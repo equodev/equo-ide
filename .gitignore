@@ -1,0 +1,13 @@
+# gradle ignores
+.gradle/
+build/
+
+# eclipse ignores
+.metadata
+bin/
+tmp/
+.settings/
+.project
+
+# idea ignores
+.idea/
