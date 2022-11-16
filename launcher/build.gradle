@@ -1,0 +1,12 @@
+
+apply plugin: 'java-library'
+apply from: rootProject.file('gradle/spotless.gradle')
+
+apply plugin: 'com.diffplug.eclipse.mavencentral'
+eclipseMavenCentral {
+	release '4.25.0', {
+		implementation 'org.eclipse.ui.ide.application'
+		useNativesForRunningPlatform()
+		constrainTransitivesToThisRelease()
+	}
+}

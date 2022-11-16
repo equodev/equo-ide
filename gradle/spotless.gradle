@@ -1,0 +1,16 @@
+repositories { mavenCentral() }
+
+apply plugin: 'com.diffplug.spotless'
+spotless {
+	groovyGradle {
+		target '*.gradle'
+		greclipse()
+	}
+	if (project != rootProject) {
+		java {
+			removeUnusedImports()
+			googleJavaFormat()
+			indentWithTabs(2)
+		}
+	}
+}
