@@ -2,6 +2,17 @@
 apply plugin: 'java-library'
 apply from: rootProject.file('gradle/spotless.gradle')
 
+String VER_SLF4J = '2.0.3'
+
+dependencies {
+	implementation 'com.diffplug.durian:durian-swt.os:4.1.1'
+
+	implementation 'com.google.code.findbugs:jsr305:3.0.2'
+	implementation 'com.google.code.findbugs:annotations:3.0.1'
+	api "org.slf4j:slf4j-api:${VER_SLF4J}"
+	testImplementation "org.slf4j:slf4j-simple:${VER_SLF4J}"
+}
+
 apply plugin: 'com.diffplug.eclipse.mavencentral'
 eclipseMavenCentral {
 	release '4.25.0', {
