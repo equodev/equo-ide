@@ -59,6 +59,12 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 	final FrameworkWiring frameworkWiring = new Shims.FrameworkWiringUnsupported() {};
 
 	class SystemBundle extends Shims.PackageAdminUnsupported implements Shims.BundleUnsupported {
+		@Override
+		public int getState() {
+			// this signals InternalPlatform.isRunning() to be true
+			return Bundle.ACTIVE;
+		}
+
 		public <A> A adapt(Class<A> type) {
 			if (type.equals(PackageAdmin.class)) {
 				return (A) packageAdmin;
@@ -68,6 +74,11 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 				throw new UnsupportedOperationException(type.getName());
 			}
 		}
+	}
+
+	@Override
+	public org.osgi.framework.Bundle getBundle() {
+		return systemBundle;
 	}
 
 	@Override

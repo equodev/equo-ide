@@ -1,8 +1,8 @@
 package pkg;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.List;
@@ -15,96 +15,76 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 
 public class ShimBundleContextWithServiceRegistry extends Shims.BundleContextUnsupported {
-	Map<Class<?>, List<?>> services = new HashMap<>();
+	Map<String, List<ShimServiceReference>> services = new HashMap<>();
 
-	private <S> List<ShimServiceReference<S>> servicesForInterface(Class<S> interfase) {
-		List<?> list = services.get(interfase);
+	private List<ShimServiceReference> servicesForInterface(String interfase) {
+		List<ShimServiceReference> list = services.get(interfase);
 		if (list == null) {
 			list = new ArrayList<>();
 			services.put(interfase, list);
 		}
-		return (List<ShimServiceReference<S>>) list;
+		return list;
 	}
 
 	@Override
-	public final ServiceRegistration<?> registerService(
+	public final synchronized ServiceRegistration<?> registerService(
 			String clazz, Object service, Dictionary<String, ?> properties) {
-		try {
-			Class<Object> clazzObj = (Class<Object>) Class.forName(clazz);
-			return registerService(clazzObj, service, properties);
-		} catch (ClassNotFoundException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	@Override
-	public final synchronized <S> ServiceRegistration<S> registerService(
-			Class<S> clazz, S service, Dictionary<String, ?> properties) {
-		List<ShimServiceReference<S>> services = servicesForInterface(clazz);
-		services.add(new ShimServiceReference<>(service));
+		List<ShimServiceReference> references = servicesForInterface(clazz);
+		references.add(new ShimServiceReference(service));
 		return null;
 	}
 
 	@Override
+	public final <S> ServiceRegistration<S> registerService(
+			Class<S> clazz, S service, Dictionary<String, ?> properties) {
+		return (ServiceRegistration<S>) registerService(clazz.getName(), service, properties);
+	}
+
+	@Override
 	public final <S> S getService(ServiceReference<S> reference) {
-		if (reference instanceof ShimServiceReference<S>) {
-			return ((ShimServiceReference<S>) reference).service;
+		if (reference instanceof ShimServiceReference) {
+			return (S) ((ShimServiceReference) reference).service;
 		} else {
 			throw new RuntimeException("Unexpected class " + reference);
 		}
 	}
 
 	@Override
-	public final ServiceReference<?> getServiceReference(String clazz) {
-		try {
-			return getServiceReference(Class.forName(clazz));
-		} catch (ClassNotFoundException e) {
-			throw new RuntimeException(e);
-		}
+	public final synchronized ServiceReference<?> getServiceReference(String clazz) {
+		List<ShimServiceReference> services = servicesForInterface(clazz);
+		return services.isEmpty() ? null : services.get(0);
 	}
 
 	@Override
 	public final synchronized <S> ServiceReference<S> getServiceReference(Class<S> clazz) {
-		List<ShimServiceReference<S>> services = servicesForInterface(clazz);
-		return services.isEmpty() ? null : services.get(0);
+		return (ServiceReference<S>) getServiceReference(clazz.getName());
 	}
 
 	@Override
 	public final ServiceReference<?>[] getAllServiceReferences(String clazz, String filter)
 			throws InvalidSyntaxException {
-		try {
-			return getServiceReferences(Class.forName(clazz), filter).toArray(new ServiceReference<?>[0]);
-		} catch (ClassNotFoundException e) {
-			throw new RuntimeException(e);
-		}
+		// no difference because we only have one classloader
+		return getServiceReferences(clazz, filter);
 	}
 
 	@Override
-	public final ServiceReference<?>[] getServiceReferences(String clazz, String filter)
+	public final synchronized ServiceReference<?>[] getServiceReferences(String clazz, String filter)
 			throws InvalidSyntaxException {
-		try {
-			return getServiceReferences(Class.forName(clazz), filter).toArray(new ServiceReference<?>[0]);
-		} catch (ClassNotFoundException e) {
-			throw new RuntimeException(e);
+		List<ShimServiceReference> services;
+		if (clazz != null) {
+			services = servicesForInterface(clazz);
+		} else {
+			FilterImpl filterParsed = FilterImpl.newInstance(filter);
+			services = servicesForInterface(filterParsed.getRequiredObjectClass());
 		}
+		return services.toArray(new ServiceReference<?>[0]);
 	}
 
 	@Override
 	public final <S> Collection<ServiceReference<S>> getServiceReferences(
 			Class<S> clazz, String filter) throws InvalidSyntaxException {
-		try {
-			List<ShimServiceReference<S>> services;
-			if (clazz != null) {
-				services = servicesForInterface(clazz);
-			} else {
-				FilterImpl filterParsed = FilterImpl.newInstance(filter);
-				Class<S> clazzFilter = (Class<S>) Class.forName(filterParsed.getRequiredObjectClass());
-				services = servicesForInterface(clazzFilter);
-			}
-			return Collections.unmodifiableList(servicesForInterface(clazz));
-		} catch (ClassNotFoundException e) {
-			throw new RuntimeException(e);
-		}
+		return (List<ServiceReference<S>>)
+				(Object) Arrays.asList(getServiceReferences(clazz.getName(), filter));
 	}
 
 	@Override
@@ -112,10 +92,10 @@ public class ShimBundleContextWithServiceRegistry extends Shims.BundleContextUns
 		return FilterImpl.newInstance(filter);
 	}
 
-	static class ShimServiceReference<S> implements ServiceReference<S> {
-		final S service;
+	static class ShimServiceReference implements ServiceReference {
+		final Object service;
 
-		ShimServiceReference(S service) {
+		ShimServiceReference(Object service) {
 			this.service = service;
 		}
 
@@ -159,7 +139,7 @@ public class ShimBundleContextWithServiceRegistry extends Shims.BundleContextUns
 		}
 
 		@Override
-		public <A> A adapt(Class<A> type) {
+		public Object adapt(Class type) {
 			throw new UnsupportedOperationException();
 		}
 	}
