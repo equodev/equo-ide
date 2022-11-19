@@ -25,7 +25,11 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.framework.Version;
 import org.osgi.framework.wiring.BundleCapability;
+import org.osgi.framework.wiring.BundleRequirement;
+import org.osgi.framework.wiring.BundleRevision;
+import org.osgi.framework.wiring.BundleWiring;
 import org.osgi.framework.wiring.FrameworkWiring;
+import org.osgi.resource.Capability;
 import org.osgi.resource.Requirement;
 import org.osgi.service.packageadmin.ExportedPackage;
 import org.osgi.service.packageadmin.PackageAdmin;
@@ -594,6 +598,80 @@ class Shims {
 
 		@Override
 		public boolean matches(Map<String, ?> map) {
+			throw new UnsupportedOperationException();
+		}
+	}
+
+	static class BundleCapabilityUnsupported implements BundleCapability {
+		@Override
+		public BundleRevision getRevision() {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public String getNamespace() {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public Map<String, String> getDirectives() {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public Map<String, Object> getAttributes() {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public BundleRevision getResource() {
+			throw new UnsupportedOperationException();
+		}
+	}
+
+	static class BundleRevisionUnsupported implements BundleRevision {
+		@Override
+		public String getSymbolicName() {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public Version getVersion() {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public List<BundleCapability> getDeclaredCapabilities(String namespace) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public List<BundleRequirement> getDeclaredRequirements(String namespace) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public int getTypes() {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public BundleWiring getWiring() {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public List<Capability> getCapabilities(String namespace) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public List<Requirement> getRequirements(String namespace) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public Bundle getBundle() {
 			throw new UnsupportedOperationException();
 		}
 	}

@@ -5,14 +5,18 @@ import java.lang.reflect.Constructor;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Objects;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 import javax.annotation.Nullable;
 import org.eclipse.core.internal.runtime.InternalPlatform;
+import org.eclipse.osgi.internal.framework.FilterImpl;
 import org.eclipse.osgi.service.environment.EnvironmentInfo;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
@@ -22,7 +26,12 @@ import org.osgi.framework.Constants;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceListener;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.framework.namespace.IdentityNamespace;
+import org.osgi.framework.wiring.BundleCapability;
+import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.framework.wiring.FrameworkWiring;
+import org.osgi.resource.Namespace;
+import org.osgi.resource.Requirement;
 import org.osgi.service.packageadmin.PackageAdmin;
 
 public class OsgiShim extends ShimBundleContextWithServiceRegistry {
@@ -33,6 +42,15 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 	}
 
 	private List<ShimBundle> bundles = new ArrayList<ShimBundle>();
+
+	private ShimBundle bundleByName(String name) {
+		for (ShimBundle bundle : bundles) {
+			if (name.equals(bundle.getSymbolicName())) {
+				return bundle;
+			}
+		}
+		return null;
+	}
 
 	private OsgiShim() {
 		try {
@@ -56,7 +74,48 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 
 	final PackageAdmin packageAdmin = new Shims.PackageAdminUnsupported() {};
 
-	final FrameworkWiring frameworkWiring = new Shims.FrameworkWiringUnsupported() {};
+	final FrameworkWiring frameworkWiring =
+			new Shims.FrameworkWiringUnsupported() {
+				@Override
+				public Collection<BundleCapability> findProviders(Requirement requirement) {
+					String filterSpec =
+							requirement.getDirectives().get(Namespace.REQUIREMENT_FILTER_DIRECTIVE);
+					try {
+						var requirementFilter = FilterImpl.newInstance(filterSpec).getStandardOSGiAttributes();
+						var requiredBundle = requirementFilter.get(IdentityNamespace.IDENTITY_NAMESPACE);
+						var bundle = bundleByName(requiredBundle);
+						return Collections.singleton(new ShimBundleCapability(bundle));
+					} catch (InvalidSyntaxException e) {
+						throw new IllegalArgumentException("Filter specifiation invalid:\n" + filterSpec, e);
+					}
+				}
+			};
+
+	private static class ShimBundleCapability extends Shims.BundleCapabilityUnsupported {
+		private final ShimBundleRevision revision;
+
+		public ShimBundleCapability(Bundle bundle) {
+			this.revision = new ShimBundleRevision(bundle);
+		}
+
+		@Override
+		public BundleRevision getRevision() {
+			return revision;
+		}
+	}
+
+	private static class ShimBundleRevision extends Shims.BundleRevisionUnsupported {
+		private final Bundle bundle;
+
+		public ShimBundleRevision(Bundle bundle) {
+			this.bundle = Objects.requireNonNull(bundle);
+		}
+
+		@Override
+		public Bundle getBundle() {
+			return bundle;
+		}
+	}
 
 	class SystemBundle extends Shims.PackageAdminUnsupported implements Shims.BundleUnsupported {
 		@Override
@@ -116,14 +175,39 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 			jarFile = externalForm.substring(0, externalForm.length() - MANIFEST_PATH.length());
 			Manifest manifest = new Manifest(manifestURL.openStream());
 			activator = manifest.getMainAttributes().getValue(ACTIVATOR);
-			symbolicName = manifest.getMainAttributes().getValue(SYMBOLIC_NAME);
+			String symbolicNameRaw = manifest.getMainAttributes().getValue(SYMBOLIC_NAME);
+			if (symbolicNameRaw == null) {
+				symbolicName = null;
+			} else {
+				// strip off singleton stuff
+				int firstDirective = symbolicNameRaw.indexOf(';');
+				if (firstDirective == -1) {
+					symbolicName = symbolicNameRaw;
+				} else {
+					symbolicName = symbolicNameRaw.substring(0, firstDirective);
+				}
+			}
+			if (!jarFile.endsWith("!")) {
+				throw new IllegalArgumentException(
+						"Must end with !  SEE getEntry if this changes  " + jarFile);
+			}
+		}
+
+		@Override
+		public String toString() {
+			if (symbolicName != null) {
+				return symbolicName;
+			} else {
+				return jarFile;
+			}
 		}
 
 		private void activate() throws Exception {
 			if (activator != null) {
+				System.out.println("ACTIVATE " + symbolicName);
 				var c = (Constructor<BundleActivator>) Class.forName(activator).getConstructor();
 				if (c == null) {
-					System.out.println("No activator for " + jarFile + " " + activator);
+					throw new IllegalArgumentException("No activator for " + jarFile + " " + activator);
 				}
 				var bundleActivator = c.newInstance();
 				bundleActivator.start(this);
@@ -165,9 +249,17 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 		}
 
 		@Override
+		public int getState() {
+			return Bundle.ACTIVE;
+		}
+
+		@Override
 		public URL getEntry(String path) {
 			try {
-				return new URL(jarFile + path);
+				if (path.startsWith("/")) {
+					throw new IllegalArgumentException("Path must not start with /");
+				}
+				return new URL(jarFile + "/" + path);
 			} catch (MalformedURLException e) {
 				throw new RuntimeException(e);
 			}
