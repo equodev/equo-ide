@@ -7,6 +7,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -61,6 +62,21 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 			while (resources.hasMoreElements()) {
 				bundles.add(new ShimBundle(this, resources.nextElement()));
 			}
+
+			Collections.sort(
+					bundles,
+					new Comparator<ShimBundle>() {
+						@Override
+						public int compare(ShimBundle o1, ShimBundle o2) {
+							if ((o1.symbolicName != null) == (o2.symbolicName != null)) {
+								// sort based on name for the same "types"
+								return o1.toString().compareTo(o2.toString());
+							} else {
+								// otherwise put the symbolic names first
+								return o1.symbolicName != null ? 1 : -1;
+							}
+						}
+					});
 
 			for (ShimBundle bundle : bundles) {
 				bundle.activate();
