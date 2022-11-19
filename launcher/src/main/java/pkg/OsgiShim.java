@@ -7,25 +7,25 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.Enumeration;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 import javax.annotation.Nullable;
 import org.eclipse.core.internal.runtime.InternalPlatform;
+import org.eclipse.osgi.service.environment.EnvironmentInfo;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleListener;
 import org.osgi.framework.Constants;
-import org.osgi.framework.Filter;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceListener;
-import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.framework.wiring.FrameworkWiring;
 import org.osgi.service.packageadmin.PackageAdmin;
 
-public class OsgiShim extends Shims.BundleContextUnsupported {
+public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 	private static final OsgiShim instance = new OsgiShim();
 
 	public static OsgiShim instance() {
@@ -36,6 +36,7 @@ public class OsgiShim extends Shims.BundleContextUnsupported {
 
 	private OsgiShim() {
 		try {
+			registerService(EnvironmentInfo.class, new ShimEnvironmentInfo(), new Hashtable<>());
 			InternalPlatform.getDefault().start(this);
 
 			Enumeration<URL> resources = getClass().getClassLoader().getResources("META-INF/MANIFEST.MF");
@@ -79,22 +80,9 @@ public class OsgiShim extends Shims.BundleContextUnsupported {
 	}
 
 	@Override
-	public Filter createFilter(String filter) throws InvalidSyntaxException {
-		// TODO: this will probably not work
-		return new Shims.FilterUnsupported();
-	}
-
-	@Override
 	public void addServiceListener(ServiceListener listener, String filter)
 			throws InvalidSyntaxException {
 		// TODO: this no-op *might* work
-	}
-
-	@Override
-	public ServiceReference<?>[] getServiceReferences(String clazz, String filter)
-			throws InvalidSyntaxException {
-		// TODO: this no-op probably won't work
-		return new ServiceReference<?>[0];
 	}
 
 	public static class ShimBundle extends Shims.BundleContextDelegate
