@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
@@ -26,7 +25,6 @@ import org.osgi.framework.BundleListener;
 import org.osgi.framework.Constants;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceListener;
-import org.osgi.framework.ServiceRegistration;
 import org.osgi.framework.namespace.IdentityNamespace;
 import org.osgi.framework.wiring.BundleCapability;
 import org.osgi.framework.wiring.BundleRevision;
@@ -60,7 +58,7 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 
 			Enumeration<URL> resources = getClass().getClassLoader().getResources("META-INF/MANIFEST.MF");
 			while (resources.hasMoreElements()) {
-				bundles.add(new ShimBundle(this, resources.nextElement()));
+				bundles.add(new ShimBundle(resources.nextElement()));
 			}
 
 			Collections.sort(
@@ -73,7 +71,7 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 								return o1.toString().compareTo(o2.toString());
 							} else {
 								// otherwise put the symbolic names first
-								return o1.symbolicName != null ? 1 : -1;
+								return o1.symbolicName != null ? -1 : 1;
 							}
 						}
 					});
@@ -171,18 +169,19 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 		// TODO: this no-op *might* work
 	}
 
-	public static class ShimBundle extends Shims.BundleContextDelegate
-			implements Shims.BundleUnsupported {
+	public class ShimBundle extends Shims.BundleContextDelegate implements Shims.BundleUnsupported {
 		static final Attributes.Name SYMBOLIC_NAME = new Attributes.Name("Bundle-SymbolicName");
 		static final Attributes.Name ACTIVATOR = new Attributes.Name("Bundle-Activator");
+		static final Attributes.Name REQUIRE_BUNDLE = new Attributes.Name("Require-Bundle");
 		static final String MANIFEST_PATH = "/META-INF/MANIFEST.MF";
 
 		final String jarFile;
 		final @Nullable String activator;
 		final @Nullable String symbolicName;
+		final List<String> requiredBundles;
 
-		ShimBundle(OsgiShim rootCtx, URL manifestURL) throws IOException {
-			super(rootCtx);
+		ShimBundle(URL manifestURL) throws IOException {
+			super(OsgiShim.this);
 			var externalForm = manifestURL.toExternalForm();
 			if (!externalForm.endsWith(MANIFEST_PATH)) {
 				throw new RuntimeException(
@@ -207,6 +206,28 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 				throw new IllegalArgumentException(
 						"Must end with !  SEE getEntry if this changes  " + jarFile);
 			}
+			requiredBundles = requiredBundles(manifest);
+		}
+
+		private static List<String> requiredBundles(Manifest manifest) {
+			String requireBundle = manifest.getMainAttributes().getValue(REQUIRE_BUNDLE);
+			if (requireBundle == null) {
+				return Collections.emptyList();
+			}
+
+			String[] bundlesAndVersions = requireBundle.split(",");
+			List<String> required = new ArrayList<>(bundlesAndVersions.length);
+			for (String s : bundlesAndVersions) {
+				int attrDelim = s.indexOf(';');
+				if (attrDelim == -1) {
+					attrDelim = s.length();
+				}
+				String bundle = s.substring(0, attrDelim);
+				if (bundle.indexOf('"') == -1) {
+					required.add(bundle);
+				}
+			}
+			return required;
 		}
 
 		@Override
@@ -215,18 +236,6 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 				return symbolicName;
 			} else {
 				return jarFile;
-			}
-		}
-
-		private void activate() throws Exception {
-			if (activator != null) {
-				System.out.println("ACTIVATE " + symbolicName);
-				var c = (Constructor<BundleActivator>) Class.forName(activator).getConstructor();
-				if (c == null) {
-					throw new IllegalArgumentException("No activator for " + jarFile + " " + activator);
-				}
-				var bundleActivator = c.newInstance();
-				bundleActivator.start(this);
 			}
 		}
 
@@ -244,16 +253,45 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 			// https://github.com/eclipse-platform/eclipse.platform.ui/blob/4507d1fc873a70b5c74f411b2f7de70d37bd8d0a/bundles/org.eclipse.ui.workbench/Eclipse%20UI/org/eclipse/ui/plugin/AbstractUIPlugin.java#L508-L528
 		}
 
-		@Override
-		public <S> ServiceRegistration<S> registerService(
-				Class<S> clazz, S service, Dictionary<String, ?> properties) {
-			// TODO: no-op, which might be a problem later
-			return null;
-		}
-
 		///////////////////
 		// Bundle overrides
 		///////////////////
+		private boolean isActivated = false;
+
+		private void activate() throws Exception {
+			if (isActivated) {
+				return;
+			}
+			System.out.println("ACTIVATE " + symbolicName);
+			if (activator != null) {
+				isActivated = true;
+				if ("org.eclipse.osgi".equals(symbolicName)) {
+					System.out.println("  (skipped on purpose)");
+					return;
+				}
+				for (var required : requiredBundles) {
+					System.out.println("  requires " + required);
+					ShimBundle bundle = bundleByName(required);
+					if (bundle != null) {
+						bundle.activate();
+					} else {
+						System.out.println("    NOT PRESENT");
+					}
+				}
+				var c = (Constructor<BundleActivator>) Class.forName(activator).getConstructor();
+				if (c == null) {
+					throw new IllegalArgumentException("No activator for " + jarFile + " " + activator);
+				}
+				var bundleActivator = c.newInstance();
+				bundleActivator.start(this);
+			}
+		}
+
+		@Override
+		public int getState() {
+			return isActivated ? Bundle.ACTIVE : Bundle.STARTING;
+		}
+
 		@Override
 		public BundleContext getBundleContext() {
 			return this;
@@ -262,11 +300,6 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 		@Override
 		public String getSymbolicName() {
 			return symbolicName;
-		}
-
-		@Override
-		public int getState() {
-			return Bundle.ACTIVE;
 		}
 
 		@Override
