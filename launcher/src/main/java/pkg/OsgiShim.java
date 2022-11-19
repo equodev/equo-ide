@@ -12,11 +12,18 @@ import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 import javax.annotation.Nullable;
 import org.eclipse.core.internal.runtime.InternalPlatform;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleListener;
 import org.osgi.framework.Constants;
+import org.osgi.framework.Filter;
+import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.framework.ServiceListener;
+import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.framework.wiring.FrameworkWiring;
+import org.osgi.service.packageadmin.PackageAdmin;
 
 public class OsgiShim extends Shims.BundleContextUnsupported {
 	private static final OsgiShim instance = new OsgiShim();
@@ -44,12 +51,50 @@ public class OsgiShim extends Shims.BundleContextUnsupported {
 		}
 	}
 
+	final Bundle systemBundle = new SystemBundle();
+
+	final PackageAdmin packageAdmin = new Shims.PackageAdminUnsupported() {};
+
+	final FrameworkWiring frameworkWiring = new Shims.FrameworkWiringUnsupported() {};
+
+	class SystemBundle extends Shims.PackageAdminUnsupported implements Shims.BundleUnsupported {
+		public <A> A adapt(Class<A> type) {
+			if (type.equals(PackageAdmin.class)) {
+				return (A) packageAdmin;
+			} else if (type.equals(FrameworkWiring.class)) {
+				return (A) frameworkWiring;
+			} else {
+				throw new UnsupportedOperationException(type.getName());
+			}
+		}
+	}
+
 	@Override
 	public org.osgi.framework.Bundle getBundle(String location) {
 		if (Constants.SYSTEM_BUNDLE_LOCATION.equals(location)) {
-			// TODO: return system Bundle
+			return systemBundle;
+		} else {
+			throw new UnsupportedOperationException();
 		}
-		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public Filter createFilter(String filter) throws InvalidSyntaxException {
+		// TODO: this will probably not work
+		return new Shims.FilterUnsupported();
+	}
+
+	@Override
+	public void addServiceListener(ServiceListener listener, String filter)
+			throws InvalidSyntaxException {
+		// TODO: this no-op *might* work
+	}
+
+	@Override
+	public ServiceReference<?>[] getServiceReferences(String clazz, String filter)
+			throws InvalidSyntaxException {
+		// TODO: this no-op probably won't work
+		return new ServiceReference<?>[0];
 	}
 
 	public static class ShimBundle extends Shims.BundleContextDelegate

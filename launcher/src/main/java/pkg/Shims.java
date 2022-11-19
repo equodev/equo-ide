@@ -24,6 +24,12 @@ import org.osgi.framework.ServiceObjects;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.framework.Version;
+import org.osgi.framework.wiring.BundleCapability;
+import org.osgi.framework.wiring.FrameworkWiring;
+import org.osgi.resource.Requirement;
+import org.osgi.service.packageadmin.ExportedPackage;
+import org.osgi.service.packageadmin.PackageAdmin;
+import org.osgi.service.packageadmin.RequiredBundle;
 
 class Shims {
 	static class BundleContextUnsupported implements BundleContext {
@@ -456,6 +462,11 @@ class Shims {
 		}
 
 		@Override
+		default File getDataFile(String filename) {
+			return null;
+		}
+
+		@Override
 		default Map<X509Certificate, List<X509Certificate>> getSignerCertificates(int signersType) {
 			throw new UnsupportedOperationException();
 		}
@@ -473,6 +484,117 @@ class Shims {
 		@Override
 		default int compareTo(Bundle o) {
 			return getSymbolicName().compareTo(o.getSymbolicName());
+		}
+	}
+
+	static class PackageAdminUnsupported implements PackageAdmin {
+		@Override
+		public ExportedPackage[] getExportedPackages(Bundle bundle) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public ExportedPackage[] getExportedPackages(String name) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public ExportedPackage getExportedPackage(String name) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public void refreshPackages(Bundle[] bundles) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public boolean resolveBundles(Bundle[] bundles) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public RequiredBundle[] getRequiredBundles(String symbolicName) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public Bundle[] getBundles(String symbolicName, String versionRange) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public Bundle[] getFragments(Bundle bundle) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public Bundle[] getHosts(Bundle bundle) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public Bundle getBundle(Class<?> clazz) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public int getBundleType(Bundle bundle) {
+			throw new UnsupportedOperationException();
+		}
+	}
+
+	static class FrameworkWiringUnsupported implements FrameworkWiring {
+		@Override
+		public void refreshBundles(Collection<Bundle> bundles, FrameworkListener... listeners) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public boolean resolveBundles(Collection<Bundle> bundles) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public Collection<Bundle> getRemovalPendingBundles() {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public Collection<Bundle> getDependencyClosure(Collection<Bundle> bundles) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public Collection<BundleCapability> findProviders(Requirement requirement) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public Bundle getBundle() {
+			throw new UnsupportedOperationException();
+		}
+	}
+
+	static class FilterUnsupported implements Filter {
+		@Override
+		public boolean match(ServiceReference<?> reference) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public boolean match(Dictionary<String, ?> dictionary) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public boolean matchCase(Dictionary<String, ?> dictionary) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public boolean matches(Map<String, ?> map) {
+			throw new UnsupportedOperationException();
 		}
 	}
 }
