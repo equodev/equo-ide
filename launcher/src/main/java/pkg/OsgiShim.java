@@ -21,6 +21,7 @@ import org.eclipse.osgi.service.environment.EnvironmentInfo;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleException;
 import org.osgi.framework.BundleListener;
 import org.osgi.framework.Constants;
 import org.osgi.framework.InvalidSyntaxException;
@@ -126,6 +127,11 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 
 		@Override
 		public boolean isReadOnly() {
+			return true;
+		}
+
+		@Override
+		public boolean isSet() {
 			return true;
 		}
 	}
@@ -307,6 +313,15 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 		@Override
 		public long getBundleId() {
 			return toString().hashCode();
+		}
+
+		@Override
+		public void start(int options) throws BundleException {
+			try {
+				activate();
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
 		}
 
 		@Override
