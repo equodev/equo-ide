@@ -7,9 +7,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Enumeration;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Objects;
 import java.util.jar.Attributes;
@@ -17,6 +15,7 @@ import java.util.jar.Manifest;
 import javax.annotation.Nullable;
 import org.eclipse.core.internal.runtime.InternalPlatform;
 import org.eclipse.osgi.internal.framework.FilterImpl;
+import org.eclipse.osgi.service.datalocation.Location;
 import org.eclipse.osgi.service.environment.EnvironmentInfo;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
@@ -51,36 +50,72 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 		return null;
 	}
 
+	public Bundle bundleForURL(URL source) {
+		String sourceString = "jar:" + source.toExternalForm() + "!";
+		for (ShimBundle bundle : bundles) {
+			if (sourceString.equals(bundle.jarFile)) {
+				return bundle;
+			}
+		}
+		StringBuilder msg = new StringBuilder();
+		msg.append(sourceString);
+		msg.append('\n');
+		for (ShimBundle bundle : bundles) {
+			msg.append("  ");
+			msg.append(bundle.jarFile);
+			msg.append('\n');
+		}
+		throw new IllegalArgumentException(msg.toString());
+	}
+
+	private void discoverBundles() throws IOException {
+		Enumeration<URL> resources = getClass().getClassLoader().getResources("META-INF/MANIFEST.MF");
+		while (resources.hasMoreElements()) {
+			bundles.add(new ShimBundle(resources.nextElement()));
+		}
+		Collections.sort(
+				bundles,
+				(o1, o2) -> {
+					if ((o1.symbolicName != null) == (o2.symbolicName != null)) {
+						// sort based on name for the same "types"
+						return o1.toString().compareTo(o2.toString());
+					} else {
+						// otherwise put the symbolic names first
+						return o1.symbolicName != null ? -1 : 1;
+					}
+				});
+	}
+
 	private OsgiShim() {
 		try {
-			registerService(EnvironmentInfo.class, new ShimEnvironmentInfo(), new Hashtable<>());
+			ShimFrameworkUtilHelper.initialize(this);
+			discoverBundles();
+
+			registerService(EnvironmentInfo.class, new ShimEnvironmentInfo(), Dictionaries.empty());
+			registerService(
+					Location.class,
+					new ShimLocation(new URL("file:/")),
+					Dictionaries.of(Location.SERVICE_PROPERTY_TYPE, Location.INSTALL_AREA_TYPE));
+
 			InternalPlatform.getDefault().start(this);
-
-			Enumeration<URL> resources = getClass().getClassLoader().getResources("META-INF/MANIFEST.MF");
-			while (resources.hasMoreElements()) {
-				bundles.add(new ShimBundle(resources.nextElement()));
-			}
-
-			Collections.sort(
-					bundles,
-					new Comparator<ShimBundle>() {
-						@Override
-						public int compare(ShimBundle o1, ShimBundle o2) {
-							if ((o1.symbolicName != null) == (o2.symbolicName != null)) {
-								// sort based on name for the same "types"
-								return o1.toString().compareTo(o2.toString());
-							} else {
-								// otherwise put the symbolic names first
-								return o1.symbolicName != null ? -1 : 1;
-							}
-						}
-					});
-
 			for (ShimBundle bundle : bundles) {
 				bundle.activate();
 			}
 		} catch (Exception e) {
 			throw new RuntimeException(e);
+		}
+	}
+
+	static class ShimLocation extends Shims.LocationUnsupported {
+		final URL url;
+
+		ShimLocation(URL url) {
+			this.url = url;
+		}
+
+		@Override
+		public URL getURL() {
+			return url;
 		}
 	}
 
@@ -251,6 +286,16 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 		public void addBundleListener(BundleListener listener) {
 			// TODO: no-op, which might be a problem later. See for example:
 			// https://github.com/eclipse-platform/eclipse.platform.ui/blob/4507d1fc873a70b5c74f411b2f7de70d37bd8d0a/bundles/org.eclipse.ui.workbench/Eclipse%20UI/org/eclipse/ui/plugin/AbstractUIPlugin.java#L508-L528
+		}
+
+		@Override
+		public void removeBundleListener(BundleListener listener) {
+			// TODO: no-op
+		}
+
+		@Override
+		public void removeServiceListener(ServiceListener listener) {
+			// TODO: no-op
 		}
 
 		///////////////////

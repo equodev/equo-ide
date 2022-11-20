@@ -11,6 +11,7 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import org.eclipse.osgi.service.datalocation.Location;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
@@ -672,6 +673,79 @@ class Shims {
 
 		@Override
 		public Bundle getBundle() {
+			throw new UnsupportedOperationException();
+		}
+	}
+
+	static class LocationUnsupported implements Location {
+		@Override
+		public boolean allowsDefault() {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public URL getDefault() {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public Location getParentLocation() {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public URL getURL() {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public boolean isSet() {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public boolean isReadOnly() {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public boolean setURL(URL value, boolean lock) throws IllegalStateException {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public boolean set(URL value, boolean lock) throws IllegalStateException, IOException {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public boolean set(URL value, boolean lock, String lockFilePath)
+				throws IllegalStateException, IOException {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public boolean lock() throws IOException {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public void release() {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public boolean isLocked() throws IOException {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public Location createLocation(Location parent, URL defaultValue, boolean readonly) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public URL getDataArea(String path) throws IOException {
 			throw new UnsupportedOperationException();
 		}
 	}

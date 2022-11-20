@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Dictionary;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,7 +31,7 @@ public class ShimBundleContextWithServiceRegistry extends Shims.BundleContextUns
 	public final synchronized ServiceRegistration<?> registerService(
 			String clazz, Object service, Dictionary<String, ?> properties) {
 		List<ShimServiceReference> references = servicesForInterface(clazz);
-		references.add(new ShimServiceReference(service));
+		references.add(new ShimServiceReference(service, properties));
 		return null;
 	}
 
@@ -47,6 +48,11 @@ public class ShimBundleContextWithServiceRegistry extends Shims.BundleContextUns
 		} else {
 			throw new RuntimeException("Unexpected class " + reference);
 		}
+	}
+
+	@Override
+	public final boolean ungetService(ServiceReference<?> reference) {
+		return true;
 	}
 
 	@Override
@@ -77,6 +83,7 @@ public class ShimBundleContextWithServiceRegistry extends Shims.BundleContextUns
 			FilterImpl filterParsed = FilterImpl.newInstance(filter);
 			services = servicesForInterface(filterParsed.getRequiredObjectClass());
 		}
+		// TODO: deal with filter
 		return services.toArray(new ServiceReference<?>[0]);
 	}
 
@@ -94,9 +101,11 @@ public class ShimBundleContextWithServiceRegistry extends Shims.BundleContextUns
 
 	static class ShimServiceReference implements ServiceReference {
 		final Object service;
+		final Dictionary<String, Object> properties;
 
-		ShimServiceReference(Object service) {
+		ShimServiceReference(Object service, Dictionary<String, ?> properties) {
 			this.service = service;
+			this.properties = (Dictionary<String, Object>) properties;
 		}
 
 		@Override
@@ -110,17 +119,28 @@ public class ShimBundleContextWithServiceRegistry extends Shims.BundleContextUns
 
 		@Override
 		public Object getProperty(String key) {
-			throw new UnsupportedOperationException();
+			return properties.get(key);
 		}
 
 		@Override
 		public String[] getPropertyKeys() {
-			throw new UnsupportedOperationException();
+			List<String> keys = new ArrayList<>();
+			Enumeration<String> keysEnum = properties.keys();
+			while (keysEnum.hasMoreElements()) {
+				keys.add(keysEnum.nextElement());
+			}
+			return keys.toArray(new String[0]);
+		}
+
+		@Override
+		public Dictionary<String, Object> getProperties() {
+			return properties;
 		}
 
 		@Override
 		public Bundle getBundle() {
-			throw new UnsupportedOperationException();
+			// TODO: we could determine this for real using ShimFrameworkUtilHelper
+			return null;
 		}
 
 		@Override
@@ -130,11 +150,6 @@ public class ShimBundleContextWithServiceRegistry extends Shims.BundleContextUns
 
 		@Override
 		public int compareTo(Object reference) {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		public Dictionary<String, Object> getProperties() {
 			throw new UnsupportedOperationException();
 		}
 
