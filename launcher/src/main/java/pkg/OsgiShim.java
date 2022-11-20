@@ -453,5 +453,10 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 				throw new RuntimeException(e);
 			}
 		}
+
+		@Override
+		public String getLocation() {
+			return jarFile;
+		}
 	}
 }

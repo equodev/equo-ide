@@ -47,6 +47,16 @@ public class ShimBundleContextWithServiceRegistry extends Shims.BundleContextUns
 	}
 
 	@Override
+	public ServiceRegistration<?> registerService(
+			String[] clazzes, Object service, Dictionary<String, ?> properties) {
+		if (clazzes.length == 1) {
+			return registerService(clazzes[0], service, properties);
+		} else {
+			throw new IllegalArgumentException("The multiple API is not necessary.");
+		}
+	}
+
+	@Override
 	public final <S> ServiceRegistration<S> registerService(
 			Class<S> clazz, S service, Dictionary<String, ?> properties) {
 		return (ServiceRegistration<S>) registerService(clazz.getName(), service, properties);
@@ -106,7 +116,7 @@ public class ShimBundleContextWithServiceRegistry extends Shims.BundleContextUns
 	}
 
 	@Override
-	public Filter createFilter(String filter) throws InvalidSyntaxException {
+	public final Filter createFilter(String filter) throws InvalidSyntaxException {
 		return FilterImpl.newInstance(filter);
 	}
 
