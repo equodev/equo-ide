@@ -8,8 +8,10 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
 import org.eclipse.osgi.internal.framework.FilterImpl;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.Constants;
 import org.osgi.framework.Filter;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceFactory;
@@ -108,11 +110,15 @@ public class ShimBundleContextWithServiceRegistry extends Shims.BundleContextUns
 		return FilterImpl.newInstance(filter);
 	}
 
+	static AtomicLong globalId = new AtomicLong();
+
 	static class ShimServiceReference implements ServiceReference {
+		final long id;
 		final Object service;
 		final Dictionary<String, Object> properties;
 
 		ShimServiceReference(Object service, Dictionary<String, ?> properties) {
+			this.id = globalId.getAndIncrement();
 			this.service = service;
 			if (properties != null) {
 				this.properties = (Dictionary<String, Object>) properties;
@@ -139,7 +145,11 @@ public class ShimBundleContextWithServiceRegistry extends Shims.BundleContextUns
 
 		@Override
 		public Object getProperty(String key) {
-			return properties.get(key);
+			if (key.equals(Constants.SERVICE_ID)) {
+				return id;
+			} else {
+				return properties.get(key);
+			}
 		}
 
 		@Override
