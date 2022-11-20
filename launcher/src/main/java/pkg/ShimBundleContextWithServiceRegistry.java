@@ -12,6 +12,7 @@ import org.eclipse.osgi.internal.framework.FilterImpl;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Filter;
 import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.framework.ServiceFactory;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 
@@ -32,6 +33,14 @@ public class ShimBundleContextWithServiceRegistry extends Shims.BundleContextUns
 			String clazz, Object service, Dictionary<String, ?> properties) {
 		List<ShimServiceReference> references = servicesForInterface(clazz);
 		references.add(new ShimServiceReference(service, properties));
+		return null;
+	}
+
+	@Override
+	public final synchronized <S> ServiceRegistration<S> registerService(
+			Class<S> clazz, ServiceFactory<S> factory, Dictionary<String, ?> properties) {
+		List<ShimServiceReference> references = servicesForInterface(clazz.getName());
+		references.add(new ShimServiceReference(factory, properties));
 		return null;
 	}
 
@@ -105,7 +114,18 @@ public class ShimBundleContextWithServiceRegistry extends Shims.BundleContextUns
 
 		ShimServiceReference(Object service, Dictionary<String, ?> properties) {
 			this.service = service;
-			this.properties = (Dictionary<String, Object>) properties;
+			if (properties != null) {
+				this.properties = (Dictionary<String, Object>) properties;
+			} else {
+				this.properties = Dictionaries.empty();
+			}
+		}
+
+		ShimServiceReference(ServiceFactory factory, Dictionary<String, ?> properties) {
+			this(
+					factory.getService(
+							new ShimFrameworkUtilHelper().getBundle(factory.getClass()).get(), null),
+					properties);
 		}
 
 		@Override

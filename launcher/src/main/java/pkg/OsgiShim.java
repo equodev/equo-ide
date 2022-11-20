@@ -7,6 +7,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Objects;
@@ -117,6 +118,16 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 		public URL getURL() {
 			return url;
 		}
+
+		@Override
+		public Location getParentLocation() {
+			return null;
+		}
+
+		@Override
+		public boolean isReadOnly() {
+			return true;
+		}
 	}
 
 	final Bundle systemBundle = new SystemBundle();
@@ -204,6 +215,17 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 		// TODO: this no-op *might* work
 	}
 
+	@Override
+	public Bundle[] getBundles() {
+		return bundles.toArray(new Bundle[0]);
+	}
+
+	@Override
+	public String getProperty(String key) {
+		// TODO: users might want to set various properties
+		return null;
+	}
+
 	public class ShimBundle extends Shims.BundleContextDelegate implements Shims.BundleUnsupported {
 		static final Attributes.Name SYMBOLIC_NAME = new Attributes.Name("Bundle-SymbolicName");
 		static final Attributes.Name ACTIVATOR = new Attributes.Name("Bundle-Activator");
@@ -283,6 +305,11 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 		}
 
 		@Override
+		public long getBundleId() {
+			return toString().hashCode();
+		}
+
+		@Override
 		public void addBundleListener(BundleListener listener) {
 			// TODO: no-op, which might be a problem later. See for example:
 			// https://github.com/eclipse-platform/eclipse.platform.ui/blob/4507d1fc873a70b5c74f411b2f7de70d37bd8d0a/bundles/org.eclipse.ui.workbench/Eclipse%20UI/org/eclipse/ui/plugin/AbstractUIPlugin.java#L508-L528
@@ -335,6 +362,12 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 		@Override
 		public int getState() {
 			return isActivated ? Bundle.ACTIVE : Bundle.STARTING;
+		}
+
+		@Override
+		public Dictionary<String, String> getHeaders(String locale) {
+			// TODO: this should be from the MANIFEST.MF
+			return Dictionaries.empty();
 		}
 
 		@Override
