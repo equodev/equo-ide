@@ -20,7 +20,11 @@ import java.util.jar.Manifest;
 import javax.annotation.Nullable;
 import javax.xml.parsers.SAXParserFactory;
 import org.eclipse.core.internal.runtime.InternalPlatform;
+import org.eclipse.equinox.log.ExtendedLogReaderService;
+import org.eclipse.equinox.log.ExtendedLogService;
 import org.eclipse.osgi.internal.framework.FilterImpl;
+import org.eclipse.osgi.internal.log.ExtendedLogReaderServiceFactory;
+import org.eclipse.osgi.internal.log.ExtendedLogServiceFactory;
 import org.eclipse.osgi.service.datalocation.Location;
 import org.eclipse.osgi.service.environment.EnvironmentInfo;
 import org.osgi.framework.Bundle;
@@ -31,12 +35,14 @@ import org.osgi.framework.BundleListener;
 import org.osgi.framework.Constants;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceListener;
+import org.osgi.framework.Version;
 import org.osgi.framework.namespace.IdentityNamespace;
 import org.osgi.framework.wiring.BundleCapability;
 import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.framework.wiring.FrameworkWiring;
 import org.osgi.resource.Namespace;
 import org.osgi.resource.Requirement;
+import org.osgi.service.log.LogLevel;
 import org.osgi.service.packageadmin.PackageAdmin;
 
 public class OsgiShim extends ShimBundleContextWithServiceRegistry {
@@ -117,6 +123,11 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 					new ShimLocation(userDir.toURI().toURL()),
 					Dictionaries.of(Location.SERVICE_PROPERTY_TYPE, Location.INSTALL_AREA_TYPE));
 			registerService(SAXParserFactory.class, SAXParserFactory.newInstance(), Dictionaries.empty());
+
+			var logReaderFactory = new ExtendedLogReaderServiceFactory(99, LogLevel.INFO);
+			var logWriterFactory = new ExtendedLogServiceFactory(logReaderFactory, false);
+			registerService(ExtendedLogService.class, logWriterFactory.getService(systemBundle, null), Dictionaries.empty());
+			registerService(ExtendedLogReaderService.class, logReaderFactory.getService(systemBundle, null), Dictionaries.empty());
 
 			InternalPlatform.getDefault().start(this);
 			for (ShimBundle bundle : bundles) {
@@ -209,6 +220,22 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 			return Bundle.ACTIVE;
 		}
 
+		@Override
+		public String getSymbolicName() {
+			return "osgi-shim-system-bundle";
+		}
+
+		@Override
+		public Version getVersion() {
+			return null;
+		}
+
+		@Override
+		public String getLocation() {
+			return null;
+		}
+
+		@Override
 		public <A> A adapt(Class<A> type) {
 			if (type.equals(PackageAdmin.class)) {
 				return (A) packageAdmin;
@@ -348,6 +375,11 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 		}
 
 		@Override
+		public Version getVersion() {
+			return null;
+		}
+
+		@Override
 		public void start(int options) throws BundleException {
 			try {
 				activate();
@@ -381,21 +413,23 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 			if (isActivated) {
 				return;
 			}
-			System.out.println("ACTIVATE " + symbolicName);
 			if ("org.eclipse.osgi".equals(symbolicName)) {
-				System.out.println("  (skipped on purpose)");
+				// skip org.eclipse.osgi on purpose
 				return;
 			}
 			isActivated = true;
 			for (var required : requiredBundles) {
-				System.out.println("  requires " + required);
 				ShimBundle bundle = bundleByName(required);
 				if (bundle != null) {
 					bundle.activate();
 				} else {
-					System.out.println("    NOT PRESENT");
+					var CAN_BE_IGNORED = Arrays.asList("javax.annotation", "org.eclipse.ant.core", "org.eclipse.jdt.annotation", "org.apache.batik.css");
+					if (!CAN_BE_IGNORED.contains(required)) {
+						throw new IllegalArgumentException(required + " IS MISSING, needed by " + this);
+					}
 				}
 			}
+			System.out.println("ACTIVATE " + symbolicName);
 			if (activator != null) {
 				var c = (Constructor<BundleActivator>) Class.forName(activator).getConstructor();
 				if (c == null) {
