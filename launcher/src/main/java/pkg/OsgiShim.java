@@ -1,5 +1,6 @@
 package pkg;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.net.MalformedURLException;
@@ -93,10 +94,11 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 			ShimFrameworkUtilHelper.initialize(this);
 			discoverBundles();
 
+			File userDir = new File(System.getProperty("user.dir") + "/build");
 			registerService(EnvironmentInfo.class, new ShimEnvironmentInfo(), Dictionaries.empty());
 			registerService(
 					Location.class,
-					new ShimLocation(new URL("file:/")),
+					new ShimLocation(userDir.toURI().toURL()),
 					Dictionaries.of(Location.SERVICE_PROPERTY_TYPE, Location.INSTALL_AREA_TYPE));
 
 			InternalPlatform.getDefault().start(this);
