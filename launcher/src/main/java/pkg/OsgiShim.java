@@ -1,11 +1,14 @@
 package pkg;
 
+import com.diffplug.spotless.extra.eclipse.base.runtime.PluginRegistrar;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Dictionary;
@@ -15,6 +18,7 @@ import java.util.Objects;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 import javax.annotation.Nullable;
+import javax.xml.parsers.SAXParserFactory;
 import org.eclipse.core.internal.runtime.InternalPlatform;
 import org.eclipse.osgi.internal.framework.FilterImpl;
 import org.eclipse.osgi.service.datalocation.Location;
@@ -76,9 +80,21 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 		while (resources.hasMoreElements()) {
 			bundles.add(new ShimBundle(resources.nextElement()));
 		}
+		List<String> startOrder = Arrays.asList("org.eclipse.equinox.registry");
 		Collections.sort(
 				bundles,
 				(o1, o2) -> {
+					int start1 = startOrder.indexOf(o1.symbolicName);
+					int start2 = startOrder.indexOf(o2.symbolicName);
+					if (start1 != -1 || start2 != -1) {
+						if (start1 == -1) {
+							start1 = Integer.MAX_VALUE;
+						}
+						if (start2 == -1) {
+							start2 = Integer.MAX_VALUE;
+						}
+						return start1 - start2;
+					}
 					if ((o1.symbolicName != null) == (o2.symbolicName != null)) {
 						// sort based on name for the same "types"
 						return o1.toString().compareTo(o2.toString());
@@ -100,6 +116,7 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 					Location.class,
 					new ShimLocation(userDir.toURI().toURL()),
 					Dictionaries.of(Location.SERVICE_PROPERTY_TYPE, Location.INSTALL_AREA_TYPE));
+			registerService(SAXParserFactory.class, SAXParserFactory.newInstance(), Dictionaries.empty());
 
 			InternalPlatform.getDefault().start(this);
 			for (ShimBundle bundle : bundles) {
@@ -234,6 +251,11 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 		return null;
 	}
 
+	@Override
+	public Bundle getBundle(long id) {
+		return id == -1 ? systemBundle : bundles.get((int) id);
+	}
+
 	public class ShimBundle extends Shims.BundleContextDelegate implements Shims.BundleUnsupported {
 		static final Attributes.Name SYMBOLIC_NAME = new Attributes.Name("Bundle-SymbolicName");
 		static final Attributes.Name ACTIVATOR = new Attributes.Name("Bundle-Activator");
@@ -314,7 +336,15 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 
 		@Override
 		public long getBundleId() {
-			return toString().hashCode();
+			if (this == systemBundle) {
+				return -1;
+			} else {
+				int idx = bundles.indexOf(this);
+				if (idx == -1) {
+					throw new IllegalStateException("This bundle wasn't known at startup.");
+				}
+				return idx;
+			}
 		}
 
 		@Override
@@ -352,27 +382,42 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 				return;
 			}
 			System.out.println("ACTIVATE " + symbolicName);
+			if ("org.eclipse.osgi".equals(symbolicName)) {
+				System.out.println("  (skipped on purpose)");
+				return;
+			}
+			isActivated = true;
+			for (var required : requiredBundles) {
+				System.out.println("  requires " + required);
+				ShimBundle bundle = bundleByName(required);
+				if (bundle != null) {
+					bundle.activate();
+				} else {
+					System.out.println("    NOT PRESENT");
+				}
+			}
 			if (activator != null) {
-				isActivated = true;
-				if ("org.eclipse.osgi".equals(symbolicName)) {
-					System.out.println("  (skipped on purpose)");
-					return;
-				}
-				for (var required : requiredBundles) {
-					System.out.println("  requires " + required);
-					ShimBundle bundle = bundleByName(required);
-					if (bundle != null) {
-						bundle.activate();
-					} else {
-						System.out.println("    NOT PRESENT");
-					}
-				}
 				var c = (Constructor<BundleActivator>) Class.forName(activator).getConstructor();
 				if (c == null) {
 					throw new IllegalArgumentException("No activator for " + jarFile + " " + activator);
 				}
 				var bundleActivator = c.newInstance();
 				bundleActivator.start(this);
+			}
+
+			boolean hasPluginXml;
+			try {
+				InputStream stream = getEntry("plugin.xml").openStream();
+				stream.close();
+				hasPluginXml = true;
+			} catch (IOException e) {
+				hasPluginXml = false;
+			}
+			if (hasPluginXml) {
+				BundleException exception = PluginRegistrar.register(this);
+				if (exception != null) {
+					throw exception;
+				}
 			}
 		}
 
