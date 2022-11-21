@@ -14,7 +14,9 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
 import org.osgi.framework.Filter;
 import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceFactory;
+import org.osgi.framework.ServiceListener;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 
@@ -35,6 +37,7 @@ public class ShimBundleContextWithServiceRegistry extends Shims.BundleContextUns
 			String clazz, Object service, Dictionary<String, ?> properties) {
 		var newService = new ShimServiceReference<>(service, properties);
 		servicesForInterface(clazz).add(newService);
+		notifyListenersAdded(newService);
 		return newService;
 	}
 
@@ -43,7 +46,38 @@ public class ShimBundleContextWithServiceRegistry extends Shims.BundleContextUns
 			Class<S> clazz, ServiceFactory<S> factory, Dictionary<String, ?> properties) {
 		var newService = new ShimServiceFactoryReference<>(clazz, factory, properties);
 		servicesForInterface(clazz.getName()).add(newService);
+		notifyListenersAdded(newService);
 		return newService;
+	}
+
+	private final List<ListenerEntry> serviceListeners = new ArrayList<>();
+
+	@Override
+	public final synchronized void addServiceListener(ServiceListener listener, String filter) {
+		try {
+			serviceListeners.add(new ListenerEntry(listener, FilterImpl.newInstance(filter)));
+		} catch (InvalidSyntaxException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	private void notifyListenersAdded(AbstractServiceReference serviceReference) {
+		var event = new ServiceEvent(ServiceEvent.REGISTERED, serviceReference);
+		for (var listener : serviceListeners) {
+			if (listener.filter.match(serviceReference)) {
+				listener.listener.serviceChanged(event);
+			}
+		}
+	}
+
+	static class ListenerEntry {
+		final ServiceListener listener;
+		final FilterImpl filter;
+
+		ListenerEntry(ServiceListener listener, FilterImpl filter) {
+			this.listener = listener;
+			this.filter = filter;
+		}
 	}
 
 	@Override

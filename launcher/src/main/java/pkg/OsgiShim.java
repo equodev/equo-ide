@@ -268,12 +268,6 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 	}
 
 	@Override
-	public void addServiceListener(ServiceListener listener, String filter)
-			throws InvalidSyntaxException {
-		// TODO: this no-op *might* work
-	}
-
-	@Override
 	public Bundle[] getBundles() {
 		return bundles.toArray(new Bundle[0]);
 	}
