@@ -126,8 +126,14 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 
 			var logReaderFactory = new ExtendedLogReaderServiceFactory(99, LogLevel.INFO);
 			var logWriterFactory = new ExtendedLogServiceFactory(logReaderFactory, false);
-			registerService(ExtendedLogService.class, logWriterFactory.getService(systemBundle, null), Dictionaries.empty());
-			registerService(ExtendedLogReaderService.class, logReaderFactory.getService(systemBundle, null), Dictionaries.empty());
+			registerService(
+					ExtendedLogService.class,
+					logWriterFactory.getService(systemBundle, null),
+					Dictionaries.empty());
+			registerService(
+					ExtendedLogReaderService.class,
+					logReaderFactory.getService(systemBundle, null),
+					Dictionaries.empty());
 
 			InternalPlatform.getDefault().start(this);
 			for (ShimBundle bundle : bundles) {
@@ -287,12 +293,14 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 		static final Attributes.Name SYMBOLIC_NAME = new Attributes.Name("Bundle-SymbolicName");
 		static final Attributes.Name ACTIVATOR = new Attributes.Name("Bundle-Activator");
 		static final Attributes.Name REQUIRE_BUNDLE = new Attributes.Name("Require-Bundle");
+		static final Attributes.Name SERVICE_COMPONENT = new Attributes.Name("Service-Component");
 		static final String MANIFEST_PATH = "/META-INF/MANIFEST.MF";
 
 		final String jarFile;
 		final @Nullable String activator;
 		final @Nullable String symbolicName;
 		final List<String> requiredBundles;
+		final List<String> osgiDS;
 
 		ShimBundle(URL manifestURL) throws IOException {
 			super(OsgiShim.this);
@@ -321,6 +329,12 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 						"Must end with !  SEE getEntry if this changes  " + jarFile);
 			}
 			requiredBundles = requiredBundles(manifest);
+			var serviceComponents = manifest.getMainAttributes().getValue(SERVICE_COMPONENT);
+			if (serviceComponents == null) {
+				osgiDS = Collections.emptyList();
+			} else {
+				osgiDS = Arrays.asList(serviceComponents.split(","));
+			}
 		}
 
 		private static List<String> requiredBundles(Manifest manifest) {
@@ -353,6 +367,11 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 			}
 		}
 
+		@Override
+		public Class<?> loadClass(String name) throws ClassNotFoundException {
+			return Class.forName(name);
+		}
+
 		//////////////////////////
 		// BundleContext overrides
 		//////////////////////////
@@ -376,7 +395,7 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 
 		@Override
 		public Version getVersion() {
-			return null;
+			return Version.emptyVersion;
 		}
 
 		@Override
@@ -413,7 +432,7 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 			if (isActivated) {
 				return;
 			}
-			if ("org.eclipse.osgi".equals(symbolicName)) {
+			if ("org.eclipse.osgi".equals(symbolicName) || "org.apache.felix.scr".equals(symbolicName)) {
 				// skip org.eclipse.osgi on purpose
 				return;
 			}
@@ -423,7 +442,12 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 				if (bundle != null) {
 					bundle.activate();
 				} else {
-					var CAN_BE_IGNORED = Arrays.asList("javax.annotation", "org.eclipse.ant.core", "org.eclipse.jdt.annotation", "org.apache.batik.css");
+					var CAN_BE_IGNORED =
+							Arrays.asList(
+									"javax.annotation",
+									"org.eclipse.ant.core",
+									"org.eclipse.jdt.annotation",
+									"org.apache.batik.css");
 					if (!CAN_BE_IGNORED.contains(required)) {
 						throw new IllegalArgumentException(required + " IS MISSING, needed by " + this);
 					}
@@ -451,6 +475,13 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 				BundleException exception = PluginRegistrar.register(this);
 				if (exception != null) {
 					throw exception;
+				}
+			}
+			if (!osgiDS.isEmpty()) {
+				if (osgiDS.size() == 1 && osgiDS.get(0).equals("OSGI-INF/*.xml")) {
+					System.out.println("TODO: OSGI-INF/*.xml");
+				} else {
+					ShimDS.register(this);
 				}
 			}
 		}

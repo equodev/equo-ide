@@ -19,10 +19,10 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 
 public class ShimBundleContextWithServiceRegistry extends Shims.BundleContextUnsupported {
-	Map<String, List<ShimServiceReference>> services = new HashMap<>();
+	Map<String, List<AbstractServiceReference>> services = new HashMap<>();
 
-	private List<ShimServiceReference> servicesForInterface(String interfase) {
-		List<ShimServiceReference> list = services.get(interfase);
+	private List<AbstractServiceReference> servicesForInterface(String interfase) {
+		List<AbstractServiceReference> list = services.get(interfase);
 		if (list == null) {
 			list = new ArrayList<>();
 			services.put(interfase, list);
@@ -33,17 +33,17 @@ public class ShimBundleContextWithServiceRegistry extends Shims.BundleContextUns
 	@Override
 	public final synchronized ServiceRegistration<?> registerService(
 			String clazz, Object service, Dictionary<String, ?> properties) {
-		List<ShimServiceReference> references = servicesForInterface(clazz);
-		references.add(new ShimServiceReference(service, properties));
-		return null;
+		var newService = new ShimServiceReference<>(service, properties);
+		servicesForInterface(clazz).add(newService);
+		return newService;
 	}
 
 	@Override
 	public final synchronized <S> ServiceRegistration<S> registerService(
 			Class<S> clazz, ServiceFactory<S> factory, Dictionary<String, ?> properties) {
-		List<ShimServiceReference> references = servicesForInterface(clazz.getName());
-		references.add(new ShimServiceReference(factory, properties));
-		return null;
+		var newService = new ShimServiceFactoryReference<>(clazz, factory, properties);
+		servicesForInterface(clazz.getName()).add(newService);
+		return newService;
 	}
 
 	@Override
@@ -66,6 +66,9 @@ public class ShimBundleContextWithServiceRegistry extends Shims.BundleContextUns
 	public final <S> S getService(ServiceReference<S> reference) {
 		if (reference instanceof ShimServiceReference) {
 			return (S) ((ShimServiceReference) reference).service;
+		} else if (reference instanceof ShimServiceFactoryReference) {
+			ShimServiceFactoryReference cast = (ShimServiceFactoryReference) reference;
+			return (S) cast.factory.getService(null, cast);
 		} else {
 			throw new RuntimeException("Unexpected class " + reference);
 		}
@@ -78,7 +81,7 @@ public class ShimBundleContextWithServiceRegistry extends Shims.BundleContextUns
 
 	@Override
 	public final synchronized ServiceReference<?> getServiceReference(String clazz) {
-		List<ShimServiceReference> services = servicesForInterface(clazz);
+		List<AbstractServiceReference> services = servicesForInterface(clazz);
 		return services.isEmpty() ? null : services.get(0);
 	}
 
@@ -97,15 +100,14 @@ public class ShimBundleContextWithServiceRegistry extends Shims.BundleContextUns
 	@Override
 	public final synchronized ServiceReference<?>[] getServiceReferences(String clazz, String filter)
 			throws InvalidSyntaxException {
-		List<ShimServiceReference> services;
 		if (clazz != null) {
-			services = servicesForInterface(clazz);
+			return servicesForInterface(clazz).toArray(new ServiceReference<?>[0]);
 		} else {
 			FilterImpl filterParsed = FilterImpl.newInstance(filter);
-			services = servicesForInterface(filterParsed.getRequiredObjectClass());
+			return servicesForInterface(filterParsed.getRequiredObjectClass()).stream()
+					.filter(service -> filterParsed.match(service))
+					.toArray(ServiceReference[]::new);
 		}
-		// TODO: deal with filter
-		return services.toArray(new ServiceReference<?>[0]);
 	}
 
 	@Override
@@ -120,28 +122,12 @@ public class ShimBundleContextWithServiceRegistry extends Shims.BundleContextUns
 		return FilterImpl.newInstance(filter);
 	}
 
-	static AtomicLong globalId = new AtomicLong();
+	static class ShimServiceReference<S> extends AbstractServiceReference<S> {
+		final S service;
 
-	static class ShimServiceReference implements ServiceReference {
-		final long id;
-		final Object service;
-		final Dictionary<String, Object> properties;
-
-		ShimServiceReference(Object service, Dictionary<String, ?> properties) {
-			this.id = globalId.getAndIncrement();
+		ShimServiceReference(S service, Dictionary<String, ?> properties) {
+			super(properties);
 			this.service = service;
-			if (properties != null) {
-				this.properties = (Dictionary<String, Object>) properties;
-			} else {
-				this.properties = Dictionaries.empty();
-			}
-		}
-
-		ShimServiceReference(ServiceFactory factory, Dictionary<String, ?> properties) {
-			this(
-					factory.getService(
-							new ShimFrameworkUtilHelper().getBundle(factory.getClass()).get(), null),
-					properties);
 		}
 
 		@Override
@@ -150,6 +136,48 @@ public class ShimBundleContextWithServiceRegistry extends Shims.BundleContextUns
 				return Class.forName(className).isInstance(service);
 			} catch (ClassNotFoundException e) {
 				throw new RuntimeException(e);
+			}
+		}
+	}
+
+	static class ShimServiceFactoryReference<S> extends AbstractServiceReference<S> {
+		final Class<S> clazz;
+		final ServiceFactory<S> factory;
+
+		ShimServiceFactoryReference(
+				Class<S> clazz, ServiceFactory<S> factory, Dictionary<String, ?> properties) {
+			super(properties);
+			this.clazz = clazz;
+			this.factory = factory;
+		}
+
+		@Override
+		public boolean isAssignableTo(Bundle bundle, String className) {
+			if (className.equals(clazz.getName())) {
+				return true;
+			} else {
+				try {
+					return Class.forName(className).isAssignableFrom(clazz);
+				} catch (ClassNotFoundException e) {
+					throw new RuntimeException(e);
+				}
+			}
+		}
+	}
+
+	static AtomicLong globalId = new AtomicLong();
+
+	abstract static class AbstractServiceReference<S>
+			implements ServiceReference<S>, ServiceRegistration<S> {
+		final long id;
+		final Dictionary<String, Object> properties;
+
+		AbstractServiceReference(Dictionary<String, ?> properties) {
+			this.id = globalId.getAndIncrement();
+			if (properties != null) {
+				this.properties = (Dictionary<String, Object>) properties;
+			} else {
+				this.properties = Dictionaries.empty();
 			}
 		}
 
@@ -195,6 +223,22 @@ public class ShimBundleContextWithServiceRegistry extends Shims.BundleContextUns
 
 		@Override
 		public Object adapt(Class type) {
+			throw new UnsupportedOperationException();
+		}
+
+		// ServiceRegistration overrides
+		@Override
+		public ServiceReference getReference() {
+			return this;
+		}
+
+		@Override
+		public void unregister() {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public void setProperties(Dictionary properties) {
 			throw new UnsupportedOperationException();
 		}
 	}

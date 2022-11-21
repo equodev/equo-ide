@@ -6,6 +6,7 @@ String VER_SLF4J = '2.0.3'
 
 dependencies {
 	implementation 'com.diffplug.durian:durian-swt.os:4.1.1'
+	implementation 'org.apache.felix:org.apache.felix.scr:2.2.4'
 
 	implementation 'com.google.code.findbugs:jsr305:3.0.2'
 	implementation 'com.google.code.findbugs:annotations:3.0.1'
@@ -17,6 +18,7 @@ apply plugin: 'com.diffplug.eclipse.mavencentral'
 eclipseMavenCentral {
 	release '4.25.0', {
 		implementation 'org.eclipse.ui.ide.application'
+		implementation 'org.osgi.service.component'
 		useNativesForRunningPlatform()
 		constrainTransitivesToThisRelease()
 	}
