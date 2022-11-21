@@ -22,7 +22,7 @@ class Main {
 	}
 
 	public static void main(String[] args) {
-		OsgiShim.instance();
+		OsgiShim.initialize(new EquinotConfiguration() {});
 
 		var display = PlatformUI.createDisplay();
 		// processor must be created before we start event loop

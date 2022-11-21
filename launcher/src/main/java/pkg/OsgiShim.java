@@ -1,7 +1,6 @@
 package pkg;
 
 import com.diffplug.spotless.extra.eclipse.base.runtime.PluginRegistrar;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
@@ -18,15 +17,9 @@ import java.util.Objects;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 import javax.annotation.Nullable;
-import javax.xml.parsers.SAXParserFactory;
 import org.eclipse.core.internal.runtime.InternalPlatform;
-import org.eclipse.equinox.log.ExtendedLogReaderService;
-import org.eclipse.equinox.log.ExtendedLogService;
 import org.eclipse.osgi.internal.framework.FilterImpl;
-import org.eclipse.osgi.internal.log.ExtendedLogReaderServiceFactory;
-import org.eclipse.osgi.internal.log.ExtendedLogServiceFactory;
 import org.eclipse.osgi.service.datalocation.Location;
-import org.eclipse.osgi.service.environment.EnvironmentInfo;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -42,13 +35,16 @@ import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.framework.wiring.FrameworkWiring;
 import org.osgi.resource.Namespace;
 import org.osgi.resource.Requirement;
-import org.osgi.service.log.LogLevel;
 import org.osgi.service.packageadmin.PackageAdmin;
 
 public class OsgiShim extends ShimBundleContextWithServiceRegistry {
-	private static final OsgiShim instance = new OsgiShim();
+	private static OsgiShim instance;
 
-	public static OsgiShim instance() {
+	public static OsgiShim initialize(EquinotConfiguration config) {
+		if (instance != null) {
+			throw new IllegalStateException("Equinot has already been initialized");
+		}
+		instance = new OsgiShim(config);
 		return instance;
 	}
 
@@ -86,7 +82,7 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 		while (resources.hasMoreElements()) {
 			bundles.add(new ShimBundle(resources.nextElement()));
 		}
-		List<String> startOrder = Arrays.asList("org.eclipse.equinox.registry");
+		List<String> startOrder = cfg.startOrder();
 		Collections.sort(
 				bundles,
 				(o1, o2) -> {
@@ -111,29 +107,14 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 				});
 	}
 
-	private OsgiShim() {
+	private final EquinotConfiguration cfg;
+
+	private OsgiShim(EquinotConfiguration cfg) {
+		this.cfg = cfg;
 		try {
 			ShimFrameworkUtilHelper.initialize(this);
 			discoverBundles();
-
-			File userDir = new File(System.getProperty("user.dir") + "/build");
-			registerService(EnvironmentInfo.class, new ShimEnvironmentInfo(), Dictionaries.empty());
-			registerService(
-					Location.class,
-					new ShimLocation(userDir.toURI().toURL()),
-					Dictionaries.of(Location.SERVICE_PROPERTY_TYPE, Location.INSTALL_AREA_TYPE));
-			registerService(SAXParserFactory.class, SAXParserFactory.newInstance(), Dictionaries.empty());
-
-			var logReaderFactory = new ExtendedLogReaderServiceFactory(99, LogLevel.INFO);
-			var logWriterFactory = new ExtendedLogServiceFactory(logReaderFactory, false);
-			registerService(
-					ExtendedLogService.class,
-					logWriterFactory.getService(systemBundle, null),
-					Dictionaries.empty());
-			registerService(
-					ExtendedLogReaderService.class,
-					logReaderFactory.getService(systemBundle, null),
-					Dictionaries.empty());
+			cfg.bootstrapServices(systemBundle, this);
 
 			InternalPlatform.getDefault().start(this);
 			for (ShimBundle bundle : bundles) {
@@ -444,13 +425,7 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 				if (bundle != null) {
 					bundle.activate();
 				} else {
-					var CAN_BE_IGNORED =
-							Arrays.asList(
-									"javax.annotation",
-									"org.eclipse.ant.core",
-									"org.eclipse.jdt.annotation",
-									"org.apache.batik.css");
-					if (!CAN_BE_IGNORED.contains(required)) {
+					if (!cfg.okayIfMissing().contains(required)) {
 						throw new IllegalArgumentException(required + " IS MISSING, needed by " + this);
 					}
 				}
