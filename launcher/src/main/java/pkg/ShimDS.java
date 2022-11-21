@@ -2,7 +2,10 @@ package pkg;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.zip.ZipFile;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParserFactory;
 import org.apache.felix.scr.impl.inject.internal.ComponentMethodsImpl;
@@ -25,15 +28,37 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.xml.sax.SAXException;
 
-public class ShimDS {
+class ShimDS {
+	static List<String> starDotXML(String jarFile) throws IOException {
+		String prefix = "jar:file:";
+		if (!jarFile.startsWith(prefix)) {
+			throw new IllegalArgumentException("jar does not start with expected prefix: " + jarFile);
+		}
+		if (!jarFile.endsWith("!")) {
+			throw new IllegalArgumentException("jar does not end with expected suffix: !");
+		}
+		List<String> dotXml = new ArrayList<>();
+		try (ZipFile file = new ZipFile(jarFile.substring(prefix.length(), jarFile.length() - 1))) {
+			var entries = file.entries();
+			while (entries.hasMoreElements()) {
+				var entry = entries.nextElement().getName();
+				if (entry.startsWith("OSGI-INF/") && entry.endsWith(".xml")) {
+					dotXml.add(entry);
+				}
+			}
+		}
+		return dotXml;
+	}
+
 	public static void register(OsgiShim.ShimBundle bundle)
-			throws IOException, ParserConfigurationException, SAXException, ClassNotFoundException {
+			throws ParserConfigurationException, SAXException, ClassNotFoundException {
 		var saxFactory = bundle.getService(bundle.getServiceReference(SAXParserFactory.class));
 		var handler = new XmlHandler(bundle, new NoOpLogger(), false, false, null);
 		for (String s : bundle.osgiDS) {
 			try (InputStream stream = bundle.getEntry(s).openStream()) {
 				saxFactory.newSAXParser().parse(stream, handler);
 			} catch (IOException e) {
+				System.out.println(" url=" + bundle.getEntry(s));
 				System.out.println("  Parse error for " + bundle + " " + e.getMessage());
 			}
 		}
@@ -89,6 +114,13 @@ public class ShimDS {
 			var serviceMetadata = metadataFinal.getServiceMetadata();
 			if (serviceMetadata == null) {
 				// this means it should just be instantiated, it's not part of the normal "service" thing
+				var registration =
+						bundle.registerService(
+								metadataFinal.getImplementationClassName(),
+								componentManager,
+								componentManager.getServiceProperties());
+				Object instance = bundle.getService(registration.getReference());
+				System.out.println("  instantiated " + instance);
 			} else {
 				String[] provides = metadataFinal.getServiceMetadata().getProvides();
 				System.out.println(

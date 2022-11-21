@@ -333,7 +333,15 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 			if (serviceComponents == null) {
 				osgiDS = Collections.emptyList();
 			} else {
-				osgiDS = Arrays.asList(serviceComponents.split(","));
+				String[] entries = serviceComponents.split(",");
+				for (int i = 0; i < entries.length; ++i) {
+					entries[i] = entries[i].trim(); // some have a leading space
+				}
+				if (entries.length == 1 && entries[0].trim().equals("OSGI-INF/*.xml")) {
+					osgiDS = ShimDS.starDotXML(jarFile);
+				} else {
+					osgiDS = Arrays.asList(entries);
+				}
 			}
 		}
 
@@ -478,11 +486,7 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 				}
 			}
 			if (!osgiDS.isEmpty()) {
-				if (osgiDS.size() == 1 && osgiDS.get(0).equals("OSGI-INF/*.xml")) {
-					System.out.println("TODO: OSGI-INF/*.xml");
-				} else {
-					ShimDS.register(this);
-				}
+				ShimDS.register(this);
 			}
 		}
 
