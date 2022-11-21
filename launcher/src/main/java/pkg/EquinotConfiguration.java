@@ -1,6 +1,7 @@
 package pkg;
 
 import java.io.File;
+import java.net.MalformedURLException;
 import java.util.Arrays;
 import java.util.List;
 import javax.xml.parsers.SAXParserFactory;
@@ -15,11 +16,16 @@ import org.osgi.framework.BundleContext;
 import org.osgi.service.log.LogLevel;
 
 public interface EquinotConfiguration {
+	default LogLevel logLevel() {
+		return LogLevel.INFO;
+	}
+
 	default List<String> startOrder() {
 		return Arrays.asList("org.eclipse.equinox.registry");
 	}
 
-	default void bootstrapServices(Bundle systemBundle, BundleContext context) {
+	default void bootstrapServices(Bundle systemBundle, BundleContext context)
+			throws MalformedURLException {
 		File userDir = new File(System.getProperty("user.dir") + "/build");
 		context.registerService(EnvironmentInfo.class, new ShimEnvironmentInfo(), Dictionaries.empty());
 		context.registerService(

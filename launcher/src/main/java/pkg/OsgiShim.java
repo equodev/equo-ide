@@ -36,6 +36,8 @@ import org.osgi.framework.wiring.FrameworkWiring;
 import org.osgi.resource.Namespace;
 import org.osgi.resource.Requirement;
 import org.osgi.service.packageadmin.PackageAdmin;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 	private static OsgiShim instance;
@@ -48,36 +50,33 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 		return instance;
 	}
 
+	private final Logger logger = LoggerFactory.getLogger(OsgiShim.class);
+	private final EquinotConfiguration cfg;
+
+	private OsgiShim(EquinotConfiguration cfg) {
+		this.cfg = cfg;
+		try {
+			ShimFrameworkUtilHelper.initialize(this);
+			cfg.bootstrapServices(systemBundle, this);
+
+			discoverAndSortBundles();
+
+			InternalPlatform.getDefault().start(this);
+			for (ShimBundle bundle : bundles) {
+				try {
+					bundle.activate();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
 	private List<ShimBundle> bundles = new ArrayList<ShimBundle>();
 
-	private ShimBundle bundleByName(String name) {
-		for (ShimBundle bundle : bundles) {
-			if (name.equals(bundle.getSymbolicName())) {
-				return bundle;
-			}
-		}
-		return null;
-	}
-
-	public Bundle bundleForURL(URL source) {
-		String sourceString = "jar:" + source.toExternalForm() + "!";
-		for (ShimBundle bundle : bundles) {
-			if (sourceString.equals(bundle.jarFile)) {
-				return bundle;
-			}
-		}
-		StringBuilder msg = new StringBuilder();
-		msg.append(sourceString);
-		msg.append('\n');
-		for (ShimBundle bundle : bundles) {
-			msg.append("  ");
-			msg.append(bundle.jarFile);
-			msg.append('\n');
-		}
-		throw new IllegalArgumentException(msg.toString());
-	}
-
-	private void discoverBundles() throws IOException {
+	private void discoverAndSortBundles() throws IOException {
 		Enumeration<URL> resources = getClass().getClassLoader().getResources("META-INF/MANIFEST.MF");
 		while (resources.hasMoreElements()) {
 			bundles.add(new ShimBundle(resources.nextElement()));
@@ -107,22 +106,23 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 				});
 	}
 
-	private final EquinotConfiguration cfg;
-
-	private OsgiShim(EquinotConfiguration cfg) {
-		this.cfg = cfg;
-		try {
-			ShimFrameworkUtilHelper.initialize(this);
-			discoverBundles();
-			cfg.bootstrapServices(systemBundle, this);
-
-			InternalPlatform.getDefault().start(this);
-			for (ShimBundle bundle : bundles) {
-				bundle.activate();
+	private ShimBundle bundleByName(String name) {
+		for (ShimBundle bundle : bundles) {
+			if (name.equals(bundle.getSymbolicName())) {
+				return bundle;
 			}
-		} catch (Exception e) {
-			throw new RuntimeException(e);
 		}
+		return null;
+	}
+
+	public Bundle bundleForURL(URL source) {
+		String sourceString = "jar:" + source.toExternalForm() + "!";
+		for (ShimBundle bundle : bundles) {
+			if (sourceString.equals(bundle.jarUrl)) {
+				return bundle;
+			}
+		}
+		return null;
 	}
 
 	static class ShimLocation extends Shims.LocationUnsupported {
@@ -153,7 +153,40 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 		}
 	}
 
-	final Bundle systemBundle = new SystemBundle();
+	final Bundle systemBundle =
+			new Shims.BundleUnsupported() {
+				@Override
+				public int getState() {
+					// this signals InternalPlatform.isRunning() to be true
+					return Bundle.ACTIVE;
+				}
+
+				@Override
+				public String getSymbolicName() {
+					return "osgi-shim-system-bundle";
+				}
+
+				@Override
+				public Version getVersion() {
+					return null;
+				}
+
+				@Override
+				public String getLocation() {
+					return null;
+				}
+
+				@Override
+				public <A> A adapt(Class<A> type) {
+					if (type.equals(PackageAdmin.class)) {
+						return (A) packageAdmin;
+					} else if (type.equals(FrameworkWiring.class)) {
+						return (A) frameworkWiring;
+					} else {
+						throw new UnsupportedOperationException(type.getName());
+					}
+				}
+			};
 
 	final PackageAdmin packageAdmin = new Shims.PackageAdminUnsupported() {};
 
@@ -200,40 +233,6 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 		}
 	}
 
-	class SystemBundle extends Shims.PackageAdminUnsupported implements Shims.BundleUnsupported {
-		@Override
-		public int getState() {
-			// this signals InternalPlatform.isRunning() to be true
-			return Bundle.ACTIVE;
-		}
-
-		@Override
-		public String getSymbolicName() {
-			return "osgi-shim-system-bundle";
-		}
-
-		@Override
-		public Version getVersion() {
-			return null;
-		}
-
-		@Override
-		public String getLocation() {
-			return null;
-		}
-
-		@Override
-		public <A> A adapt(Class<A> type) {
-			if (type.equals(PackageAdmin.class)) {
-				return (A) packageAdmin;
-			} else if (type.equals(FrameworkWiring.class)) {
-				return (A) frameworkWiring;
-			} else {
-				throw new UnsupportedOperationException(type.getName());
-			}
-		}
-	}
-
 	@Override
 	public org.osgi.framework.Bundle getBundle() {
 		return systemBundle;
@@ -271,7 +270,7 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 		static final Attributes.Name SERVICE_COMPONENT = new Attributes.Name("Service-Component");
 		static final String MANIFEST_PATH = "/META-INF/MANIFEST.MF";
 
-		final String jarFile;
+		final String jarUrl;
 		final @Nullable String activator;
 		final @Nullable String symbolicName;
 		final List<String> requiredBundles;
@@ -284,7 +283,7 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 				throw new RuntimeException(
 						"Expected manifest to end with " + MANIFEST_PATH + " but was " + externalForm);
 			}
-			jarFile = externalForm.substring(0, externalForm.length() - MANIFEST_PATH.length());
+			jarUrl = externalForm.substring(0, externalForm.length() - MANIFEST_PATH.length());
 			Manifest manifest = new Manifest(manifestURL.openStream());
 			activator = manifest.getMainAttributes().getValue(ACTIVATOR);
 			String symbolicNameRaw = manifest.getMainAttributes().getValue(SYMBOLIC_NAME);
@@ -299,9 +298,9 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 					symbolicName = symbolicNameRaw.substring(0, firstDirective);
 				}
 			}
-			if (!jarFile.endsWith("!")) {
+			if (!jarUrl.endsWith("!")) {
 				throw new IllegalArgumentException(
-						"Must end with !  SEE getEntry if this changes  " + jarFile);
+						"Must end with !  SEE getEntry if this changes  " + jarUrl);
 			}
 			requiredBundles = requiredBundles(manifest);
 			var serviceComponents = manifest.getMainAttributes().getValue(SERVICE_COMPONENT);
@@ -313,7 +312,7 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 					entries[i] = entries[i].trim(); // some have a leading space
 				}
 				if (entries.length == 1 && entries[0].trim().equals("OSGI-INF/*.xml")) {
-					osgiDS = ShimDS.starDotXML(jarFile);
+					osgiDS = ShimDS.starDotXML(jarUrl);
 				} else {
 					osgiDS = Arrays.asList(entries);
 				}
@@ -346,7 +345,7 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 			if (symbolicName != null) {
 				return symbolicName;
 			} else {
-				return jarFile;
+				return jarUrl;
 			}
 		}
 
@@ -434,7 +433,7 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 			if (activator != null) {
 				var c = (Constructor<BundleActivator>) Class.forName(activator).getConstructor();
 				if (c == null) {
-					throw new IllegalArgumentException("No activator for " + jarFile + " " + activator);
+					throw new IllegalArgumentException("No activator for " + jarUrl + " " + activator);
 				}
 				var bundleActivator = c.newInstance();
 				bundleActivator.start(this);
@@ -486,7 +485,7 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 				if (path.startsWith("/")) {
 					throw new IllegalArgumentException("Path must not start with /");
 				}
-				return new URL(jarFile + "/" + path);
+				return new URL(jarUrl + "/" + path);
 			} catch (MalformedURLException e) {
 				throw new RuntimeException(e);
 			}
@@ -494,7 +493,7 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 
 		@Override
 		public String getLocation() {
-			return jarFile;
+			return jarUrl;
 		}
 	}
 }
