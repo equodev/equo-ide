@@ -1,6 +1,8 @@
 package pkg;
 
 import java.util.Collections;
+import org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher;
+import org.eclipse.osgi.service.runnable.ApplicationLauncher;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.internal.ide.application.DelayedEventsProcessor;
 import org.eclipse.ui.internal.ide.application.IDEWorkbenchAdvisor;
@@ -9,7 +11,8 @@ import org.osgi.service.application.ApplicationException;
 
 class Main {
 	public static void main(String[] args) throws InvalidSyntaxException, ApplicationException {
-		System.setProperty(org.slf4j.simple.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "INFO");
+		// System.setProperty(org.slf4j.simple.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "INFO");
+		System.setProperty(org.slf4j.simple.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "WARN");
 		var osgiShim = OsgiShim.initialize(new EquinotConfiguration() {});
 
 		var appServices =
@@ -19,7 +22,12 @@ class Main {
 		if (appServices.size() != 1) {
 			throw new IllegalArgumentException("Expected exactly one application, got " + appServices);
 		}
+
 		var appDescriptor = osgiShim.getService(appServices.iterator().next());
+
+		var appLauncher = new EclipseAppLauncher(osgiShim, false, false, null, null);
+		osgiShim.registerService(ApplicationLauncher.class, appLauncher, Dictionaries.empty());
+
 		var appHandle = appDescriptor.launch(Collections.emptyMap());
 
 		var display = PlatformUI.createDisplay();
