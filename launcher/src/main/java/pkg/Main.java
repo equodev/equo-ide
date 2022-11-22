@@ -1,7 +1,9 @@
 package pkg;
 
-import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher;
+import org.eclipse.equinox.app.IApplicationContext;
 import org.eclipse.osgi.service.runnable.ApplicationLauncher;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.internal.ide.application.DelayedEventsProcessor;
@@ -28,7 +30,9 @@ class Main {
 		var appLauncher = new EclipseAppLauncher(osgiShim, false, false, null, null);
 		osgiShim.registerService(ApplicationLauncher.class, appLauncher, Dictionaries.empty());
 
-		var appHandle = appDescriptor.launch(Collections.emptyMap());
+		Map<String, Object> appProps = new HashMap<>();
+		appProps.put(IApplicationContext.APPLICATION_ARGS, new String[] {});
+		var appHandle = appDescriptor.launch(appProps);
 
 		var display = PlatformUI.createDisplay();
 		// processor must be created before we start event loop
