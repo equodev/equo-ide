@@ -36,6 +36,7 @@ import org.osgi.resource.Requirement;
 import org.osgi.service.packageadmin.PackageAdmin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pkg.platform.Handler;
 
 public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 	private static OsgiShim instance;
@@ -52,6 +53,8 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 	private final EquinotConfiguration cfg;
 
 	private OsgiShim(EquinotConfiguration cfg) {
+		Handler.install(this);
+
 		this.cfg = cfg;
 		try {
 			ShimFrameworkUtilHelper.initialize(this);
@@ -111,7 +114,7 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 				});
 	}
 
-	private ShimBundle bundleByName(String name) {
+	public ShimBundle bundleByName(String name) {
 		for (ShimBundle bundle : bundles) {
 			if (name.equals(bundle.getSymbolicName())) {
 				return bundle;
