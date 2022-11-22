@@ -41,7 +41,7 @@ public class ShimBundleContextWithServiceRegistry extends Shims.BundleContextUns
 		logger.info("{} implemented by {} with {}", clazz, service, properties);
 		var newService = new ShimServiceReference<>(service, properties);
 		servicesForInterface(clazz).add(newService);
-		notifyListenersAdded(newService);
+		notifyListeners(ServiceEvent.REGISTERED, newService);
 		return newService;
 	}
 
@@ -51,7 +51,7 @@ public class ShimBundleContextWithServiceRegistry extends Shims.BundleContextUns
 		logger.info("{} implemented by factory {} with {}", clazz, factory, properties);
 		var newService = new ShimServiceFactoryReference<>(clazz, factory, properties);
 		servicesForInterface(clazz.getName()).add(newService);
-		notifyListenersAdded(newService);
+		notifyListeners(ServiceEvent.REGISTERED, newService);
 		return newService;
 	}
 
@@ -67,8 +67,8 @@ public class ShimBundleContextWithServiceRegistry extends Shims.BundleContextUns
 		}
 	}
 
-	private void notifyListenersAdded(AbstractServiceReference serviceReference) {
-		var event = new ServiceEvent(ServiceEvent.REGISTERED, serviceReference);
+	private void notifyListeners(int type, AbstractServiceReference serviceReference) {
+		var event = new ServiceEvent(type, serviceReference);
 		for (var listener : serviceListeners) {
 			if (listener.filter.match(serviceReference)) {
 				listener.listener.serviceChanged(event);
@@ -87,12 +87,17 @@ public class ShimBundleContextWithServiceRegistry extends Shims.BundleContextUns
 	}
 
 	@Override
-	public ServiceRegistration<?> registerService(
+	public synchronized ServiceRegistration<?> registerService(
 			String[] clazzes, Object service, Dictionary<String, ?> properties) {
 		if (clazzes.length == 1) {
 			return registerService(clazzes[0], service, properties);
 		} else {
-			throw new IllegalArgumentException("The multiple API is not necessary.");
+			var newService = new ShimServiceReference<>(service, properties);
+			for (String clazz : clazzes) {
+				servicesForInterface(clazz).equals(newService);
+			}
+			notifyListeners(ServiceEvent.REGISTERED, newService);
+			return newService;
 		}
 	}
 
@@ -163,7 +168,7 @@ public class ShimBundleContextWithServiceRegistry extends Shims.BundleContextUns
 		return FilterImpl.newInstance(filter);
 	}
 
-	static class ShimServiceReference<S> extends AbstractServiceReference<S> {
+	class ShimServiceReference<S> extends AbstractServiceReference<S> {
 		final S service;
 
 		ShimServiceReference(S service, Dictionary<String, ?> properties) {
@@ -181,7 +186,7 @@ public class ShimBundleContextWithServiceRegistry extends Shims.BundleContextUns
 		}
 	}
 
-	static class ShimServiceFactoryReference<S> extends AbstractServiceReference<S> {
+	class ShimServiceFactoryReference<S> extends AbstractServiceReference<S> {
 		final Class<S> clazz;
 		final ServiceFactory<S> factory;
 
@@ -208,10 +213,10 @@ public class ShimBundleContextWithServiceRegistry extends Shims.BundleContextUns
 
 	static AtomicLong globalId = new AtomicLong();
 
-	abstract static class AbstractServiceReference<S>
+	abstract class AbstractServiceReference<S>
 			implements ServiceReference<S>, ServiceRegistration<S> {
 		final long id;
-		final Dictionary<String, Object> properties;
+		Dictionary<String, Object> properties;
 
 		AbstractServiceReference(Dictionary<String, ?> properties) {
 			this.id = globalId.getAndIncrement();
@@ -223,7 +228,7 @@ public class ShimBundleContextWithServiceRegistry extends Shims.BundleContextUns
 		}
 
 		@Override
-		public Object getProperty(String key) {
+		public synchronized Object getProperty(String key) {
 			if (key.equals(Constants.SERVICE_ID)) {
 				return id;
 			} else {
@@ -232,7 +237,7 @@ public class ShimBundleContextWithServiceRegistry extends Shims.BundleContextUns
 		}
 
 		@Override
-		public String[] getPropertyKeys() {
+		public synchronized String[] getPropertyKeys() {
 			List<String> keys = new ArrayList<>();
 			Enumeration<String> keysEnum = properties.keys();
 			while (keysEnum.hasMoreElements()) {
@@ -242,8 +247,14 @@ public class ShimBundleContextWithServiceRegistry extends Shims.BundleContextUns
 		}
 
 		@Override
-		public Dictionary<String, Object> getProperties() {
+		public synchronized Dictionary<String, Object> getProperties() {
 			return properties;
+		}
+
+		@Override
+		public synchronized void setProperties(Dictionary properties) {
+			this.properties = properties;
+			notifyListeners(ServiceEvent.MODIFIED, this);
 		}
 
 		@Override
@@ -275,11 +286,6 @@ public class ShimBundleContextWithServiceRegistry extends Shims.BundleContextUns
 
 		@Override
 		public void unregister() {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		public void setProperties(Dictionary properties) {
 			throw new UnsupportedOperationException();
 		}
 	}
