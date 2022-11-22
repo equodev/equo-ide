@@ -26,6 +26,7 @@ import org.apache.felix.scr.impl.metadata.ComponentMetadata;
 import org.apache.felix.scr.impl.xml.XmlHandler;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
+import org.slf4j.Logger;
 import org.xml.sax.SAXException;
 
 class ShimDS {
@@ -50,7 +51,7 @@ class ShimDS {
 		return dotXml;
 	}
 
-	public static void register(OsgiShim.ShimBundle bundle)
+	public static void register(Logger logger, OsgiShim.ShimBundle bundle)
 			throws ParserConfigurationException, SAXException, ClassNotFoundException {
 		var saxFactory = bundle.getService(bundle.getServiceReference(SAXParserFactory.class));
 		var handler = new XmlHandler(bundle, new NoOpLogger(), false, false, null);
@@ -58,11 +59,10 @@ class ShimDS {
 			try (InputStream stream = bundle.getEntry(s).openStream()) {
 				saxFactory.newSAXParser().parse(stream, handler);
 			} catch (IOException e) {
-				System.out.println(" url=" + bundle.getEntry(s));
-				System.out.println("  Parse error for " + bundle + " " + e.getMessage());
+				logger.error("{}/{} parse error", bundle, s, e);
 			}
 		}
-		final NoOpLogger logger = new NoOpLogger();
+		final NoOpLogger felixLogger = new NoOpLogger();
 		final ComponentActivator activator =
 				new ComponentActivatorUnsupported() {
 					@Override
@@ -101,7 +101,7 @@ class ShimDS {
 
 						@Override
 						public ComponentLogger getLogger() {
-							return logger;
+							return felixLogger;
 						}
 
 						@Override
@@ -119,15 +119,15 @@ class ShimDS {
 								metadataFinal.getImplementationClassName(),
 								componentManager,
 								componentManager.getServiceProperties());
-				Object instance = bundle.getService(registration.getReference());
-				System.out.println("  instantiated " + instance);
+				bundle.getService(registration.getReference());
+				logger.info("{} DS instantiated {}", bundle, metadataFinal.getImplementationClassName());
 			} else {
 				String[] provides = metadataFinal.getServiceMetadata().getProvides();
-				System.out.println(
-						"  register "
-								+ Arrays.asList(provides)
-								+ " with "
-								+ metadataFinal.getImplementationClassName());
+				logger.info(
+						"{} DS provides {} for {}",
+						bundle,
+						metadataFinal.getImplementationClassName(),
+						Arrays.asList(provides));
 				if (provides.length == 1) {
 					bundle.registerService(
 							Class.forName(provides[0]),

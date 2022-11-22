@@ -11,7 +11,7 @@ dependencies {
 	implementation 'com.google.code.findbugs:jsr305:3.0.2'
 	implementation 'com.google.code.findbugs:annotations:3.0.1'
 	api "org.slf4j:slf4j-api:${VER_SLF4J}"
-	testImplementation "org.slf4j:slf4j-simple:${VER_SLF4J}"
+	implementation "org.slf4j:slf4j-simple:${VER_SLF4J}"
 }
 
 apply plugin: 'com.diffplug.eclipse.mavencentral'

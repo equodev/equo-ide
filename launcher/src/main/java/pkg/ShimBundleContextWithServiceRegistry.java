@@ -19,8 +19,11 @@ import org.osgi.framework.ServiceFactory;
 import org.osgi.framework.ServiceListener;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ShimBundleContextWithServiceRegistry extends Shims.BundleContextUnsupported {
+	private final Logger logger = LoggerFactory.getLogger(ShimBundleContextWithServiceRegistry.class);
 	Map<String, List<AbstractServiceReference>> services = new HashMap<>();
 
 	private List<AbstractServiceReference> servicesForInterface(String interfase) {
@@ -35,6 +38,7 @@ public class ShimBundleContextWithServiceRegistry extends Shims.BundleContextUns
 	@Override
 	public final synchronized ServiceRegistration<?> registerService(
 			String clazz, Object service, Dictionary<String, ?> properties) {
+		logger.info("{} implemented by {} with {}", clazz, service, properties);
 		var newService = new ShimServiceReference<>(service, properties);
 		servicesForInterface(clazz).add(newService);
 		notifyListenersAdded(newService);
@@ -44,6 +48,7 @@ public class ShimBundleContextWithServiceRegistry extends Shims.BundleContextUns
 	@Override
 	public final synchronized <S> ServiceRegistration<S> registerService(
 			Class<S> clazz, ServiceFactory<S> factory, Dictionary<String, ?> properties) {
+		logger.info("{} implemented by factory {} with {}", clazz, factory, properties);
 		var newService = new ShimServiceFactoryReference<>(clazz, factory, properties);
 		servicesForInterface(clazz.getName()).add(newService);
 		notifyListenersAdded(newService);
@@ -55,6 +60,7 @@ public class ShimBundleContextWithServiceRegistry extends Shims.BundleContextUns
 	@Override
 	public final synchronized void addServiceListener(ServiceListener listener, String filter) {
 		try {
+			logger.info("add listener {} with {}", listener, filter);
 			serviceListeners.add(new ListenerEntry(listener, FilterImpl.newInstance(filter)));
 		} catch (InvalidSyntaxException e) {
 			throw new RuntimeException(e);

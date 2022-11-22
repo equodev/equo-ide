@@ -1,27 +1,12 @@
 package pkg;
 
-import com.diffplug.spotless.extra.eclipse.base.SpotlessEclipseConfig;
-import com.diffplug.spotless.extra.eclipse.base.SpotlessEclipsePluginConfig;
-import com.diffplug.spotless.extra.eclipse.base.SpotlessEclipseServiceConfig;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.internal.ide.application.DelayedEventsProcessor;
 import org.eclipse.ui.internal.ide.application.IDEWorkbenchAdvisor;
 
 class Main {
-	static class FrameworkConfig implements SpotlessEclipseConfig {
-		@Override
-		public void registerServices(SpotlessEclipseServiceConfig config) {
-			config.applyDefault();
-			config.useSlf4J(Main.class.getPackage().getName());
-		}
-
-		@Override
-		public void activatePlugins(SpotlessEclipsePluginConfig config) {
-			config.applyDefault();
-		}
-	}
-
 	public static void main(String[] args) {
+		System.setProperty(org.slf4j.simple.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "INFO");
 		OsgiShim.initialize(new EquinotConfiguration() {});
 
 		var display = PlatformUI.createDisplay();

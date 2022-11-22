@@ -58,15 +58,21 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 		try {
 			ShimFrameworkUtilHelper.initialize(this);
 			cfg.bootstrapServices(systemBundle, this);
+			logger.info("Bootstrap services installed");
 
 			discoverAndSortBundles();
+			logger.info("Bundles found and sorted.");
+			for (var b : bundles) {
+				logger.info("  {}", b);
+			}
 
 			InternalPlatform.getDefault().start(this);
+			logger.info("InternalPlatform started.");
 			for (ShimBundle bundle : bundles) {
 				try {
 					bundle.activate();
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.warn("Error while activating " + bundle, e);
 				}
 			}
 		} catch (Exception e) {
@@ -414,23 +420,30 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 			if (isActivated) {
 				return;
 			}
+			logger.info("Request activate {}", symbolicName);
 			if ("org.eclipse.osgi".equals(symbolicName) || "org.apache.felix.scr".equals(symbolicName)) {
 				// skip org.eclipse.osgi on purpose
+				logger.info("  skipping because of shim implementation");
 				return;
 			}
 			isActivated = true;
 			for (var required : requiredBundles) {
+				logger.info("{} requires {}", this, required);
 				ShimBundle bundle = bundleByName(required);
 				if (bundle != null) {
 					bundle.activate();
 				} else {
 					if (!cfg.okayIfMissing().contains(required)) {
+						logger.error("{} is missing, was required by {}", required, this);
 						throw new IllegalArgumentException(required + " IS MISSING, needed by " + this);
+					} else {
+						logger.info("  missing but okayIfMissing so no problem");
 					}
 				}
 			}
-			System.out.println("ACTIVATE " + symbolicName);
+			logger.info("/START ACTIVATE {}", this);
 			if (activator != null) {
+				logger.info("{} Bundle-Activator {}", this, activator);
 				var c = (Constructor<BundleActivator>) Class.forName(activator).getConstructor();
 				if (c == null) {
 					throw new IllegalArgumentException("No activator for " + jarUrl + " " + activator);
@@ -448,14 +461,16 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 				hasPluginXml = false;
 			}
 			if (hasPluginXml) {
+				logger.info("{} plugin.xml", this);
 				BundleException exception = PluginRegistrar.register(this);
 				if (exception != null) {
 					throw exception;
 				}
 			}
 			if (!osgiDS.isEmpty()) {
-				ShimDS.register(this);
+				ShimDS.register(logger, this);
 			}
+			logger.info("\\FINISH ACTIVATE {}", this);
 		}
 
 		@Override
