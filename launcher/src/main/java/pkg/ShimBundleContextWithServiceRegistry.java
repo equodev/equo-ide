@@ -154,9 +154,16 @@ public class ShimBundleContextWithServiceRegistry extends Shims.BundleContextUns
 		} else {
 			FilterImpl filterParsed = FilterImpl.newInstance(filter);
 			String interfaze = clazz != null ? clazz : filterParsed.getRequiredObjectClass();
-			return servicesForInterface(interfaze).stream()
-					.filter(service -> filterParsed.match(service))
-					.toArray(ServiceReference[]::new);
+			if (interfaze != null) {
+				return servicesForInterface(interfaze).stream()
+						.filter(service -> filterParsed.match(service))
+						.toArray(ServiceReference[]::new);
+			} else {
+				return services.values().stream()
+						.flatMap(list -> list.stream())
+						.filter(service -> filterParsed.match(service))
+						.toArray(ServiceReference[]::new);
+			}
 		}
 	}
 
