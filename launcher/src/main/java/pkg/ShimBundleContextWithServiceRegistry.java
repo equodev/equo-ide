@@ -140,11 +140,12 @@ public class ShimBundleContextWithServiceRegistry extends Shims.BundleContextUns
 	@Override
 	public final synchronized ServiceReference<?>[] getServiceReferences(String clazz, String filter)
 			throws InvalidSyntaxException {
-		if (clazz != null) {
+		if (clazz != null && filter == null) {
 			return servicesForInterface(clazz).toArray(new ServiceReference<?>[0]);
 		} else {
 			FilterImpl filterParsed = FilterImpl.newInstance(filter);
-			return servicesForInterface(filterParsed.getRequiredObjectClass()).stream()
+			String interfaze = clazz != null ? clazz : filterParsed.getRequiredObjectClass();
+			return servicesForInterface(interfaze).stream()
 					.filter(service -> filterParsed.match(service))
 					.toArray(ServiceReference[]::new);
 		}
