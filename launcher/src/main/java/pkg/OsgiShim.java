@@ -152,7 +152,7 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 
 		@Override
 		public boolean isReadOnly() {
-			return true;
+			return false;
 		}
 
 		@Override

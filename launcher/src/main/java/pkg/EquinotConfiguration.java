@@ -40,7 +40,11 @@ public interface EquinotConfiguration {
 		context.registerService(
 				Location.class,
 				new OsgiShim.ShimLocation(userDir.toURI().toURL()),
-				Dictionaries.of(Location.SERVICE_PROPERTY_TYPE, Location.INSTANCE_AREA_TYPE));
+				Dictionaries.of(
+						Location.SERVICE_PROPERTY_TYPE,
+						Location.INSTANCE_AREA_TYPE,
+						"url",
+						userDir.toURI().toURL().toExternalForm()));
 		context.registerService(
 				SAXParserFactory.class, SAXParserFactory.newInstance(), Dictionaries.empty());
 
