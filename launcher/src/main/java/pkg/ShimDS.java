@@ -72,6 +72,9 @@ class ShimDS {
 					}
 
 					@Override
+					public void updateChangeCount() {}
+
+					@Override
 					public <T> void leaveCreate(ServiceReference<T> reference) {}
 
 					@Override
