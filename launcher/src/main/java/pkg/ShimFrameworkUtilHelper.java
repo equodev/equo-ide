@@ -1,6 +1,5 @@
 package pkg;
 
-import java.net.URL;
 import java.util.Optional;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.connect.FrameworkUtilHelper;
@@ -15,7 +14,12 @@ public class ShimFrameworkUtilHelper implements FrameworkUtilHelper {
 
 	@Override
 	public Optional<Bundle> getBundle(Class<?> classFromBundle) {
-		URL source = classFromBundle.getProtectionDomain().getCodeSource().getLocation();
-		return Optional.of(owner.bundleForURL(source));
+		var domain = classFromBundle.getProtectionDomain();
+		var source = domain.getCodeSource();
+		if (source == null) {
+			return Optional.of(owner.systemBundle);
+		}
+		var location = source.getLocation();
+		return Optional.of(owner.bundleForURL(location));
 	}
 }

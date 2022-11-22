@@ -22,6 +22,7 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkEvent;
 import org.osgi.service.log.LogLevel;
+import org.osgi.service.log.LogService;
 
 public interface EquinotConfiguration {
 	default LogLevel logLevel() {
@@ -46,7 +47,7 @@ public interface EquinotConfiguration {
 		var logReaderFactory = new ExtendedLogReaderServiceFactory(99, LogLevel.INFO);
 		var logWriterFactory = new ExtendedLogServiceFactory(logReaderFactory, false);
 		context.registerService(
-				ExtendedLogService.class,
+				new String[] {ExtendedLogService.class.getName(), LogService.class.getName()},
 				logWriterFactory.getService(systemBundle, null),
 				Dictionaries.empty());
 		context.registerService(
