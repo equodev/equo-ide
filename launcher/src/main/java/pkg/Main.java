@@ -13,8 +13,9 @@ import org.osgi.service.application.ApplicationException;
 
 class Main {
 	public static void main(String[] args) throws InvalidSyntaxException, ApplicationException {
-		// System.setProperty(org.slf4j.simple.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "INFO");
-		System.setProperty(org.slf4j.simple.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "WARN");
+		System.setProperty(org.slf4j.simple.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "INFO");
+		System.setProperty("org.slf4j.simpleLogger.logFile", "System.out");
+
 		var osgiShim = OsgiShim.initialize(new EquinotConfiguration() {});
 
 		var appServices =

@@ -15,7 +15,6 @@ import java.util.Objects;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 import javax.annotation.Nullable;
-import org.eclipse.core.internal.runtime.InternalPlatform;
 import org.eclipse.osgi.internal.framework.FilterImpl;
 import org.eclipse.osgi.service.datalocation.Location;
 import org.osgi.framework.Bundle;
@@ -67,7 +66,6 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 				logger.info("  {}", b);
 			}
 
-			InternalPlatform.getDefault().start(this);
 			logger.info("InternalPlatform started.");
 			for (ShimBundle bundle : bundles) {
 				try {
@@ -76,7 +74,6 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 					logger.warn("Error while activating " + bundle, e);
 				}
 			}
-			ShimPluginXml.logExtensions(logger);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -433,7 +430,12 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 				logger.info("{} requires {}", this, required);
 				ShimBundle bundle = bundleByName(required);
 				if (bundle != null) {
-					bundle.activate();
+					try {
+						bundle.activate();
+					} catch (Exception e) {
+						logger.error(
+								"{} failed to activate, was required by {}, caused by {}", required, this, e);
+					}
 				} else {
 					if (!cfg.okayIfMissing().contains(required)) {
 						logger.error("{} is missing, was required by {}", required, this);
