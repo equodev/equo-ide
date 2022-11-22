@@ -70,7 +70,7 @@ public class ShimBundleContextWithServiceRegistry extends Shims.BundleContextUns
 		serviceListeners.add(new ListenerEntry(listener, null));
 	}
 
-	private void notifyListeners(int type, AbstractServiceReference serviceReference) {
+	private synchronized void notifyListeners(int type, AbstractServiceReference serviceReference) {
 		var event = new ServiceEvent(type, serviceReference);
 		for (var listener : serviceListeners) {
 			if (listener.filter == null || listener.filter.match(serviceReference)) {
@@ -285,6 +285,16 @@ public class ShimBundleContextWithServiceRegistry extends Shims.BundleContextUns
 		}
 
 		@Override
+		public void unregister() {
+			notifyListeners(ServiceEvent.UNREGISTERING, this);
+			synchronized (ShimBundleContextWithServiceRegistry.this) {
+				for (String clazz : objectClass) {
+					servicesForInterface(clazz).remove(this);
+				}
+			}
+		}
+
+		@Override
 		public int compareTo(Object reference) {
 			if (reference instanceof AbstractServiceReference) {
 				return (int) (id - ((AbstractServiceReference) reference).id);
@@ -307,11 +317,6 @@ public class ShimBundleContextWithServiceRegistry extends Shims.BundleContextUns
 		@Override
 		public ServiceReference getReference() {
 			return this;
-		}
-
-		@Override
-		public void unregister() {
-			throw new UnsupportedOperationException();
 		}
 	}
 }
