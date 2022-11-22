@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
+import org.eclipse.e4.core.contexts.IContextFunction;
 import org.eclipse.osgi.internal.framework.FilterImpl;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
@@ -36,13 +37,9 @@ public class ShimBundleContextWithServiceRegistry extends Shims.BundleContextUns
 	}
 
 	@Override
-	public final synchronized ServiceRegistration<?> registerService(
+	public final ServiceRegistration<?> registerService(
 			String clazz, Object service, Dictionary<String, ?> properties) {
-		logger.info("{} implemented by {} with {}", clazz, service, properties);
-		var newService = new ShimServiceReference<>(service, properties);
-		servicesForInterface(clazz).add(newService);
-		notifyListeners(ServiceEvent.REGISTERED, newService);
-		return newService;
+		return registerService(new String[] {clazz}, service, properties);
 	}
 
 	@Override
@@ -67,10 +64,16 @@ public class ShimBundleContextWithServiceRegistry extends Shims.BundleContextUns
 		}
 	}
 
+	@Override
+	public final synchronized void addServiceListener(ServiceListener listener) {
+		logger.info("add listener {} with no filter", listener);
+		serviceListeners.add(new ListenerEntry(listener, null));
+	}
+
 	private void notifyListeners(int type, AbstractServiceReference serviceReference) {
 		var event = new ServiceEvent(type, serviceReference);
 		for (var listener : serviceListeners) {
-			if (listener.filter.match(serviceReference)) {
+			if (listener.filter == null || listener.filter.match(serviceReference)) {
 				listener.listener.serviceChanged(event);
 			}
 		}
@@ -84,21 +87,22 @@ public class ShimBundleContextWithServiceRegistry extends Shims.BundleContextUns
 			this.listener = listener;
 			this.filter = filter;
 		}
+
+		@Override
+		public String toString() {
+			return filter.toString();
+		}
 	}
 
 	@Override
 	public synchronized ServiceRegistration<?> registerService(
 			String[] clazzes, Object service, Dictionary<String, ?> properties) {
-		if (clazzes.length == 1) {
-			return registerService(clazzes[0], service, properties);
-		} else {
-			var newService = new ShimServiceReference<>(service, properties);
-			for (String clazz : clazzes) {
-				servicesForInterface(clazz).equals(newService);
-			}
-			notifyListeners(ServiceEvent.REGISTERED, newService);
-			return newService;
+		var newService = new ShimServiceReference<>(service, clazzes, properties);
+		for (String clazz : clazzes) {
+			servicesForInterface(clazz).add(newService);
 		}
+		notifyListeners(ServiceEvent.REGISTERED, newService);
+		return newService;
 	}
 
 	@Override
@@ -171,8 +175,8 @@ public class ShimBundleContextWithServiceRegistry extends Shims.BundleContextUns
 	class ShimServiceReference<S> extends AbstractServiceReference<S> {
 		final S service;
 
-		ShimServiceReference(S service, Dictionary<String, ?> properties) {
-			super(properties);
+		ShimServiceReference(S service, String[] clazzes, Dictionary<String, ?> properties) {
+			super(clazzes, properties);
 			this.service = service;
 		}
 
@@ -184,6 +188,11 @@ public class ShimBundleContextWithServiceRegistry extends Shims.BundleContextUns
 				throw new RuntimeException(e);
 			}
 		}
+
+		@Override
+		public String toString() {
+			return service.toString();
+		}
 	}
 
 	class ShimServiceFactoryReference<S> extends AbstractServiceReference<S> {
@@ -192,7 +201,7 @@ public class ShimBundleContextWithServiceRegistry extends Shims.BundleContextUns
 
 		ShimServiceFactoryReference(
 				Class<S> clazz, ServiceFactory<S> factory, Dictionary<String, ?> properties) {
-			super(properties);
+			super(new String[] {clazz.getName()}, properties);
 			this.clazz = clazz;
 			this.factory = factory;
 		}
@@ -209,17 +218,24 @@ public class ShimBundleContextWithServiceRegistry extends Shims.BundleContextUns
 				}
 			}
 		}
+
+		@Override
+		public String toString() {
+			return clazz.toString();
+		}
 	}
 
 	static AtomicLong globalId = new AtomicLong();
 
 	abstract class AbstractServiceReference<S>
 			implements ServiceReference<S>, ServiceRegistration<S> {
+		final String[] objectClass;
 		final long id;
 		Dictionary<String, Object> properties;
 
-		AbstractServiceReference(Dictionary<String, ?> properties) {
+		AbstractServiceReference(String[] objectClass, Dictionary<String, ?> properties) {
 			this.id = globalId.getAndIncrement();
+			this.objectClass = objectClass;
 			if (properties != null) {
 				this.properties = (Dictionary<String, Object>) properties;
 			} else {
@@ -229,8 +245,13 @@ public class ShimBundleContextWithServiceRegistry extends Shims.BundleContextUns
 
 		@Override
 		public synchronized Object getProperty(String key) {
-			if (key.equals(Constants.SERVICE_ID)) {
+			if (key.equals(Constants.OBJECTCLASS)) {
+				return objectClass;
+			} else if (key.equals(Constants.SERVICE_ID)) {
 				return id;
+			} else if (key.equals(IContextFunction.SERVICE_CONTEXT_KEY)) {
+				Object value = properties.get(key);
+				return value != null ? value : properties.get("component.name");
 			} else {
 				return properties.get(key);
 			}
@@ -264,12 +285,16 @@ public class ShimBundleContextWithServiceRegistry extends Shims.BundleContextUns
 		}
 
 		@Override
-		public Bundle[] getUsingBundles() {
-			throw new UnsupportedOperationException();
+		public int compareTo(Object reference) {
+			if (reference instanceof AbstractServiceReference) {
+				return (int) (id - ((AbstractServiceReference) reference).id);
+			} else {
+				throw new UnsupportedOperationException();
+			}
 		}
 
 		@Override
-		public int compareTo(Object reference) {
+		public Bundle[] getUsingBundles() {
 			throw new UnsupportedOperationException();
 		}
 
