@@ -1,6 +1,5 @@
 package pkg;
 
-import com.diffplug.spotless.extra.eclipse.base.runtime.PluginRegistrar;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
@@ -75,6 +74,7 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 					logger.warn("Error while activating " + bundle, e);
 				}
 			}
+			ShimPluginXml.logExtensions(logger);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -420,7 +420,7 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 			if (isActivated) {
 				return;
 			}
-			logger.info("Request activate {}", symbolicName);
+			logger.info("Request activate {}", this);
 			if ("org.eclipse.osgi".equals(symbolicName) || "org.apache.felix.scr".equals(symbolicName)) {
 				// skip org.eclipse.osgi on purpose
 				logger.info("  skipping because of shim implementation");
@@ -452,20 +452,9 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 				bundleActivator.start(this);
 			}
 
-			boolean hasPluginXml;
-			try {
-				InputStream stream = getEntry("plugin.xml").openStream();
-				stream.close();
-				hasPluginXml = true;
-			} catch (IOException e) {
-				hasPluginXml = false;
-			}
-			if (hasPluginXml) {
+			if (ShimPluginXml.hasPluginXml(this)) {
 				logger.info("{} plugin.xml", this);
-				BundleException exception = PluginRegistrar.register(this);
-				if (exception != null) {
-					throw exception;
-				}
+				ShimPluginXml.register(this);
 			}
 			if (!osgiDS.isEmpty()) {
 				ShimDS.register(logger, this);
