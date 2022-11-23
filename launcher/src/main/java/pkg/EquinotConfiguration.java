@@ -30,7 +30,8 @@ public interface EquinotConfiguration {
 	}
 
 	default List<String> startOrder() {
-		return Arrays.asList("org.eclipse.equinox.registry", "org.eclipse.core.runtime");
+		return Arrays.asList(
+				"org.eclipse.equinox.registry", "org.apache.felix.scr", "org.eclipse.core.runtime");
 	}
 
 	default void bootstrapServices(Bundle systemBundle, BundleContext context)

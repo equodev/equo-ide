@@ -55,6 +55,16 @@ public class ShimBundleContextWithServiceRegistry extends Shims.BundleContextUns
 	private final List<ListenerEntry> serviceListeners = new ArrayList<>();
 
 	@Override
+	public synchronized void removeServiceListener(ServiceListener listener) {
+		var iter = serviceListeners.iterator();
+		while (iter.hasNext()) {
+			if (iter.next().listener == listener) {
+				iter.remove();
+			}
+		}
+	}
+
+	@Override
 	public final synchronized void addServiceListener(ServiceListener listener, String filter) {
 		try {
 			logger.info("add listener {} with {}", listener, filter);

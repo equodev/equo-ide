@@ -12,19 +12,21 @@ import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
+import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.eclipse.osgi.internal.framework.FilterImpl;
 import org.eclipse.osgi.service.datalocation.Location;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleEvent;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.BundleListener;
 import org.osgi.framework.Constants;
 import org.osgi.framework.InvalidSyntaxException;
-import org.osgi.framework.ServiceListener;
 import org.osgi.framework.Version;
 import org.osgi.framework.namespace.IdentityNamespace;
 import org.osgi.framework.wiring.BundleCapability;
@@ -254,13 +256,35 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 
 	@Override
 	public Bundle[] getBundles() {
-		return bundles.toArray(new Bundle[0]);
+		return bundles.stream().filter(bundle -> bundle.symbolicName != null).toArray(Bundle[]::new);
 	}
 
 	@Override
 	public String getProperty(String key) {
 		// TODO: users might want to set various properties
 		return null;
+	}
+
+	private CopyOnWriteArrayList<BundleListener> bundleListeners = new CopyOnWriteArrayList<>();
+
+	@Override
+	public synchronized void addBundleListener(BundleListener listener) {
+		bundleListeners.add(listener);
+	}
+
+	@Override
+	public synchronized void removeBundleListener(BundleListener listener) {
+		bundleListeners.remove(listener);
+	}
+
+	private synchronized void notifyBundleListeners(int type, ShimBundle bundle) {
+		if (bundle.symbolicName == null) {
+			return;
+		}
+		var event = new BundleEvent(type, bundle);
+		for (BundleListener listener : bundleListeners) {
+			listener.bundleChanged(event);
+		}
 	}
 
 	@Override
@@ -394,38 +418,24 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 			}
 		}
 
-		@Override
-		public void addBundleListener(BundleListener listener) {
-			// TODO: no-op, which might be a problem later. See for example:
-			// https://github.com/eclipse-platform/eclipse.platform.ui/blob/4507d1fc873a70b5c74f411b2f7de70d37bd8d0a/bundles/org.eclipse.ui.workbench/Eclipse%20UI/org/eclipse/ui/plugin/AbstractUIPlugin.java#L508-L528
-		}
-
-		@Override
-		public void removeBundleListener(BundleListener listener) {
-			// TODO: no-op
-		}
-
-		@Override
-		public void removeServiceListener(ServiceListener listener) {
-			// TODO: no-op
-		}
-
 		///////////////////
 		// Bundle overrides
 		///////////////////
-		private boolean isActivated = false;
+		private int state = Bundle.RESOLVED;
 
 		private void activate() throws Exception {
-			if (isActivated) {
+			if (state != Bundle.RESOLVED) {
 				return;
 			}
 			logger.info("Request activate {}", this);
-			if ("org.eclipse.osgi".equals(symbolicName) || "org.apache.felix.scr".equals(symbolicName)) {
+			if ("org.eclipse.osgi".equals(symbolicName)) {
 				// skip org.eclipse.osgi on purpose
 				logger.info("  skipping because of shim implementation");
 				return;
 			}
-			isActivated = true;
+			state = Bundle.STARTING;
+			notifyBundleListeners(BundleEvent.STARTING, this);
+
 			for (var required : requiredBundles) {
 				logger.info("{} requires {}", this, required);
 				ShimBundle bundle = bundleByName(required);
@@ -454,27 +464,30 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 				}
 				var bundleActivator = c.newInstance();
 				bundleActivator.start(this);
+				state = Bundle.ACTIVE;
+				notifyBundleListeners(BundleEvent.STARTED, this);
 			}
 
 			if (ShimPluginXml.hasPluginXml(this)) {
 				logger.info("{} plugin.xml", this);
 				ShimPluginXml.register(this);
 			}
-			if (!osgiDS.isEmpty()) {
-				ShimDS.register(logger, this);
-			}
 			logger.info("\\FINISH ACTIVATE {}", this);
 		}
 
 		@Override
 		public int getState() {
-			return isActivated ? Bundle.ACTIVE : Bundle.STARTING;
+			return state;
 		}
 
 		@Override
 		public Dictionary<String, String> getHeaders(String locale) {
-			// TODO: this should be from the MANIFEST.MF
-			return Dictionaries.empty();
+			if (osgiDS.isEmpty()) {
+				return Dictionaries.empty();
+			} else {
+				return Dictionaries.of(
+						SERVICE_COMPONENT.toString(), osgiDS.stream().collect(Collectors.joining(",")));
+			}
 		}
 
 		@Override
