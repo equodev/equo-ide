@@ -24,6 +24,7 @@ import org.apache.felix.scr.impl.manager.ScrConfiguration;
 import org.apache.felix.scr.impl.manager.SingleComponentManager;
 import org.apache.felix.scr.impl.metadata.ComponentMetadata;
 import org.apache.felix.scr.impl.xml.XmlHandler;
+import org.eclipse.e4.core.contexts.IContextFunction;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
@@ -89,6 +90,7 @@ class ShimDS {
 				};
 
 		for (var metadata : handler.getComponentMetadataList()) {
+			metadata.validate();
 			final ComponentMetadata metadataFinal = metadata;
 			var container =
 					new ComponentContainer() {
@@ -131,6 +133,7 @@ class ShimDS {
 						bundle,
 						metadataFinal.getImplementationClassName(),
 						Arrays.asList(provides));
+				// we can't register all at once b/c componentManager is a ServiceFactory
 				if (provides.length == 1) {
 					bundle.registerService(
 							Class.forName(provides[0]),
@@ -142,6 +145,21 @@ class ShimDS {
 								Class.forName(p), componentManager, componentManager.getServiceProperties());
 					}
 				}
+			}
+
+			// TODO: we probably have something wrong with how DS handles properties and/or how
+			// IContextFunction registers services
+			Object contextFuntionHack =
+					metadataFinal.getProperties().get(IContextFunction.SERVICE_CONTEXT_KEY);
+			if (contextFuntionHack instanceof String) {
+				logger.info(
+						"  context function hack {} {}",
+						IContextFunction.SERVICE_CONTEXT_KEY,
+						contextFuntionHack);
+				bundle.registerService(
+						Class.forName((String) contextFuntionHack),
+						componentManager,
+						componentManager.getServiceProperties());
 			}
 		}
 	}
