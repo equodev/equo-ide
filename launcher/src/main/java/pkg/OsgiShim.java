@@ -67,8 +67,6 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 			for (var b : bundles) {
 				logger.info("  {}", b);
 			}
-
-			logger.info("InternalPlatform started.");
 			for (ShimBundle bundle : bundles) {
 				try {
 					bundle.activate();
@@ -79,6 +77,11 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	@Override
+	protected Bundle systemBundle() {
+		return systemBundle;
 	}
 
 	private List<ShimBundle> bundles = new ArrayList<ShimBundle>();
@@ -162,6 +165,11 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 
 	final Bundle systemBundle =
 			new Shims.BundleUnsupported() {
+				@Override
+				public long getBundleId() {
+					return 0;
+				}
+
 				@Override
 				public int getState() {
 					// this signals InternalPlatform.isRunning() to be true
@@ -394,13 +402,13 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 		@Override
 		public long getBundleId() {
 			if (this == systemBundle) {
-				return -1;
+				return systemBundle.getBundleId();
 			} else {
 				int idx = bundles.indexOf(this);
 				if (idx == -1) {
 					throw new IllegalStateException("This bundle wasn't known at startup.");
 				}
-				return idx;
+				return idx + 1;
 			}
 		}
 

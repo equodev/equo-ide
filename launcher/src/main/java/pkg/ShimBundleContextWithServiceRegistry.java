@@ -23,7 +23,7 @@ import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ShimBundleContextWithServiceRegistry extends Shims.BundleContextUnsupported {
+public abstract class ShimBundleContextWithServiceRegistry extends Shims.BundleContextUnsupported {
 	private final Logger logger = LoggerFactory.getLogger(ShimBundleContextWithServiceRegistry.class);
 	Map<String, List<AbstractServiceReference>> services = new HashMap<>();
 
@@ -35,6 +35,8 @@ public class ShimBundleContextWithServiceRegistry extends Shims.BundleContextUns
 		}
 		return list;
 	}
+
+	protected abstract Bundle systemBundle();
 
 	@Override
 	public final ServiceRegistration<?> registerService(
@@ -297,8 +299,7 @@ public class ShimBundleContextWithServiceRegistry extends Shims.BundleContextUns
 
 		@Override
 		public Bundle getBundle() {
-			// TODO: we could determine this for real using ShimFrameworkUtilHelper
-			return null;
+			return systemBundle();
 		}
 
 		@Override
