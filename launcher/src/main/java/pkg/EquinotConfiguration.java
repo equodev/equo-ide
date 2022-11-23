@@ -61,6 +61,11 @@ public interface EquinotConfiguration {
 				Dictionaries.empty());
 
 		context.registerService(
+				org.osgi.service.condition.Condition.class,
+				new org.osgi.service.condition.Condition() {},
+				Dictionaries.of("osgi.condition.id", "true"));
+
+		context.registerService(
 				FrameworkLog.class,
 				new FrameworkLog() {
 					@Override
