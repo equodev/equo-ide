@@ -31,6 +31,7 @@ import org.osgi.framework.Version;
 import org.osgi.framework.namespace.IdentityNamespace;
 import org.osgi.framework.wiring.BundleCapability;
 import org.osgi.framework.wiring.BundleRevision;
+import org.osgi.framework.wiring.BundleWiring;
 import org.osgi.framework.wiring.FrameworkWiring;
 import org.osgi.resource.Namespace;
 import org.osgi.resource.Requirement;
@@ -523,6 +524,25 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 		@Override
 		public String getLocation() {
 			return jarUrl;
+		}
+
+		// implemented for OSGi DS
+		@Override
+		public <A> A adapt(Class<A> type) {
+			if (BundleWiring.class.equals(type)) {
+				return (A) new ShimDS.BundleWiringImpl();
+			} else {
+				throw new UnsupportedOperationException();
+			}
+		}
+
+		// implemented for OSGi DS
+		@Override
+		public Enumeration<URL> findEntries(String path, String filePattern, boolean recurse) {
+			if (recurse) {
+				throw new UnsupportedOperationException();
+			}
+			return Dictionaries.enumeration(getEntry(path + "/" + filePattern));
 		}
 	}
 }

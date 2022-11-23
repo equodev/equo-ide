@@ -54,6 +54,19 @@ public abstract class ShimBundleContextWithServiceRegistry extends Shims.BundleC
 		return newService;
 	}
 
+	@Override
+	public synchronized ServiceRegistration<?> registerService(
+			String[] clazzes, Object service, Dictionary<String, ?> properties) {
+		logger.info(
+				"{} implemented by service {} with {}", Arrays.asList(clazzes), service, properties);
+		var newService = new ShimServiceReference<>(service, clazzes, properties);
+		for (String clazz : clazzes) {
+			servicesForInterface(clazz).add(newService);
+		}
+		notifyListeners(ServiceEvent.REGISTERED, newService);
+		return newService;
+	}
+
 	private final List<ListenerEntry> serviceListeners = new ArrayList<>();
 
 	@Override
@@ -104,17 +117,6 @@ public abstract class ShimBundleContextWithServiceRegistry extends Shims.BundleC
 		public String toString() {
 			return filter.toString();
 		}
-	}
-
-	@Override
-	public synchronized ServiceRegistration<?> registerService(
-			String[] clazzes, Object service, Dictionary<String, ?> properties) {
-		var newService = new ShimServiceReference<>(service, clazzes, properties);
-		for (String clazz : clazzes) {
-			servicesForInterface(clazz).add(newService);
-		}
-		notifyListeners(ServiceEvent.REGISTERED, newService);
-		return newService;
 	}
 
 	@Override

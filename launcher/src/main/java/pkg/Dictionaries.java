@@ -1,11 +1,17 @@
 package pkg;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Map;
 
 class Dictionaries {
+	static <T> Enumeration<T> enumeration(T... values) {
+		return Collections.enumeration(Arrays.asList(values));
+	}
+
 	private static class EmptyDictionary<K, V> extends Dictionary<K, V> {
 		private final Hashtable<K, V> backing = new Hashtable<>();
 

@@ -1,34 +1,21 @@
 package pkg;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.zip.ZipFile;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParserFactory;
-import org.apache.felix.scr.impl.inject.internal.ComponentMethodsImpl;
-import org.apache.felix.scr.impl.logger.BundleLogger;
-import org.apache.felix.scr.impl.logger.ComponentLogger;
-import org.apache.felix.scr.impl.logger.InternalLogger;
-import org.apache.felix.scr.impl.logger.NoOpLogger;
-import org.apache.felix.scr.impl.manager.AbstractComponentManager;
-import org.apache.felix.scr.impl.manager.ComponentActivator;
-import org.apache.felix.scr.impl.manager.ComponentContainer;
-import org.apache.felix.scr.impl.manager.DependencyManager;
-import org.apache.felix.scr.impl.manager.ExtendedServiceEvent;
-import org.apache.felix.scr.impl.manager.ExtendedServiceListener;
-import org.apache.felix.scr.impl.manager.RegionConfigurationSupport;
-import org.apache.felix.scr.impl.manager.ScrConfiguration;
-import org.apache.felix.scr.impl.manager.SingleComponentManager;
-import org.apache.felix.scr.impl.metadata.ComponentMetadata;
-import org.apache.felix.scr.impl.xml.XmlHandler;
-import org.eclipse.e4.core.contexts.IContextFunction;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
-import org.slf4j.Logger;
-import org.xml.sax.SAXException;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.wiring.BundleCapability;
+import org.osgi.framework.wiring.BundleRequirement;
+import org.osgi.framework.wiring.BundleRevision;
+import org.osgi.framework.wiring.BundleWire;
+import org.osgi.framework.wiring.BundleWiring;
+import org.osgi.resource.Capability;
+import org.osgi.resource.Requirement;
+import org.osgi.resource.Wire;
 
 class ShimDS {
 	static List<String> starDotXML(String jarFile) throws IOException {
@@ -52,267 +39,85 @@ class ShimDS {
 		return dotXml;
 	}
 
-	public static void register(Logger logger, OsgiShim.ShimBundle bundle)
-			throws ParserConfigurationException, SAXException, ClassNotFoundException {
-		var saxFactory = bundle.getService(bundle.getServiceReference(SAXParserFactory.class));
-		var handler = new XmlHandler(bundle, new NoOpLogger(), false, false, null);
-		for (String s : bundle.osgiDS) {
-			try (InputStream stream = bundle.getEntry(s).openStream()) {
-				saxFactory.newSAXParser().parse(stream, handler);
-			} catch (IOException e) {
-				logger.error("{}/{} parse error", bundle, s, e);
-			}
-		}
-		final NoOpLogger felixLogger = new NoOpLogger();
-		final ComponentActivator activator =
-				new ComponentActivatorUnsupported() {
-					@Override
-					public <T> boolean enterCreate(ServiceReference<T> reference) {
-						// returning false means no circular dependency
-						return false;
-					}
-
-					@Override
-					public void updateChangeCount() {}
-
-					@Override
-					public <T> void leaveCreate(ServiceReference<T> reference) {}
-
-					@Override
-					public BundleContext getBundleContext() {
-						return bundle;
-					}
-
-					@Override
-					public ScrConfiguration getConfiguration() {
-						return new ShimScrConfiguration();
-					}
-				};
-
-		for (var metadata : handler.getComponentMetadataList()) {
-			metadata.validate();
-			final ComponentMetadata metadataFinal = metadata;
-			var container =
-					new ComponentContainer() {
-						@Override
-						public ComponentMetadata getComponentMetadata() {
-							return metadataFinal;
-						}
-
-						@Override
-						public ComponentActivator getActivator() {
-							return activator;
-						}
-
-						@Override
-						public ComponentLogger getLogger() {
-							return felixLogger;
-						}
-
-						@Override
-						public void disposed(SingleComponentManager component) {
-							throw new UnsupportedOperationException();
-						}
-					};
-			var properties = Dictionaries.toDictionary(metadataFinal.getProperties());
-
-			var methods = new ComponentMethodsImpl();
-			var componentManager = new SingleComponentManager(container, methods);
-			var serviceMetadata = metadataFinal.getServiceMetadata();
-			if (serviceMetadata == null) {
-				// this means it should just be instantiated, it's not part of the normal "service" thing
-				var registration =
-						bundle.registerService(
-								metadataFinal.getImplementationClassName(), componentManager, properties);
-				bundle.getService(registration.getReference());
-				logger.info("{} DS instantiated {}", bundle, metadataFinal.getImplementationClassName());
-			} else {
-				String[] provides = metadataFinal.getServiceMetadata().getProvides();
-				logger.info(
-						"{} DS provides {} for {}",
-						bundle,
-						metadataFinal.getImplementationClassName(),
-						Arrays.asList(provides));
-				// we can't register all at once b/c componentManager is a ServiceFactory
-				if (provides.length == 1) {
-					bundle.registerService(Class.forName(provides[0]), componentManager, properties);
-				} else {
-					for (String p : provides) {
-						bundle.registerService(Class.forName(p), componentManager, properties);
-					}
-				}
-			}
-
-			// TODO: we probably have something wrong with how DS handles properties and/or how
-			// IContextFunction registers services
-			Object contextFuntionHack = properties.get(IContextFunction.SERVICE_CONTEXT_KEY);
-			if (contextFuntionHack instanceof String) {
-				logger.info(
-						"  context function hack {} {}",
-						IContextFunction.SERVICE_CONTEXT_KEY,
-						contextFuntionHack);
-				bundle.registerService(
-						Class.forName((String) contextFuntionHack), componentManager, properties);
-			}
-		}
-	}
-
-	static class ComponentActivatorUnsupported implements ComponentActivator {
+	static class BundleWiringImpl implements BundleWiring {
 		@Override
-		public BundleLogger getLogger() {
+		public List<BundleWire> getRequiredWires(String namespace) {
+			return Collections.emptyList();
+		}
+
+		@Override
+		public boolean isCurrent() {
 			throw new UnsupportedOperationException();
 		}
 
 		@Override
-		public BundleContext getBundleContext() {
+		public boolean isInUse() {
 			throw new UnsupportedOperationException();
 		}
 
 		@Override
-		public boolean isActive() {
+		public List<BundleCapability> getCapabilities(String namespace) {
 			throw new UnsupportedOperationException();
 		}
 
 		@Override
-		public ScrConfiguration getConfiguration() {
+		public List<BundleRequirement> getRequirements(String namespace) {
 			throw new UnsupportedOperationException();
 		}
 
 		@Override
-		public void schedule(Runnable runnable) {
+		public List<BundleWire> getProvidedWires(String namespace) {
 			throw new UnsupportedOperationException();
 		}
 
 		@Override
-		public long registerComponentId(AbstractComponentManager<?> sAbstractComponentManager) {
+		public BundleRevision getRevision() {
 			throw new UnsupportedOperationException();
 		}
 
 		@Override
-		public void unregisterComponentId(AbstractComponentManager<?> sAbstractComponentManager) {
+		public ClassLoader getClassLoader() {
 			throw new UnsupportedOperationException();
 		}
 
 		@Override
-		public <T> boolean enterCreate(ServiceReference<T> reference) {
+		public List<URL> findEntries(String path, String filePattern, int options) {
 			throw new UnsupportedOperationException();
 		}
 
 		@Override
-		public <T> void leaveCreate(ServiceReference<T> reference) {
+		public Collection<String> listResources(String path, String filePattern, int options) {
 			throw new UnsupportedOperationException();
 		}
 
 		@Override
-		public <S, T> void registerMissingDependency(
-				DependencyManager<S, T> dependencyManager,
-				ServiceReference<T> serviceReference,
-				int trackingCount) {
+		public List<Capability> getResourceCapabilities(String namespace) {
 			throw new UnsupportedOperationException();
 		}
 
 		@Override
-		public <T> void missingServicePresent(ServiceReference<T> serviceReference) {
+		public List<Requirement> getResourceRequirements(String namespace) {
 			throw new UnsupportedOperationException();
 		}
 
 		@Override
-		public void enableComponent(String name) {
+		public List<Wire> getProvidedResourceWires(String namespace) {
 			throw new UnsupportedOperationException();
 		}
 
 		@Override
-		public void disableComponent(String name) {
+		public List<Wire> getRequiredResourceWires(String namespace) {
 			throw new UnsupportedOperationException();
 		}
 
 		@Override
-		public RegionConfigurationSupport setRegionConfigurationSupport(ServiceReference reference) {
+		public BundleRevision getResource() {
 			throw new UnsupportedOperationException();
 		}
 
 		@Override
-		public void unsetRegionConfigurationSupport(RegionConfigurationSupport rcs) {
+		public Bundle getBundle() {
 			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		public void updateChangeCount() {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		public ServiceReference<?> getTrueCondition() {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		public void addServiceListener(
-				String serviceFilterString, ExtendedServiceListener<ExtendedServiceEvent> listener) {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		public void removeServiceListener(
-				String serviceFilterString, ExtendedServiceListener<ExtendedServiceEvent> listener) {
-			throw new UnsupportedOperationException();
-		}
-	}
-
-	static class ShimScrConfiguration implements ScrConfiguration {
-		@Override
-		public boolean isFactoryEnabled() {
-			return false;
-		}
-
-		@Override
-		public boolean keepInstances() {
-			return false;
-		}
-
-		@Override
-		public boolean infoAsService() {
-			return false;
-		}
-
-		@Override
-		public long lockTimeout() {
-			return 0;
-		}
-
-		@Override
-		public long stopTimeout() {
-			return 0;
-		}
-
-		@Override
-		public boolean globalExtender() {
-			return false;
-		}
-
-		@Override
-		public long serviceChangecountTimeout() {
-			return 0;
-		}
-
-		@Override
-		public boolean cacheMetadata() {
-			return false;
-		}
-
-		@Override
-		public InternalLogger.Level getLogLevel() {
-			return InternalLogger.Level.INFO;
-		}
-
-		@Override
-		public boolean isLogEnabled() {
-			return false;
-		}
-
-		@Override
-		public boolean isLogExtensionEnabled() {
-			return false;
 		}
 	}
 }
