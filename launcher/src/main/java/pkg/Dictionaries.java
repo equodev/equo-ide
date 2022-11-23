@@ -3,6 +3,7 @@ package pkg;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Map;
 
 class Dictionaries {
 	private static class EmptyDictionary<K, V> extends Dictionary<K, V> {
@@ -71,5 +72,17 @@ class Dictionaries {
 		table.put(k1, v1);
 		table.put(k2, v2);
 		return table;
+	}
+
+	public static <K, V> Dictionary<K, V> toDictionary(Map<K, V> in) {
+		if (in.isEmpty()) {
+			return empty();
+		} else {
+			var table = new Hashtable<K, V>();
+			for (var e : in.entrySet()) {
+				table.put(e.getKey(), e.getValue());
+			}
+			return table;
+		}
 	}
 }

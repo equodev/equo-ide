@@ -114,6 +114,8 @@ class ShimDS {
 							throw new UnsupportedOperationException();
 						}
 					};
+			var properties = Dictionaries.toDictionary(metadataFinal.getProperties());
+
 			var methods = new ComponentMethodsImpl();
 			var componentManager = new SingleComponentManager(container, methods);
 			var serviceMetadata = metadataFinal.getServiceMetadata();
@@ -121,9 +123,7 @@ class ShimDS {
 				// this means it should just be instantiated, it's not part of the normal "service" thing
 				var registration =
 						bundle.registerService(
-								metadataFinal.getImplementationClassName(),
-								componentManager,
-								componentManager.getServiceProperties());
+								metadataFinal.getImplementationClassName(), componentManager, properties);
 				bundle.getService(registration.getReference());
 				logger.info("{} DS instantiated {}", bundle, metadataFinal.getImplementationClassName());
 			} else {
@@ -135,31 +135,24 @@ class ShimDS {
 						Arrays.asList(provides));
 				// we can't register all at once b/c componentManager is a ServiceFactory
 				if (provides.length == 1) {
-					bundle.registerService(
-							Class.forName(provides[0]),
-							componentManager,
-							componentManager.getServiceProperties());
+					bundle.registerService(Class.forName(provides[0]), componentManager, properties);
 				} else {
 					for (String p : provides) {
-						bundle.registerService(
-								Class.forName(p), componentManager, componentManager.getServiceProperties());
+						bundle.registerService(Class.forName(p), componentManager, properties);
 					}
 				}
 			}
 
 			// TODO: we probably have something wrong with how DS handles properties and/or how
 			// IContextFunction registers services
-			Object contextFuntionHack =
-					metadataFinal.getProperties().get(IContextFunction.SERVICE_CONTEXT_KEY);
+			Object contextFuntionHack = properties.get(IContextFunction.SERVICE_CONTEXT_KEY);
 			if (contextFuntionHack instanceof String) {
 				logger.info(
 						"  context function hack {} {}",
 						IContextFunction.SERVICE_CONTEXT_KEY,
 						contextFuntionHack);
 				bundle.registerService(
-						Class.forName((String) contextFuntionHack),
-						componentManager,
-						componentManager.getServiceProperties());
+						Class.forName((String) contextFuntionHack), componentManager, properties);
 			}
 		}
 	}
