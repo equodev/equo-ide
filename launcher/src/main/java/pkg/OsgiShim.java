@@ -10,6 +10,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Dictionary;
 import java.util.Enumeration;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -306,6 +307,7 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 		static final Attributes.Name ACTIVATOR = new Attributes.Name("Bundle-Activator");
 		static final Attributes.Name REQUIRE_BUNDLE = new Attributes.Name("Require-Bundle");
 		static final Attributes.Name SERVICE_COMPONENT = new Attributes.Name("Service-Component");
+		static final Attributes.Name BUNDLE_LOCALIZATION = new Attributes.Name("Bundle-Localization");
 		static final String MANIFEST_PATH = "/META-INF/MANIFEST.MF";
 
 		final String jarUrl;
@@ -313,6 +315,7 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 		final @Nullable String symbolicName;
 		final List<String> requiredBundles;
 		final List<String> osgiDS;
+		final String bundleLocalization;
 
 		ShimBundle(URL manifestURL) throws IOException {
 			super(OsgiShim.this);
@@ -355,6 +358,7 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 					osgiDS = Arrays.asList(entries);
 				}
 			}
+			bundleLocalization = manifest.getMainAttributes().getValue(BUNDLE_LOCALIZATION);
 		}
 
 		private static List<String> requiredBundles(Manifest manifest) {
@@ -491,12 +495,14 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 
 		@Override
 		public Dictionary<String, String> getHeaders(String locale) {
-			if (osgiDS.isEmpty()) {
-				return Dictionaries.empty();
-			} else {
-				return Dictionaries.of(
-						SERVICE_COMPONENT.toString(), osgiDS.stream().collect(Collectors.joining(",")));
+			var headers = new Hashtable<String, String>();
+			if (!osgiDS.isEmpty()) {
+				headers.put(SERVICE_COMPONENT.toString(), osgiDS.stream().collect(Collectors.joining(",")));
 			}
+			if (bundleLocalization != null) {
+				headers.put(BUNDLE_LOCALIZATION.toString(), bundleLocalization);
+			}
+			return headers;
 		}
 
 		@Override

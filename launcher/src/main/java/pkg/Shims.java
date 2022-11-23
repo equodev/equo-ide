@@ -9,7 +9,6 @@ import java.util.Collection;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import org.eclipse.osgi.service.datalocation.Location;
 import org.osgi.framework.Bundle;
@@ -408,7 +407,7 @@ class Shims {
 
 		@Override
 		default Dictionary<String, String> getHeaders() {
-			return getHeaders(Locale.ROOT.getDisplayName());
+			return getHeaders("");
 		}
 
 		@Override
