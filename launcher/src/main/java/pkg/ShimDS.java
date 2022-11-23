@@ -46,12 +46,17 @@ class ShimDS {
 		}
 
 		@Override
-		public boolean isCurrent() {
-			throw new UnsupportedOperationException();
+		public boolean isInUse() {
+			return true;
 		}
 
 		@Override
-		public boolean isInUse() {
+		public List<BundleWire> getProvidedWires(String namespace) {
+			return Collections.emptyList();
+		}
+
+		@Override
+		public boolean isCurrent() {
 			throw new UnsupportedOperationException();
 		}
 
@@ -62,11 +67,6 @@ class ShimDS {
 
 		@Override
 		public List<BundleRequirement> getRequirements(String namespace) {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		public List<BundleWire> getProvidedWires(String namespace) {
 			throw new UnsupportedOperationException();
 		}
 

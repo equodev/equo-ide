@@ -48,7 +48,8 @@ public abstract class ShimBundleContextWithServiceRegistry extends Shims.BundleC
 	public final synchronized <S> ServiceRegistration<S> registerService(
 			Class<S> clazz, ServiceFactory<S> factory, Dictionary<String, ?> properties) {
 		logger.info("{} implemented by factory {} with {}", clazz, factory, properties);
-		var newService = new ShimServiceFactoryReference<>(clazz, factory, properties);
+		var newService =
+				new ShimServiceFactoryReference<>(factory, new String[] {clazz.getName()}, properties);
 		servicesForInterface(clazz.getName()).add(newService);
 		notifyListeners(ServiceEvent.REGISTERED, newService);
 		return newService;
@@ -59,7 +60,13 @@ public abstract class ShimBundleContextWithServiceRegistry extends Shims.BundleC
 			String[] clazzes, Object service, Dictionary<String, ?> properties) {
 		logger.info(
 				"{} implemented by service {} with {}", Arrays.asList(clazzes), service, properties);
-		var newService = new ShimServiceReference<>(service, clazzes, properties);
+		AbstractServiceReference<?> newService;
+		if (service instanceof ServiceFactory<?>) {
+			newService =
+					new ShimServiceFactoryReference<>((ServiceFactory<?>) service, clazzes, properties);
+		} else {
+			newService = new ShimServiceReference<>(service, clazzes, properties);
+		}
 		for (String clazz : clazzes) {
 			servicesForInterface(clazz).add(newService);
 		}
@@ -131,7 +138,7 @@ public abstract class ShimBundleContextWithServiceRegistry extends Shims.BundleC
 			return (S) ((ShimServiceReference) reference).service;
 		} else if (reference instanceof ShimServiceFactoryReference) {
 			ShimServiceFactoryReference cast = (ShimServiceFactoryReference) reference;
-			return (S) cast.factory.getService(null, cast);
+			return (S) cast.factory.getService(systemBundle(), cast);
 		} else {
 			throw new RuntimeException("Unexpected class " + reference);
 		}
@@ -217,32 +224,42 @@ public abstract class ShimBundleContextWithServiceRegistry extends Shims.BundleC
 	}
 
 	class ShimServiceFactoryReference<S> extends AbstractServiceReference<S> {
-		final Class<S> clazz;
+		final Class<?>[] clazzes;
 		final ServiceFactory<S> factory;
 
 		ShimServiceFactoryReference(
-				Class<S> clazz, ServiceFactory<S> factory, Dictionary<String, ?> properties) {
-			super(new String[] {clazz.getName()}, properties);
-			this.clazz = clazz;
+				ServiceFactory<S> factory, String[] clazzes, Dictionary<String, ?> properties) {
+			super(clazzes, properties);
 			this.factory = factory;
-		}
-
-		@Override
-		public boolean isAssignableTo(Bundle bundle, String className) {
-			if (className.equals(clazz.getName())) {
-				return true;
-			} else {
+			this.clazzes = new Class[clazzes.length];
+			for (int i = 0; i < clazzes.length; ++i) {
 				try {
-					return Class.forName(className).isAssignableFrom(clazz);
+					this.clazzes[i] = Class.forName(clazzes[i]);
 				} catch (ClassNotFoundException e) {
-					throw new RuntimeException(e);
+					logger.warn("unable to resolve class {} for ServiceFactory {}", clazzes[i], factory);
+					this.clazzes[i] = ShimServiceFactoryReference.class;
 				}
 			}
 		}
 
 		@Override
-		public String toString() {
-			return clazz.toString();
+		public boolean isAssignableTo(Bundle bundle, String className) {
+			for (String clazz : objectClass) {
+				if (clazz.equals(className)) {
+					return true;
+				}
+			}
+			try {
+				var target = Class.forName(className);
+				for (Class<?> clazz : clazzes) {
+					if (target.isAssignableFrom(clazz)) {
+						return true;
+					}
+				}
+				return false;
+			} catch (ClassNotFoundException e) {
+				throw new RuntimeException(e);
+			}
 		}
 	}
 

@@ -532,7 +532,7 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 			if (BundleWiring.class.equals(type)) {
 				return (A) new ShimDS.BundleWiringImpl();
 			} else {
-				throw new UnsupportedOperationException();
+				return null;
 			}
 		}
 
