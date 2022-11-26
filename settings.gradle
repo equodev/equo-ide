@@ -1,9 +1,9 @@
 pluginManagement {
 	plugins {
 		// https://github.com/diffplug/spotless/blob/main/plugin-gradle/CHANGES.md
-		id 'com.diffplug.spotless'                 version '6.11.0'
+		id 'com.diffplug.spotless'                 version '6.12.0'
 		// https://github.com/diffplug/spotless-changelog/blob/main/CHANGELOG.md
-		id 'com.diffplug.spotless-changelog'       version '2.4.0'
+		id 'com.diffplug.spotless-changelog'       version '2.4.1'
 		// https://github.com/diffplug/goomph/blob/main/CHANGES.md
 		id 'com.diffplug.eclipse.mavencentral'     version '3.40.0'
 		// https://plugins.gradle.org/plugin/com.gradle.plugin-publish
