@@ -302,13 +302,14 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 		return id == -1 ? systemBundle : bundles.get((int) id);
 	}
 
+	static final Attributes.Name SYMBOLIC_NAME = new Attributes.Name("Bundle-SymbolicName");
+	static final Attributes.Name ACTIVATOR = new Attributes.Name("Bundle-Activator");
+	static final Attributes.Name REQUIRE_BUNDLE = new Attributes.Name("Require-Bundle");
+	static final Attributes.Name SERVICE_COMPONENT = new Attributes.Name("Service-Component");
+	static final Attributes.Name BUNDLE_LOCALIZATION = new Attributes.Name("Bundle-Localization");
+	static final String MANIFEST_PATH = "/META-INF/MANIFEST.MF";
+
 	public class ShimBundle extends Shims.BundleContextDelegate implements Shims.BundleUnsupported {
-		static final Attributes.Name SYMBOLIC_NAME = new Attributes.Name("Bundle-SymbolicName");
-		static final Attributes.Name ACTIVATOR = new Attributes.Name("Bundle-Activator");
-		static final Attributes.Name REQUIRE_BUNDLE = new Attributes.Name("Require-Bundle");
-		static final Attributes.Name SERVICE_COMPONENT = new Attributes.Name("Service-Component");
-		static final Attributes.Name BUNDLE_LOCALIZATION = new Attributes.Name("Bundle-Localization");
-		static final String MANIFEST_PATH = "/META-INF/MANIFEST.MF";
 
 		final String jarUrl;
 		final @Nullable String activator;
@@ -361,7 +362,7 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 			bundleLocalization = manifest.getMainAttributes().getValue(BUNDLE_LOCALIZATION);
 		}
 
-		private static List<String> requiredBundles(Manifest manifest) {
+		private List<String> requiredBundles(Manifest manifest) {
 			String requireBundle = manifest.getMainAttributes().getValue(REQUIRE_BUNDLE);
 			if (requireBundle == null) {
 				return Collections.emptyList();

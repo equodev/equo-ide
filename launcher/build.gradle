@@ -2,9 +2,10 @@ ext.maven_name='Solstice'
 ext.maven_artifact = 'solstice'
 ext.maven_desc='Single-classloader implementation of the Eclipse plugin registry and OSGi (including Declarative Services)'
 
+apply from: 干.file('changelog.gradle')
 apply plugin: 'java-library'
-apply from: rootProject.file('gradle/spotless.gradle')
-
+sourceCompatibility = java_compat
+targetCompatibility = java_compat
 apply from: 干.file('maven.gradle')
 apply from: 干.file('sonatype.gradle')
 
@@ -14,17 +15,20 @@ dependencies {
 	implementation 'com.diffplug.durian:durian-swt.os:4.1.1'
 	implementation 'org.apache.felix:org.apache.felix.scr:2.2.4'
 
-	implementation 'com.google.code.findbugs:jsr305:3.0.2'
-	implementation 'com.google.code.findbugs:annotations:3.0.1'
+	compileOnly 'com.google.code.findbugs:jsr305:3.0.2'
+	compileOnly 'com.google.code.findbugs:annotations:3.0.1'
 	api "org.slf4j:slf4j-api:${VER_SLF4J}"
-	implementation "org.slf4j:slf4j-simple:${VER_SLF4J}"
+
+	testImplementation "org.slf4j:slf4j-simple:${VER_SLF4J}"
 }
 
 apply plugin: 'com.diffplug.eclipse.mavencentral'
 eclipseMavenCentral {
 	release '4.25.0', {
-		implementation 'org.eclipse.ui.ide.application'
-		implementation 'org.osgi.service.component'
+		compileOnly 'org.eclipse.ui.ide.application'
+		compileOnly 'org.osgi.service.component'
+		testImplementation 'org.eclipse.ui.ide.application'
+		testImplementation 'org.osgi.service.component'
 		useNativesForRunningPlatform()
 		constrainTransitivesToThisRelease()
 	}

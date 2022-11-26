@@ -2,6 +2,12 @@ ext.maven_name='EquoIDE for Gradle'
 ext.maven_artifact = 'equo-ide-gradle-plugin'
 ext.maven_desc=干.proj('gradlePlugin_equoIde_desc', 'Marketing description of EquoIDE')
 
+apply from: 干.file('changelog.gradle')
 apply from: 干.file('gradle-plugin.gradle')
+sourceCompatibility = java_compat
+targetCompatibility = java_compat
+dependencies {
+	implementation project(':launcher')
+}
 apply from: 干.file('maven.gradle')
 apply from: 干.file('sonatype.gradle')
