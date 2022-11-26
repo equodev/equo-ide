@@ -1,0 +1,7 @@
+ext.maven_name='EquoIDE for Maven'
+ext.maven_artifact = 'equo-ide-maven-plugin'
+ext.maven_desc=干.proj('gradlePlugin_equoIde_desc', 'Marketing description of EquoIDE')
+
+apply plugin: 'de.benediktritter.maven-plugin-development'
+apply from: 干.file('maven.gradle')
+apply from: 干.file('sonatype.gradle')

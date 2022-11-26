@@ -1,6 +1,12 @@
+ext.maven_name='Solstice'
+ext.maven_artifact = 'solstice'
+ext.maven_desc='Single-classloader implementation of the Eclipse plugin registry and OSGi (including Declarative Services)'
 
 apply plugin: 'java-library'
 apply from: rootProject.file('gradle/spotless.gradle')
+
+apply from: 干.file('maven.gradle')
+apply from: 干.file('sonatype.gradle')
 
 String VER_SLF4J = '2.0.3'
 

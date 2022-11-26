@@ -1,0 +1,43 @@
+// 干.mustRunAfter('base/maven'), except for root project where it can run anytime
+
+if (project.findProperty('enable_publishing') != 'true') {
+	return
+}
+
+def nexus_user     = 干.proj('nexus_user', 'username for nexus/mavencentral (or unset enable_publishing)')
+def nexus_pass     = 干.proj('nexus_pass', 'password for nexus/mavencentral (or unset enable_publishing)')
+def gpg_key64      = 干.proj('gpg_key64',      'gpg --export-secret-keys --armor <key-id>')
+def gpg_passphrase = 干.proj('gpg_passphrase', 'passphrase for unlocking gpg_key')
+
+def gpg_key = new String(gpg_key64.decodeBase64())
+if (plugins.hasPlugin('maven-publish')) {
+	apply plugin: 'signing'
+	signing {
+		useInMemoryPgpKeys(gpg_key, gpg_passphrase)
+		sign(publishing.publications)
+	}
+}
+
+if (project.parent == null) {
+	if (group == null || group.trim().isEmpty()) {
+		throw new Error('You must set maven group in the root project')
+	}
+	// it's the root project
+	apply plugin: 'io.github.gradle-nexus.publish-plugin'
+	nexusPublishing {
+		repositories {
+			sonatype {
+				nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
+				snapshotRepositoryUrl.set(uri("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
+				username = nexus_user
+				password = nexus_pass
+			}
+		}
+	}
+	def initTask = tasks.named('initializeSonatypeStagingRepository')
+	allprojects {
+		initTask.configure {
+			shouldRunAfter(tasks.withType(Sign))
+		}
+	}
+}

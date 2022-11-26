@@ -1,0 +1,24 @@
+
+// 干.mustRunAfter('base/javadoc-agg')
+// 干.mustRunAfter('base/maven')
+
+import com.diffplug.common.swt.os.OS
+
+// adds a javadocView task, which shows the javadoc
+tasks.register('javadocView') {
+	group JavaBasePlugin.DOCUMENTATION_GROUP;
+	description 'Views the Javadoc in a browser.'
+	dependsOn tasks.named('javadoc')
+	doLast {
+		project.exec {
+			String toOpen = new File(((Javadoc) tasks.getByName('javadoc')).destinationDir, 'index.html').absolutePath
+			commandLine(OS.native.winMacLinux(
+					[
+						'explorer',
+						"/select,$toOpen"
+					],
+					['open', toOpen],
+					['xdg-open', toOpen]))
+		}
+	}
+}

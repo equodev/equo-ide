@@ -1,1 +1,9 @@
+plugins {
+	id 'com.diffplug.blowdryer'
+}
 apply from: rootProject.file('gradle/spotless.gradle')
+spotless {
+	groovyGradle {
+		target '*.gradle', 'gradle/blowdryer-scripts/**/*.gradle'
+	}
+}
