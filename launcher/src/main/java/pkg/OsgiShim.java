@@ -478,11 +478,6 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 				state = Bundle.ACTIVE;
 				notifyBundleListeners(BundleEvent.STARTED, this);
 			}
-
-			if (ShimPluginXml.hasPluginXml(this)) {
-				logger.info("{} plugin.xml", this);
-				ShimPluginXml.register(this);
-			}
 			logger.info("\\FINISH ACTIVATE {}", this);
 		}
 
