@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.zip.ZipFile;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.wiring.BundleCapability;
@@ -18,7 +19,22 @@ import org.osgi.resource.Requirement;
 import org.osgi.resource.Wire;
 
 class ShimDS {
-	static List<String> starDotXML(String jarFile) throws IOException {
+	static final String SERVICE_COMPONENT = "Service-Component";
+	private static final String STAR_DOT_XML = "OSGI-INF/*.xml";
+
+	static String cleanHeader(String jarFile, String header) {
+		if (!STAR_DOT_XML.equals(header)) {
+			return header;
+		} else {
+			try {
+				return starDotXML(jarFile).stream().collect(Collectors.joining(","));
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+		}
+	}
+
+	private static List<String> starDotXML(String jarFile) throws IOException {
 		String prefix = "jar:file:";
 		if (!jarFile.startsWith(prefix)) {
 			throw new IllegalArgumentException("jar does not start with expected prefix: " + jarFile);

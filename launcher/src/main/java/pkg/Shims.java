@@ -24,6 +24,7 @@ import org.osgi.framework.ServiceObjects;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.framework.Version;
+import org.osgi.framework.startlevel.BundleStartLevel;
 import org.osgi.framework.wiring.BundleCapability;
 import org.osgi.framework.wiring.BundleRequirement;
 import org.osgi.framework.wiring.BundleRevision;
@@ -745,6 +746,33 @@ class Shims {
 
 		@Override
 		public URL getDataArea(String path) throws IOException {
+			throw new UnsupportedOperationException();
+		}
+	}
+
+	static class BundleStartLevelImpl implements BundleStartLevel {
+		@Override
+		public boolean isActivationPolicyUsed() {
+			return true;
+		}
+
+		@Override
+		public int getStartLevel() {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public void setStartLevel(int startlevel) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public boolean isPersistentlyStarted() {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public Bundle getBundle() {
 			throw new UnsupportedOperationException();
 		}
 	}

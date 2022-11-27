@@ -16,7 +16,6 @@ import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
-import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.eclipse.osgi.internal.framework.FilterImpl;
 import org.eclipse.osgi.service.datalocation.Location;
@@ -30,6 +29,7 @@ import org.osgi.framework.Constants;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.Version;
 import org.osgi.framework.namespace.IdentityNamespace;
+import org.osgi.framework.startlevel.BundleStartLevel;
 import org.osgi.framework.wiring.BundleCapability;
 import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.framework.wiring.BundleWiring;
@@ -302,11 +302,11 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 		return id == -1 ? systemBundle : bundles.get((int) id);
 	}
 
-	static final Attributes.Name SYMBOLIC_NAME = new Attributes.Name("Bundle-SymbolicName");
-	static final Attributes.Name ACTIVATOR = new Attributes.Name("Bundle-Activator");
-	static final Attributes.Name REQUIRE_BUNDLE = new Attributes.Name("Require-Bundle");
-	static final Attributes.Name SERVICE_COMPONENT = new Attributes.Name("Service-Component");
-	static final Attributes.Name BUNDLE_LOCALIZATION = new Attributes.Name("Bundle-Localization");
+	static final Attributes.Name SYMBOLIC_NAME = new Attributes.Name(Constants.BUNDLE_SYMBOLICNAME);
+	static final Attributes.Name ACTIVATOR = new Attributes.Name(Constants.BUNDLE_ACTIVATOR);
+	static final Attributes.Name REQUIRE_BUNDLE = new Attributes.Name(Constants.REQUIRE_BUNDLE);
+	static final List<String> IGNORED_HEADERS =
+			Arrays.asList(Constants.IMPORT_PACKAGE, Constants.EXPORT_PACKAGE);
 	static final String MANIFEST_PATH = "/META-INF/MANIFEST.MF";
 
 	public class ShimBundle extends Shims.BundleContextDelegate implements Shims.BundleUnsupported {
@@ -315,8 +315,7 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 		final @Nullable String activator;
 		final @Nullable String symbolicName;
 		final List<String> requiredBundles;
-		final List<String> osgiDS;
-		final String bundleLocalization;
+		final Hashtable<String, String> headers;
 
 		ShimBundle(URL manifestURL) throws IOException {
 			super(OsgiShim.this);
@@ -345,21 +344,19 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 						"Must end with !  SEE getEntry if this changes  " + jarUrl);
 			}
 			requiredBundles = requiredBundles(manifest);
-			var serviceComponents = manifest.getMainAttributes().getValue(SERVICE_COMPONENT);
-			if (serviceComponents == null) {
-				osgiDS = Collections.emptyList();
-			} else {
-				String[] entries = serviceComponents.split(",");
-				for (int i = 0; i < entries.length; ++i) {
-					entries[i] = entries[i].trim(); // some have a leading space
-				}
-				if (entries.length == 1 && entries[0].trim().equals("OSGI-INF/*.xml")) {
-					osgiDS = ShimDS.starDotXML(jarUrl);
-				} else {
-					osgiDS = Arrays.asList(entries);
-				}
-			}
-			bundleLocalization = manifest.getMainAttributes().getValue(BUNDLE_LOCALIZATION);
+			headers = new Hashtable<>();
+			manifest
+					.getMainAttributes()
+					.forEach(
+							(key, value) -> {
+								String keyStr = key.toString();
+								if (ShimDS.SERVICE_COMPONENT.equals(keyStr)) {
+									String valueStr = value.toString().trim();
+									headers.put(ShimDS.SERVICE_COMPONENT, ShimDS.cleanHeader(jarUrl, valueStr));
+								} else if (!IGNORED_HEADERS.contains(keyStr)) {
+									headers.put(keyStr, value.toString());
+								}
+							});
 		}
 
 		private List<String> requiredBundles(Manifest manifest) {
@@ -496,13 +493,6 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 
 		@Override
 		public Dictionary<String, String> getHeaders(String locale) {
-			var headers = new Hashtable<String, String>();
-			if (!osgiDS.isEmpty()) {
-				headers.put(SERVICE_COMPONENT.toString(), osgiDS.stream().collect(Collectors.joining(",")));
-			}
-			if (bundleLocalization != null) {
-				headers.put(BUNDLE_LOCALIZATION.toString(), bundleLocalization);
-			}
 			return headers;
 		}
 
@@ -538,6 +528,8 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 		public <A> A adapt(Class<A> type) {
 			if (BundleWiring.class.equals(type)) {
 				return (A) new ShimDS.BundleWiringImpl();
+			} else if (BundleStartLevel.class.equals(type)) {
+				return (A) new Shims.BundleStartLevelImpl();
 			} else {
 				return null;
 			}
