@@ -2,11 +2,15 @@ package pkg;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Writer;
 import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.PropertyResourceBundle;
+import java.util.ResourceBundle;
 import javax.xml.parsers.SAXParserFactory;
 import org.eclipse.equinox.log.ExtendedLogReaderService;
 import org.eclipse.equinox.log.ExtendedLogService;
@@ -18,8 +22,10 @@ import org.eclipse.osgi.service.datalocation.Location;
 import org.eclipse.osgi.service.debug.DebugOptions;
 import org.eclipse.osgi.service.debug.DebugTrace;
 import org.eclipse.osgi.service.environment.EnvironmentInfo;
+import org.eclipse.osgi.service.localization.BundleLocalization;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.Constants;
 import org.osgi.framework.FrameworkEvent;
 import org.osgi.service.log.LogLevel;
 import org.osgi.service.log.LogService;
@@ -36,6 +42,26 @@ public interface EquinotConfiguration {
 
 	default void bootstrapServices(Bundle systemBundle, BundleContext context)
 			throws MalformedURLException {
+		// in particular, we need services normally provided by
+		// org.eclipse.osgi.internal.framework.SystemBundleActivator::start
+		context.registerService(
+				BundleLocalization.class,
+				new BundleLocalization() {
+					@Override
+					public ResourceBundle getLocalization(Bundle bundle, String locale) {
+						String localization = bundle.getHeaders().get(Constants.BUNDLE_LOCALIZATION);
+						if (localization == null) {
+							throw new IllegalArgumentException("No localization for " + bundle);
+						}
+						URL url = bundle.getEntry(localization + ".properties");
+						try (InputStream input = url.openStream()) {
+							return new PropertyResourceBundle(input);
+						} catch (IOException e) {
+							throw new RuntimeException(e);
+						}
+					}
+				},
+				Dictionaries.empty());
 		File userDir = new File(System.getProperty("user.dir") + "/build");
 		context.registerService(EnvironmentInfo.class, new ShimEnvironmentInfo(), Dictionaries.empty());
 		context.registerService(
