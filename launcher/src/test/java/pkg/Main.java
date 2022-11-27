@@ -10,14 +10,14 @@ import org.eclipse.ui.internal.ide.application.DelayedEventsProcessor;
 import org.eclipse.ui.internal.ide.application.IDEWorkbenchAdvisor;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.service.application.ApplicationException;
+import org.slf4j.simple.SimpleLogger;
 
 class Main {
 	public static void main(String[] args) throws InvalidSyntaxException, ApplicationException {
-		System.setProperty(org.slf4j.simple.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "INFO");
-		System.setProperty("org.slf4j.simpleLogger.logFile", "System.out");
+		System.setProperty(SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "INFO");
+		System.setProperty(SimpleLogger.LOG_FILE_KEY, "System.out");
 
 		var osgiShim = OsgiShim.initialize(new EquinotConfiguration() {});
-
 		var appServices =
 				osgiShim.getServiceReferences(
 						org.osgi.service.application.ApplicationDescriptor.class,
