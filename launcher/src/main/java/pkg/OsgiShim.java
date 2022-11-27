@@ -432,20 +432,19 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 		///////////////////
 		// Bundle overrides
 		///////////////////
-		private int state = Bundle.RESOLVED;
+		private int state = Bundle.INSTALLED;
 
 		private void activate() throws Exception {
-			if (state != Bundle.RESOLVED) {
+			if (state != Bundle.INSTALLED) {
 				return;
 			}
 			logger.info("Request activate {}", this);
 			if ("org.eclipse.osgi".equals(symbolicName)) {
+				state = Bundle.ACTIVE;
 				// skip org.eclipse.osgi on purpose
 				logger.info("  skipping because of shim implementation");
 				return;
 			}
-			state = Bundle.STARTING;
-			notifyBundleListeners(BundleEvent.STARTING, this);
 
 			for (var required : requiredBundles) {
 				logger.info("{} requires {}", this, required);
@@ -467,6 +466,15 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 				}
 			}
 			logger.info("/START ACTIVATE {}", this);
+			state = Bundle.RESOLVED;
+			notifyBundleListeners(BundleEvent.RESOLVED, this);
+
+			if ("org.eclipse.e4.ui.services".equals(symbolicName)) {
+				System.out.println("DOOP");
+			}
+
+			state = Bundle.STARTING;
+			notifyBundleListeners(BundleEvent.STARTING, this);
 			if (activator != null) {
 				logger.info("{} Bundle-Activator {}", this, activator);
 				var c = (Constructor<BundleActivator>) Class.forName(activator).getConstructor();
@@ -475,9 +483,9 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 				}
 				var bundleActivator = c.newInstance();
 				bundleActivator.start(this);
-				state = Bundle.ACTIVE;
-				notifyBundleListeners(BundleEvent.STARTED, this);
 			}
+			state = Bundle.ACTIVE;
+			notifyBundleListeners(BundleEvent.STARTED, this);
 			logger.info("\\FINISH ACTIVATE {}", this);
 		}
 
