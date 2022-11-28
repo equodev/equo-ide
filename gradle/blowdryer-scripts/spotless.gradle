@@ -11,6 +11,7 @@ spotless {
 			removeUnusedImports()
 			googleJavaFormat()
 			indentWithTabs(2)
+			licenseHeaderFile 干.file("impl/header_${license}.java")
 		}
 	}
 }
