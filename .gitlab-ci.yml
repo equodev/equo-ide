@@ -1,0 +1,30 @@
+stages:
+  - assemble
+  - check
+  - deploy
+
+do-assemble:
+  stage: assemble
+  script:
+    - ./gradlew assemble
+
+check-plugin-gradle:
+  stage: check
+  script:
+    - ./gradlew :plugin-gradle:check
+
+check-plugin-maven:
+  stage: check
+  script:
+    - ./gradlew :plugin-maven:check
+
+check-solstice:
+  stage: check
+  script:
+    - ./gradlew :solstice:check
+
+deploy-plugin-gradle:
+  stage: deploy
+  when: manual
+  script:
+    - ./gradlew :plugin-gradle:changelogPush -Pgradle.publish.key=${gradle_key} -Pgradle.publish.secret=${gradle_secret} --stacktrace
