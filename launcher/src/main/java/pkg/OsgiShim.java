@@ -142,6 +142,14 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 	}
 
 	static class ShimLocation extends Shims.LocationUnsupported {
+		static void set(BundleContext context, File dir, String type) throws MalformedURLException {
+			context.registerService(
+					Location.class,
+					new OsgiShim.ShimLocation(dir.toURI().toURL()),
+					Dictionaries.of(
+							Location.SERVICE_PROPERTY_TYPE, type, "url", dir.toURI().toURL().toExternalForm()));
+		}
+
 		final URL url;
 
 		ShimLocation(URL url) {
@@ -166,6 +174,11 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 		@Override
 		public boolean isSet() {
 			return true;
+		}
+
+		@Override
+		public URL getDataArea(String path) throws IOException {
+			return new URL(url.toExternalForm() + path);
 		}
 	}
 
