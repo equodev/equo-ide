@@ -7,7 +7,7 @@ apply from: 干.file('gradle-plugin.gradle')
 sourceCompatibility = java_compat
 targetCompatibility = java_compat
 dependencies {
-	implementation project(':launcher')
+	implementation project(':solstice')
 }
 apply from: 干.file('maven.gradle')
 apply from: 干.file('sonatype.gradle')

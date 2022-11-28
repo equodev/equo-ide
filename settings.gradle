@@ -31,6 +31,6 @@ blowdryerSetup {
 	devLocal 'gradle/blowdryer-scripts'
 }
 rootProject.name = 'equo-ide'
-include 'launcher'
+include 'solstice'
 include 'plugin-gradle'
 include 'plugin-maven'
