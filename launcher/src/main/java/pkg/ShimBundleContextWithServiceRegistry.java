@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
-import org.eclipse.e4.core.contexts.IContextFunction;
 import org.eclipse.osgi.internal.framework.FilterImpl;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
@@ -283,9 +282,6 @@ public abstract class ShimBundleContextWithServiceRegistry extends Shims.BundleC
 				return objectClass;
 			} else if (key.equals(Constants.SERVICE_ID)) {
 				return id;
-			} else if (key.equals(IContextFunction.SERVICE_CONTEXT_KEY)) {
-				Object value = properties.get(key);
-				return value != null ? value : properties.get("component.name");
 			} else {
 				return properties.get(key);
 			}
