@@ -508,10 +508,6 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 			state = Bundle.RESOLVED;
 			notifyBundleListeners(BundleEvent.RESOLVED, this);
 
-			if ("org.eclipse.e4.ui.services".equals(symbolicName)) {
-				System.out.println("DOOP");
-			}
-
 			state = Bundle.STARTING;
 			notifyBundleListeners(BundleEvent.STARTING, this);
 			if (activator != null) {
