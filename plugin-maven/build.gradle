@@ -2,12 +2,20 @@ ext.maven_name='EquoIDE for Maven'
 ext.maven_artifact = 'equo-ide-maven-plugin'
 ext.maven_desc=干.proj('gradlePlugin_equoIde_desc', 'Marketing description of EquoIDE')
 
+String VER_MAVEN_API='3.0'
+
 apply from: 干.file('changelog.gradle')
-apply plugin: 'de.benediktritter.maven-plugin-development'
+
+apply plugin: 'java'
 sourceCompatibility = java_compat
 targetCompatibility = java_compat
 dependencies {
+	compileOnly "org.apache.maven:maven-plugin-api:$VER_MAVEN_API"
+	compileOnly "org.apache.maven.plugin-tools:maven-plugin-annotations:$VER_MAVEN_API"
 	implementation project(':solstice')
+	testImplementation "org.junit.jupiter:junit-jupiter:$VER_JUNIT"
+	testImplementation "org.assertj:assertj-core:$VER_ASSERTJ"
 }
 apply from: 干.file('maven.gradle')
 apply from: 干.file('sonatype.gradle')
+apply plugin: 'de.benediktritter.maven-plugin-development'
