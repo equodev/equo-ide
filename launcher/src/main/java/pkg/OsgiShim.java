@@ -27,6 +27,7 @@ import org.osgi.framework.BundleEvent;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.BundleListener;
 import org.osgi.framework.Constants;
+import org.osgi.framework.FrameworkListener;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.Version;
 import org.osgi.framework.namespace.IdentityNamespace;
@@ -301,6 +302,11 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 	@Override
 	public synchronized void removeBundleListener(BundleListener listener) {
 		bundleListeners.remove(listener);
+	}
+
+	@Override
+	public void addFrameworkListener(FrameworkListener listener) {
+		// TODO: not sure if we can survive without FrameworkEvents
 	}
 
 	private synchronized void notifyBundleListeners(int type, ShimBundle bundle) {
