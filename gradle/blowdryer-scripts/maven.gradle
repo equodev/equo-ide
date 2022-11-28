@@ -41,7 +41,6 @@ javadoc {
 	options.setEncoding('UTF-8');
 	// setup the header
 	options.header javadocInfo
-	options.footer javadocInfo
 	// setup links
 	options.links(javadocLinks)
 }
@@ -78,10 +77,3 @@ publishing.publications.register(isPlugin ? 'pluginMaven' : 'mavenJava', MavenPu
 		}
 	}
 })
-
-if (isPlugin) {
-	tasks.named('generateMetadataFileForPluginMavenPublication') {
-		dependsOn('publishPluginJar')
-		dependsOn('publishPluginJavaDocsJar')
-	}
-}
