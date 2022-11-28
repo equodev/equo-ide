@@ -45,14 +45,10 @@ public abstract class ShimBundleContextWithServiceRegistry extends Shims.BundleC
 	}
 
 	@Override
-	public final synchronized <S> ServiceRegistration<S> registerService(
+	public final <S> ServiceRegistration<S> registerService(
 			Class<S> clazz, ServiceFactory<S> factory, Dictionary<String, ?> properties) {
-		logger.info("{} implemented by factory {} with {}", clazz, factory, properties);
-		var newService =
-				new ShimServiceFactoryReference<>(factory, new String[] {clazz.getName()}, properties);
-		servicesForInterface(clazz.getName()).add(newService);
-		notifyListeners(ServiceEvent.REGISTERED, newService);
-		return newService;
+		return (ServiceRegistration<S>)
+				registerService(new String[] {clazz.getName()}, factory, properties);
 	}
 
 	@Override
