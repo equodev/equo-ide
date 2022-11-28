@@ -1,5 +1,6 @@
 package pkg;
 
+import com.diffplug.common.swt.os.SwtPlatform;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
@@ -18,6 +19,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 import javax.annotation.Nullable;
+import org.eclipse.core.internal.runtime.InternalPlatform;
 import org.eclipse.osgi.internal.framework.FilterImpl;
 import org.eclipse.osgi.service.datalocation.Location;
 import org.osgi.framework.Bundle;
@@ -283,8 +285,13 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 
 	@Override
 	public String getProperty(String key) {
-		// TODO: users might want to set various properties
-		return null;
+		if (InternalPlatform.PROP_OS.equals(key)) {
+			return SwtPlatform.getRunning().getOs();
+		} else if (InternalPlatform.PROP_WS.equals(key)) {
+			return SwtPlatform.getRunning().getWs();
+		} else {
+			return null;
+		}
 	}
 
 	@Override
