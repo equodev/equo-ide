@@ -1,4 +1,4 @@
-package pkg;
+package dev.equo.solstice;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,7 +12,7 @@ import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.service.application.ApplicationException;
 import org.slf4j.simple.SimpleLogger;
 
-class Main {
+class IdeMain {
 	public static void main(String[] args) throws InvalidSyntaxException, ApplicationException {
 		System.setProperty(SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "INFO");
 		System.setProperty(SimpleLogger.LOG_FILE_KEY, "System.out");

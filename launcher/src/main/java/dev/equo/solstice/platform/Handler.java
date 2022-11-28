@@ -1,13 +1,13 @@
-package pkg.platform;
+package dev.equo.solstice.platform;
 
+import dev.equo.solstice.OsgiShim;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
-import pkg.OsgiShim;
 
 public class Handler extends URLStreamHandler {
-	private static final String PKG = "pkg";
+	private static final String PKG = "dev.equo.solstice";
 	private static final String CONTENT_PATH_PROP = "java.protocol.handler.pkgs";
 
 	public static void install(OsgiShim solstice) {

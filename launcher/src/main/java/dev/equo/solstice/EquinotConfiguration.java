@@ -1,4 +1,4 @@
-package pkg;
+package dev.equo.solstice;
 
 import java.io.File;
 import java.io.IOException;

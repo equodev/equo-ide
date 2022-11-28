@@ -1,4 +1,4 @@
-package pkg;
+package dev.equo.solstice;
 
 import java.util.ArrayList;
 import java.util.Arrays;

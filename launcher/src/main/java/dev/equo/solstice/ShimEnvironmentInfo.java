@@ -1,4 +1,4 @@
-package pkg;
+package dev.equo.solstice;
 
 import com.diffplug.common.swt.os.SwtPlatform;
 import java.util.HashMap;

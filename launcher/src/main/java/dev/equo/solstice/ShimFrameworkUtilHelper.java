@@ -1,4 +1,4 @@
-package pkg;
+package dev.equo.solstice;
 
 import java.util.Optional;
 import org.osgi.framework.Bundle;

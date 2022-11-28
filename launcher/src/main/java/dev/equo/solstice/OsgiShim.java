@@ -1,6 +1,7 @@
-package pkg;
+package dev.equo.solstice;
 
 import com.diffplug.common.swt.os.SwtPlatform;
+import dev.equo.solstice.platform.Handler;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
@@ -43,7 +44,6 @@ import org.osgi.resource.Requirement;
 import org.osgi.service.packageadmin.PackageAdmin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pkg.platform.Handler;
 
 public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 	private static OsgiShim instance;
@@ -147,7 +147,7 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 					Location.class,
 					new OsgiShim.ShimLocation(dir.toURI().toURL()),
 					Dictionaries.of(
-							Location.SERVICE_PROPERTY_TYPE, type, "url", dir.toURI().toURL().toExternalForm()));
+							SERVICE_PROPERTY_TYPE, type, "url", dir.toURI().toURL().toExternalForm()));
 		}
 
 		final URL url;
@@ -192,7 +192,7 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 				@Override
 				public int getState() {
 					// this signals InternalPlatform.isRunning() to be true
-					return Bundle.ACTIVE;
+					return ACTIVE;
 				}
 
 				@Override
@@ -480,7 +480,7 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 		///////////////////
 		// Bundle overrides
 		///////////////////
-		private int state = Bundle.INSTALLED;
+		private int state = INSTALLED;
 
 		private boolean activating = false;
 
@@ -492,7 +492,7 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 
 			logger.info("Request activate {}", this);
 			if ("org.eclipse.osgi".equals(symbolicName)) {
-				state = Bundle.ACTIVE;
+				state = ACTIVE;
 				// skip org.eclipse.osgi on purpose
 				logger.info("  skipping because of shim implementation");
 				return;
@@ -518,10 +518,10 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 				}
 			}
 			logger.info("/START ACTIVATE {}", this);
-			state = Bundle.RESOLVED;
+			state = RESOLVED;
 			notifyBundleListeners(BundleEvent.RESOLVED, this);
 
-			state = Bundle.STARTING;
+			state = STARTING;
 			notifyBundleListeners(BundleEvent.STARTING, this);
 			if (activator != null) {
 				logger.info("{} Bundle-Activator {}", this, activator);
@@ -532,7 +532,7 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 				var bundleActivator = c.newInstance();
 				bundleActivator.start(this);
 			}
-			state = Bundle.ACTIVE;
+			state = ACTIVE;
 			notifyBundleListeners(BundleEvent.STARTED, this);
 			logger.info("\\FINISH ACTIVATE {}", this);
 		}

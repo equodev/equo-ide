@@ -1,4 +1,4 @@
-package pkg;
+package dev.equo.solstice;
 
 import java.io.IOException;
 import java.net.URL;
