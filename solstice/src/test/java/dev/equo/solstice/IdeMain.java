@@ -17,7 +17,7 @@ class IdeMain {
 		System.setProperty(SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "INFO");
 		System.setProperty(SimpleLogger.LOG_FILE_KEY, "System.out");
 
-		var osgiShim = OsgiShim.initialize(new EquinotConfiguration() {});
+		var osgiShim = Solstice.initialize(new SolsticeConfiguration() {});
 		var appServices =
 				osgiShim.getServiceReferences(
 						org.osgi.service.application.ApplicationDescriptor.class,

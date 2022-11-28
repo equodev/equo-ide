@@ -22,8 +22,8 @@ import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class ShimBundleContextWithServiceRegistry extends Shims.BundleContextUnsupported {
-	private final Logger logger = LoggerFactory.getLogger(ShimBundleContextWithServiceRegistry.class);
+abstract class ServiceRegistry extends Shims.BundleContextUnsupported {
+	private final Logger logger = LoggerFactory.getLogger(ServiceRegistry.class);
 	Map<String, List<AbstractServiceReference>> services = new HashMap<>();
 
 	private List<AbstractServiceReference> servicesForInterface(String interfase) {
@@ -316,7 +316,7 @@ public abstract class ShimBundleContextWithServiceRegistry extends Shims.BundleC
 		@Override
 		public void unregister() {
 			notifyListeners(ServiceEvent.UNREGISTERING, this);
-			synchronized (ShimBundleContextWithServiceRegistry.this) {
+			synchronized (ServiceRegistry.this) {
 				for (String clazz : objectClass) {
 					servicesForInterface(clazz).remove(this);
 				}

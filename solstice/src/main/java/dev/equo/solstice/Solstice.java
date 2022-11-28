@@ -45,26 +45,26 @@ import org.osgi.service.packageadmin.PackageAdmin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class OsgiShim extends ShimBundleContextWithServiceRegistry {
-	private static OsgiShim instance;
+public class Solstice extends ServiceRegistry {
+	private static Solstice instance;
 
-	public static OsgiShim initialize(EquinotConfiguration config) {
+	public static Solstice initialize(SolsticeConfiguration config) {
 		if (instance != null) {
 			throw new IllegalStateException("Equinot has already been initialized");
 		}
-		instance = new OsgiShim(config);
+		instance = new Solstice(config);
 		return instance;
 	}
 
-	private final Logger logger = LoggerFactory.getLogger(OsgiShim.class);
-	private final EquinotConfiguration cfg;
+	private final Logger logger = LoggerFactory.getLogger(Solstice.class);
+	private final SolsticeConfiguration cfg;
 
-	private OsgiShim(EquinotConfiguration cfg) {
+	private Solstice(SolsticeConfiguration cfg) {
 		Handler.install(this);
 
 		this.cfg = cfg;
 		try {
-			ShimFrameworkUtilHelper.initialize(this);
+			SolsticeFrameworkUtilHelper.initialize(this);
 			cfg.bootstrapServices(systemBundle, this);
 			logger.info("Bootstrap services installed");
 
@@ -145,7 +145,7 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 		static void set(BundleContext context, File dir, String type) throws MalformedURLException {
 			context.registerService(
 					Location.class,
-					new OsgiShim.ShimLocation(dir.toURI().toURL()),
+					new Solstice.ShimLocation(dir.toURI().toURL()),
 					Dictionaries.of(
 							SERVICE_PROPERTY_TYPE, type, "url", dir.toURI().toURL().toExternalForm()));
 		}
@@ -212,7 +212,7 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 
 				@Override
 				public BundleContext getBundleContext() {
-					return OsgiShim.this;
+					return Solstice.this;
 				}
 
 				@Override
@@ -360,7 +360,7 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 		final Hashtable<String, String> headers;
 
 		ShimBundle(URL manifestURL) throws IOException {
-			super(OsgiShim.this);
+			super(Solstice.this);
 			var externalForm = manifestURL.toExternalForm();
 			if (!externalForm.endsWith(MANIFEST_PATH)) {
 				throw new RuntimeException(

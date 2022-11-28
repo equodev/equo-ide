@@ -32,7 +32,7 @@ import org.osgi.service.log.LogLevel;
 import org.osgi.service.log.LogService;
 import org.osgi.service.log.LoggerFactory;
 
-public interface EquinotConfiguration {
+public interface SolsticeConfiguration {
 	default LogLevel logLevel() {
 		return LogLevel.INFO;
 	}
@@ -81,9 +81,9 @@ public interface EquinotConfiguration {
 		context.registerService(EnvironmentInfo.class, new ShimEnvironmentInfo(), Dictionaries.empty());
 
 		File userDir = new File(System.getProperty("user.dir") + "/build");
-		OsgiShim.ShimLocation.set(context, new File(userDir, "instance"), Location.INSTANCE_AREA_TYPE);
-		OsgiShim.ShimLocation.set(context, new File(userDir, "install"), Location.INSTALL_AREA_TYPE);
-		OsgiShim.ShimLocation.set(
+		Solstice.ShimLocation.set(context, new File(userDir, "instance"), Location.INSTANCE_AREA_TYPE);
+		Solstice.ShimLocation.set(context, new File(userDir, "install"), Location.INSTALL_AREA_TYPE);
+		Solstice.ShimLocation.set(
 				context, new File(userDir, "config"), Location.CONFIGURATION_AREA_TYPE);
 		context.registerService(
 				SAXParserFactory.class, SAXParserFactory.newInstance(), Dictionaries.empty());

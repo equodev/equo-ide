@@ -1,6 +1,6 @@
 package dev.equo.solstice.platform;
 
-import dev.equo.solstice.OsgiShim;
+import dev.equo.solstice.Solstice;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -10,7 +10,7 @@ public class Handler extends URLStreamHandler {
 	private static final String PKG = "dev.equo.solstice";
 	private static final String CONTENT_PATH_PROP = "java.protocol.handler.pkgs";
 
-	public static void install(OsgiShim solstice) {
+	public static void install(Solstice solstice) {
 		Handler.solstice = solstice;
 		String handlerPkgs = System.getProperty(CONTENT_PATH_PROP, "");
 		if (!handlerPkgs.contains(PKG)) {
@@ -23,7 +23,7 @@ public class Handler extends URLStreamHandler {
 		}
 	}
 
-	private static OsgiShim solstice;
+	private static Solstice solstice;
 
 	private static final String SLASH_PLUGIN = "/plugin/";
 
