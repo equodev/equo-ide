@@ -360,6 +360,12 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 						"Must end with !  SEE getEntry if this changes  " + jarUrl);
 			}
 			requiredBundles = requiredBundles(manifest);
+			if (symbolicName != null) {
+				var additional = cfg.additionalDeps().get(symbolicName);
+				if (additional != null) {
+					requiredBundles.addAll(additional);
+				}
+			}
 			headers = new Hashtable<>();
 			manifest
 					.getMainAttributes()
@@ -450,10 +456,14 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 		///////////////////
 		private int state = Bundle.INSTALLED;
 
+		private boolean activating = false;
+
 		private void activate() throws Exception {
-			if (state != Bundle.INSTALLED) {
+			if (activating) {
 				return;
 			}
+			activating = true;
+
 			logger.info("Request activate {}", this);
 			if ("org.eclipse.osgi".equals(symbolicName)) {
 				state = Bundle.ACTIVE;

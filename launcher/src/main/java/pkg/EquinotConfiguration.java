@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
+import java.util.TreeMap;
 import javax.xml.parsers.SAXParserFactory;
 import org.eclipse.equinox.log.ExtendedLogReaderService;
 import org.eclipse.equinox.log.ExtendedLogService;
@@ -38,7 +39,21 @@ public interface EquinotConfiguration {
 
 	default List<String> startOrder() {
 		return Arrays.asList(
-				"org.eclipse.equinox.registry", "org.apache.felix.scr", "org.eclipse.core.runtime");
+				"org.eclipse.equinox.registry",
+				"org.apache.felix.scr",
+				"org.eclipse.equinox.cm",
+				"org.eclipse.core.runtime");
+	}
+
+	default Map<String, List<String>> additionalDeps() {
+		var additional = new TreeMap<String, List<String>>();
+		additional.put(
+				"org.eclipse.e4.ui.services",
+				Arrays.asList(
+						"org.eclipse.equinox.event",
+						"org.eclipse.e4.ui.di",
+						"org.eclipse.e4.ui.workbench.swt"));
+		return additional;
 	}
 
 	default void bootstrapServices(Bundle systemBundle, BundleContext context)
