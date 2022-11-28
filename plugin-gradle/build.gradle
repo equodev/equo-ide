@@ -8,6 +8,12 @@ sourceCompatibility = java_compat
 targetCompatibility = java_compat
 dependencies {
 	implementation project(':solstice')
+	testImplementation "org.junit.jupiter:junit-jupiter:$VER_JUNIT"
+	testImplementation "org.assertj:assertj-core:$VER_ASSERTJ"
 }
 apply from: 干.file('maven.gradle')
 apply from: 干.file('sonatype.gradle')
+
+test {
+	useJUnitPlatform()
+}
