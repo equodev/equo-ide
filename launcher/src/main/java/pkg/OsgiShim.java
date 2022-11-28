@@ -1,5 +1,6 @@
 package pkg;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.net.MalformedURLException;
@@ -194,6 +195,11 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 				}
 
 				@Override
+				public BundleContext getBundleContext() {
+					return OsgiShim.this;
+				}
+
+				@Override
 				public <A> A adapt(Class<A> type) {
 					if (type.equals(PackageAdmin.class)) {
 						return (A) packageAdmin;
@@ -202,6 +208,11 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 					} else {
 						throw new UnsupportedOperationException(type.getName());
 					}
+				}
+
+				@Override
+				public String toString() {
+					return "SystemBundle";
 				}
 			};
 
@@ -272,6 +283,11 @@ public class OsgiShim extends ShimBundleContextWithServiceRegistry {
 	@Override
 	public String getProperty(String key) {
 		// TODO: users might want to set various properties
+		return null;
+	}
+
+	@Override
+	public File getDataFile(String filename) {
 		return null;
 	}
 

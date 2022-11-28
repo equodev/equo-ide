@@ -27,8 +27,13 @@ eclipseMavenCentral {
 	release '4.25.0', {
 		compileOnly 'org.eclipse.ui.ide.application'
 		compileOnly 'org.osgi.service.component'
+		compileOnly 'org.osgi.service.cm'
+		compileOnly 'org.eclipse.equinox.cm'
+
 		testImplementation 'org.eclipse.ui.ide.application'
 		testImplementation 'org.osgi.service.component'
+		testImplementation 'org.osgi.service.cm'
+		testImplementation 'org.eclipse.equinox.cm'
 		useNativesForRunningPlatform()
 		constrainTransitivesToThisRelease()
 	}
