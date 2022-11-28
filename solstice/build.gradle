@@ -20,6 +20,8 @@ dependencies {
 	api "org.slf4j:slf4j-api:${VER_SLF4J}"
 
 	testImplementation "org.slf4j:slf4j-simple:${VER_SLF4J}"
+	testImplementation "org.junit.jupiter:junit-jupiter:$VER_JUNIT"
+	testImplementation "org.assertj:assertj-core:$VER_ASSERTJ"
 }
 
 apply plugin: 'com.diffplug.eclipse.mavencentral'
@@ -39,4 +41,8 @@ eclipseMavenCentral {
 		useNativesForRunningPlatform()
 		constrainTransitivesToThisRelease()
 	}
+}
+
+test {
+	useJUnitPlatform()
 }
