@@ -27,11 +27,8 @@ dependencies {
 apply plugin: 'com.diffplug.eclipse.mavencentral'
 eclipseMavenCentral {
 	release '4.25.0', {
-		compileOnly 'org.eclipse.ui.ide.application'
-		compileOnly 'org.osgi.service.component'
-		compileOnly 'org.osgi.service.cm'
-		compileOnly 'org.eclipse.equinox.cm'
-		compileOnly 'org.eclipse.equinox.event'
+		compileOnly 'org.eclipse.osgi'
+		compileOnly 'org.eclipse.core.runtime'
 
 		testImplementation 'org.eclipse.ui.ide.application'
 		testImplementation 'org.osgi.service.component'
