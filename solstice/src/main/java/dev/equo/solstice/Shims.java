@@ -27,7 +27,6 @@ import org.eclipse.osgi.service.datalocation.Location;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
-import org.osgi.framework.Filter;
 import org.osgi.framework.FrameworkListener;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.Version;
@@ -277,28 +276,6 @@ class Shims {
 
 		@Override
 		public Bundle getBundle() {
-			throw new UnsupportedOperationException();
-		}
-	}
-
-	static class FilterUnsupported implements Filter {
-		@Override
-		public boolean match(ServiceReference<?> reference) {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		public boolean match(Dictionary<String, ?> dictionary) {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		public boolean matchCase(Dictionary<String, ?> dictionary) {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		public boolean matches(Map<String, ?> map) {
 			throw new UnsupportedOperationException();
 		}
 	}
