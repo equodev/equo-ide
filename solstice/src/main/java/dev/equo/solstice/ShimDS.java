@@ -14,22 +14,11 @@
 package dev.equo.solstice;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.zip.ZipFile;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.wiring.BundleCapability;
-import org.osgi.framework.wiring.BundleRequirement;
-import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.framework.wiring.BundleWire;
-import org.osgi.framework.wiring.BundleWiring;
-import org.osgi.resource.Capability;
-import org.osgi.resource.Requirement;
-import org.osgi.resource.Wire;
 
 class ShimDS {
 	static final String SERVICE_COMPONENT = "Service-Component";
@@ -39,15 +28,11 @@ class ShimDS {
 		if (!STAR_DOT_XML.equals(header)) {
 			return header;
 		} else {
-			try {
-				return starDotXML(jarFile).stream().collect(Collectors.joining(","));
-			} catch (IOException e) {
-				throw new RuntimeException(e);
-			}
+			return String.join(",", starDotXML(jarFile));
 		}
 	}
 
-	private static List<String> starDotXML(String jarFile) throws IOException {
+	private static List<String> starDotXML(String jarFile) {
 		String prefix = "jar:file:";
 		if (!jarFile.startsWith(prefix)) {
 			throw new IllegalArgumentException("jar does not start with expected prefix: " + jarFile);
@@ -64,11 +49,13 @@ class ShimDS {
 					dotXml.add(entry);
 				}
 			}
+		} catch (IOException e) {
+			throw Unchecked.rethrow(e);
 		}
 		return dotXml;
 	}
 
-	static class BundleWiringImpl implements BundleWiring {
+	static class BundleWiring extends Unimplemented.BundleWiring {
 		@Override
 		public List<BundleWire> getRequiredWires(String namespace) {
 			return Collections.emptyList();
@@ -82,71 +69,6 @@ class ShimDS {
 		@Override
 		public List<BundleWire> getProvidedWires(String namespace) {
 			return Collections.emptyList();
-		}
-
-		@Override
-		public boolean isCurrent() {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		public List<BundleCapability> getCapabilities(String namespace) {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		public List<BundleRequirement> getRequirements(String namespace) {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		public BundleRevision getRevision() {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		public ClassLoader getClassLoader() {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		public List<URL> findEntries(String path, String filePattern, int options) {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		public Collection<String> listResources(String path, String filePattern, int options) {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		public List<Capability> getResourceCapabilities(String namespace) {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		public List<Requirement> getResourceRequirements(String namespace) {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		public List<Wire> getProvidedResourceWires(String namespace) {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		public List<Wire> getRequiredResourceWires(String namespace) {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		public BundleRevision getResource() {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		public Bundle getBundle() {
-			throw new UnsupportedOperationException();
 		}
 	}
 }

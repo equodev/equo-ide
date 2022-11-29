@@ -17,13 +17,11 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.PropertyResourceBundle;
-import java.util.ResourceBundle;
 import java.util.TreeMap;
 import javax.xml.parsers.SAXParserFactory;
 import org.eclipse.equinox.log.ExtendedLogReaderService;
@@ -46,10 +44,6 @@ import org.osgi.service.log.LogService;
 import org.osgi.service.log.LoggerFactory;
 
 public interface SolsticeConfiguration {
-	default LogLevel logLevel() {
-		return LogLevel.INFO;
-	}
-
 	default List<String> startOrder() {
 		return Arrays.asList(
 				"org.eclipse.equinox.registry",
@@ -69,35 +63,30 @@ public interface SolsticeConfiguration {
 		return additional;
 	}
 
-	default void bootstrapServices(Bundle systemBundle, BundleContext context)
-			throws MalformedURLException {
+	default void bootstrapServices(Bundle systemBundle, BundleContext context) {
 		// in particular, we need services normally provided by
 		// org.eclipse.osgi.internal.framework.SystemBundleActivator::start
 		context.registerService(
 				BundleLocalization.class,
-				new BundleLocalization() {
-					@Override
-					public ResourceBundle getLocalization(Bundle bundle, String locale) {
-						String localization = bundle.getHeaders().get(Constants.BUNDLE_LOCALIZATION);
-						if (localization == null) {
-							throw new IllegalArgumentException("No localization for " + bundle);
-						}
-						URL url = bundle.getEntry(localization + ".properties");
-						try (InputStream input = url.openStream()) {
-							return new PropertyResourceBundle(input);
-						} catch (IOException e) {
-							throw new RuntimeException(e);
-						}
+				(bundle, locale) -> {
+					String localization = bundle.getHeaders().get(Constants.BUNDLE_LOCALIZATION);
+					if (localization == null) {
+						throw new IllegalArgumentException("No localization for " + bundle);
+					}
+					URL url = bundle.getEntry(localization + ".properties");
+					try (InputStream input = url.openStream()) {
+						return new PropertyResourceBundle(input);
+					} catch (IOException e) {
+						throw Unchecked.rethrow(e);
 					}
 				},
 				Dictionaries.empty());
 		context.registerService(EnvironmentInfo.class, new ShimEnvironmentInfo(), Dictionaries.empty());
 
 		File userDir = new File(System.getProperty("user.dir") + "/build");
-		Solstice.ShimLocation.set(context, new File(userDir, "instance"), Location.INSTANCE_AREA_TYPE);
-		Solstice.ShimLocation.set(context, new File(userDir, "install"), Location.INSTALL_AREA_TYPE);
-		Solstice.ShimLocation.set(
-				context, new File(userDir, "config"), Location.CONFIGURATION_AREA_TYPE);
+		ShimLocation.set(context, new File(userDir, "instance"), Location.INSTANCE_AREA_TYPE);
+		ShimLocation.set(context, new File(userDir, "install"), Location.INSTALL_AREA_TYPE);
+		ShimLocation.set(context, new File(userDir, "config"), Location.CONFIGURATION_AREA_TYPE);
 		context.registerService(
 				SAXParserFactory.class, SAXParserFactory.newInstance(), Dictionaries.empty());
 
@@ -134,7 +123,7 @@ public interface SolsticeConfiguration {
 					public void setWriter(Writer newWriter, boolean append) {}
 
 					@Override
-					public void setFile(File newFile, boolean append) throws IOException {}
+					public void setFile(File newFile, boolean append) {}
 
 					@Override
 					public File getFile() {
@@ -191,37 +180,37 @@ public interface SolsticeConfiguration {
 
 					@Override
 					public String getOption(String option, String defaultValue) {
-						throw new UnsupportedOperationException();
+						throw Unimplemented.onPurpose();
 					}
 
 					@Override
 					public int getIntegerOption(String option, int defaultValue) {
-						throw new UnsupportedOperationException();
+						throw Unimplemented.onPurpose();
 					}
 
 					@Override
 					public Map<String, String> getOptions() {
-						throw new UnsupportedOperationException();
+						throw Unimplemented.onPurpose();
 					}
 
 					@Override
 					public void setOption(String option, String value) {
-						throw new UnsupportedOperationException();
+						throw Unimplemented.onPurpose();
 					}
 
 					@Override
 					public void setOptions(Map<String, String> options) {
-						throw new UnsupportedOperationException();
+						throw Unimplemented.onPurpose();
 					}
 
 					@Override
 					public void removeOption(String option) {
-						throw new UnsupportedOperationException();
+						throw Unimplemented.onPurpose();
 					}
 
 					@Override
 					public void setDebugEnabled(boolean value) {
-						throw new UnsupportedOperationException();
+						throw Unimplemented.onPurpose();
 					}
 				},
 				Dictionaries.empty());

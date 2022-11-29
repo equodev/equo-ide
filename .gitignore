@@ -1,13 +1,16 @@
-# gradle ignores
+# mac
+.DS_Store
+
+# gradle
 .gradle/
 build/
 
-# eclipse ignores
+# eclipse
 .metadata
 bin/
 tmp/
 .settings/
 .project
 
-# idea ignores
+# idea
 .idea/

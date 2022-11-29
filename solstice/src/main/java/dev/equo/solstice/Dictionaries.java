@@ -55,12 +55,12 @@ class Dictionaries {
 
 		@Override
 		public V put(K key, V value) {
-			throw new UnsupportedOperationException();
+			throw Unimplemented.onPurpose();
 		}
 
 		@Override
 		public V remove(Object key) {
-			throw new UnsupportedOperationException();
+			throw Unimplemented.onPurpose();
 		}
 
 		@Override

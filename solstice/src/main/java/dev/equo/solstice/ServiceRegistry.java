@@ -16,6 +16,7 @@ package dev.equo.solstice;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -24,29 +25,22 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 import org.eclipse.osgi.internal.framework.FilterImpl;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.Filter;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceFactory;
 import org.osgi.framework.ServiceListener;
+import org.osgi.framework.ServiceObjects;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-abstract class ServiceRegistry extends Shims.BundleContextUnsupported {
+abstract class ServiceRegistry implements BundleContext {
 	private final Logger logger = LoggerFactory.getLogger(ServiceRegistry.class);
-	Map<String, List<AbstractServiceReference>> services = new HashMap<>();
-
-	private List<AbstractServiceReference> servicesForInterface(String interfase) {
-		List<AbstractServiceReference> list = services.get(interfase);
-		if (list == null) {
-			list = new ArrayList<>();
-			services.put(interfase, list);
-		}
-		return list;
-	}
+	final Map<String, List<AbstractServiceReference<?>>> services = new HashMap<>();
 
 	protected abstract Bundle systemBundle();
 
@@ -76,7 +70,7 @@ abstract class ServiceRegistry extends Shims.BundleContextUnsupported {
 			newService = new ShimServiceReference<>(service, clazzes, properties);
 		}
 		for (String clazz : clazzes) {
-			servicesForInterface(clazz).add(newService);
+			services.computeIfAbsent(clazz, k -> new ArrayList<>()).add(newService);
 		}
 		notifyListeners(ServiceEvent.REGISTERED, newService);
 		return newService;
@@ -86,22 +80,14 @@ abstract class ServiceRegistry extends Shims.BundleContextUnsupported {
 
 	@Override
 	public synchronized void removeServiceListener(ServiceListener listener) {
-		var iter = serviceListeners.iterator();
-		while (iter.hasNext()) {
-			if (iter.next().listener == listener) {
-				iter.remove();
-			}
-		}
+		serviceListeners.removeIf(entry -> entry.listener == listener);
 	}
 
 	@Override
 	public final synchronized void addServiceListener(ServiceListener listener, String filter) {
-		try {
-			logger.info("add listener {} with {}", listener, filter);
-			serviceListeners.add(new ListenerEntry(listener, FilterImpl.newInstance(filter)));
-		} catch (InvalidSyntaxException e) {
-			throw new RuntimeException(e);
-		}
+		logger.info("add listener {} with {}", listener, filter);
+		serviceListeners.add(
+				new ListenerEntry(listener, Unchecked.get(() -> FilterImpl.newInstance(filter))));
 	}
 
 	@Override
@@ -110,7 +96,8 @@ abstract class ServiceRegistry extends Shims.BundleContextUnsupported {
 		serviceListeners.add(new ListenerEntry(listener, null));
 	}
 
-	private synchronized void notifyListeners(int type, AbstractServiceReference serviceReference) {
+	private synchronized void notifyListeners(
+			int type, AbstractServiceReference<?> serviceReference) {
 		var event = new ServiceEvent(type, serviceReference);
 		for (var listener : serviceListeners) {
 			if (listener.filter == null || listener.filter.match(serviceReference)) {
@@ -143,13 +130,18 @@ abstract class ServiceRegistry extends Shims.BundleContextUnsupported {
 	@Override
 	public final <S> S getService(ServiceReference<S> reference) {
 		if (reference instanceof ShimServiceReference) {
-			return (S) ((ShimServiceReference) reference).service;
+			return ((ShimServiceReference<S>) reference).service;
 		} else if (reference instanceof ShimServiceFactoryReference) {
-			ShimServiceFactoryReference cast = (ShimServiceFactoryReference) reference;
-			return (S) cast.factory.getService(systemBundle(), cast);
+			var cast = (ShimServiceFactoryReference<S>) reference;
+			return cast.factory.getService(systemBundle(), cast);
 		} else {
 			throw new RuntimeException("Unexpected class " + reference);
 		}
+	}
+
+	@Override
+	public <S> ServiceObjects<S> getServiceObjects(ServiceReference<S> reference) {
+		throw Unimplemented.onPurpose();
 	}
 
 	@Override
@@ -159,8 +151,10 @@ abstract class ServiceRegistry extends Shims.BundleContextUnsupported {
 
 	@Override
 	public final synchronized ServiceReference<?> getServiceReference(String clazz) {
-		List<AbstractServiceReference> services = servicesForInterface(clazz);
-		return services.isEmpty() ? null : services.get(0);
+		List<AbstractServiceReference<?>> servicesForClazz = services.get(clazz);
+		return (servicesForClazz == null || servicesForClazz.isEmpty())
+				? null
+				: servicesForClazz.get(0);
 	}
 
 	@Override
@@ -179,18 +173,20 @@ abstract class ServiceRegistry extends Shims.BundleContextUnsupported {
 	public final synchronized ServiceReference<?>[] getServiceReferences(String clazz, String filter)
 			throws InvalidSyntaxException {
 		if (clazz != null && filter == null) {
-			return servicesForInterface(clazz).toArray(new ServiceReference<?>[0]);
+			return services
+					.getOrDefault(clazz, Collections.emptyList())
+					.toArray(new ServiceReference<?>[0]);
 		} else {
 			FilterImpl filterParsed = FilterImpl.newInstance(filter);
 			String interfaze = clazz != null ? clazz : filterParsed.getRequiredObjectClass();
 			if (interfaze != null) {
-				return servicesForInterface(interfaze).stream()
-						.filter(service -> filterParsed.match(service))
+				return services.getOrDefault(interfaze, Collections.emptyList()).stream()
+						.filter(filterParsed::match)
 						.toArray(ServiceReference[]::new);
 			} else {
 				return services.values().stream()
-						.flatMap(list -> list.stream())
-						.filter(service -> filterParsed.match(service))
+						.flatMap(Collection::stream)
+						.filter(filterParsed::match)
 						.toArray(ServiceReference[]::new);
 			}
 		}
@@ -218,11 +214,7 @@ abstract class ServiceRegistry extends Shims.BundleContextUnsupported {
 
 		@Override
 		public boolean isAssignableTo(Bundle bundle, String className) {
-			try {
-				return Class.forName(className).isInstance(service);
-			} catch (ClassNotFoundException e) {
-				throw new RuntimeException(e);
-			}
+			return Unchecked.classForName(className).isInstance(service);
 		}
 
 		@Override
@@ -257,17 +249,13 @@ abstract class ServiceRegistry extends Shims.BundleContextUnsupported {
 					return true;
 				}
 			}
-			try {
-				var target = Class.forName(className);
-				for (Class<?> clazz : clazzes) {
-					if (target.isAssignableFrom(clazz)) {
-						return true;
-					}
+			var target = Unchecked.classForName(className);
+			for (Class<?> clazz : clazzes) {
+				if (target.isAssignableFrom(clazz)) {
+					return true;
 				}
-				return false;
-			} catch (ClassNotFoundException e) {
-				throw new RuntimeException(e);
 			}
+			return false;
 		}
 	}
 
@@ -331,7 +319,7 @@ abstract class ServiceRegistry extends Shims.BundleContextUnsupported {
 			notifyListeners(ServiceEvent.UNREGISTERING, this);
 			synchronized (ServiceRegistry.this) {
 				for (String clazz : objectClass) {
-					servicesForInterface(clazz).remove(this);
+					services.get(clazz).remove(this);
 				}
 			}
 		}
@@ -339,25 +327,25 @@ abstract class ServiceRegistry extends Shims.BundleContextUnsupported {
 		@Override
 		public int compareTo(Object reference) {
 			if (reference instanceof AbstractServiceReference) {
-				return (int) (id - ((AbstractServiceReference) reference).id);
+				return (int) (id - ((AbstractServiceReference<?>) reference).id);
 			} else {
-				throw new UnsupportedOperationException();
+				throw Unimplemented.onPurpose();
 			}
 		}
 
 		@Override
 		public Bundle[] getUsingBundles() {
-			throw new UnsupportedOperationException();
+			throw Unimplemented.onPurpose();
 		}
 
 		@Override
-		public Object adapt(Class type) {
-			throw new UnsupportedOperationException();
+		public <A> A adapt(Class<A> type) {
+			throw Unimplemented.onPurpose();
 		}
 
 		// ServiceRegistration overrides
 		@Override
-		public ServiceReference getReference() {
+		public ServiceReference<S> getReference() {
 			return this;
 		}
 	}
