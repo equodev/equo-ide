@@ -395,8 +395,12 @@ public class Solstice extends ServiceRegistry {
 				}
 			}
 			if (!jarUrl.endsWith("!")) {
-				throw new IllegalArgumentException(
-						"Must end with !  SEE getEntry if this changes  " + jarUrl);
+				if (jarUrl.endsWith("build/resources/main")) {
+					// we're inside a Gradle build/test, no worries
+				} else {
+					throw new IllegalArgumentException(
+							"Must end with !  SEE getEntry if this changes  " + jarUrl);
+				}
 			}
 			requiredBundles = requiredBundles(manifest);
 			if (symbolicName != null) {
@@ -418,6 +422,7 @@ public class Solstice extends ServiceRegistry {
 									headers.put(keyStr, value.toString());
 								}
 							});
+			var classpath = headers.get(Constants.BUNDLE_CLASSPATH);
 		}
 
 		private List<String> requiredBundles(Manifest manifest) {
