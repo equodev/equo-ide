@@ -2,7 +2,6 @@ plugins {
 	id 'com.diffplug.blowdryer'
 }
 allprojects {
-	apply from: 干.file('changelog.gradle')
 	apply from: 干.file('spotless.gradle')
 }
 
