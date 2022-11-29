@@ -24,18 +24,20 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 import org.eclipse.osgi.internal.framework.FilterImpl;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.Filter;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceFactory;
 import org.osgi.framework.ServiceListener;
+import org.osgi.framework.ServiceObjects;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-abstract class ServiceRegistry extends Shims.BundleContextUnsupported {
+abstract class ServiceRegistry implements BundleContext {
 	private final Logger logger = LoggerFactory.getLogger(ServiceRegistry.class);
 	Map<String, List<AbstractServiceReference>> services = new HashMap<>();
 
@@ -150,6 +152,11 @@ abstract class ServiceRegistry extends Shims.BundleContextUnsupported {
 		} else {
 			throw new RuntimeException("Unexpected class " + reference);
 		}
+	}
+
+	@Override
+	public <S> ServiceObjects<S> getServiceObjects(ServiceReference<S> reference) {
+		throw new UnsupportedOperationException();
 	}
 
 	@Override

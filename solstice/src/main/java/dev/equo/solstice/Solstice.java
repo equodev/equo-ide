@@ -17,6 +17,7 @@ import com.diffplug.common.swt.os.SwtPlatform;
 import dev.equo.solstice.platform.Handler;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -296,6 +297,16 @@ public class Solstice extends ServiceRegistry {
 	}
 
 	@Override
+	public Bundle installBundle(String location, InputStream input) throws BundleException {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public Bundle installBundle(String location) throws BundleException {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
 	public org.osgi.framework.Bundle getBundle(String location) {
 		if (Constants.SYSTEM_BUNDLE_LOCATION.equals(location)) {
 			return systemBundle;
@@ -339,6 +350,11 @@ public class Solstice extends ServiceRegistry {
 
 	@Override
 	public void addFrameworkListener(FrameworkListener listener) {
+		// TODO: not sure if we can survive without FrameworkEvents
+	}
+
+	@Override
+	public void removeFrameworkListener(FrameworkListener listener) {
 		// TODO: not sure if we can survive without FrameworkEvents
 	}
 
