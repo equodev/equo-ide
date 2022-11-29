@@ -16,6 +16,7 @@ package dev.equo.solstice;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import javax.swing.*;
 import org.eclipse.osgi.service.datalocation.Location;
 import org.osgi.framework.BundleContext;
 
@@ -26,6 +27,25 @@ class ShimLocation extends Unimplemented.Location {
 				new ShimLocation(Unchecked.fileToURL(dir)),
 				Dictionaries.of(
 						SERVICE_PROPERTY_TYPE, type, "url", Unchecked.fileToURL(dir).toExternalForm()));
+	}
+
+	static File get(BundleContext context, String type) {
+		var services =
+				Unchecked.get(
+						() ->
+								context.getServiceReferences(
+										Location.class, "(" + SERVICE_PROPERTY_TYPE + "=" + type + ")"));
+		if (services.size() == 1) {
+			var service = services.iterator().next();
+			var location = context.getService(service);
+			var file = new File(Unchecked.get(location.getURL()::toURI));
+			if (!file.exists()) {
+				file.mkdirs();
+			}
+			return file;
+		} else {
+			throw new IllegalArgumentException("Couldn't find a location of type " + type);
+		}
 	}
 
 	final URL url;

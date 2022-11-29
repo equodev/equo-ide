@@ -11,9 +11,12 @@
  * Contributors:
  *     EquoTech, Inc. - initial API and implementation
  *******************************************************************************/
-package dev.equo.solstice;
+package pkg;
 
+import dev.equo.solstice.Solstice;
+import dev.equo.solstice.SolsticeConfiguration;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Map;
 import org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher;
 import org.eclipse.equinox.app.IApplicationContext;
@@ -42,7 +45,7 @@ class IdeMain {
 		var appDescriptor = osgiShim.getService(appServices.iterator().next());
 
 		var appLauncher = new EclipseAppLauncher(osgiShim, false, false, null, null);
-		osgiShim.registerService(ApplicationLauncher.class, appLauncher, Dictionaries.empty());
+		osgiShim.registerService(ApplicationLauncher.class, appLauncher, new Hashtable<>());
 
 		Map<String, Object> appProps = new HashMap<>();
 		appProps.put(IApplicationContext.APPLICATION_ARGS, new String[] {});
