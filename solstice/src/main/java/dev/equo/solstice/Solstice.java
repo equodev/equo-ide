@@ -622,7 +622,13 @@ public class Solstice extends ServiceRegistry {
 			if (BundleWiring.class.equals(type)) {
 				return (A) new ShimDS.BundleWiringImpl();
 			} else if (BundleStartLevel.class.equals(type)) {
-				return (A) new Shims.BundleStartLevelImpl();
+				return (A)
+						new Shims.BundleStartLevel() {
+							@Override
+							public boolean isActivationPolicyUsed() {
+								return true;
+							}
+						};
 			} else {
 				return null;
 			}

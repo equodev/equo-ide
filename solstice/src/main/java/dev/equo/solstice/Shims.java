@@ -30,7 +30,6 @@ import org.osgi.framework.BundleException;
 import org.osgi.framework.FrameworkListener;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.Version;
-import org.osgi.framework.startlevel.BundleStartLevel;
 import org.osgi.framework.wiring.BundleCapability;
 import org.osgi.framework.wiring.BundleRequirement;
 import org.osgi.framework.wiring.BundleRevision;
@@ -427,10 +426,10 @@ class Shims {
 		}
 	}
 
-	static class BundleStartLevelImpl implements BundleStartLevel {
+	static class BundleStartLevel implements org.osgi.framework.startlevel.BundleStartLevel {
 		@Override
 		public boolean isActivationPolicyUsed() {
-			return true;
+			throw new UnsupportedOperationException();
 		}
 
 		@Override
