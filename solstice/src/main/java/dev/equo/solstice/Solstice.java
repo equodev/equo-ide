@@ -380,8 +380,7 @@ public class Solstice extends ServiceRegistry {
 			Arrays.asList(Constants.IMPORT_PACKAGE, Constants.EXPORT_PACKAGE);
 	static final String MANIFEST_PATH = "/META-INF/MANIFEST.MF";
 
-	public class ShimBundle extends Shims.BundleContextDelegate implements Shims.BundleUnsupported {
-
+	public class ShimBundle extends BundleContextDelegate implements Shims.BundleUnsupported {
 		final String jarUrl;
 		final @Nullable String activator;
 		final @Nullable String symbolicName;
