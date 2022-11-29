@@ -29,9 +29,10 @@ import org.osgi.framework.FrameworkListener;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.Version;
 import org.osgi.framework.wiring.BundleRequirement;
-import org.osgi.framework.wiring.BundleWiring;
+import org.osgi.framework.wiring.BundleWire;
 import org.osgi.resource.Capability;
 import org.osgi.resource.Requirement;
+import org.osgi.resource.Wire;
 import org.osgi.service.packageadmin.ExportedPackage;
 import org.osgi.service.packageadmin.RequiredBundle;
 
@@ -330,7 +331,7 @@ class Unimplemented {
 		}
 
 		@Override
-		public BundleWiring getWiring() {
+		public org.osgi.framework.wiring.BundleWiring getWiring() {
 			throw new UnsupportedOperationException();
 		}
 
@@ -442,6 +443,88 @@ class Unimplemented {
 
 		@Override
 		public boolean isPersistentlyStarted() {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public org.osgi.framework.Bundle getBundle() {
+			throw new UnsupportedOperationException();
+		}
+	}
+
+	static class BundleWiring implements org.osgi.framework.wiring.BundleWiring {
+		@Override
+		public List<BundleWire> getRequiredWires(String namespace) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public boolean isInUse() {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public List<BundleWire> getProvidedWires(String namespace) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public boolean isCurrent() {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public List<org.osgi.framework.wiring.BundleCapability> getCapabilities(String namespace) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public List<BundleRequirement> getRequirements(String namespace) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public org.osgi.framework.wiring.BundleRevision getRevision() {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public ClassLoader getClassLoader() {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public List<URL> findEntries(String path, String filePattern, int options) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public Collection<String> listResources(String path, String filePattern, int options) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public List<Capability> getResourceCapabilities(String namespace) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public List<Requirement> getResourceRequirements(String namespace) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public List<Wire> getProvidedResourceWires(String namespace) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public List<Wire> getRequiredResourceWires(String namespace) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public org.osgi.framework.wiring.BundleRevision getResource() {
 			throw new UnsupportedOperationException();
 		}
 
