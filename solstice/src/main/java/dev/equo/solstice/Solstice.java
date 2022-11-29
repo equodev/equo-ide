@@ -368,10 +368,6 @@ public class Solstice extends ServiceRegistry {
 									headers.put(keyStr, value.toString());
 								}
 							});
-			var classpath = headers.get(Constants.BUNDLE_CLASSPATH);
-			if (classpath != null && !classpath.equals(".")) {
-				SolsticeClassPathAgent.extract(this, getEntry(classpath));
-			}
 		}
 
 		private List<String> requiredBundles(Manifest manifest) {

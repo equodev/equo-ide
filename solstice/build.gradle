@@ -9,6 +9,8 @@ targetCompatibility = java_compat
 apply from: 干.file('maven.gradle')
 apply from: 干.file('sonatype.gradle')
 
+String VER_SLF4J = '2.0.3'
+
 dependencies {
 	implementation 'com.diffplug.durian:durian-swt.os:4.1.1'
 	implementation 'org.apache.felix:org.apache.felix.scr:2.2.4'
@@ -21,10 +23,6 @@ dependencies {
 	testImplementation "org.junit.jupiter:junit-jupiter:$VER_JUNIT"
 	testImplementation "org.assertj:assertj-core:$VER_ASSERTJ"
 }
-jar.manifest.attributes(
-		'Agent-Class': 'dev.equo.solstice.SolsticeClassPathAgent',
-		'Premain-Class': 'dev.equo.solstice.SolsticeClassPathAgent'
-		)
 
 apply plugin: 'com.diffplug.eclipse.mavencentral'
 eclipseMavenCentral {
@@ -32,9 +30,6 @@ eclipseMavenCentral {
 		compileOnly 'org.eclipse.osgi'
 		compileOnly 'org.eclipse.core.runtime'
 
-		testImplementation 'org.eclipse.jdt.ui'
-		//		testImplementation 'org.eclipse.jdt.debug'
-		testImplementation 'org.eclipse.jdt.debug.ui'
 		testImplementation 'org.eclipse.ui.ide.application'
 		testImplementation 'org.osgi.service.component'
 		testImplementation 'org.osgi.service.cm'
