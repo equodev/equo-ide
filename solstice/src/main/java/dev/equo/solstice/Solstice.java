@@ -574,12 +574,21 @@ public class Solstice extends ServiceRegistry {
 		public URL getEntry(String path) {
 			try {
 				if (path.startsWith("/")) {
-					throw new IllegalArgumentException("Path must not start with /");
+					return new URL(jarUrl + path);
+				} else {
+					return new URL(jarUrl + "/" + path);
 				}
-				return new URL(jarUrl + "/" + path);
 			} catch (MalformedURLException e) {
 				throw new RuntimeException(e);
 			}
+		}
+
+		@Override
+		public URL getResource(String name) {
+			// TODO: according to spec, we should search in this bundle first,
+			// and then after that from the classloader, but we are only using
+			// this bundle
+			return getEntry(name);
 		}
 
 		@Override
