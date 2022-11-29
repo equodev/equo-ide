@@ -23,27 +23,20 @@ import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
-import org.eclipse.osgi.service.datalocation.Location;
-import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.FrameworkListener;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.Version;
-import org.osgi.framework.wiring.BundleCapability;
 import org.osgi.framework.wiring.BundleRequirement;
-import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.framework.wiring.BundleWiring;
-import org.osgi.framework.wiring.FrameworkWiring;
 import org.osgi.resource.Capability;
 import org.osgi.resource.Requirement;
 import org.osgi.service.packageadmin.ExportedPackage;
-import org.osgi.service.packageadmin.PackageAdmin;
 import org.osgi.service.packageadmin.RequiredBundle;
 
-class Shims {
-
-	interface BundleUnsupported extends Bundle {
+class Unimplemented {
+	interface Bundle extends org.osgi.framework.Bundle {
 		@Override
 		default BundleContext getBundleContext() {
 			throw new UnsupportedOperationException();
@@ -185,14 +178,14 @@ class Shims {
 		}
 
 		@Override
-		default int compareTo(Bundle o) {
+		default int compareTo(org.osgi.framework.Bundle o) {
 			return getSymbolicName().compareTo(o.getSymbolicName());
 		}
 	}
 
-	static class PackageAdminUnsupported implements PackageAdmin {
+	static class PackageAdmin implements org.osgi.service.packageadmin.PackageAdmin {
 		@Override
-		public ExportedPackage[] getExportedPackages(Bundle bundle) {
+		public ExportedPackage[] getExportedPackages(org.osgi.framework.Bundle bundle) {
 			throw new UnsupportedOperationException();
 		}
 
@@ -207,12 +200,12 @@ class Shims {
 		}
 
 		@Override
-		public void refreshPackages(Bundle[] bundles) {
+		public void refreshPackages(org.osgi.framework.Bundle[] bundles) {
 			throw new UnsupportedOperationException();
 		}
 
 		@Override
-		public boolean resolveBundles(Bundle[] bundles) {
+		public boolean resolveBundles(org.osgi.framework.Bundle[] bundles) {
 			throw new UnsupportedOperationException();
 		}
 
@@ -222,66 +215,69 @@ class Shims {
 		}
 
 		@Override
-		public Bundle[] getBundles(String symbolicName, String versionRange) {
+		public org.osgi.framework.Bundle[] getBundles(String symbolicName, String versionRange) {
 			throw new UnsupportedOperationException();
 		}
 
 		@Override
-		public Bundle[] getFragments(Bundle bundle) {
+		public org.osgi.framework.Bundle[] getFragments(org.osgi.framework.Bundle bundle) {
 			throw new UnsupportedOperationException();
 		}
 
 		@Override
-		public Bundle[] getHosts(Bundle bundle) {
+		public org.osgi.framework.Bundle[] getHosts(org.osgi.framework.Bundle bundle) {
 			throw new UnsupportedOperationException();
 		}
 
 		@Override
-		public Bundle getBundle(Class<?> clazz) {
+		public org.osgi.framework.Bundle getBundle(Class<?> clazz) {
 			throw new UnsupportedOperationException();
 		}
 
 		@Override
-		public int getBundleType(Bundle bundle) {
-			throw new UnsupportedOperationException();
-		}
-	}
-
-	static class FrameworkWiringUnsupported implements FrameworkWiring {
-		@Override
-		public void refreshBundles(Collection<Bundle> bundles, FrameworkListener... listeners) {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		public boolean resolveBundles(Collection<Bundle> bundles) {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		public Collection<Bundle> getRemovalPendingBundles() {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		public Collection<Bundle> getDependencyClosure(Collection<Bundle> bundles) {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		public Collection<BundleCapability> findProviders(Requirement requirement) {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		public Bundle getBundle() {
+		public int getBundleType(org.osgi.framework.Bundle bundle) {
 			throw new UnsupportedOperationException();
 		}
 	}
 
-	static class BundleCapabilityUnsupported implements BundleCapability {
+	static class FrameworkWiring implements org.osgi.framework.wiring.FrameworkWiring {
 		@Override
-		public BundleRevision getRevision() {
+		public void refreshBundles(
+				Collection<org.osgi.framework.Bundle> bundles, FrameworkListener... listeners) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public boolean resolveBundles(Collection<org.osgi.framework.Bundle> bundles) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public Collection<org.osgi.framework.Bundle> getRemovalPendingBundles() {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public Collection<org.osgi.framework.Bundle> getDependencyClosure(
+				Collection<org.osgi.framework.Bundle> bundles) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public Collection<org.osgi.framework.wiring.BundleCapability> findProviders(
+				Requirement requirement) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public org.osgi.framework.Bundle getBundle() {
+			throw new UnsupportedOperationException();
+		}
+	}
+
+	static class BundleCapability implements org.osgi.framework.wiring.BundleCapability {
+		@Override
+		public org.osgi.framework.wiring.BundleRevision getRevision() {
 			throw new UnsupportedOperationException();
 		}
 
@@ -301,12 +297,12 @@ class Shims {
 		}
 
 		@Override
-		public BundleRevision getResource() {
+		public org.osgi.framework.wiring.BundleRevision getResource() {
 			throw new UnsupportedOperationException();
 		}
 	}
 
-	static class BundleRevisionUnsupported implements BundleRevision {
+	static class BundleRevision implements org.osgi.framework.wiring.BundleRevision {
 		@Override
 		public String getSymbolicName() {
 			throw new UnsupportedOperationException();
@@ -318,7 +314,8 @@ class Shims {
 		}
 
 		@Override
-		public List<BundleCapability> getDeclaredCapabilities(String namespace) {
+		public List<org.osgi.framework.wiring.BundleCapability> getDeclaredCapabilities(
+				String namespace) {
 			throw new UnsupportedOperationException();
 		}
 
@@ -348,12 +345,12 @@ class Shims {
 		}
 
 		@Override
-		public Bundle getBundle() {
+		public org.osgi.framework.Bundle getBundle() {
 			throw new UnsupportedOperationException();
 		}
 	}
 
-	static class LocationUnsupported implements Location {
+	static class Location implements org.eclipse.osgi.service.datalocation.Location {
 		@Override
 		public boolean allowsDefault() {
 			throw new UnsupportedOperationException();
@@ -365,7 +362,7 @@ class Shims {
 		}
 
 		@Override
-		public Location getParentLocation() {
+		public org.eclipse.osgi.service.datalocation.Location getParentLocation() {
 			throw new UnsupportedOperationException();
 		}
 
@@ -416,7 +413,8 @@ class Shims {
 		}
 
 		@Override
-		public Location createLocation(Location parent, URL defaultValue, boolean readonly) {
+		public org.eclipse.osgi.service.datalocation.Location createLocation(
+				org.eclipse.osgi.service.datalocation.Location parent, URL defaultValue, boolean readonly) {
 			throw new UnsupportedOperationException();
 		}
 
@@ -448,7 +446,7 @@ class Shims {
 		}
 
 		@Override
-		public Bundle getBundle() {
+		public org.osgi.framework.Bundle getBundle() {
 			throw new UnsupportedOperationException();
 		}
 	}

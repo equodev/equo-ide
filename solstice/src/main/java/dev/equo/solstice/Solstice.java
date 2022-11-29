@@ -155,7 +155,7 @@ public class Solstice extends ServiceRegistry {
 		return null;
 	}
 
-	static class ShimLocation extends Shims.LocationUnsupported {
+	static class ShimLocation extends Unimplemented.Location {
 		static void set(BundleContext context, File dir, String type) throws MalformedURLException {
 			context.registerService(
 					Location.class,
@@ -197,7 +197,7 @@ public class Solstice extends ServiceRegistry {
 	}
 
 	final Bundle systemBundle =
-			new Shims.BundleUnsupported() {
+			new Unimplemented.Bundle() {
 				@Override
 				public long getBundleId() {
 					return 0;
@@ -246,10 +246,10 @@ public class Solstice extends ServiceRegistry {
 				}
 			};
 
-	final PackageAdmin packageAdmin = new Shims.PackageAdminUnsupported() {};
+	final PackageAdmin packageAdmin = new Unimplemented.PackageAdmin() {};
 
 	final FrameworkWiring frameworkWiring =
-			new Shims.FrameworkWiringUnsupported() {
+			new Unimplemented.FrameworkWiring() {
 				@Override
 				public Collection<BundleCapability> findProviders(Requirement requirement) {
 					String filterSpec =
@@ -265,7 +265,7 @@ public class Solstice extends ServiceRegistry {
 				}
 			};
 
-	private static class ShimBundleCapability extends Shims.BundleCapabilityUnsupported {
+	private static class ShimBundleCapability extends Unimplemented.BundleCapability {
 		private final ShimBundleRevision revision;
 
 		public ShimBundleCapability(Bundle bundle) {
@@ -278,7 +278,7 @@ public class Solstice extends ServiceRegistry {
 		}
 	}
 
-	private static class ShimBundleRevision extends Shims.BundleRevisionUnsupported {
+	private static class ShimBundleRevision extends Unimplemented.BundleRevision {
 		private final Bundle bundle;
 
 		public ShimBundleRevision(Bundle bundle) {
@@ -380,7 +380,7 @@ public class Solstice extends ServiceRegistry {
 			Arrays.asList(Constants.IMPORT_PACKAGE, Constants.EXPORT_PACKAGE);
 	static final String MANIFEST_PATH = "/META-INF/MANIFEST.MF";
 
-	public class ShimBundle extends BundleContextDelegate implements Shims.BundleUnsupported {
+	public class ShimBundle extends BundleContextDelegate implements Unimplemented.Bundle {
 		final String jarUrl;
 		final @Nullable String activator;
 		final @Nullable String symbolicName;
@@ -623,7 +623,7 @@ public class Solstice extends ServiceRegistry {
 				return (A) new ShimDS.BundleWiringImpl();
 			} else if (BundleStartLevel.class.equals(type)) {
 				return (A)
-						new Shims.BundleStartLevel() {
+						new Unimplemented.BundleStartLevel() {
 							@Override
 							public boolean isActivationPolicyUsed() {
 								return true;
