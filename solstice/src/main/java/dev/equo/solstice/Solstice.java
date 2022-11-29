@@ -29,19 +29,16 @@ import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 import javax.annotation.Nullable;
 import org.eclipse.core.internal.runtime.InternalPlatform;
 import org.eclipse.osgi.internal.framework.FilterImpl;
-import org.eclipse.osgi.service.datalocation.Location;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
-import org.osgi.framework.BundleException;
 import org.osgi.framework.BundleListener;
 import org.osgi.framework.Constants;
 import org.osgi.framework.FrameworkListener;
@@ -50,7 +47,6 @@ import org.osgi.framework.Version;
 import org.osgi.framework.namespace.IdentityNamespace;
 import org.osgi.framework.startlevel.BundleStartLevel;
 import org.osgi.framework.wiring.BundleCapability;
-import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.framework.wiring.BundleWiring;
 import org.osgi.framework.wiring.FrameworkWiring;
 import org.osgi.resource.Namespace;
@@ -104,7 +100,7 @@ public class Solstice extends ServiceRegistry {
 		return systemBundle;
 	}
 
-	private List<ShimBundle> bundles = new ArrayList<ShimBundle>();
+	private final List<ShimBundle> bundles = new ArrayList<>();
 
 	private void discoverAndSortBundles() throws IOException {
 		Enumeration<URL> resources = getClass().getClassLoader().getResources("META-INF/MANIFEST.MF");
@@ -112,8 +108,7 @@ public class Solstice extends ServiceRegistry {
 			bundles.add(new ShimBundle(resources.nextElement()));
 		}
 		List<String> startOrder = cfg.startOrder();
-		Collections.sort(
-				bundles,
+		bundles.sort(
 				(o1, o2) -> {
 					int start1 = startOrder.indexOf(o1.symbolicName);
 					int start2 = startOrder.indexOf(o2.symbolicName);
@@ -153,47 +148,6 @@ public class Solstice extends ServiceRegistry {
 			}
 		}
 		return null;
-	}
-
-	static class ShimLocation extends Unimplemented.Location {
-		static void set(BundleContext context, File dir, String type) throws MalformedURLException {
-			context.registerService(
-					Location.class,
-					new Solstice.ShimLocation(dir.toURI().toURL()),
-					Dictionaries.of(
-							SERVICE_PROPERTY_TYPE, type, "url", dir.toURI().toURL().toExternalForm()));
-		}
-
-		final URL url;
-
-		ShimLocation(URL url) {
-			this.url = url;
-		}
-
-		@Override
-		public URL getURL() {
-			return url;
-		}
-
-		@Override
-		public Location getParentLocation() {
-			return null;
-		}
-
-		@Override
-		public boolean isReadOnly() {
-			return false;
-		}
-
-		@Override
-		public boolean isSet() {
-			return true;
-		}
-
-		@Override
-		public URL getDataArea(String path) throws IOException {
-			return new URL(url.toExternalForm() + path);
-		}
 	}
 
 	final Bundle systemBundle =
@@ -265,44 +219,18 @@ public class Solstice extends ServiceRegistry {
 				}
 			};
 
-	private static class ShimBundleCapability extends Unimplemented.BundleCapability {
-		private final ShimBundleRevision revision;
-
-		public ShimBundleCapability(Bundle bundle) {
-			this.revision = new ShimBundleRevision(bundle);
-		}
-
-		@Override
-		public BundleRevision getRevision() {
-			return revision;
-		}
-	}
-
-	private static class ShimBundleRevision extends Unimplemented.BundleRevision {
-		private final Bundle bundle;
-
-		public ShimBundleRevision(Bundle bundle) {
-			this.bundle = Objects.requireNonNull(bundle);
-		}
-
-		@Override
-		public Bundle getBundle() {
-			return bundle;
-		}
-	}
-
 	@Override
 	public org.osgi.framework.Bundle getBundle() {
 		return systemBundle;
 	}
 
 	@Override
-	public Bundle installBundle(String location, InputStream input) throws BundleException {
+	public Bundle installBundle(String location, InputStream input) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public Bundle installBundle(String location) throws BundleException {
+	public Bundle installBundle(String location) {
 		throw new UnsupportedOperationException();
 	}
 
@@ -336,7 +264,7 @@ public class Solstice extends ServiceRegistry {
 		return null;
 	}
 
-	private CopyOnWriteArrayList<BundleListener> bundleListeners = new CopyOnWriteArrayList<>();
+	private final CopyOnWriteArrayList<BundleListener> bundleListeners = new CopyOnWriteArrayList<>();
 
 	@Override
 	public synchronized void addBundleListener(BundleListener listener) {
@@ -437,7 +365,6 @@ public class Solstice extends ServiceRegistry {
 									headers.put(keyStr, value.toString());
 								}
 							});
-			var classpath = headers.get(Constants.BUNDLE_CLASSPATH);
 		}
 
 		private List<String> requiredBundles(Manifest manifest) {
@@ -502,7 +429,7 @@ public class Solstice extends ServiceRegistry {
 		}
 
 		@Override
-		public void start(int options) throws BundleException {
+		public void start(int options) {
 			try {
 				activate();
 			} catch (Exception e) {
@@ -558,12 +485,13 @@ public class Solstice extends ServiceRegistry {
 			notifyBundleListeners(BundleEvent.STARTING, this);
 			if (activator != null) {
 				logger.info("{} Bundle-Activator {}", this, activator);
-				var c = (Constructor<BundleActivator>) Class.forName(activator).getConstructor();
-				if (c == null) {
-					throw new IllegalArgumentException("No activator for " + jarUrl + " " + activator);
+				try {
+					var c = (Constructor<BundleActivator>) Class.forName(activator).getConstructor();
+					var bundleActivator = c.newInstance();
+					bundleActivator.start(this);
+				} catch (Exception e) {
+					logger.error(this + " Bundle-Activator " + activator + " failed to start", e);
 				}
-				var bundleActivator = c.newInstance();
-				bundleActivator.start(this);
 			}
 			state = ACTIVE;
 			notifyBundleListeners(BundleEvent.STARTED, this);

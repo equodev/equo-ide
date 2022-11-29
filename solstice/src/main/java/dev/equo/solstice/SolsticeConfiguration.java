@@ -94,10 +94,9 @@ public interface SolsticeConfiguration {
 		context.registerService(EnvironmentInfo.class, new ShimEnvironmentInfo(), Dictionaries.empty());
 
 		File userDir = new File(System.getProperty("user.dir") + "/build");
-		Solstice.ShimLocation.set(context, new File(userDir, "instance"), Location.INSTANCE_AREA_TYPE);
-		Solstice.ShimLocation.set(context, new File(userDir, "install"), Location.INSTALL_AREA_TYPE);
-		Solstice.ShimLocation.set(
-				context, new File(userDir, "config"), Location.CONFIGURATION_AREA_TYPE);
+		ShimLocation.set(context, new File(userDir, "instance"), Location.INSTANCE_AREA_TYPE);
+		ShimLocation.set(context, new File(userDir, "install"), Location.INSTALL_AREA_TYPE);
+		ShimLocation.set(context, new File(userDir, "config"), Location.CONFIGURATION_AREA_TYPE);
 		context.registerService(
 				SAXParserFactory.class, SAXParserFactory.newInstance(), Dictionaries.empty());
 
