@@ -85,12 +85,9 @@ abstract class ServiceRegistry implements BundleContext {
 
 	@Override
 	public final synchronized void addServiceListener(ServiceListener listener, String filter) {
-		try {
-			logger.info("add listener {} with {}", listener, filter);
-			serviceListeners.add(new ListenerEntry(listener, FilterImpl.newInstance(filter)));
-		} catch (InvalidSyntaxException e) {
-			throw new RuntimeException(e);
-		}
+		logger.info("add listener {} with {}", listener, filter);
+		serviceListeners.add(
+				new ListenerEntry(listener, Unchecked.get(() -> FilterImpl.newInstance(filter))));
 	}
 
 	@Override
@@ -217,11 +214,7 @@ abstract class ServiceRegistry implements BundleContext {
 
 		@Override
 		public boolean isAssignableTo(Bundle bundle, String className) {
-			try {
-				return Class.forName(className).isInstance(service);
-			} catch (ClassNotFoundException e) {
-				throw new RuntimeException(e);
-			}
+			return Unchecked.classForName(className).isInstance(service);
 		}
 
 		@Override
@@ -256,17 +249,13 @@ abstract class ServiceRegistry implements BundleContext {
 					return true;
 				}
 			}
-			try {
-				var target = Class.forName(className);
-				for (Class<?> clazz : clazzes) {
-					if (target.isAssignableFrom(clazz)) {
-						return true;
-					}
+			var target = Unchecked.classForName(className);
+			for (Class<?> clazz : clazzes) {
+				if (target.isAssignableFrom(clazz)) {
+					return true;
 				}
-				return false;
-			} catch (ClassNotFoundException e) {
-				throw new RuntimeException(e);
 			}
+			return false;
 		}
 	}
 

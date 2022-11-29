@@ -28,15 +28,11 @@ class ShimDS {
 		if (!STAR_DOT_XML.equals(header)) {
 			return header;
 		} else {
-			try {
-				return String.join(",", starDotXML(jarFile));
-			} catch (IOException e) {
-				throw new RuntimeException(e);
-			}
+			return String.join(",", starDotXML(jarFile));
 		}
 	}
 
-	private static List<String> starDotXML(String jarFile) throws IOException {
+	private static List<String> starDotXML(String jarFile) {
 		String prefix = "jar:file:";
 		if (!jarFile.startsWith(prefix)) {
 			throw new IllegalArgumentException("jar does not start with expected prefix: " + jarFile);
@@ -53,6 +49,8 @@ class ShimDS {
 					dotXml.add(entry);
 				}
 			}
+		} catch (IOException e) {
+			throw Unchecked.rethrow(e);
 		}
 		return dotXml;
 	}

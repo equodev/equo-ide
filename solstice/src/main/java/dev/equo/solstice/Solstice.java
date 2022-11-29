@@ -73,25 +73,22 @@ public class Solstice extends ServiceRegistry {
 		Handler.install(this);
 
 		this.cfg = cfg;
-		try {
-			SolsticeFrameworkUtilHelper.initialize(this);
-			cfg.bootstrapServices(systemBundle, this);
-			logger.info("Bootstrap services installed");
 
-			discoverAndSortBundles();
-			logger.info("Bundles found and sorted.");
-			for (var b : bundles) {
-				logger.info("  {}", b);
+		SolsticeFrameworkUtilHelper.initialize(this);
+		cfg.bootstrapServices(systemBundle, this);
+		logger.info("Bootstrap services installed");
+
+		discoverAndSortBundles();
+		logger.info("Bundles found and sorted.");
+		for (var b : bundles) {
+			logger.info("  {}", b);
+		}
+		for (ShimBundle bundle : bundles) {
+			try {
+				bundle.activate();
+			} catch (Exception e) {
+				logger.warn("Error while activating " + bundle, e);
 			}
-			for (ShimBundle bundle : bundles) {
-				try {
-					bundle.activate();
-				} catch (Exception e) {
-					logger.warn("Error while activating " + bundle, e);
-				}
-			}
-		} catch (Exception e) {
-			throw new RuntimeException(e);
 		}
 	}
 
@@ -102,8 +99,9 @@ public class Solstice extends ServiceRegistry {
 
 	private final List<ShimBundle> bundles = new ArrayList<>();
 
-	private void discoverAndSortBundles() throws IOException {
-		Enumeration<URL> resources = getClass().getClassLoader().getResources("META-INF/MANIFEST.MF");
+	private void discoverAndSortBundles() {
+		Enumeration<URL> resources =
+				Unchecked.get(() -> getClass().getClassLoader().getResources("META-INF/MANIFEST.MF"));
 		while (resources.hasMoreElements()) {
 			bundles.add(new ShimBundle(resources.nextElement()));
 		}
@@ -315,15 +313,20 @@ public class Solstice extends ServiceRegistry {
 		final List<String> requiredBundles;
 		final Hashtable<String, String> headers;
 
-		ShimBundle(URL manifestURL) throws IOException {
+		ShimBundle(URL manifestURL) {
 			super(Solstice.this);
 			var externalForm = manifestURL.toExternalForm();
 			if (!externalForm.endsWith(MANIFEST_PATH)) {
-				throw new RuntimeException(
+				throw new IllegalArgumentException(
 						"Expected manifest to end with " + MANIFEST_PATH + " but was " + externalForm);
 			}
 			jarUrl = externalForm.substring(0, externalForm.length() - MANIFEST_PATH.length());
-			Manifest manifest = new Manifest(manifestURL.openStream());
+			Manifest manifest;
+			try (InputStream stream = manifestURL.openStream()) {
+				manifest = new Manifest(stream);
+			} catch (IOException e) {
+				throw Unchecked.rethrow(e);
+			}
 			activator = manifest.getMainAttributes().getValue(ACTIVATOR);
 			String symbolicNameRaw = manifest.getMainAttributes().getValue(SYMBOLIC_NAME);
 			if (symbolicNameRaw == null) {
@@ -430,11 +433,7 @@ public class Solstice extends ServiceRegistry {
 
 		@Override
 		public void start(int options) {
-			try {
-				activate();
-			} catch (Exception e) {
-				throw new RuntimeException(e);
-			}
+			activate();
 		}
 
 		///////////////////
@@ -527,7 +526,7 @@ public class Solstice extends ServiceRegistry {
 					return new URL(jarUrl + "/" + path);
 				}
 			} catch (MalformedURLException e) {
-				throw new RuntimeException(e);
+				throw Unchecked.rethrow(e);
 			}
 		}
 

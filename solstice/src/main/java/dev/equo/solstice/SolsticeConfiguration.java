@@ -17,7 +17,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
@@ -64,8 +63,7 @@ public interface SolsticeConfiguration {
 		return additional;
 	}
 
-	default void bootstrapServices(Bundle systemBundle, BundleContext context)
-			throws MalformedURLException {
+	default void bootstrapServices(Bundle systemBundle, BundleContext context) {
 		// in particular, we need services normally provided by
 		// org.eclipse.osgi.internal.framework.SystemBundleActivator::start
 		context.registerService(
@@ -79,7 +77,7 @@ public interface SolsticeConfiguration {
 					try (InputStream input = url.openStream()) {
 						return new PropertyResourceBundle(input);
 					} catch (IOException e) {
-						throw new RuntimeException(e);
+						throw Unchecked.rethrow(e);
 					}
 				},
 				Dictionaries.empty());
