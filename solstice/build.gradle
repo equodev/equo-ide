@@ -30,6 +30,9 @@ eclipseMavenCentral {
 		compileOnly 'org.eclipse.osgi'
 		compileOnly 'org.eclipse.core.runtime'
 
+		testImplementation 'org.eclipse.jdt.ui'
+		testImplementation 'org.eclipse.jdt.debug'
+		testImplementation 'org.eclipse.jdt.debug.ui'
 		testImplementation 'org.eclipse.ui.ide.application'
 		testImplementation 'org.osgi.service.component'
 		testImplementation 'org.osgi.service.cm'

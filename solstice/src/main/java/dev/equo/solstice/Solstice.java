@@ -79,7 +79,9 @@ public class Solstice extends ServiceRegistry {
 		logger.info("Bootstrap services installed");
 
 		discoverAndSortBundles();
-		logger.info("Bundles found and sorted.");
+		logger.info("Confirming that nested jars have been extracted");
+		NestedBundles.onClassPath().confirmAllNestedJarsArePresentOnClasspath(cfg.nestedJarFolder());
+		logger.info("All bundles found and sorted.");
 		for (var b : bundles) {
 			logger.info("  {}", b);
 		}
@@ -100,10 +102,10 @@ public class Solstice extends ServiceRegistry {
 	private final List<ShimBundle> bundles = new ArrayList<>();
 
 	private void discoverAndSortBundles() {
-		Enumeration<URL> resources =
+		Enumeration<URL> manifests =
 				Unchecked.get(() -> getClass().getClassLoader().getResources("META-INF/MANIFEST.MF"));
-		while (resources.hasMoreElements()) {
-			bundles.add(new ShimBundle(resources.nextElement()));
+		while (manifests.hasMoreElements()) {
+			bundles.add(new ShimBundle(manifests.nextElement()));
 		}
 		List<String> startOrder = cfg.startOrder();
 		bundles.sort(

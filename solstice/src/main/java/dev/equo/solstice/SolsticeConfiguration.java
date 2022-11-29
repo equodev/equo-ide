@@ -63,6 +63,11 @@ public interface SolsticeConfiguration {
 		return additional;
 	}
 
+	default File nestedJarFolder() {
+		File userDir = new File(System.getProperty("user.dir") + "/build");
+		return new File(userDir, "nested-jars");
+	}
+
 	default void bootstrapServices(Bundle systemBundle, BundleContext context) {
 		// in particular, we need services normally provided by
 		// org.eclipse.osgi.internal.framework.SystemBundleActivator::start
