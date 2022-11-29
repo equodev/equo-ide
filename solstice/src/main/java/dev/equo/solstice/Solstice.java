@@ -444,7 +444,7 @@ public class Solstice extends ServiceRegistry {
 
 		private boolean activating = false;
 
-		private void activate() throws Exception {
+		private void activate() {
 			if (activating) {
 				return;
 			}

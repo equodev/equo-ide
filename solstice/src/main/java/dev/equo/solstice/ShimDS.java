@@ -17,7 +17,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.zip.ZipFile;
 import org.osgi.framework.wiring.BundleWire;
 
@@ -30,7 +29,7 @@ class ShimDS {
 			return header;
 		} else {
 			try {
-				return starDotXML(jarFile).stream().collect(Collectors.joining(","));
+				return String.join(",", starDotXML(jarFile));
 			} catch (IOException e) {
 				throw new RuntimeException(e);
 			}

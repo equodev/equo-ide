@@ -24,7 +24,6 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.BundleException;
 import org.osgi.framework.FrameworkListener;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.Version;
@@ -59,37 +58,37 @@ class Unimplemented {
 		}
 
 		@Override
-		default void start(int options) throws BundleException {
+		default void start(int options) {
 			throw new UnsupportedOperationException();
 		}
 
 		@Override
-		default void start() throws BundleException {
+		default void start() {
 			start(0);
 		}
 
 		@Override
-		default void stop(int options) throws BundleException {
+		default void stop(int options) {
 			throw new UnsupportedOperationException();
 		}
 
 		@Override
-		default void stop() throws BundleException {
+		default void stop() {
 			stop(0);
 		}
 
 		@Override
-		default void update(InputStream input) throws BundleException {
+		default void update(InputStream input) {
 			throw new UnsupportedOperationException();
 		}
 
 		@Override
-		default void update() throws BundleException {
+		default void update() {
 			throw new UnsupportedOperationException();
 		}
 
 		@Override
-		default void uninstall() throws BundleException {
+		default void uninstall() {
 			throw new UnsupportedOperationException();
 		}
 
@@ -139,7 +138,7 @@ class Unimplemented {
 		}
 
 		@Override
-		default Enumeration<URL> getResources(String name) throws IOException {
+		default Enumeration<URL> getResources(String name) {
 			throw new UnsupportedOperationException();
 		}
 
@@ -388,18 +387,17 @@ class Unimplemented {
 		}
 
 		@Override
-		public boolean set(URL value, boolean lock) throws IllegalStateException, IOException {
+		public boolean set(URL value, boolean lock) throws IllegalStateException {
 			throw new UnsupportedOperationException();
 		}
 
 		@Override
-		public boolean set(URL value, boolean lock, String lockFilePath)
-				throws IllegalStateException, IOException {
+		public boolean set(URL value, boolean lock, String lockFilePath) throws IllegalStateException {
 			throw new UnsupportedOperationException();
 		}
 
 		@Override
-		public boolean lock() throws IOException {
+		public boolean lock() {
 			throw new UnsupportedOperationException();
 		}
 
@@ -409,7 +407,7 @@ class Unimplemented {
 		}
 
 		@Override
-		public boolean isLocked() throws IOException {
+		public boolean isLocked() {
 			throw new UnsupportedOperationException();
 		}
 

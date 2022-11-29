@@ -23,7 +23,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.PropertyResourceBundle;
-import java.util.ResourceBundle;
 import java.util.TreeMap;
 import javax.xml.parsers.SAXParserFactory;
 import org.eclipse.equinox.log.ExtendedLogReaderService;
@@ -46,10 +45,6 @@ import org.osgi.service.log.LogService;
 import org.osgi.service.log.LoggerFactory;
 
 public interface SolsticeConfiguration {
-	default LogLevel logLevel() {
-		return LogLevel.INFO;
-	}
-
 	default List<String> startOrder() {
 		return Arrays.asList(
 				"org.eclipse.equinox.registry",
@@ -75,19 +70,16 @@ public interface SolsticeConfiguration {
 		// org.eclipse.osgi.internal.framework.SystemBundleActivator::start
 		context.registerService(
 				BundleLocalization.class,
-				new BundleLocalization() {
-					@Override
-					public ResourceBundle getLocalization(Bundle bundle, String locale) {
-						String localization = bundle.getHeaders().get(Constants.BUNDLE_LOCALIZATION);
-						if (localization == null) {
-							throw new IllegalArgumentException("No localization for " + bundle);
-						}
-						URL url = bundle.getEntry(localization + ".properties");
-						try (InputStream input = url.openStream()) {
-							return new PropertyResourceBundle(input);
-						} catch (IOException e) {
-							throw new RuntimeException(e);
-						}
+				(bundle, locale) -> {
+					String localization = bundle.getHeaders().get(Constants.BUNDLE_LOCALIZATION);
+					if (localization == null) {
+						throw new IllegalArgumentException("No localization for " + bundle);
+					}
+					URL url = bundle.getEntry(localization + ".properties");
+					try (InputStream input = url.openStream()) {
+						return new PropertyResourceBundle(input);
+					} catch (IOException e) {
+						throw new RuntimeException(e);
 					}
 				},
 				Dictionaries.empty());
@@ -133,7 +125,7 @@ public interface SolsticeConfiguration {
 					public void setWriter(Writer newWriter, boolean append) {}
 
 					@Override
-					public void setFile(File newFile, boolean append) throws IOException {}
+					public void setFile(File newFile, boolean append) {}
 
 					@Override
 					public File getFile() {

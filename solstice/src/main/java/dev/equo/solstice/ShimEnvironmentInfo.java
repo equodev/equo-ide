@@ -65,7 +65,7 @@ class ShimEnvironmentInfo implements EnvironmentInfo {
 		return false;
 	}
 
-	private Map<String, String> properties = new HashMap<>();
+	private final Map<String, String> properties = new HashMap<>();
 
 	@Override
 	public synchronized String getProperty(String key) {
