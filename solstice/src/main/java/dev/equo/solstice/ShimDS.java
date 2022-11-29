@@ -50,7 +50,7 @@ class ShimDS {
 				}
 			}
 		} catch (IOException e) {
-			throw Unchecked.rethrow(e);
+			throw Unchecked.wrap(e);
 		}
 		return dotXml;
 	}

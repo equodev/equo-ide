@@ -22,7 +22,7 @@ class Unchecked {
 		try {
 			return Class.forName(className);
 		} catch (ClassNotFoundException e) {
-			throw rethrow(e);
+			throw wrap(e);
 		}
 	}
 
@@ -30,11 +30,11 @@ class Unchecked {
 		try {
 			return file.toURI().toURL();
 		} catch (MalformedURLException e) {
-			throw rethrow(e);
+			throw wrap(e);
 		}
 	}
 
-	static RuntimeException rethrow(Exception e) {
+	static RuntimeException wrap(Exception e) {
 		if (e instanceof RuntimeException) {
 			return (RuntimeException) e;
 		} else {
@@ -46,7 +46,7 @@ class Unchecked {
 		try {
 			return supplier.get();
 		} catch (Exception e) {
-			throw rethrow(e);
+			throw wrap(e);
 		}
 	}
 

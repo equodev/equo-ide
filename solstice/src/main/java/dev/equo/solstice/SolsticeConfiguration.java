@@ -77,7 +77,7 @@ public interface SolsticeConfiguration {
 					try (InputStream input = url.openStream()) {
 						return new PropertyResourceBundle(input);
 					} catch (IOException e) {
-						throw Unchecked.rethrow(e);
+						throw Unchecked.wrap(e);
 					}
 				},
 				Dictionaries.empty());

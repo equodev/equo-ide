@@ -325,7 +325,7 @@ public class Solstice extends ServiceRegistry {
 			try (InputStream stream = manifestURL.openStream()) {
 				manifest = new Manifest(stream);
 			} catch (IOException e) {
-				throw Unchecked.rethrow(e);
+				throw Unchecked.wrap(e);
 			}
 			activator = manifest.getMainAttributes().getValue(ACTIVATOR);
 			String symbolicNameRaw = manifest.getMainAttributes().getValue(SYMBOLIC_NAME);
@@ -526,7 +526,7 @@ public class Solstice extends ServiceRegistry {
 					return new URL(jarUrl + "/" + path);
 				}
 			} catch (MalformedURLException e) {
-				throw Unchecked.rethrow(e);
+				throw Unchecked.wrap(e);
 			}
 		}
 
