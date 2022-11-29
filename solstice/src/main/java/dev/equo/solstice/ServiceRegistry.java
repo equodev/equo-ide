@@ -144,7 +144,7 @@ abstract class ServiceRegistry implements BundleContext {
 
 	@Override
 	public <S> ServiceObjects<S> getServiceObjects(ServiceReference<S> reference) {
-		throw new UnsupportedOperationException();
+		throw Unimplemented.onPurpose();
 	}
 
 	@Override
@@ -340,18 +340,18 @@ abstract class ServiceRegistry implements BundleContext {
 			if (reference instanceof AbstractServiceReference) {
 				return (int) (id - ((AbstractServiceReference<?>) reference).id);
 			} else {
-				throw new UnsupportedOperationException();
+				throw Unimplemented.onPurpose();
 			}
 		}
 
 		@Override
 		public Bundle[] getUsingBundles() {
-			throw new UnsupportedOperationException();
+			throw Unimplemented.onPurpose();
 		}
 
 		@Override
 		public <A> A adapt(Class<A> type) {
-			throw new UnsupportedOperationException();
+			throw Unimplemented.onPurpose();
 		}
 
 		// ServiceRegistration overrides

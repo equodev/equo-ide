@@ -182,37 +182,37 @@ public interface SolsticeConfiguration {
 
 					@Override
 					public String getOption(String option, String defaultValue) {
-						throw new UnsupportedOperationException();
+						throw Unimplemented.onPurpose();
 					}
 
 					@Override
 					public int getIntegerOption(String option, int defaultValue) {
-						throw new UnsupportedOperationException();
+						throw Unimplemented.onPurpose();
 					}
 
 					@Override
 					public Map<String, String> getOptions() {
-						throw new UnsupportedOperationException();
+						throw Unimplemented.onPurpose();
 					}
 
 					@Override
 					public void setOption(String option, String value) {
-						throw new UnsupportedOperationException();
+						throw Unimplemented.onPurpose();
 					}
 
 					@Override
 					public void setOptions(Map<String, String> options) {
-						throw new UnsupportedOperationException();
+						throw Unimplemented.onPurpose();
 					}
 
 					@Override
 					public void removeOption(String option) {
-						throw new UnsupportedOperationException();
+						throw Unimplemented.onPurpose();
 					}
 
 					@Override
 					public void setDebugEnabled(boolean value) {
-						throw new UnsupportedOperationException();
+						throw Unimplemented.onPurpose();
 					}
 				},
 				Dictionaries.empty());

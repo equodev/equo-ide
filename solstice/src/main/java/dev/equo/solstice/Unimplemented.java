@@ -36,30 +36,35 @@ import org.osgi.service.packageadmin.ExportedPackage;
 import org.osgi.service.packageadmin.RequiredBundle;
 
 class Unimplemented {
+	static RuntimeException onPurpose() {
+		return new UnsupportedOperationException(
+				"Solstice believes that this method is not actually needed.");
+	}
+
 	interface Bundle extends org.osgi.framework.Bundle {
 		@Override
 		default BundleContext getBundleContext() {
-			throw new UnsupportedOperationException();
+			throw onPurpose();
 		}
 
 		@Override
 		default String getSymbolicName() {
-			throw new UnsupportedOperationException();
+			throw onPurpose();
 		}
 
 		@Override
 		default URL getEntry(String path) {
-			throw new UnsupportedOperationException();
+			throw onPurpose();
 		}
 
 		@Override
 		default int getState() {
-			throw new UnsupportedOperationException();
+			throw onPurpose();
 		}
 
 		@Override
 		default void start(int options) {
-			throw new UnsupportedOperationException();
+			throw onPurpose();
 		}
 
 		@Override
@@ -69,7 +74,7 @@ class Unimplemented {
 
 		@Override
 		default void stop(int options) {
-			throw new UnsupportedOperationException();
+			throw onPurpose();
 		}
 
 		@Override
@@ -79,22 +84,22 @@ class Unimplemented {
 
 		@Override
 		default void update(InputStream input) {
-			throw new UnsupportedOperationException();
+			throw onPurpose();
 		}
 
 		@Override
 		default void update() {
-			throw new UnsupportedOperationException();
+			throw onPurpose();
 		}
 
 		@Override
 		default void uninstall() {
-			throw new UnsupportedOperationException();
+			throw onPurpose();
 		}
 
 		@Override
 		default Dictionary<String, String> getHeaders(String locale) {
-			throw new UnsupportedOperationException();
+			throw onPurpose();
 		}
 
 		@Override
@@ -104,57 +109,57 @@ class Unimplemented {
 
 		@Override
 		default long getBundleId() {
-			throw new UnsupportedOperationException();
+			throw onPurpose();
 		}
 
 		@Override
 		default String getLocation() {
-			throw new UnsupportedOperationException();
+			throw onPurpose();
 		}
 
 		@Override
 		default ServiceReference<?>[] getRegisteredServices() {
-			throw new UnsupportedOperationException();
+			throw onPurpose();
 		}
 
 		@Override
 		default ServiceReference<?>[] getServicesInUse() {
-			throw new UnsupportedOperationException();
+			throw onPurpose();
 		}
 
 		@Override
 		default boolean hasPermission(Object permission) {
-			throw new UnsupportedOperationException();
+			throw onPurpose();
 		}
 
 		@Override
 		default URL getResource(String name) {
-			throw new UnsupportedOperationException();
+			throw onPurpose();
 		}
 
 		@Override
 		default Class<?> loadClass(String name) throws ClassNotFoundException {
-			throw new UnsupportedOperationException();
+			throw onPurpose();
 		}
 
 		@Override
 		default Enumeration<URL> getResources(String name) {
-			throw new UnsupportedOperationException();
+			throw onPurpose();
 		}
 
 		@Override
 		default Enumeration<String> getEntryPaths(String path) {
-			throw new UnsupportedOperationException();
+			throw onPurpose();
 		}
 
 		@Override
 		default long getLastModified() {
-			throw new UnsupportedOperationException();
+			throw onPurpose();
 		}
 
 		@Override
 		default Enumeration<URL> findEntries(String path, String filePattern, boolean recurse) {
-			throw new UnsupportedOperationException();
+			throw onPurpose();
 		}
 
 		@Override
@@ -164,17 +169,17 @@ class Unimplemented {
 
 		@Override
 		default Map<X509Certificate, List<X509Certificate>> getSignerCertificates(int signersType) {
-			throw new UnsupportedOperationException();
+			throw onPurpose();
 		}
 
 		@Override
 		default Version getVersion() {
-			throw new UnsupportedOperationException();
+			throw onPurpose();
 		}
 
 		@Override
 		default <A> A adapt(Class<A> type) {
-			throw new UnsupportedOperationException();
+			throw onPurpose();
 		}
 
 		@Override
@@ -186,57 +191,57 @@ class Unimplemented {
 	static class PackageAdmin implements org.osgi.service.packageadmin.PackageAdmin {
 		@Override
 		public ExportedPackage[] getExportedPackages(org.osgi.framework.Bundle bundle) {
-			throw new UnsupportedOperationException();
+			throw onPurpose();
 		}
 
 		@Override
 		public ExportedPackage[] getExportedPackages(String name) {
-			throw new UnsupportedOperationException();
+			throw onPurpose();
 		}
 
 		@Override
 		public ExportedPackage getExportedPackage(String name) {
-			throw new UnsupportedOperationException();
+			throw onPurpose();
 		}
 
 		@Override
 		public void refreshPackages(org.osgi.framework.Bundle[] bundles) {
-			throw new UnsupportedOperationException();
+			throw onPurpose();
 		}
 
 		@Override
 		public boolean resolveBundles(org.osgi.framework.Bundle[] bundles) {
-			throw new UnsupportedOperationException();
+			throw onPurpose();
 		}
 
 		@Override
 		public RequiredBundle[] getRequiredBundles(String symbolicName) {
-			throw new UnsupportedOperationException();
+			throw onPurpose();
 		}
 
 		@Override
 		public org.osgi.framework.Bundle[] getBundles(String symbolicName, String versionRange) {
-			throw new UnsupportedOperationException();
+			throw onPurpose();
 		}
 
 		@Override
 		public org.osgi.framework.Bundle[] getFragments(org.osgi.framework.Bundle bundle) {
-			throw new UnsupportedOperationException();
+			throw onPurpose();
 		}
 
 		@Override
 		public org.osgi.framework.Bundle[] getHosts(org.osgi.framework.Bundle bundle) {
-			throw new UnsupportedOperationException();
+			throw onPurpose();
 		}
 
 		@Override
 		public org.osgi.framework.Bundle getBundle(Class<?> clazz) {
-			throw new UnsupportedOperationException();
+			throw onPurpose();
 		}
 
 		@Override
 		public int getBundleType(org.osgi.framework.Bundle bundle) {
-			throw new UnsupportedOperationException();
+			throw onPurpose();
 		}
 	}
 
@@ -244,291 +249,291 @@ class Unimplemented {
 		@Override
 		public void refreshBundles(
 				Collection<org.osgi.framework.Bundle> bundles, FrameworkListener... listeners) {
-			throw new UnsupportedOperationException();
+			throw onPurpose();
 		}
 
 		@Override
 		public boolean resolveBundles(Collection<org.osgi.framework.Bundle> bundles) {
-			throw new UnsupportedOperationException();
+			throw onPurpose();
 		}
 
 		@Override
 		public Collection<org.osgi.framework.Bundle> getRemovalPendingBundles() {
-			throw new UnsupportedOperationException();
+			throw onPurpose();
 		}
 
 		@Override
 		public Collection<org.osgi.framework.Bundle> getDependencyClosure(
 				Collection<org.osgi.framework.Bundle> bundles) {
-			throw new UnsupportedOperationException();
+			throw onPurpose();
 		}
 
 		@Override
 		public Collection<org.osgi.framework.wiring.BundleCapability> findProviders(
 				Requirement requirement) {
-			throw new UnsupportedOperationException();
+			throw onPurpose();
 		}
 
 		@Override
 		public org.osgi.framework.Bundle getBundle() {
-			throw new UnsupportedOperationException();
+			throw onPurpose();
 		}
 	}
 
 	static class BundleCapability implements org.osgi.framework.wiring.BundleCapability {
 		@Override
 		public org.osgi.framework.wiring.BundleRevision getRevision() {
-			throw new UnsupportedOperationException();
+			throw onPurpose();
 		}
 
 		@Override
 		public String getNamespace() {
-			throw new UnsupportedOperationException();
+			throw onPurpose();
 		}
 
 		@Override
 		public Map<String, String> getDirectives() {
-			throw new UnsupportedOperationException();
+			throw onPurpose();
 		}
 
 		@Override
 		public Map<String, Object> getAttributes() {
-			throw new UnsupportedOperationException();
+			throw onPurpose();
 		}
 
 		@Override
 		public org.osgi.framework.wiring.BundleRevision getResource() {
-			throw new UnsupportedOperationException();
+			throw onPurpose();
 		}
 	}
 
 	static class BundleRevision implements org.osgi.framework.wiring.BundleRevision {
 		@Override
 		public String getSymbolicName() {
-			throw new UnsupportedOperationException();
+			throw onPurpose();
 		}
 
 		@Override
 		public Version getVersion() {
-			throw new UnsupportedOperationException();
+			throw onPurpose();
 		}
 
 		@Override
 		public List<org.osgi.framework.wiring.BundleCapability> getDeclaredCapabilities(
 				String namespace) {
-			throw new UnsupportedOperationException();
+			throw onPurpose();
 		}
 
 		@Override
 		public List<BundleRequirement> getDeclaredRequirements(String namespace) {
-			throw new UnsupportedOperationException();
+			throw onPurpose();
 		}
 
 		@Override
 		public int getTypes() {
-			throw new UnsupportedOperationException();
+			throw onPurpose();
 		}
 
 		@Override
 		public org.osgi.framework.wiring.BundleWiring getWiring() {
-			throw new UnsupportedOperationException();
+			throw onPurpose();
 		}
 
 		@Override
 		public List<Capability> getCapabilities(String namespace) {
-			throw new UnsupportedOperationException();
+			throw onPurpose();
 		}
 
 		@Override
 		public List<Requirement> getRequirements(String namespace) {
-			throw new UnsupportedOperationException();
+			throw onPurpose();
 		}
 
 		@Override
 		public org.osgi.framework.Bundle getBundle() {
-			throw new UnsupportedOperationException();
+			throw onPurpose();
 		}
 	}
 
 	static class Location implements org.eclipse.osgi.service.datalocation.Location {
 		@Override
 		public boolean allowsDefault() {
-			throw new UnsupportedOperationException();
+			throw onPurpose();
 		}
 
 		@Override
 		public URL getDefault() {
-			throw new UnsupportedOperationException();
+			throw onPurpose();
 		}
 
 		@Override
 		public org.eclipse.osgi.service.datalocation.Location getParentLocation() {
-			throw new UnsupportedOperationException();
+			throw onPurpose();
 		}
 
 		@Override
 		public URL getURL() {
-			throw new UnsupportedOperationException();
+			throw onPurpose();
 		}
 
 		@Override
 		public boolean isSet() {
-			throw new UnsupportedOperationException();
+			throw onPurpose();
 		}
 
 		@Override
 		public boolean isReadOnly() {
-			throw new UnsupportedOperationException();
+			throw onPurpose();
 		}
 
 		@Override
 		public boolean setURL(URL value, boolean lock) throws IllegalStateException {
-			throw new UnsupportedOperationException();
+			throw onPurpose();
 		}
 
 		@Override
 		public boolean set(URL value, boolean lock) throws IllegalStateException {
-			throw new UnsupportedOperationException();
+			throw onPurpose();
 		}
 
 		@Override
 		public boolean set(URL value, boolean lock, String lockFilePath) throws IllegalStateException {
-			throw new UnsupportedOperationException();
+			throw onPurpose();
 		}
 
 		@Override
 		public boolean lock() {
-			throw new UnsupportedOperationException();
+			throw onPurpose();
 		}
 
 		@Override
 		public void release() {
-			throw new UnsupportedOperationException();
+			throw onPurpose();
 		}
 
 		@Override
 		public boolean isLocked() {
-			throw new UnsupportedOperationException();
+			throw onPurpose();
 		}
 
 		@Override
 		public org.eclipse.osgi.service.datalocation.Location createLocation(
 				org.eclipse.osgi.service.datalocation.Location parent, URL defaultValue, boolean readonly) {
-			throw new UnsupportedOperationException();
+			throw onPurpose();
 		}
 
 		@Override
 		public URL getDataArea(String path) throws IOException {
-			throw new UnsupportedOperationException();
+			throw onPurpose();
 		}
 	}
 
 	static class BundleStartLevel implements org.osgi.framework.startlevel.BundleStartLevel {
 		@Override
 		public boolean isActivationPolicyUsed() {
-			throw new UnsupportedOperationException();
+			throw onPurpose();
 		}
 
 		@Override
 		public int getStartLevel() {
-			throw new UnsupportedOperationException();
+			throw onPurpose();
 		}
 
 		@Override
 		public void setStartLevel(int startlevel) {
-			throw new UnsupportedOperationException();
+			throw onPurpose();
 		}
 
 		@Override
 		public boolean isPersistentlyStarted() {
-			throw new UnsupportedOperationException();
+			throw onPurpose();
 		}
 
 		@Override
 		public org.osgi.framework.Bundle getBundle() {
-			throw new UnsupportedOperationException();
+			throw onPurpose();
 		}
 	}
 
 	static class BundleWiring implements org.osgi.framework.wiring.BundleWiring {
 		@Override
 		public List<BundleWire> getRequiredWires(String namespace) {
-			throw new UnsupportedOperationException();
+			throw onPurpose();
 		}
 
 		@Override
 		public boolean isInUse() {
-			throw new UnsupportedOperationException();
+			throw onPurpose();
 		}
 
 		@Override
 		public List<BundleWire> getProvidedWires(String namespace) {
-			throw new UnsupportedOperationException();
+			throw onPurpose();
 		}
 
 		@Override
 		public boolean isCurrent() {
-			throw new UnsupportedOperationException();
+			throw onPurpose();
 		}
 
 		@Override
 		public List<org.osgi.framework.wiring.BundleCapability> getCapabilities(String namespace) {
-			throw new UnsupportedOperationException();
+			throw onPurpose();
 		}
 
 		@Override
 		public List<BundleRequirement> getRequirements(String namespace) {
-			throw new UnsupportedOperationException();
+			throw onPurpose();
 		}
 
 		@Override
 		public org.osgi.framework.wiring.BundleRevision getRevision() {
-			throw new UnsupportedOperationException();
+			throw onPurpose();
 		}
 
 		@Override
 		public ClassLoader getClassLoader() {
-			throw new UnsupportedOperationException();
+			throw onPurpose();
 		}
 
 		@Override
 		public List<URL> findEntries(String path, String filePattern, int options) {
-			throw new UnsupportedOperationException();
+			throw onPurpose();
 		}
 
 		@Override
 		public Collection<String> listResources(String path, String filePattern, int options) {
-			throw new UnsupportedOperationException();
+			throw onPurpose();
 		}
 
 		@Override
 		public List<Capability> getResourceCapabilities(String namespace) {
-			throw new UnsupportedOperationException();
+			throw onPurpose();
 		}
 
 		@Override
 		public List<Requirement> getResourceRequirements(String namespace) {
-			throw new UnsupportedOperationException();
+			throw onPurpose();
 		}
 
 		@Override
 		public List<Wire> getProvidedResourceWires(String namespace) {
-			throw new UnsupportedOperationException();
+			throw onPurpose();
 		}
 
 		@Override
 		public List<Wire> getRequiredResourceWires(String namespace) {
-			throw new UnsupportedOperationException();
+			throw onPurpose();
 		}
 
 		@Override
 		public org.osgi.framework.wiring.BundleRevision getResource() {
-			throw new UnsupportedOperationException();
+			throw onPurpose();
 		}
 
 		@Override
 		public org.osgi.framework.Bundle getBundle() {
-			throw new UnsupportedOperationException();
+			throw onPurpose();
 		}
 	}
 }

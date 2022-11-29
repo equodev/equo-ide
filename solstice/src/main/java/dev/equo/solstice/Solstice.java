@@ -226,12 +226,12 @@ public class Solstice extends ServiceRegistry {
 
 	@Override
 	public Bundle installBundle(String location, InputStream input) {
-		throw new UnsupportedOperationException();
+		throw Unimplemented.onPurpose();
 	}
 
 	@Override
 	public Bundle installBundle(String location) {
-		throw new UnsupportedOperationException();
+		throw Unimplemented.onPurpose();
 	}
 
 	@Override
@@ -239,7 +239,7 @@ public class Solstice extends ServiceRegistry {
 		if (Constants.SYSTEM_BUNDLE_LOCATION.equals(location)) {
 			return systemBundle;
 		} else {
-			throw new UnsupportedOperationException();
+			throw Unimplemented.onPurpose();
 		}
 	}
 
@@ -566,7 +566,7 @@ public class Solstice extends ServiceRegistry {
 		@Override
 		public Enumeration<URL> findEntries(String path, String filePattern, boolean recurse) {
 			if (recurse) {
-				throw new UnsupportedOperationException();
+				throw Unimplemented.onPurpose();
 			}
 			return Dictionaries.enumeration(getEntry(path + "/" + filePattern));
 		}
