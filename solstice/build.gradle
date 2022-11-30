@@ -50,9 +50,37 @@ tasks.named('test') {
 	}
 }
 
+dependencies {
+	testSetupImplementation 'org.eclipse.jetty:jetty-util:11.0.12'
+	testSetupImplementation 'org.eclipse.jetty:jetty-server:11.0.12'
+	testSetupImplementation 'junit:junit:4.13.2'
+	testSetupImplementation 'com.jcraft:jsch:0.1.55'
+	testSetupImplementation 'org.apache.ant:ant:1.10.12'
+	testSetupImplementation 'org.apache.lucene:lucene-analyzers-common:8.4.1'
+	testSetupImplementation 'javax.inject:javax.inject:1'
+}
+
 def pluginsFromEclipse = [
-	// TODO: emf.common and emf.core
-	// TODO: org.eclipse.help
+	// seems important
+	'org.eclipse.emf.edit',
+	'org.eclipse.e4.ui.progress',
+	// feature org.eclipse.emf.ecore (and emf.common)
+	'org.eclipse.core.runtime',
+	'org.eclipse.emf.common',
+	'org.eclipse.emf.ecore',
+	'org.eclipse.emf.ecore.change',
+	'org.eclipse.emf.ecore.xmi',
+	// feature org.eclipse.help
+	'org.eclipse.equinox.http.jetty',
+	'org.eclipse.equinox.http.registry',
+	'org.eclipse.equinox.http.servlet',
+	'org.eclipse.equinox.jsp.jasper',
+	'org.eclipse.equinox.jsp.jasper.registry',
+	'org.eclipse.help.base',
+	'org.eclipse.help.ui',
+	'org.eclipse.help.webapp',
+	'org.eclipse.core.net',
+	'org.eclipse.equinox.security',
 	// feature org.eclipse.platform
 	'org.eclipse.rcp',
 	'org.eclipse.help',
@@ -214,6 +242,8 @@ def pluginsFromEclipse = [
 	'org.eclipse.jdt.launching.ui.macosx',
 	'org.eclipse.ant.launching'
 ]
+
+pluginsFromEclipse.remove('org.eclipse.jdt.junit4.runtime')
 
 apply plugin: 'com.diffplug.eclipse.mavencentral'
 eclipseMavenCentral {
