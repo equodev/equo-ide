@@ -28,8 +28,10 @@ public class NestedJarsNeededForTest {
 		var nestedJarFolder = new SolsticeConfiguration() {}.nestedJarFolder();
 		var nestedJars = NestedBundles.onClassPath().extractAllNestedJars(nestedJarFolder);
 		var content = new StringBuilder();
+		var build = nestedJarFolder.getParentFile();
+		var solstice = build.getParentFile().getAbsolutePath();
 		for (var nestedJar : nestedJars) {
-			content.append(nestedJar.getValue().getAbsolutePath());
+			content.append(nestedJar.getValue().getAbsolutePath().substring(solstice.length() + 1));
 			content.append('\n');
 		}
 		Files.write(
