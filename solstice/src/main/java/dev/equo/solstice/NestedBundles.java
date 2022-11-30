@@ -104,18 +104,30 @@ public abstract class NestedBundles {
 		return files;
 	}
 
+	private static final String JAR_COLON_FILE_COLON = "jar:file:";
+
 	public void confirmAllNestedJarsArePresentOnClasspath(File nestedJarFolder) {
 		var entries = extractAllNestedJars(nestedJarFolder);
 		Enumeration<URL> manifests =
 				Unchecked.get(
-						() -> NestedBundles.class.getClassLoader().getResources(Solstice.MANIFEST_PATH));
+						() ->
+								NestedBundles.class
+										.getClassLoader()
+										.getResources(Solstice.MANIFEST_PATH.substring(1)));
 		while (manifests.hasMoreElements()) {
 			var fullUrl = manifests.nextElement().toExternalForm();
 			var jarUrl = fullUrl.substring(0, fullUrl.length() - Solstice.MANIFEST_PATH.length());
 			if (!jarUrl.endsWith("!")) {
 				throw new IllegalArgumentException("Expected " + jarUrl + " to end with !");
 			}
-			var jarFile = new File(jarUrl.substring(0, jarUrl.length() - 1)); // -1 removes the !
+			if (!jarUrl.startsWith(JAR_COLON_FILE_COLON)) {
+				throw new IllegalArgumentException(
+						"Expected " + jarUrl + " to start with " + JAR_COLON_FILE_COLON);
+			}
+			var jarFile =
+					new File(
+							jarUrl.substring(
+									JAR_COLON_FILE_COLON.length(), jarUrl.length() - 1)); // -1 removes the !
 			entries.removeIf(e -> e.getValue().equals(jarFile));
 		}
 

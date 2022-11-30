@@ -64,8 +64,11 @@ public interface SolsticeConfiguration {
 	}
 
 	default File nestedJarFolder() {
-		File userDir = new File(System.getProperty("user.dir") + "/build");
-		return new File(userDir, "nested-jars");
+		File userDir = new File(System.getProperty("user.dir"));
+		if (!userDir.getName().equals("solstice")) {
+			userDir = new File(userDir, "solstice");
+		}
+		return new File(userDir, "build/nested-jars");
 	}
 
 	default void bootstrapServices(Bundle systemBundle, BundleContext context) {
