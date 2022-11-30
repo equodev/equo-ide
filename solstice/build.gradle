@@ -40,10 +40,14 @@ file('nestedJarsNeededForTest').readLines().forEach {
 
 tasks.register('nestedJarsNeededForTest', JavaExec) {
 	classpath = sourceSets.testSetup.runtimeClasspath
-	main = 'dev.equo.solstice.NestedJarsNeededForTest'
+	mainClass = 'dev.equo.solstice.NestedJarsNeededForTest'
 }
 tasks.named('test') {
 	dependsOn 'nestedJarsNeededForTest'
+	useJUnitPlatform {}
+	if (com.diffplug.common.swt.os.OS.getNative().isMac()) {
+		jvmArgs = ['-XstartOnFirstThread']
+	}
 }
 
 def pluginsFromEclipse = [
@@ -223,8 +227,4 @@ eclipseMavenCentral {
 		useNativesForRunningPlatform()
 		constrainTransitivesToThisRelease()
 	}
-}
-
-test {
-	useJUnitPlatform()
 }
