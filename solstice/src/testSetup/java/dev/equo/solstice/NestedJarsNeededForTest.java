@@ -35,7 +35,6 @@ public class NestedJarsNeededForTest {
 			content.append('\n');
 		}
 		Files.write(
-				Paths.get("solstice/nestedJarsNeededForTest"),
-				content.toString().getBytes(StandardCharsets.UTF_8));
+				Paths.get("nestedJarsNeededForTest"), content.toString().getBytes(StandardCharsets.UTF_8));
 	}
 }

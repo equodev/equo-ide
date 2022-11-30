@@ -34,8 +34,16 @@ configurations {
 	testImplementation.extendsFrom(testSetupImplementation)
 }
 
-file("nestedJarsNeededForTest").readLines().forEach {
+file('nestedJarsNeededForTest').readLines().forEach {
 	dependencies.testImplementation files(it)
+}
+
+tasks.register('nestedJarsNeededForTest', JavaExec) {
+	classpath = sourceSets.testSetup.runtimeClasspath
+	main = 'dev.equo.solstice.NestedJarsNeededForTest'
+}
+tasks.named('test') {
+	dependsOn 'nestedJarsNeededForTest'
 }
 
 apply plugin: 'com.diffplug.eclipse.mavencentral'
