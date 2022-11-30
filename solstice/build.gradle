@@ -9,7 +9,7 @@ targetCompatibility = java_compat
 apply from: 干.file('maven.gradle')
 apply from: 干.file('sonatype.gradle')
 
-String VER_SLF4J = '2.0.3'
+String VER_SLF4J = '2.0.5'
 
 dependencies {
 	implementation 'com.diffplug.durian:durian-swt.os:4.1.1'
@@ -17,11 +17,33 @@ dependencies {
 
 	compileOnly 'com.google.code.findbugs:jsr305:3.0.2'
 	compileOnly 'com.google.code.findbugs:annotations:3.0.1'
-	api "org.slf4j:slf4j-api:${VER_SLF4J}"
+	api "org.slf4j:slf4j-api:$VER_SLF4J"
 
-	testImplementation "org.slf4j:slf4j-simple:${VER_SLF4J}"
+	testImplementation "org.slf4j:slf4j-simple:$VER_SLF4J"
 	testImplementation "org.junit.jupiter:junit-jupiter:$VER_JUNIT"
 	testImplementation "org.assertj:assertj-core:$VER_ASSERTJ"
+}
+
+sourceSets {
+	testSetup {
+		compileClasspath += sourceSets.main.output
+		runtimeClasspath += sourceSets.main.output
+	}
+}
+configurations {
+	testImplementation.extendsFrom(testSetupImplementation)
+}
+
+file('nestedJarsNeededForTest').readLines().forEach {
+	dependencies.testImplementation files(it)
+}
+
+tasks.register('nestedJarsNeededForTest', JavaExec) {
+	classpath = sourceSets.testSetup.runtimeClasspath
+	main = 'dev.equo.solstice.NestedJarsNeededForTest'
+}
+tasks.named('test') {
+	dependsOn 'nestedJarsNeededForTest'
 }
 
 apply plugin: 'com.diffplug.eclipse.mavencentral'
@@ -30,11 +52,14 @@ eclipseMavenCentral {
 		compileOnly 'org.eclipse.osgi'
 		compileOnly 'org.eclipse.core.runtime'
 
-		testImplementation 'org.eclipse.ui.ide.application'
-		testImplementation 'org.osgi.service.component'
-		testImplementation 'org.osgi.service.cm'
-		testImplementation 'org.eclipse.equinox.cm'
-		testImplementation 'org.eclipse.equinox.event'
+		dep 'testSetupImplementation', 'org.eclipse.jdt.ui'
+		dep 'testSetupImplementation', 'org.eclipse.jdt.debug'
+		dep 'testSetupImplementation', 'org.eclipse.jdt.debug.ui'
+		dep 'testSetupImplementation', 'org.eclipse.ui.ide.application'
+		dep 'testSetupImplementation', 'org.osgi.service.component'
+		dep 'testSetupImplementation', 'org.osgi.service.cm'
+		dep 'testSetupImplementation', 'org.eclipse.equinox.cm'
+		dep 'testSetupImplementation', 'org.eclipse.equinox.event'
 		useNativesForRunningPlatform()
 		constrainTransitivesToThisRelease()
 	}
