@@ -82,7 +82,7 @@ public abstract class NestedBundles {
 		};
 	}
 
-	public static NestedBundles inFiles(Collection<File> files) {
+	public static NestedBundles inFiles(Iterable<File> files) {
 		return new NestedBundles() {
 			@Override
 			protected List<URL> listNestedJars() {
