@@ -15,6 +15,7 @@ if (changelog_per_project) {
 		apply plugin: 'com.diffplug.spotless-changelog'
 		spotlessChangelog {
 			tagPrefix "${kind}/"
+			appendDashSnapshotUnless_dashPrelease=true
 			commitMessage "Published ${kind}/{{version}}" // {{version}} will be replaced
 		}
 	} else {
