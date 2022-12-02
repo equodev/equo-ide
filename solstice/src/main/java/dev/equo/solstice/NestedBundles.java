@@ -13,10 +13,12 @@
  *******************************************************************************/
 package dev.equo.solstice;
 
+import com.diffplug.common.swt.os.OS;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.JarURLConnection;
 import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -28,6 +30,8 @@ import java.util.Map;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 import org.osgi.framework.Constants;
 
 /**
@@ -43,6 +47,42 @@ import org.osgi.framework.Constants;
  * </ul>
  */
 public abstract class NestedBundles {
+	/** Reads the version of the Solstice jar from the classpath. */
+	public static String solsticeVersion() throws IOException {
+		var solsticeJar =
+				NestedBundles.class.getResource(NestedBundles.class.getSimpleName() + ".class").toString();
+		if (!solsticeJar.startsWith("jar")) {
+			throw new IllegalArgumentException("");
+		}
+		var url = new URL(solsticeJar);
+		var jarConnection = (JarURLConnection) url.openConnection();
+		var manifest = jarConnection.getManifest();
+		return manifest.getMainAttributes().getValue("Implementation-Version");
+	}
+
+	public static void javaExec(String mainClass, Iterable<File> cp, String... args)
+			throws IOException, InterruptedException {
+		String javaHome = System.getProperty("java.home");
+		String javaBin = javaHome + File.separator + "bin" + File.separator + "java";
+
+		List<String> command = new ArrayList<>();
+		command.add(javaBin);
+		if (OS.getRunning().isMac()) {
+			command.add("-XstartOnFirstThread");
+		}
+		command.add("-classpath");
+		command.add(
+				StreamSupport.stream(cp.spliterator(), false)
+						.map(File::getAbsolutePath)
+						.collect(Collectors.joining(":")));
+		command.add(mainClass);
+		for (var arg : args) {
+			command.add(arg);
+		}
+
+		new ProcessBuilder(command).inheritIO().start().waitFor();
+	}
+
 	public static final String DIR = "nested-jars";
 	private static final Attributes.Name CLASSPATH = new Attributes.Name(Constants.BUNDLE_CLASSPATH);
 
