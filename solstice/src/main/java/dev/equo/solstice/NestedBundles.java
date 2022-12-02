@@ -21,7 +21,6 @@ import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.List;
@@ -44,6 +43,7 @@ import org.osgi.framework.Constants;
  * </ul>
  */
 public abstract class NestedBundles {
+	public static final String DIR = "nested-jars";
 	private static final Attributes.Name CLASSPATH = new Attributes.Name(Constants.BUNDLE_CLASSPATH);
 
 	private static void addNestedJarsFromManifest(
@@ -82,18 +82,18 @@ public abstract class NestedBundles {
 		};
 	}
 
-	public static NestedBundles inFiles(Collection<File> files) {
+	public static NestedBundles inFiles(Iterable<File> files) {
 		return new NestedBundles() {
 			@Override
 			protected List<URL> listNestedJars() {
 				List<URL> nestedJars = new ArrayList<>();
 				for (File file : files) {
 					try (var jarFile = new JarFile(file)) {
-						var zipEntry = jarFile.getEntry(Solstice.MANIFEST_PATH);
+						var zipEntry = jarFile.getEntry(Solstice.MANIFEST_PATH.substring(1));
 						if (zipEntry != null) {
+							var jarUrl = "jar:" + file.toURI().toURL().toExternalForm() + "!";
 							try (var input = jarFile.getInputStream(zipEntry)) {
-								addNestedJarsFromManifest(
-										nestedJars, file.toURI().toURL().toExternalForm() + "!", input);
+								addNestedJarsFromManifest(nestedJars, jarUrl, input);
 							}
 						}
 					} catch (IOException e) {

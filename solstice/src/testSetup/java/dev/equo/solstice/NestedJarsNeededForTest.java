@@ -25,13 +25,12 @@ public class NestedJarsNeededForTest {
 	 * change.
 	 */
 	public static void main(String[] args) throws IOException {
-		var nestedJarFolder = new SolsticeConfiguration() {}.nestedJarFolder();
+		var nestedJarFolder = new SolsticeConfiguration().nestedJarFolder();
 		var nestedJars = NestedBundles.onClassPath().extractAllNestedJars(nestedJarFolder);
 		var content = new StringBuilder();
-		var build = nestedJarFolder.getParentFile();
-		var solstice = build.getParentFile().getAbsolutePath();
+		var base = nestedJarFolder.getParentFile().getParentFile().getParentFile().getAbsolutePath();
 		for (var nestedJar : nestedJars) {
-			content.append(nestedJar.getValue().getAbsolutePath().substring(solstice.length() + 1));
+			content.append(nestedJar.getValue().getAbsolutePath().substring(base.length() + 1));
 			content.append('\n');
 		}
 		Files.write(

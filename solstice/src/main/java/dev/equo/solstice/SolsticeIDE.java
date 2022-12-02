@@ -13,6 +13,8 @@
  *******************************************************************************/
 package dev.equo.solstice;
 
+import java.io.File;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher;
@@ -23,14 +25,17 @@ import org.eclipse.ui.internal.ide.application.DelayedEventsProcessor;
 import org.eclipse.ui.internal.ide.application.IDEWorkbenchAdvisor;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.service.application.ApplicationException;
-import org.slf4j.simple.SimpleLogger;
 
-class IdeMain {
+class SolsticeIDE {
 	public static void main(String[] args) throws InvalidSyntaxException, ApplicationException {
-		System.setProperty(SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "INFO");
-		System.setProperty(SimpleLogger.LOG_FILE_KEY, "System.out");
-
-		var osgiShim = Solstice.initialize(new SolsticeConfiguration() {});
+		int idx = Arrays.asList(args).indexOf("-installDir");
+		SolsticeConfiguration cfg;
+		if (idx == -1) {
+			cfg = new SolsticeConfiguration();
+		} else {
+			cfg = new SolsticeConfiguration(new File(args[idx + 1]));
+		}
+		var osgiShim = Solstice.initialize(cfg);
 		var appServices =
 				osgiShim.getServiceReferences(
 						org.osgi.service.application.ApplicationDescriptor.class,
