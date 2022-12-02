@@ -6,7 +6,7 @@
 - downloads, configures, and launches an instance of the Eclipse IDE
 - ensures that all of your devs have a zero-effort and perfectly repeatable IDE setup process
 
-Use it like this in Gradle:
+Use it like this in Gradle with `gradlew equoIde`:
 
 ```gradle
 plugins {
@@ -20,7 +20,14 @@ equoIde { // launch with gradlew equoIde
 or like this in Maven:
 
 ```xml
-<plugin><!-- launch with mvn equo:ide -->
+<settings> <!-- put this in ~/.m2/settings.xml and launch with mvn equo-ide:equoIde -->
+  <pluginGroups>
+     <pluginGroup>dev.equo.ide</pluginGroup>
+  </pluginGroups>
+  ...
+    
+    
+<plugin><!-- or add this to pom.xml/<project><build><pluginManagement><plugins> to add non-default settings -->
   <groupId>dev.equo.ide</groupId>
   <artifactId>equo-ide-maven-plugin</artifactId>
   <version>${equo.ide.version}</version>

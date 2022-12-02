@@ -19,3 +19,6 @@ dependencies {
 apply from: 干.file('maven.gradle')
 apply from: 干.file('sonatype.gradle')
 apply plugin: 'de.benediktritter.maven-plugin-development'
+mavenPlugin {
+	artifactId = 'equo-ide-maven-plugin'
+}
