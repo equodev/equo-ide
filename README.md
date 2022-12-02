@@ -17,17 +17,16 @@ equoIde { // launch with gradlew equoIde
 }
 ```
 
-or like this in Maven:
+or like this in Maven with `mvn equo-ide:launch`:
 
 ```xml
-<settings> <!-- put this in ~/.m2/settings.xml and launch with mvn equo-ide:equoIde -->
+<settings> <!-- put this in ~/.m2/settings.xml -->
   <pluginGroups>
      <pluginGroup>dev.equo.ide</pluginGroup>
   </pluginGroups>
   ...
-    
-    
-<plugin><!-- or add this to pom.xml/<project><build><pluginManagement><plugins> to add non-default settings -->
+
+<plugin><!-- or add this to pom.xml/<project><build><pluginManagement><plugins> -->
   <groupId>dev.equo.ide</groupId>
   <artifactId>equo-ide-maven-plugin</artifactId>
   <version>${equo.ide.version}</version>
