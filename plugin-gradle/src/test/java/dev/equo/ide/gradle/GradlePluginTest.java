@@ -15,6 +15,7 @@ package dev.equo.ide.gradle;
 
 import java.io.IOException;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public class GradlePluginTest extends GradleHarness {
@@ -24,5 +25,12 @@ public class GradlePluginTest extends GradleHarness {
 		String output = gradleRunner().withArguments("tasks").build().getOutput().replace("\r", "");
 		Assertions.assertThat(output)
 				.contains("IDE tasks\n" + "---------\n" + "equoIde - Launches EquoIDE");
+	}
+
+	@Test
+	@Disabled
+	public void equoIde() throws IOException {
+		setFile("build.gradle").toLines("plugins { id 'dev.equo.ide' }", "equoIde {", "}");
+		gradleRunner().withArguments("equoIde", "--stacktrace").forwardOutput().build();
 	}
 }

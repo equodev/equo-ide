@@ -13,14 +13,56 @@
  *******************************************************************************/
 package dev.equo.ide.gradle;
 
+import com.diffplug.common.swt.os.OS;
+import dev.equo.solstice.NestedBundles;
+import java.io.File;
+import java.util.stream.Collectors;
+import javax.inject.Inject;
 import org.gradle.api.DefaultTask;
+import org.gradle.api.file.FileCollection;
+import org.gradle.api.model.ObjectFactory;
+import org.gradle.api.provider.Property;
+import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.TaskAction;
+import org.gradle.process.ExecOperations;
 
-public class EquoIdeTask extends DefaultTask {
-	EquoIdeExtension extension;
+public abstract class EquoIdeTask extends DefaultTask {
+	@Internal
+	abstract Property<EquoIdeExtension> getExtension();
+
+	@Internal
+	abstract Property<FileCollection> getClassPath();
+
+	@Internal
+	abstract Property<File> getInstallDir();
+
+	@Inject
+	protected abstract ExecOperations getExecOperations();
+
+	@Inject
+	protected abstract ObjectFactory getObjectFactory();
 
 	@TaskAction
 	public void launch() {
-		System.out.println("DO THE LAUNCH");
+		var cp = getClassPath().get();
+
+		var installDir = getInstallDir().get();
+		var nestedJarFolder = new File(installDir, NestedBundles.DIR);
+		var allNested =
+				NestedBundles.inFiles(cp).extractAllNestedJars(nestedJarFolder).stream()
+						.map(e -> e.getValue())
+						.collect(Collectors.toList());
+		var nestedFileCollection = getObjectFactory().fileCollection().from(allNested);
+
+		getExecOperations()
+				.javaexec(
+						javaExec -> {
+							javaExec.setClasspath(cp.plus(nestedFileCollection));
+							javaExec.args("-installDir", installDir.getAbsolutePath());
+							javaExec.getMainClass().set("dev.equo.solstice.SolsticeIDE");
+							if (OS.getRunning().isMac()) {
+								javaExec.jvmArgs("-XstartOnFirstThread");
+							}
+						});
 	}
 }
