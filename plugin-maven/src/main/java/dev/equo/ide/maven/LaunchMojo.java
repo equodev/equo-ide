@@ -13,11 +13,13 @@
  *******************************************************************************/
 package dev.equo.ide.maven;
 
+import com.diffplug.common.swt.os.SwtPlatform;
 import dev.equo.solstice.NestedBundles;
 import dev.equo.solstice.P2AsMaven;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.maven.plugin.AbstractMojo;
@@ -31,6 +33,7 @@ import org.eclipse.aether.RepositorySystemSession;
 import org.eclipse.aether.artifact.DefaultArtifact;
 import org.eclipse.aether.collection.CollectRequest;
 import org.eclipse.aether.graph.Dependency;
+import org.eclipse.aether.graph.Exclusion;
 import org.eclipse.aether.repository.RemoteRepository;
 import org.eclipse.aether.resolution.ArtifactResult;
 import org.eclipse.aether.resolution.DependencyRequest;
@@ -53,13 +56,23 @@ public class LaunchMojo extends AbstractMojo {
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		try {
+			System.setProperty("osgi.platform", SwtPlatform.getRunning().toString());
+
 			List<Dependency> deps = new ArrayList<>();
 			deps.add(
 					new Dependency(
 							new DefaultArtifact("dev.equo.ide:solstice:" + NestedBundles.solsticeVersion()),
 							null));
+
+			// not sure why, but we get errors from an old SWT with bad metadata, and this exclusion fixes
+			// it
+			// https://bugs.eclipse.org/bugs/show_bug.cgi?id=570685
+			var excludeTransitive =
+					Arrays.asList(
+							new Exclusion("org.eclipse.platform", "org.eclipse.swt.gtk.linux.aarch64", "*", "*"),
+							new Exclusion("org.eclipse.platform", "org.eclipse.swt.gtk.linux.arm", "*", "*"));
 			for (var coordinate : P2AsMaven.jdtDeps()) {
-				deps.add(new Dependency(new DefaultArtifact(coordinate), null));
+				deps.add(new Dependency(new DefaultArtifact(coordinate), null, null, excludeTransitive));
 			}
 			CollectRequest collectRequest = new CollectRequest(deps, null, repositories);
 			DependencyRequest dependencyRequest = new DependencyRequest(collectRequest, null);
