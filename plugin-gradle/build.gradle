@@ -8,6 +8,7 @@ sourceCompatibility = java_compat
 targetCompatibility = java_compat
 dependencies {
 	implementation project(':solstice')
+	implementation 'com.diffplug.durian:durian-swt.os:4.1.1'
 	testImplementation "org.junit.jupiter:junit-jupiter:$VER_JUNIT"
 	testImplementation "org.assertj:assertj-core:$VER_ASSERTJ"
 }

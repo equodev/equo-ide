@@ -43,8 +43,27 @@ import org.osgi.service.log.LogLevel;
 import org.osgi.service.log.LogService;
 import org.osgi.service.log.LoggerFactory;
 
-public interface SolsticeConfiguration {
-	default List<String> startOrder() {
+public class SolsticeConfiguration {
+	private File installDir;
+
+	public SolsticeConfiguration(File installDir) {
+		this.installDir = installDir;
+	}
+
+	public SolsticeConfiguration() {
+		this(defaultDir());
+	}
+
+	private static File defaultDir() {
+		var userDir = System.getProperty("user.dir");
+		if (userDir.endsWith("equo-ide")) {
+			return new File(userDir + "/solstice/build/testSetup");
+		} else {
+			return new File(userDir + "/build/testSetup");
+		}
+	}
+
+	public List<String> startOrder() {
 		return Arrays.asList(
 				"org.eclipse.equinox.registry",
 				"org.apache.felix.scr",
@@ -52,7 +71,7 @@ public interface SolsticeConfiguration {
 				"org.eclipse.core.runtime");
 	}
 
-	default Map<String, List<String>> additionalDeps() {
+	public Map<String, List<String>> additionalDeps() {
 		var additional = new TreeMap<String, List<String>>();
 		additional.put(
 				"org.eclipse.e4.ui.services",
@@ -63,15 +82,11 @@ public interface SolsticeConfiguration {
 		return additional;
 	}
 
-	default File nestedJarFolder() {
-		File userDir = new File(System.getProperty("user.dir"));
-		if (!userDir.getName().equals("solstice")) {
-			userDir = new File(userDir, "solstice");
-		}
-		return new File(userDir, "build/nested-jars");
+	public File nestedJarFolder() {
+		return new File(installDir, NestedBundles.DIR);
 	}
 
-	default void bootstrapServices(Bundle systemBundle, BundleContext context) {
+	public void bootstrapServices(Bundle systemBundle, BundleContext context) {
 		// in particular, we need services normally provided by
 		// org.eclipse.osgi.internal.framework.SystemBundleActivator::start
 		context.registerService(
@@ -91,10 +106,9 @@ public interface SolsticeConfiguration {
 				Dictionaries.empty());
 		context.registerService(EnvironmentInfo.class, new ShimEnvironmentInfo(), Dictionaries.empty());
 
-		File userDir = new File(System.getProperty("user.dir") + "/build");
-		ShimLocation.set(context, new File(userDir, "instance"), Location.INSTANCE_AREA_TYPE);
-		ShimLocation.set(context, new File(userDir, "install"), Location.INSTALL_AREA_TYPE);
-		ShimLocation.set(context, new File(userDir, "config"), Location.CONFIGURATION_AREA_TYPE);
+		ShimLocation.set(context, new File(installDir, "instance"), Location.INSTANCE_AREA_TYPE);
+		ShimLocation.set(context, new File(installDir, "install"), Location.INSTALL_AREA_TYPE);
+		ShimLocation.set(context, new File(installDir, "config"), Location.CONFIGURATION_AREA_TYPE);
 		context.registerService(
 				SAXParserFactory.class, SAXParserFactory.newInstance(), Dictionaries.empty());
 
@@ -224,7 +238,7 @@ public interface SolsticeConfiguration {
 				Dictionaries.empty());
 	}
 
-	default List<String> okayIfMissing() {
+	public List<String> okayIfMissing() {
 		return Arrays.asList(
 				"javax.annotation",
 				"org.eclipse.ant.core",
