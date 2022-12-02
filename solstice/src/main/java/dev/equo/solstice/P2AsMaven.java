@@ -24,7 +24,7 @@ public class P2AsMaven {
 				"org.eclipse.jetty:jetty-io:11.0.12",
 				"org.eclipse.jetty:jetty-util:11.0.12",
 				"org.eclipse.platform:org.eclipse.ant.ui:3.8.300",
-				"org.eclipse.jdt:org.eclipse.jdt.junit",
+				"org.eclipse.jdt:org.eclipse.jdt.junit:3.15.0",
 				"org.eclipse.jdt:org.eclipse.jdt.junit.core:3.11.400",
 				"org.eclipse.jdt:org.eclipse.jdt.junit5.runtime:1.1.0",
 				"org.eclipse.jdt:org.eclipse.jdt.junit.runtime:3.7.0",
