@@ -13,6 +13,7 @@
  *******************************************************************************/
 package dev.equo.ide.maven;
 
+import com.diffplug.common.swt.os.OS;
 import com.diffplug.common.swt.os.SwtPlatform;
 import dev.equo.solstice.NestedBundles;
 import dev.equo.solstice.P2AsMaven;
@@ -69,10 +70,17 @@ public class LaunchMojo extends AbstractMojo {
 			// https://bugs.eclipse.org/bugs/show_bug.cgi?id=570685
 			var excludeTransitive =
 					Arrays.asList(
+							new Exclusion("com.sun.jna", "com.sun.jna", "*", "*"),
+							new Exclusion("com.sun.jna", "com.sun.jna.platform", "*", "*"),
+							new Exclusion("org.apache.lucene", "org.apache.lucene.analyzers-common", "*", "*"),
+							new Exclusion("org.apache.lucene", "org.apache.lucene.misc", "*", "*"),
+							new Exclusion("org.apache.lucene", "org.apache.lucene.analyzers-smartcn", "*", "*"),
+							new Exclusion("javax.annotation", "javax.annotation-api", "*", "*"),
 							new Exclusion("org.eclipse.platform", "org.eclipse.swt.gtk.linux.aarch64", "*", "*"),
 							new Exclusion("org.eclipse.platform", "org.eclipse.swt.gtk.linux.arm", "*", "*"));
 			for (var coordinate : P2AsMaven.jdtDeps()) {
-				deps.add(new Dependency(new DefaultArtifact(coordinate), null, null, excludeTransitive));
+				//				deps.add(new Dependency(new DefaultArtifact(coordinate), null, null,
+				// excludeTransitive));
 			}
 			CollectRequest collectRequest = new CollectRequest(deps, null, repositories);
 			DependencyRequest dependencyRequest = new DependencyRequest(collectRequest, null);
@@ -109,7 +117,10 @@ public class LaunchMojo extends AbstractMojo {
 
 		List<String> command = new ArrayList<>();
 		command.add(javaBin);
-		command.add("-cp");
+		if (OS.getRunning().isMac()) {
+			command.add("-XstartOnFirstThread");
+		}
+		command.add("-classpath");
 		command.add(cp.stream().map(File::getAbsolutePath).collect(Collectors.joining(";")));
 		command.add(mainClass);
 		for (var arg : args) {
@@ -118,7 +129,6 @@ public class LaunchMojo extends AbstractMojo {
 
 		var builder = new ProcessBuilder(command);
 		Process process = builder.inheritIO().start();
-		process.waitFor();
 		return process.exitValue();
 	}
 }
