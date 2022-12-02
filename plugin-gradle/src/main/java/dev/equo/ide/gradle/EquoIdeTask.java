@@ -13,9 +13,9 @@
  *******************************************************************************/
 package dev.equo.ide.gradle;
 
-import com.diffplug.common.swt.os.OS;
 import dev.equo.solstice.NestedBundles;
 import java.io.File;
+import java.io.IOException;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
 import org.gradle.api.DefaultTask;
@@ -43,7 +43,7 @@ public abstract class EquoIdeTask extends DefaultTask {
 	protected abstract ObjectFactory getObjectFactory();
 
 	@TaskAction
-	public void launch() {
+	public void launch() throws IOException, InterruptedException {
 		var cp = getClassPath().get();
 
 		var installDir = getInstallDir().get();
@@ -54,15 +54,10 @@ public abstract class EquoIdeTask extends DefaultTask {
 						.collect(Collectors.toList());
 		var nestedFileCollection = getObjectFactory().fileCollection().from(allNested);
 
-		getExecOperations()
-				.javaexec(
-						javaExec -> {
-							javaExec.setClasspath(cp.plus(nestedFileCollection));
-							javaExec.args("-installDir", installDir.getAbsolutePath());
-							javaExec.getMainClass().set("dev.equo.solstice.SolsticeIDE");
-							if (OS.getRunning().isMac()) {
-								javaExec.jvmArgs("-XstartOnFirstThread");
-							}
-						});
+		NestedBundles.javaExec(
+				"dev.equo.solstice.SolsticeIDE",
+				cp.plus(nestedFileCollection),
+				"-installDir",
+				installDir.getAbsolutePath());
 	}
 }
