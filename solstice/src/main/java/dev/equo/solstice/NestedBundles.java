@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.JarURLConnection;
 import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -43,6 +44,19 @@ import org.osgi.framework.Constants;
  * </ul>
  */
 public abstract class NestedBundles {
+	/** Reads the version of the Solstice jar from the classpath. */
+	public static String solsticeVersion() throws IOException {
+		var solsticeJar =
+				NestedBundles.class.getResource(NestedBundles.class.getSimpleName() + ".class").toString();
+		if (!solsticeJar.startsWith("jar")) {
+			throw new IllegalArgumentException("");
+		}
+		var url = new URL(solsticeJar);
+		var jarConnection = (JarURLConnection) url.openConnection();
+		var manifest = jarConnection.getManifest();
+		return manifest.getMainAttributes().getValue("Implementation-Version");
+	}
+
 	public static final String DIR = "nested-jars";
 	private static final Attributes.Name CLASSPATH = new Attributes.Name(Constants.BUNDLE_CLASSPATH);
 

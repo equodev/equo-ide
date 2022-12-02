@@ -17,8 +17,6 @@ import dev.equo.solstice.NestedBundles;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.net.JarURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -27,16 +25,7 @@ import org.gradle.plugin.devel.tasks.PluginUnderTestMetadata;
 
 class DepsResolve {
 	static List<Object> resolveFiles() throws IOException {
-		var solsticeJar =
-				NestedBundles.class.getResource(NestedBundles.class.getSimpleName() + ".class").toString();
-		if (!solsticeJar.startsWith("jar")) {
-			throw new IllegalArgumentException("");
-		}
-		var url = new URL(solsticeJar);
-		var jarConnection = (JarURLConnection) url.openConnection();
-		var manifest = jarConnection.getManifest();
-		var implVersion = manifest.getMainAttributes().getValue("Implementation-Version");
-
+		var implVersion = NestedBundles.solsticeVersion();
 		if (!implVersion.endsWith("-SNAPSHOT")) {
 			return Collections.singletonList("dev.equo.ide:solstice:" + implVersion);
 		} else {
