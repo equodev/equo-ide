@@ -17,8 +17,10 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import org.gradle.testkit.runner.GradleRunner;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.io.TempDir;
 
 public class GradleHarness {
@@ -28,6 +30,12 @@ public class GradleHarness {
 	 * guarantee there will be no symlink problems.
 	 */
 	@TempDir File folderDontUseDirectly;
+
+	@BeforeEach
+	void copyPluginUnderTestMetadata() throws IOException {
+		var content = Files.readAllBytes(Paths.get(DepsResolve.METADATA_PATH));
+		setFile(DepsResolve.METADATA_PATH).toContent(content);
+	}
 
 	/** Returns the root folder (canonicalized to fix OS X issue) */
 	protected File rootFolder() throws IOException {
@@ -51,13 +59,17 @@ public class GradleHarness {
 			this.file = file;
 		}
 
-		public File toLines(String... lines) throws IOException {
-			return toContent(String.join("\n", Arrays.asList(lines)));
+		public File toContent(byte[] content) throws IOException {
+			Files.write(file.toPath(), content);
+			return file;
 		}
 
 		public File toContent(String content) throws IOException {
-			Files.write(file.toPath(), content.getBytes(StandardCharsets.UTF_8));
-			return file;
+			return toContent(content.getBytes(StandardCharsets.UTF_8));
+		}
+
+		public File toLines(String... lines) throws IOException {
+			return toContent(String.join("\n", Arrays.asList(lines)));
 		}
 	}
 
@@ -65,6 +77,7 @@ public class GradleHarness {
 		return GradleRunner.create()
 				.withGradleVersion(oldestGradleForJre())
 				.withProjectDir(rootFolder())
+				.withTestKitDir(rootFolder())
 				.withPluginClasspath();
 	}
 

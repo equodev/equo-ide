@@ -24,12 +24,19 @@ import java.util.Properties;
 import org.gradle.plugin.devel.tasks.PluginUnderTestMetadata;
 
 class DepsResolve {
+	static final String METADATA_PATH =
+			"build/pluginUnderTestMetadata/plugin-under-test-metadata.properties";
+
 	static List<Object> resolveFiles() throws IOException {
 		var implVersion = NestedBundles.solsticeVersion();
 		if (!implVersion.endsWith("-SNAPSHOT")) {
 			return Collections.singletonList("dev.equo.ide:solstice:" + implVersion);
 		} else {
-			var file = new File("build/pluginUnderTestMetadata/plugin-under-test-metadata.properties");
+			var file = new File(METADATA_PATH);
+			if (!file.exists()) {
+				// the ../.. is needed to keep testkit happy at commandline vs within IDE
+				file = new File("../../" + METADATA_PATH);
+			}
 			var props = new Properties();
 			try (var input = new FileInputStream(file)) {
 				props.load(input);
