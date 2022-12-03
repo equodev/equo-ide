@@ -93,7 +93,7 @@ public class LaunchMojo extends AbstractMojo {
 				files.add(nested.getValue());
 			}
 			NestedBundles.javaExec(
-					"dev.equo.solstice.SolsticeIDE", files, "-installDir", installDir.getAbsolutePath());
+					"dev.equo.solstice.IdeMain", files, "-installDir", installDir.getAbsolutePath());
 		} catch (DependencyResolutionException | IOException | InterruptedException e) {
 			throw new RuntimeException(e);
 		}

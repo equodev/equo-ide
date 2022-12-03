@@ -16,8 +16,8 @@ package dev.equo.solstice;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.service.application.ApplicationException;
 
-public class IdeTest {
+public class IdeMainTest {
 	public static void main(String[] args) throws InvalidSyntaxException, ApplicationException {
-		SolsticeIDE.main(args);
+		IdeMain.main(args);
 	}
 }

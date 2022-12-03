@@ -26,7 +26,7 @@ import org.eclipse.ui.internal.ide.application.IDEWorkbenchAdvisor;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.service.application.ApplicationException;
 
-class SolsticeIDE {
+class IdeMain {
 	public static void main(String[] args) throws InvalidSyntaxException, ApplicationException {
 		var argList = Arrays.asList(args);
 		int idx = argList.indexOf("-installDir");

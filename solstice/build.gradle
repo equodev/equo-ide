@@ -252,7 +252,7 @@ eclipseMavenCentral {
 	release '4.25.0', {
 		compileOnly 'org.eclipse.osgi'
 		compileOnly 'org.eclipse.core.runtime'
-		// only needed for SolsticeIDE
+		// only needed for IdeMain
 		compileOnly 'org.eclipse.ui.ide.application'
 
 		pluginsFromEclipse.each {plugin ->
