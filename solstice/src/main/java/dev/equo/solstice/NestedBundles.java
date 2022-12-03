@@ -60,7 +60,7 @@ public abstract class NestedBundles {
 		return manifest.getMainAttributes().getValue("Implementation-Version");
 	}
 
-	public static void javaExec(String mainClass, Iterable<File> cp, String... args)
+	public static String javaExec(String mainClass, Iterable<File> cp, String... args)
 			throws IOException, InterruptedException {
 		String javaHome = System.getProperty("java.home");
 		String javaBin = javaHome + File.separator + "bin" + File.separator + "java";
@@ -80,7 +80,7 @@ public abstract class NestedBundles {
 			command.add(arg);
 		}
 
-		new ProcessBuilder(command).inheritIO().start().waitFor();
+		return new ProcessRunner().exec(command).toString();
 	}
 
 	public static final String DIR = "nested-jars";

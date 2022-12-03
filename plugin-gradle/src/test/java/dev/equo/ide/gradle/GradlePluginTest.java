@@ -29,6 +29,18 @@ public class GradlePluginTest extends GradleHarness {
 	}
 
 	@Test
+	public void equoIdeTestOnly() throws IOException {
+		setFile("build.gradle").toLines("plugins { id 'dev.equo.ide' }", "equoIde {", "}");
+		var output =
+				gradleRunner()
+						.withArguments("equoIde", "-PequoTestOnly=true", "--stacktrace")
+						.build()
+						.getOutput();
+		Assertions.assertThat(output).contains("exit code: 0");
+		Assertions.assertThat(output).matches("(?s)(.*)stdout: Loaded (\\d+) bundles(.*)");
+	}
+
+	@Test
 	@Disabled
 	public void equoIde() throws IOException {
 		setFile("build.gradle").toLines("plugins { id 'dev.equo.ide' }", "equoIde {", "}");

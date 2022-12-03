@@ -57,6 +57,8 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 		for (String dep : P2AsMaven.jdtDeps()) {
 			project.getDependencies().add(EQUO_IDE, dep);
 		}
+
+		boolean equoTestOnly = "true".equals(project.findProperty("equoTestOnly"));
 		var installDir = new File(project.getBuildDir(), EQUO_IDE);
 		project
 				.getTasks()
@@ -67,6 +69,7 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 							task.setGroup("IDE");
 							task.setDescription("Launches EquoIDE");
 
+							task.getIsTestOnly().set(equoTestOnly);
 							task.getExtension().set(extension);
 							task.getClassPath().set(configuration);
 							task.getInstallDir().set(installDir);

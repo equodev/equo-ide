@@ -28,7 +28,8 @@ import org.osgi.service.application.ApplicationException;
 
 class SolsticeIDE {
 	public static void main(String[] args) throws InvalidSyntaxException, ApplicationException {
-		int idx = Arrays.asList(args).indexOf("-installDir");
+		var argList = Arrays.asList(args);
+		int idx = argList.indexOf("-installDir");
 		SolsticeConfiguration cfg;
 		if (idx == -1) {
 			cfg = new SolsticeConfiguration();
@@ -36,6 +37,14 @@ class SolsticeIDE {
 			cfg = new SolsticeConfiguration(new File(args[idx + 1]));
 		}
 		var osgiShim = Solstice.initialize(cfg);
+
+		var dontRunIdx = argList.indexOf("-equoTestOnly");
+		if (dontRunIdx != -1 && Boolean.parseBoolean(argList.get(dontRunIdx + 1))) {
+			System.out.println("Loaded " + osgiShim.getBundles().length + " bundles");
+			System.exit(0);
+			return;
+		}
+
 		var appServices =
 				osgiShim.getServiceReferences(
 						org.osgi.service.application.ApplicationDescriptor.class,
