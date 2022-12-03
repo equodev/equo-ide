@@ -37,10 +37,10 @@ public abstract class EquoIdeTask extends DefaultTask {
 	public abstract Property<File> getInstallDir();
 
 	@Inject
-	protected abstract ExecOperations getExecOperations();
+	public abstract ExecOperations getExecOperations();
 
 	@Inject
-	protected abstract ObjectFactory getObjectFactory();
+	public abstract ObjectFactory getObjectFactory();
 
 	@TaskAction
 	public void launch() throws IOException, InterruptedException {
