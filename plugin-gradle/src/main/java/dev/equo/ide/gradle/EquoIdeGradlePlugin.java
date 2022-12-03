@@ -21,7 +21,6 @@ import org.gradle.api.GradleException;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.ModuleVersionSelector;
-import org.gradle.api.attributes.Bundling;
 
 public class EquoIdeGradlePlugin implements Plugin<Project> {
 	static final String MINIMUM_GRADLE = "5.0";
@@ -38,11 +37,6 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 						.create(
 								EQUO_IDE,
 								config -> {
-									config
-											.getAttributes()
-											.attribute(
-													Bundling.BUNDLING_ATTRIBUTE,
-													project.getObjects().named(Bundling.class, Bundling.EXTERNAL));
 									config
 											.getResolutionStrategy()
 											.eachDependency(
