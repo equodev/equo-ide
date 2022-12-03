@@ -22,7 +22,8 @@ public class GradlePluginTest extends GradleHarness {
 	@Test
 	public void tasks() throws IOException {
 		setFile("build.gradle").toLines("plugins { id 'dev.equo.ide' }", "equoIde {", "}");
-		String output = gradleRunner().withArguments("tasks").build().getOutput().replace("\r", "");
+		String output =
+				gradleRunner().withArguments("tasks", "--stacktrace").build().getOutput().replace("\r", "");
 		Assertions.assertThat(output)
 				.contains("IDE tasks\n" + "---------\n" + "equoIde - Launches EquoIDE");
 	}
