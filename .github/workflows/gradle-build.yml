@@ -29,10 +29,12 @@ jobs:
         uses: gradle/wrapper-validation-action@v1
       - name: gradle caching
         uses: gradle/gradle-build-action@v2
-      - name: xvfb for headless graphics
-        uses: GabrielBB/xvfb-action@v1
-        with:
-          run: ./gradlew build
+      - run: sudo apt-get install xvfb
+      - run: Xvfb :99 &
+      - run: export DISPLAY=:99
+      - run: ./gradlew build
+      - name: cleanup xvfb pidx
+        uses: bcomnes/cleanup-xvfb@v1
       - name: junit result
         uses: mikepenz/action-junit-report@v3.6.1
         if: always() # always run even if the previous step fails
