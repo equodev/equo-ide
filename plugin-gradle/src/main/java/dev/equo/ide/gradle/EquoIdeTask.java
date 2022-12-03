@@ -28,13 +28,13 @@ import org.gradle.process.ExecOperations;
 
 public abstract class EquoIdeTask extends DefaultTask {
 	@Internal
-	abstract Property<EquoIdeExtension> getExtension();
+	public abstract Property<EquoIdeExtension> getExtension();
 
 	@Internal
-	abstract Property<FileCollection> getClassPath();
+	public abstract Property<FileCollection> getClassPath();
 
 	@Internal
-	abstract Property<File> getInstallDir();
+	public abstract Property<File> getInstallDir();
 
 	@Inject
 	protected abstract ExecOperations getExecOperations();
