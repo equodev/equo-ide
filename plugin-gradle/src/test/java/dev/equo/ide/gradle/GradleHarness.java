@@ -84,9 +84,11 @@ public class GradleHarness {
 	private static String oldestGradleForJre() {
 		switch (jreVersion()) {
 			case 11:
-				return "5.0";
+				// return "5.0";
 			case 12:
-				return "5.4";
+				// return "5.4";
+				// to support these older versions, we'll need to do some clever stuff
+				// in EquoIdeGradlePlugin to detect which EquoIdeTask to run,
 			case 13:
 				return "6.0";
 			case 14:
