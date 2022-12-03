@@ -24,10 +24,10 @@ jobs:
           distribution: 'temurin'
       - name: Validate Gradle wrapper
         uses: gradle/wrapper-validation-action@v1
-      - name: Build with Gradle
+      - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
-        with:
-          arguments: build
+      - name: Execute Gradle build
+        run: ./gradlew build
       - name: JUnit Report Action
         uses: mikepenz/action-junit-report@v3.6.1
         if: always() # always run even if the previous step fails
