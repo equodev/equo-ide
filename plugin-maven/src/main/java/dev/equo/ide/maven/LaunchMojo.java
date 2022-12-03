@@ -42,6 +42,9 @@ import org.eclipse.aether.resolution.DependencyResult;
 public class LaunchMojo extends AbstractMojo {
 	@Component private RepositorySystem repositorySystem;
 
+	@Parameter(property = "equoTestOnly")
+	private String equoTestOnly;
+
 	@Parameter(defaultValue = "${project.build.directory}", required = true, readonly = true)
 	private File buildDir;
 
@@ -92,8 +95,15 @@ public class LaunchMojo extends AbstractMojo {
 			for (var nested : NestedBundles.inFiles(files).extractAllNestedJars(nestedJarFolder)) {
 				files.add(nested.getValue());
 			}
+
+			boolean equoTestOnlyTrue = "true".equals(equoTestOnly);
 			NestedBundles.javaExec(
-					"dev.equo.solstice.IdeMain", files, "-installDir", installDir.getAbsolutePath());
+					"dev.equo.solstice.IdeMain",
+					files,
+					"-installDir",
+					installDir.getAbsolutePath(),
+					"-equoTestOnly",
+					Boolean.toString(equoTestOnlyTrue));
 		} catch (DependencyResolutionException | IOException | InterruptedException e) {
 			throw new RuntimeException(e);
 		}
