@@ -17,12 +17,13 @@ jobs:
     strategy:
       matrix:
         java: ['11', '17']
+    name: Java ${{ matrix.java }}
     steps:
       - uses: actions/checkout@v3
-      - name: jdk 11
+      - name: jdk ${{ matrix.java }}
         uses: actions/setup-java@v3
         with:
-          java-version: '11'
+          java-version: ${{ matrix.java }}
           distribution: 'temurin'
       - name: gradle wrapper
         uses: gradle/wrapper-validation-action@v1
