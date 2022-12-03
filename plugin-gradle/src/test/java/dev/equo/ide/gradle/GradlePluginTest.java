@@ -29,6 +29,7 @@ public class GradlePluginTest extends GradleHarness {
 	}
 
 	@Test
+	@Disabled
 	public void equoIdeTestOnly() throws IOException {
 		setFile("build.gradle").toLines("plugins { id 'dev.equo.ide' }", "equoIde {", "}");
 		var output =
