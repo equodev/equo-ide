@@ -57,14 +57,14 @@ public abstract class EquoIdeTask extends DefaultTask {
 						.collect(Collectors.toList());
 		var nestedFileCollection = getObjectFactory().fileCollection().from(allNested);
 
-		var result =
-				NestedBundles.javaExec(
-						"dev.equo.solstice.IdeMain",
-						cp.plus(nestedFileCollection),
-						"-installDir",
-						installDir.getAbsolutePath(),
-						"-equoTestOnly",
-						Boolean.toString(getIsTestOnly().get()));
-		System.out.println(result);
+		//		var result =
+		//				NestedBundles.javaExec(
+		//						"dev.equo.solstice.SolsticeIDE",
+		//						cp.plus(nestedFileCollection),
+		//						"-installDir",
+		//						installDir.getAbsolutePath(),
+		//						"-equoTestOnly",
+		//						Boolean.toString(getIsTestOnly().get()));
+		//		System.out.println(result);
 	}
 }
