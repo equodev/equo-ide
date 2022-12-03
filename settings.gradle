@@ -1,5 +1,7 @@
 pluginManagement {
 	plugins {
+		// https://github.com/radarsh/gradle-test-logger-plugin/blob/develop/CHANGELOG.md
+		id 'com.adarshr.test-logger'                    version '3.2.0'
 		// https://github.com/diffplug/blowdryer/tags
 		id 'com.diffplug.blowdryer'                     version '1.6.0'
 		id 'com.diffplug.blowdryerSetup'                version '1.6.0'
@@ -19,6 +21,7 @@ pluginManagement {
 }
 plugins {
 	id 'com.diffplug.blowdryerSetup'
+	id 'com.adarshr.test-logger'                    apply false
 	id 'com.diffplug.eclipse.mavencentral'          apply false
 	id 'com.diffplug.spotless'                      apply false
 	id 'com.diffplug.spotless-changelog'            apply false

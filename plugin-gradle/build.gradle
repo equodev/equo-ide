@@ -4,6 +4,7 @@ ext.maven_desc=干.proj('gradlePlugin_equoIde_desc', 'Marketing description of E
 
 apply from: 干.file('changelog.gradle')
 apply from: 干.file('gradle-plugin.gradle')
+apply plugin: 'com.adarshr.test-logger'
 sourceCompatibility = java_compat
 targetCompatibility = java_compat
 dependencies {

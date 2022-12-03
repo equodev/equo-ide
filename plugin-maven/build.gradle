@@ -7,6 +7,7 @@ String VER_MAVEN_API='3.0'
 apply from: 干.file('changelog.gradle')
 
 apply plugin: 'java'
+apply plugin: 'com.adarshr.test-logger'
 sourceCompatibility = java_compat
 targetCompatibility = java_compat
 dependencies {
