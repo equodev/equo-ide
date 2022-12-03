@@ -22,6 +22,7 @@ import java.util.regex.Pattern;
 import org.gradle.api.GradleException;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ModuleVersionSelector;
 import org.gradle.api.attributes.Bundling;
 
@@ -37,39 +38,11 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 			throw new GradleException("equoIde requires Gradle 6.0 or later");
 		}
 		EquoIdeExtension extension = project.getExtensions().create(EQUO_IDE, EquoIdeExtension.class);
-		var configuration =
-				project
-						.getConfigurations()
-						.create(
-								EQUO_IDE,
-								config -> {
-									config.attributes(
-											attr -> {
-												attr.attribute(
-														Bundling.BUNDLING_ATTRIBUTE,
-														project.getObjects().named(Bundling.class, Bundling.EXTERNAL));
-											});
-									config
-											.getResolutionStrategy()
-											.eachDependency(
-													details -> {
-														ModuleVersionSelector req = details.getRequested();
-														if (req.getName().contains($_OSGI_PLATFORM)) {
-															String running = SwtPlatform.getRunning().toString();
-															details.useTarget(
-																	req.getGroup()
-																			+ ":"
-																			+ req.getName().replace($_OSGI_PLATFORM, running)
-																			+ ":"
-																			+ req.getVersion());
-														}
-													});
-								});
+		Configuration configuration = createConfiguration(project);
 
 		project.getRepositories().mavenCentral();
-
 		try {
-			for (var dep : DepsResolve.resolveFiles()) {
+			for (var dep : DepsResolve.resolveSolsticeAndTransitives()) {
 				if (dep instanceof File) {
 					project.getDependencies().add(EQUO_IDE, project.files(dep));
 				} else if (dep instanceof String) {
@@ -97,6 +70,36 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 							task.getExtension().set(extension);
 							task.getClassPath().set(configuration);
 							task.getInstallDir().set(installDir);
+						});
+	}
+
+	private Configuration createConfiguration(Project project) {
+		return project
+				.getConfigurations()
+				.create(
+						EQUO_IDE,
+						config -> {
+							config.attributes(
+									attr -> {
+										attr.attribute(
+												Bundling.BUNDLING_ATTRIBUTE,
+												project.getObjects().named(Bundling.class, Bundling.EXTERNAL));
+									});
+							config
+									.getResolutionStrategy()
+									.eachDependency(
+											details -> {
+												ModuleVersionSelector req = details.getRequested();
+												if (req.getName().contains($_OSGI_PLATFORM)) {
+													String running = SwtPlatform.getRunning().toString();
+													details.useTarget(
+															req.getGroup()
+																	+ ":"
+																	+ req.getName().replace($_OSGI_PLATFORM, running)
+																	+ ":"
+																	+ req.getVersion());
+												}
+											});
 						});
 	}
 

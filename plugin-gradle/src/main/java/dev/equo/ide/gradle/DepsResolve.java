@@ -27,7 +27,7 @@ class DepsResolve {
 	static final String METADATA_PATH =
 			"build/pluginUnderTestMetadata/plugin-under-test-metadata.properties";
 
-	static List<Object> resolveFiles() throws IOException {
+	static List<Object> resolveSolsticeAndTransitives() throws IOException {
 		var implVersion = NestedBundles.solsticeVersion();
 		if (!implVersion.endsWith("-SNAPSHOT")) {
 			return Collections.singletonList("dev.equo.ide:solstice:" + implVersion);
