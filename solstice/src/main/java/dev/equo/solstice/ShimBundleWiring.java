@@ -17,22 +17,19 @@ import java.util.Collections;
 import java.util.List;
 import org.osgi.framework.wiring.BundleWire;
 
-class ShimDS {
+class ShimBundleWiring extends Unimplemented.BundleWiring {
+	@Override
+	public List<BundleWire> getRequiredWires(String namespace) {
+		return Collections.emptyList();
+	}
 
-	static class BundleWiring extends Unimplemented.BundleWiring {
-		@Override
-		public List<BundleWire> getRequiredWires(String namespace) {
-			return Collections.emptyList();
-		}
+	@Override
+	public boolean isInUse() {
+		return true;
+	}
 
-		@Override
-		public boolean isInUse() {
-			return true;
-		}
-
-		@Override
-		public List<BundleWire> getProvidedWires(String namespace) {
-			return Collections.emptyList();
-		}
+	@Override
+	public List<BundleWire> getProvidedWires(String namespace) {
+		return Collections.emptyList();
 	}
 }
