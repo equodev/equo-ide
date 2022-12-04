@@ -575,7 +575,11 @@ public class Solstice extends ServiceRegistry {
 
 		private String stripLeadingAddTrailingSlash(String path) {
 			path = stripLeadingSlash(path);
-			return path.endsWith("/") ? path : (path + "/");
+			if (path.isEmpty() || path.equals("/")) {
+				return "";
+			} else {
+				return path.endsWith("/") ? path : (path + "/");
+			}
 		}
 
 		@Override
