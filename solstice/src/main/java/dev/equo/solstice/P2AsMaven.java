@@ -193,7 +193,6 @@ public class P2AsMaven {
 				"org.eclipse.platform:org.eclipse.osgi.util:3.7.100",
 				"org.eclipse.platform:org.eclipse.swt.cocoa.macosx.aarch64:3.121.0",
 				"org.eclipse.platform:org.eclipse.swt:3.121.0",
-				"org.eclipse.platform:org.eclipse.equinox.console:1.4.500",
 				"org.osgi:org.osgi.service.component:1.5.0",
 				"org.osgi:org.osgi.util.promise:1.2.0",
 				"org.osgi:org.osgi.util.function:1.2.0",

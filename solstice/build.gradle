@@ -186,7 +186,6 @@ def pluginsFromEclipse = [
 	'org.eclipse.jface',
 	'org.eclipse.jface.databinding',
 	'org.eclipse.e4.ui.workbench3',
-	'org.eclipse.equinox.console',
 	'org.eclipse.e4.ui.workbench.addons.swt',
 	'org.eclipse.equinox.bidi',
 	'org.eclipse.e4.ui.dialogs',
