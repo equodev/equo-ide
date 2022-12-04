@@ -174,6 +174,26 @@ public class Solstice extends ServiceRegistry {
 				}
 
 				@Override
+				public URL getResource(String name) {
+					return bundles.get(0).getResource(name);
+				}
+
+				@Override
+				public Enumeration<URL> getResources(String name) throws IOException {
+					return bundles.get(0).getResources(name);
+				}
+
+				@Override
+				public Enumeration<String> getEntryPaths(String path) {
+					return Dictionaries.enumeration();
+				}
+
+				@Override
+				public Enumeration<URL> findEntries(String path, String filePattern, boolean recurse) {
+					return Dictionaries.enumeration();
+				}
+
+				@Override
 				public Version getVersion() {
 					return null;
 				}
