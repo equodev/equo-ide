@@ -83,6 +83,11 @@ public abstract class NestedBundles {
 		return new ProcessRunner().exec(command).toString();
 	}
 
+	public static String consoleExec(File rootDir, String... args)
+			throws IOException, InterruptedException {
+		return new String(new ProcessRunner(rootDir).exec(args).stdOut());
+	}
+
 	public static final String DIR = "nested-jars";
 	private static final Attributes.Name CLASSPATH = new Attributes.Name(Constants.BUNDLE_CLASSPATH);
 

@@ -97,13 +97,15 @@ public class LaunchMojo extends AbstractMojo {
 			}
 
 			boolean equoTestOnlyTrue = "true".equals(equoTestOnly);
-			NestedBundles.javaExec(
-					"dev.equo.solstice.IdeMain",
-					files,
-					"-installDir",
-					installDir.getAbsolutePath(),
-					"-equoTestOnly",
-					Boolean.toString(equoTestOnlyTrue));
+			String result =
+					NestedBundles.javaExec(
+							"dev.equo.solstice.IdeMain",
+							files,
+							"-installDir",
+							installDir.getAbsolutePath(),
+							"-equoTestOnly",
+							Boolean.toString(equoTestOnlyTrue));
+			System.out.println(result);
 		} catch (DependencyResolutionException | IOException | InterruptedException e) {
 			throw new RuntimeException(e);
 		}

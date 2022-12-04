@@ -15,6 +15,7 @@ package dev.equo.solstice;
 
 import com.diffplug.common.swt.os.OS;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -40,8 +41,15 @@ class ProcessRunner implements AutoCloseable {
 	private final ExecutorService threadStdErr = Executors.newSingleThreadExecutor();
 	private final ByteArrayOutputStream bufStdOut = new ByteArrayOutputStream();
 	private final ByteArrayOutputStream bufStdErr = new ByteArrayOutputStream();
+	private File cwd;
 
-	public ProcessRunner() {}
+	public ProcessRunner() {
+		this(new File(""));
+	}
+
+	public ProcessRunner(File cwd) {
+		this.cwd = cwd;
+	}
 
 	/** Executes the given shell command (using {@code cmd} on windows and {@code sh} on unix). */
 	public Result shell(String cmd) throws IOException, InterruptedException {
@@ -83,8 +91,7 @@ class ProcessRunner implements AutoCloseable {
 	 * immediately.
 	 */
 	public Result exec(byte[] stdin, List<String> args) throws IOException, InterruptedException {
-		ProcessBuilder builder = new ProcessBuilder(args);
-		Process process = builder.start();
+		Process process = new ProcessBuilder(args).directory(cwd).start();
 		Future<byte[]> outputFut =
 				threadStdOut.submit(() -> drainToBytes(process.getInputStream(), bufStdOut));
 		Future<byte[]> errorFut =
