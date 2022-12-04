@@ -64,9 +64,15 @@ public abstract class NestedBundles {
 			throws IOException, InterruptedException {
 		String javaHome = System.getProperty("java.home");
 		String javaBin = javaHome + File.separator + "bin" + File.separator + "java";
+		String javaCmd;
+		if (new File(javaBin).exists()) {
+			javaCmd = javaBin;
+		} else {
+			javaCmd = "java";
+		}
 
 		List<String> command = new ArrayList<>();
-		command.add(javaBin);
+		command.add(javaCmd);
 		if (OS.getRunning().isMac()) {
 			command.add("-XstartOnFirstThread");
 		}
