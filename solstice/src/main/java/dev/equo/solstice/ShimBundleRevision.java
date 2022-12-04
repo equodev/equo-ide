@@ -13,8 +13,11 @@
  *******************************************************************************/
 package dev.equo.solstice;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.wiring.BundleCapability;
 
 class ShimBundleRevision extends Unimplemented.BundleRevision {
 	private final Bundle bundle;
@@ -26,5 +29,16 @@ class ShimBundleRevision extends Unimplemented.BundleRevision {
 	@Override
 	public Bundle getBundle() {
 		return bundle;
+	}
+
+	@Override
+	public List<BundleCapability> getDeclaredCapabilities(String namespace) {
+		return Collections.emptyList();
+	}
+
+	@Override
+	public int getTypes() {
+		// TODO: this should return TYPE_FRAGMENT if it is a fragment
+		return 0;
 	}
 }

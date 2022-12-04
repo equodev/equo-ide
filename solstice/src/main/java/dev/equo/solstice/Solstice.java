@@ -47,6 +47,7 @@ import org.osgi.framework.Version;
 import org.osgi.framework.namespace.IdentityNamespace;
 import org.osgi.framework.startlevel.BundleStartLevel;
 import org.osgi.framework.wiring.BundleCapability;
+import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.framework.wiring.BundleWiring;
 import org.osgi.framework.wiring.FrameworkWiring;
 import org.osgi.resource.Namespace;
@@ -558,6 +559,8 @@ public class Solstice extends ServiceRegistry {
 								return true;
 							}
 						};
+			} else if (BundleRevision.class.equals(type)) {
+				return (A) new ShimBundleRevision(this);
 			} else {
 				return null;
 			}
