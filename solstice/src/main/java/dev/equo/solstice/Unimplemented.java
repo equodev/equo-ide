@@ -143,7 +143,7 @@ class Unimplemented {
 		}
 
 		@Override
-		default Enumeration<URL> getResources(String name) {
+		default Enumeration<URL> getResources(String name) throws IOException {
 			throw onPurpose();
 		}
 

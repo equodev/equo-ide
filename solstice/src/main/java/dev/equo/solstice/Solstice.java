@@ -30,8 +30,12 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.Function;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
+import java.util.regex.Pattern;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 import javax.annotation.Nullable;
 import org.eclipse.core.internal.runtime.InternalPlatform;
 import org.eclipse.osgi.internal.framework.FilterImpl;
@@ -520,15 +524,34 @@ public class Solstice extends ServiceRegistry {
 			return symbolicName;
 		}
 
+		private String stripLeadingSlash(String path) {
+			if (path.startsWith("/")) {
+				return path.substring(1);
+			} else {
+				return path;
+			}
+		}
+
 		@Override
 		public URL getEntry(String path) {
 			try {
-				if (path.startsWith("/")) {
-					return new URL(jarUrl + path);
-				} else {
-					return new URL(jarUrl + "/" + path);
-				}
+				return new URL(jarUrl + "/" + stripLeadingSlash(path));
 			} catch (MalformedURLException e) {
+				throw Unchecked.wrap(e);
+			}
+		}
+
+		private <T> T parseFromZip(Function<ZipFile, T> function) {
+			String prefix = "jar:file:";
+			if (!jarUrl.startsWith(prefix)) {
+				throw new IllegalArgumentException("Must start with " + prefix + " was " + jarUrl);
+			}
+			if (!jarUrl.endsWith("!")) {
+				throw new IllegalArgumentException("Must end with ! was " + jarUrl);
+			}
+			try (var zipFile = new ZipFile(jarUrl.substring(prefix.length(), jarUrl.length() - 1))) {
+				return function.apply(zipFile);
+			} catch (IOException e) {
 				throw Unchecked.wrap(e);
 			}
 		}
@@ -538,7 +561,61 @@ public class Solstice extends ServiceRegistry {
 			// TODO: according to spec, we should search in this bundle first,
 			// and then after that from the classloader, but we are only using
 			// this bundle
-			return getEntry(name);
+			ZipEntry entry = parseFromZip(zip -> zip.getEntry(stripLeadingSlash(name)));
+			if (entry != null) {
+				return getEntry(name);
+			} else {
+				return Solstice.class.getClassLoader().getResource(name);
+			}
+		}
+
+		@Override
+		public Enumeration<URL> getResources(String name) throws IOException {
+			return Solstice.class.getClassLoader().getResources(name);
+		}
+
+		@Override
+		public Enumeration<URL> findEntries(String path, String filePattern, boolean recurse) {
+			path = stripLeadingSlash(path);
+			if (!path.endsWith("/")) {
+				path = path + "/";
+			}
+			var pattern = Pattern.compile(filePattern.replace(".", "\\.").replace("*", ".*"));
+
+			var pathFinal = path;
+			var pathsWithinZip =
+					parseFromZip(
+							zipFile -> {
+								List<String> zipPaths = new ArrayList<>();
+								var entries = zipFile.entries();
+								while (entries.hasMoreElements()) {
+									var entry = entries.nextElement();
+									if (entry.getName().startsWith(pathFinal)) {
+										var after = entry.getName().substring(pathFinal.length());
+										int lastSlash = after.lastIndexOf('/');
+										if (lastSlash == -1) {
+											if (pattern.matcher(after).matches()) {
+												zipPaths.add(entry.getName());
+											}
+										} else if (recurse) {
+											var name = after.substring(lastSlash + 1);
+											if (pattern.matcher(name).matches()) {
+												zipPaths.add(entry.getName());
+											}
+										}
+									}
+								}
+								return zipPaths;
+							});
+			try {
+				var urls = new ArrayList<URL>();
+				for (var withinZip : pathsWithinZip) {
+					urls.add(new URL(jarUrl + "/" + withinZip));
+				}
+				return Collections.enumeration(urls);
+			} catch (MalformedURLException e) {
+				throw Unchecked.wrap(e);
+			}
 		}
 
 		@Override
@@ -564,15 +641,6 @@ public class Solstice extends ServiceRegistry {
 			} else {
 				return null;
 			}
-		}
-
-		// implemented for OSGi DS
-		@Override
-		public Enumeration<URL> findEntries(String path, String filePattern, boolean recurse) {
-			if (recurse) {
-				throw Unimplemented.onPurpose();
-			}
-			return Dictionaries.enumeration(getEntry(path + "/" + filePattern));
 		}
 	}
 }
