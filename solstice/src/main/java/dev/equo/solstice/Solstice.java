@@ -532,6 +532,11 @@ public class Solstice extends ServiceRegistry {
 			}
 		}
 
+		private String stripLeadingAddTrailingSlash(String path) {
+			path = stripLeadingSlash(path);
+			return path.endsWith("/") ? path : (path + "/");
+		}
+
 		@Override
 		public URL getEntry(String path) {
 			try {
@@ -575,14 +580,26 @@ public class Solstice extends ServiceRegistry {
 		}
 
 		@Override
-		public Enumeration<URL> findEntries(String path, String filePattern, boolean recurse) {
-			path = stripLeadingSlash(path);
-			if (!path.endsWith("/")) {
-				path = path + "/";
-			}
-			var pattern = Pattern.compile(filePattern.replace(".", "\\.").replace("*", ".*"));
+		public Enumeration<String> getEntryPaths(String path) {
+			var pathFinal = stripLeadingAddTrailingSlash(path);
+			return parseFromZip(
+					zipFile -> {
+						List<String> zipPaths = new ArrayList<>();
+						var entries = zipFile.entries();
+						while (entries.hasMoreElements()) {
+							var entry = entries.nextElement();
+							if (entry.getName().startsWith(pathFinal)) {
+								zipPaths.add(entry.getName());
+							}
+						}
+						return Collections.enumeration(zipPaths);
+					});
+		}
 
-			var pathFinal = path;
+		@Override
+		public Enumeration<URL> findEntries(String path, String filePattern, boolean recurse) {
+			var pathFinal = stripLeadingAddTrailingSlash(path);
+			var pattern = Pattern.compile(filePattern.replace(".", "\\.").replace("*", ".*"));
 			var pathsWithinZip =
 					parseFromZip(
 							zipFile -> {
