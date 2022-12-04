@@ -388,10 +388,7 @@ public class Solstice extends ServiceRegistry {
 					.forEach(
 							(key, value) -> {
 								String keyStr = key.toString();
-								if (ShimDS.SERVICE_COMPONENT.equals(keyStr)) {
-									String valueStr = value.toString().trim();
-									headers.put(ShimDS.SERVICE_COMPONENT, ShimDS.cleanHeader(jarUrl, valueStr));
-								} else if (!IGNORED_HEADERS.contains(keyStr)) {
+								if (!IGNORED_HEADERS.contains(keyStr)) {
 									headers.put(keyStr, value.toString());
 								}
 							});
