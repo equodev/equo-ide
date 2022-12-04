@@ -57,7 +57,6 @@ dependencies {
 	testSetupImplementation 'org.eclipse.jetty:jetty-server:11.0.12'
 	testSetupImplementation 'junit:junit:4.13.2'
 	testSetupImplementation 'com.jcraft:jsch:0.1.55'
-	testSetupImplementation 'org.apache.ant:ant:1.10.12'
 	testSetupImplementation 'org.apache.lucene:lucene-analyzers-common:8.4.1'
 	testSetupImplementation 'javax.inject:javax.inject:1'
 }
@@ -86,7 +85,6 @@ def pluginsFromEclipse = [
 	// feature org.eclipse.platform
 	'org.eclipse.rcp',
 	'org.eclipse.help',
-	'org.eclipse.ant.core',
 	'org.eclipse.compare.core',
 	'org.eclipse.compare',
 	'org.eclipse.compare.win32',
@@ -220,7 +218,6 @@ def pluginsFromEclipse = [
 	'com.ibm.icu',
 	// feature org.eclipse.jdt
 	'org.eclipse.jdt',
-	'org.eclipse.ant.ui',
 	'org.eclipse.jdt.apt.core',
 	'org.eclipse.jdt.apt.ui',
 	'org.eclipse.jdt.apt.pluggable.core',
@@ -241,8 +238,7 @@ def pluginsFromEclipse = [
 	'org.eclipse.jdt.ui',
 	'org.eclipse.jdt.doc.user',
 	'org.eclipse.jdt.launching.macosx',
-	'org.eclipse.jdt.launching.ui.macosx',
-	'org.eclipse.ant.launching'
+	'org.eclipse.jdt.launching.ui.macosx'
 ]
 
 pluginsFromEclipse.remove('org.eclipse.jdt.junit4.runtime')
