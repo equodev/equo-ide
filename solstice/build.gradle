@@ -175,7 +175,6 @@ def pluginsFromEclipse = [
 	'org.eclipse.equinox.preferences',
 	'org.osgi.service.prefs',
 	'org.eclipse.equinox.registry',
-	'org.eclipse.equinox.simpleconfigurator',
 	'org.eclipse.osgi',
 	'org.eclipse.osgi.compatibility.state',
 	'org.eclipse.osgi.services',
