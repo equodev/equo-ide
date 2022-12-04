@@ -44,7 +44,7 @@ class ProcessRunner implements AutoCloseable {
 	private File cwd;
 
 	public ProcessRunner() {
-		this(new File(""));
+		this(null);
 	}
 
 	public ProcessRunner(File cwd) {
@@ -91,7 +91,11 @@ class ProcessRunner implements AutoCloseable {
 	 * immediately.
 	 */
 	public Result exec(byte[] stdin, List<String> args) throws IOException, InterruptedException {
-		Process process = new ProcessBuilder(args).directory(cwd).start();
+		var builder = new ProcessBuilder(args);
+		if (cwd != null) {
+			builder.directory(cwd);
+		}
+		var process = builder.start();
 		Future<byte[]> outputFut =
 				threadStdOut.submit(() -> drainToBytes(process.getInputStream(), bufStdOut));
 		Future<byte[]> errorFut =
