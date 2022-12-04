@@ -134,6 +134,16 @@ public class Solstice extends ServiceRegistry {
 						return o1.symbolicName != null ? -1 : 1;
 					}
 				});
+		for (var bundle : bundles) {
+			var host = bundle.fragmentHost();
+			if (host != null) {
+				var hostBundle = bundleByName(host);
+				if (hostBundle == null) {
+					throw new IllegalArgumentException("Fragment " + bundle + " needs missing " + host);
+				}
+				hostBundle.addFragment(bundle);
+			}
+		}
 	}
 
 	public ShimBundle bundleByName(String name) {
@@ -339,6 +349,7 @@ public class Solstice extends ServiceRegistry {
 		final @Nullable String symbolicName;
 		final List<String> requiredBundles;
 		final Hashtable<String, String> headers;
+		final List<ShimBundle> fragments = new ArrayList<>();
 
 		ShimBundle(URL manifestURL) {
 			super(Solstice.this);
@@ -392,6 +403,19 @@ public class Solstice extends ServiceRegistry {
 									headers.put(keyStr, value.toString());
 								}
 							});
+		}
+
+		private void addFragment(ShimBundle bundle) {
+			fragments.add(bundle);
+		}
+
+		private String fragmentHost() {
+			var host = headers.get(Constants.FRAGMENT_HOST);
+			if (host == null) {
+				return null;
+			}
+			var idx = host.indexOf(';');
+			return idx == -1 ? host : host.substring(0, idx);
 		}
 
 		private List<String> requiredBundles(Manifest manifest) {
@@ -580,9 +604,6 @@ public class Solstice extends ServiceRegistry {
 
 		@Override
 		public URL getResource(String name) {
-			// TODO: according to spec, we should search in this bundle first,
-			// and then after that from the classloader, but we are only using
-			// this bundle
 			ZipEntry entry = parseFromZip(zip -> zip.getEntry(stripLeadingSlash(name)));
 			if (entry != null) {
 				return getEntry(name);
@@ -615,6 +636,15 @@ public class Solstice extends ServiceRegistry {
 
 		@Override
 		public Enumeration<URL> findEntries(String path, String filePattern, boolean recurse) {
+			var urls = new ArrayList<URL>();
+			findEntries(urls, path, filePattern, recurse);
+			return Collections.enumeration(urls);
+		}
+
+		private void findEntries(List<URL> urls, String path, String filePattern, boolean recurse) {
+			for (var fragment : fragments) {
+				fragment.findEntries(urls, path, filePattern, recurse);
+			}
 			var pathFinal = stripLeadingAddTrailingSlash(path);
 			var pattern = Pattern.compile(filePattern.replace(".", "\\.").replace("*", ".*"));
 			var pathsWithinZip =
@@ -642,11 +672,9 @@ public class Solstice extends ServiceRegistry {
 								return zipPaths;
 							});
 			try {
-				var urls = new ArrayList<URL>();
 				for (var withinZip : pathsWithinZip) {
 					urls.add(new URL(jarUrl + "/" + withinZip));
 				}
-				return Collections.enumeration(urls);
 			} catch (MalformedURLException e) {
 				throw Unchecked.wrap(e);
 			}
