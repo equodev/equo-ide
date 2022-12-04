@@ -241,6 +241,8 @@ public class SolsticeConfiguration {
 	public List<String> okayIfMissing() {
 		return Arrays.asList(
 				"javax.annotation",
+				"javax.inject",
+				"org.apache.ant",
 				"org.eclipse.ant.core",
 				"org.eclipse.jdt.annotation",
 				"org.apache.batik.css");

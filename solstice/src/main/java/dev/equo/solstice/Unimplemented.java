@@ -20,7 +20,6 @@ import java.net.URL;
 import java.security.cert.X509Certificate;
 import java.util.Collection;
 import java.util.Dictionary;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 import org.osgi.framework.BundleContext;
@@ -133,32 +132,12 @@ class Unimplemented {
 		}
 
 		@Override
-		default URL getResource(String name) {
-			throw onPurpose();
-		}
-
-		@Override
 		default Class<?> loadClass(String name) throws ClassNotFoundException {
 			throw onPurpose();
 		}
 
 		@Override
-		default Enumeration<URL> getResources(String name) {
-			throw onPurpose();
-		}
-
-		@Override
-		default Enumeration<String> getEntryPaths(String path) {
-			throw onPurpose();
-		}
-
-		@Override
 		default long getLastModified() {
-			throw onPurpose();
-		}
-
-		@Override
-		default Enumeration<URL> findEntries(String path, String filePattern, boolean recurse) {
 			throw onPurpose();
 		}
 

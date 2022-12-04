@@ -22,6 +22,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicLong;
 import org.eclipse.osgi.internal.framework.FilterImpl;
 import org.osgi.framework.Bundle;
@@ -61,7 +62,10 @@ abstract class ServiceRegistry implements BundleContext {
 	public synchronized ServiceRegistration<?> registerService(
 			String[] clazzes, Object service, Dictionary<String, ?> properties) {
 		logger.info(
-				"{} implemented by service {} with {}", Arrays.asList(clazzes), service, properties);
+				"{} implemented by service {} with {}",
+				Arrays.asList(clazzes),
+				service.getClass(),
+				propertiesToString(properties));
 		AbstractServiceReference<?> newService;
 		if (service instanceof ServiceFactory<?>) {
 			newService =
@@ -76,6 +80,32 @@ abstract class ServiceRegistry implements BundleContext {
 		return newService;
 	}
 
+	private static String propertiesToString(Dictionary<String, ?> dict) {
+		if (dict == null) {
+			return "{null}";
+		}
+		StringBuilder builder = new StringBuilder();
+		builder.append('{');
+		TreeMap<String, String> map = new TreeMap<>();
+		var keys = dict.keys();
+		while (keys.hasMoreElements()) {
+			var key = keys.nextElement();
+			builder.append(key);
+			builder.append('=');
+			var value = dict.get(key);
+			String valueStr;
+			if (value instanceof String[]) {
+				valueStr = Arrays.asList((String[]) value).toString();
+			} else {
+				valueStr = value.toString();
+			}
+			builder.append(valueStr);
+			builder.append(',');
+		}
+		builder.setLength(builder.length() - 1);
+		return builder.toString();
+	}
+
 	private final List<ListenerEntry> serviceListeners = new ArrayList<>();
 
 	@Override
@@ -85,7 +115,7 @@ abstract class ServiceRegistry implements BundleContext {
 
 	@Override
 	public final synchronized void addServiceListener(ServiceListener listener, String filter) {
-		logger.info("add listener {} with {}", listener, filter);
+		logger.info("add listener {} with {}", listener.getClass(), filter);
 		serviceListeners.add(
 				new ListenerEntry(listener, Unchecked.get(() -> FilterImpl.newInstance(filter))));
 	}

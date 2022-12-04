@@ -15,30 +15,21 @@ package dev.equo.solstice;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.wiring.BundleCapability;
+import org.osgi.framework.wiring.BundleWire;
 
-class ShimBundleRevision extends Unimplemented.BundleRevision {
-	private final Bundle bundle;
-
-	public ShimBundleRevision(Bundle bundle) {
-		this.bundle = Objects.requireNonNull(bundle);
-	}
-
+class ShimBundleWiring extends Unimplemented.BundleWiring {
 	@Override
-	public Bundle getBundle() {
-		return bundle;
-	}
-
-	@Override
-	public List<BundleCapability> getDeclaredCapabilities(String namespace) {
+	public List<BundleWire> getRequiredWires(String namespace) {
 		return Collections.emptyList();
 	}
 
 	@Override
-	public int getTypes() {
-		// TODO: this should return TYPE_FRAGMENT if it is a fragment
-		return 0;
+	public boolean isInUse() {
+		return true;
+	}
+
+	@Override
+	public List<BundleWire> getProvidedWires(String namespace) {
+		return Collections.emptyList();
 	}
 }

@@ -30,8 +30,12 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.Function;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
+import java.util.regex.Pattern;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 import javax.annotation.Nullable;
 import org.eclipse.core.internal.runtime.InternalPlatform;
 import org.eclipse.osgi.internal.framework.FilterImpl;
@@ -47,6 +51,7 @@ import org.osgi.framework.Version;
 import org.osgi.framework.namespace.IdentityNamespace;
 import org.osgi.framework.startlevel.BundleStartLevel;
 import org.osgi.framework.wiring.BundleCapability;
+import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.framework.wiring.BundleWiring;
 import org.osgi.framework.wiring.FrameworkWiring;
 import org.osgi.resource.Namespace;
@@ -166,6 +171,26 @@ public class Solstice extends ServiceRegistry {
 				@Override
 				public String getSymbolicName() {
 					return "osgi-shim-system-bundle";
+				}
+
+				@Override
+				public URL getResource(String name) {
+					return bundles.get(0).getResource(name);
+				}
+
+				@Override
+				public Enumeration<URL> getResources(String name) throws IOException {
+					return bundles.get(0).getResources(name);
+				}
+
+				@Override
+				public Enumeration<String> getEntryPaths(String path) {
+					return Dictionaries.enumeration();
+				}
+
+				@Override
+				public Enumeration<URL> findEntries(String path, String filePattern, boolean recurse) {
+					return Dictionaries.enumeration();
 				}
 
 				@Override
@@ -363,10 +388,7 @@ public class Solstice extends ServiceRegistry {
 					.forEach(
 							(key, value) -> {
 								String keyStr = key.toString();
-								if (ShimDS.SERVICE_COMPONENT.equals(keyStr)) {
-									String valueStr = value.toString().trim();
-									headers.put(ShimDS.SERVICE_COMPONENT, ShimDS.cleanHeader(jarUrl, valueStr));
-								} else if (!IGNORED_HEADERS.contains(keyStr)) {
+								if (!IGNORED_HEADERS.contains(keyStr)) {
 									headers.put(keyStr, value.toString());
 								}
 							});
@@ -519,15 +541,39 @@ public class Solstice extends ServiceRegistry {
 			return symbolicName;
 		}
 
+		private String stripLeadingSlash(String path) {
+			if (path.startsWith("/")) {
+				return path.substring(1);
+			} else {
+				return path;
+			}
+		}
+
+		private String stripLeadingAddTrailingSlash(String path) {
+			path = stripLeadingSlash(path);
+			return path.endsWith("/") ? path : (path + "/");
+		}
+
 		@Override
 		public URL getEntry(String path) {
 			try {
-				if (path.startsWith("/")) {
-					return new URL(jarUrl + path);
-				} else {
-					return new URL(jarUrl + "/" + path);
-				}
+				return new URL(jarUrl + "/" + stripLeadingSlash(path));
 			} catch (MalformedURLException e) {
+				throw Unchecked.wrap(e);
+			}
+		}
+
+		private <T> T parseFromZip(Function<ZipFile, T> function) {
+			String prefix = "jar:file:";
+			if (!jarUrl.startsWith(prefix)) {
+				throw new IllegalArgumentException("Must start with " + prefix + " was " + jarUrl);
+			}
+			if (!jarUrl.endsWith("!")) {
+				throw new IllegalArgumentException("Must end with ! was " + jarUrl);
+			}
+			try (var zipFile = new ZipFile(jarUrl.substring(prefix.length(), jarUrl.length() - 1))) {
+				return function.apply(zipFile);
+			} catch (IOException e) {
 				throw Unchecked.wrap(e);
 			}
 		}
@@ -537,7 +583,73 @@ public class Solstice extends ServiceRegistry {
 			// TODO: according to spec, we should search in this bundle first,
 			// and then after that from the classloader, but we are only using
 			// this bundle
-			return getEntry(name);
+			ZipEntry entry = parseFromZip(zip -> zip.getEntry(stripLeadingSlash(name)));
+			if (entry != null) {
+				return getEntry(name);
+			} else {
+				return Solstice.class.getClassLoader().getResource(name);
+			}
+		}
+
+		@Override
+		public Enumeration<URL> getResources(String name) throws IOException {
+			return Solstice.class.getClassLoader().getResources(name);
+		}
+
+		@Override
+		public Enumeration<String> getEntryPaths(String path) {
+			var pathFinal = stripLeadingAddTrailingSlash(path);
+			return parseFromZip(
+					zipFile -> {
+						List<String> zipPaths = new ArrayList<>();
+						var entries = zipFile.entries();
+						while (entries.hasMoreElements()) {
+							var entry = entries.nextElement();
+							if (entry.getName().startsWith(pathFinal)) {
+								zipPaths.add(entry.getName());
+							}
+						}
+						return Collections.enumeration(zipPaths);
+					});
+		}
+
+		@Override
+		public Enumeration<URL> findEntries(String path, String filePattern, boolean recurse) {
+			var pathFinal = stripLeadingAddTrailingSlash(path);
+			var pattern = Pattern.compile(filePattern.replace(".", "\\.").replace("*", ".*"));
+			var pathsWithinZip =
+					parseFromZip(
+							zipFile -> {
+								List<String> zipPaths = new ArrayList<>();
+								var entries = zipFile.entries();
+								while (entries.hasMoreElements()) {
+									var entry = entries.nextElement();
+									if (entry.getName().startsWith(pathFinal)) {
+										var after = entry.getName().substring(pathFinal.length());
+										int lastSlash = after.lastIndexOf('/');
+										if (lastSlash == -1) {
+											if (pattern.matcher(after).matches()) {
+												zipPaths.add(entry.getName());
+											}
+										} else if (recurse) {
+											var name = after.substring(lastSlash + 1);
+											if (pattern.matcher(name).matches()) {
+												zipPaths.add(entry.getName());
+											}
+										}
+									}
+								}
+								return zipPaths;
+							});
+			try {
+				var urls = new ArrayList<URL>();
+				for (var withinZip : pathsWithinZip) {
+					urls.add(new URL(jarUrl + "/" + withinZip));
+				}
+				return Collections.enumeration(urls);
+			} catch (MalformedURLException e) {
+				throw Unchecked.wrap(e);
+			}
 		}
 
 		@Override
@@ -549,7 +661,7 @@ public class Solstice extends ServiceRegistry {
 		@Override
 		public <A> A adapt(Class<A> type) {
 			if (BundleWiring.class.equals(type)) {
-				return (A) new ShimDS.BundleWiring();
+				return (A) new ShimBundleWiring();
 			} else if (BundleStartLevel.class.equals(type)) {
 				return (A)
 						new Unimplemented.BundleStartLevel() {
@@ -558,18 +670,11 @@ public class Solstice extends ServiceRegistry {
 								return true;
 							}
 						};
+			} else if (BundleRevision.class.equals(type)) {
+				return (A) new ShimBundleRevision(this);
 			} else {
 				return null;
 			}
-		}
-
-		// implemented for OSGi DS
-		@Override
-		public Enumeration<URL> findEntries(String path, String filePattern, boolean recurse) {
-			if (recurse) {
-				throw Unimplemented.onPurpose();
-			}
-			return Dictionaries.enumeration(getEntry(path + "/" + filePattern));
 		}
 	}
 }
