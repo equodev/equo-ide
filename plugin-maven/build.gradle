@@ -31,4 +31,5 @@ jar.manifest.attributes.put('Implementation-Version', spotlessChangelog.versionN
 test {
 	useJUnitPlatform()
 	dependsOn 'publishToMavenLocal'
+	dependsOn ':solstice:publishToMavenLocal'
 }
