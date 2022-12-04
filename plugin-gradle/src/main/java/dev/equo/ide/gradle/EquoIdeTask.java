@@ -59,7 +59,7 @@ public abstract class EquoIdeTask extends DefaultTask {
 
 		var result =
 				NestedBundles.javaExec(
-						"dev.equo.solstice.SolsticeIDE",
+						"dev.equo.solstice.IdeMain",
 						cp.plus(nestedFileCollection),
 						"-installDir",
 						installDir.getAbsolutePath(),
