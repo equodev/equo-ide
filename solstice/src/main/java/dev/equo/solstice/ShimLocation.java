@@ -58,4 +58,9 @@ class ShimLocation extends Unimplemented.Location {
 	public URL getDataArea(String path) throws IOException {
 		return new URL(url.toExternalForm() + path);
 	}
+
+	@Override
+	public String toString() {
+		return "ShimLocation[" + url + "]";
+	}
 }
