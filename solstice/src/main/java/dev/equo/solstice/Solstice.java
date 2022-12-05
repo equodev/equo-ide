@@ -541,8 +541,17 @@ public class Solstice extends ServiceRegistry {
 				var bundle = bundleForPkg(pkg);
 				logger.info("{} import {} package {}", this, bundle, pkg);
 				if (bundle == null) {
-					logger.error("No bundle for package {} needed by {}", pkg, this);
-					pkgs.add(pkg);
+					if (cfg.okayIfMissingPackage().contains(pkg)) {
+						pkgs.add(pkg);
+						logger.info("  missing but okayIfMissingPackage so no problem");
+					} else {
+						throw new IllegalArgumentException(
+								"MISSING PACKAGE "
+										+ pkg
+										+ " imported by "
+										+ this
+										+ " (add it to okayIfMissingPackage)");
+					}
 				} else {
 					try {
 						bundle.activate();
@@ -564,11 +573,15 @@ public class Solstice extends ServiceRegistry {
 								"{} failed to activate, was required by {}, caused by {}", required, this, e);
 					}
 				} else {
-					if (!cfg.okayIfMissing().contains(required)) {
-						logger.error("{} is missing, was required by {}", required, this);
-						throw new IllegalArgumentException(required + " IS MISSING, needed by " + this);
+					if (!cfg.okayIfMissingBundle().contains(required)) {
+						throw new IllegalArgumentException(
+								"MISSING BUNDLE "
+										+ required
+										+ " needed by "
+										+ this
+										+ " (add it to okayIfMissingBundle)");
 					} else {
-						logger.info("  missing but okayIfMissing so no problem");
+						logger.info("  missing but okayIfMissingBundle so no problem");
 					}
 				}
 			}

@@ -82,6 +82,104 @@ public class SolsticeConfiguration {
 		return new File(installDir, NestedBundles.DIR);
 	}
 
+	public List<String> okayIfMissingBundle() {
+		return Arrays.asList(
+				"javax.annotation",
+				"javax.inject",
+				"org.apache.ant",
+				"org.apache.batik.css",
+				"org.apache.lucene.analyzers-common",
+				"org.apache.lucene.analyzers-smartcn",
+				"org.apache.lucene.core",
+				"org.eclipse.ant.core",
+				"org.eclipse.jdt.annotation",
+				"org.junit");
+	}
+
+	public List<String> okayIfMissingPackage() {
+		return Arrays.asList(
+				"java.awt",
+				"java.io",
+				"java.lang",
+				"java.lang.annotation",
+				"java.lang.invoke",
+				"java.lang.module",
+				"java.lang.ref",
+				"java.lang.reflect",
+				"java.net",
+				"java.nio",
+				"java.nio.channels",
+				"java.nio.charset",
+				"java.nio.file",
+				"java.nio.file.attribute",
+				"java.security",
+				"java.security.cert",
+				"java.sql",
+				"java.text",
+				"java.time",
+				"java.time.format",
+				"java.time.temporal",
+				"java.util",
+				"java.util.concurrent",
+				"java.util.concurrent.atomic",
+				"java.util.concurrent.locks",
+				"java.util.function",
+				"java.util.jar",
+				"java.util.regex",
+				"java.util.stream",
+				"java.util.zip",
+				"javax.crypto",
+				"javax.imageio",
+				"javax.inject",
+				"javax.naming",
+				"javax.naming.directory",
+				"javax.naming.ldap",
+				"javax.security.auth.callback",
+				"javax.security.auth.login",
+				"javax.security.auth.spi",
+				"javax.tools",
+				"javax.xml.datatype",
+				"javax.xml.namespace",
+				"javax.xml.parsers",
+				"javax.xml.transform",
+				"javax.xml.transform.dom",
+				"javax.xml.transform.stream",
+				"junit.runner",
+				"kotlin",
+				"kotlin.collections",
+				"org.apache.commons.beanutils",
+				"org.apache.commons.fileupload",
+				"org.apache.commons.fileupload.disk",
+				"org.apache.commons.fileupload.servlet",
+				"org.apache.felix.service.command",
+				"org.eclipse.ant.core",
+				"org.eclipse.equinox.internal.frameworkadmin.equinox",
+				"org.eclipse.equinox.internal.p2.jarprocessor",
+				"org.eclipse.equinox.internal.simpleconfigurator",
+				"org.eclipse.equinox.internal.simpleconfigurator.utils",
+				"org.eclipse.equinox.simpleconfigurator.manipulator",
+				"org.eclipse.internal.provisional.equinox.p2.jarprocessor",
+				"org.eclipse.jetty.jmx",
+				"org.eclipse.jetty.servlet",
+				"org.jdom",
+				"org.jdom.input",
+				"org.junit",
+				"org.junit.experimental.categories",
+				"org.junit.internal.builders",
+				"org.junit.runners.model",
+				"org.junit.runner.notification",
+				"org.slf4j.event",
+				"org.slf4j.helpers",
+				"org.slf4j.spi",
+				"org.xml.sax",
+				"org.xml.sax.ext",
+				"org.xml.sax.helpers",
+				"org.w3c.dom",
+				"org.w3c.dom.bootstrap",
+				"org.w3c.dom.css",
+				"org.w3c.dom.ls");
+	}
+
 	public void bootstrapServices(Bundle systemBundle, BundleContext context) {
 		// in particular, we need services normally provided by
 		// org.eclipse.osgi.internal.framework.SystemBundleActivator::start
@@ -232,15 +330,5 @@ public class SolsticeConfiguration {
 					}
 				},
 				Dictionaries.empty());
-	}
-
-	public List<String> okayIfMissing() {
-		return Arrays.asList(
-				"javax.annotation",
-				"javax.inject",
-				"org.apache.ant",
-				"org.eclipse.ant.core",
-				"org.eclipse.jdt.annotation",
-				"org.apache.batik.css");
 	}
 }
