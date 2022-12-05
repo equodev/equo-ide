@@ -13,7 +13,7 @@ def gpg_key = new String(gpg_key64.decodeBase64())
 if (plugins.hasPlugin('maven-publish')) {
 	apply plugin: 'signing'
 	signing {
-		useInMemoryPgpKeys(gpg_key, gpg_passphrase)
+		useInMemoryPgpKeys(gpg_key, new String(gpg_passphrase.decodeBase64()))
 		sign(publishing.publications)
 	}
 }
@@ -29,8 +29,8 @@ if (project.parent == null) {
 			sonatype {
 				nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
 				snapshotRepositoryUrl.set(uri("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
-				username = nexus_user
-				password = nexus_pass
+				username = new String(nexus_user.decodeBase64())
+				password = new String(nexus_pass.decodeBase64())
 			}
 		}
 	}

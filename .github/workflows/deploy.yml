@@ -1,11 +1,11 @@
-# gradle_portal_key
-# gradle_portal_secret
-# github_token
-# nexus_user
-# nexus_pass
-# gpg_passphrase
-# gpg_key64
-#   gpg --export-secret-keys --armor XXXX | openssl base64 | pbcopy
+# GRADLE_PORTAL_KEY (base64)
+# GRADLE_PORTAL_SECRET (base64)
+# GITHUB_TOKEN
+# NEXUS_USER (base64)
+# NEXUS_PASS (base64)
+# GPG_PASSPHRASE (base64)
+# GPG_KEY (base64)
+#   gpg --export-secret-keys --armor KEY_ID | openssl base64 | pbcopy
 
 name: deploy
 on:
@@ -25,11 +25,11 @@ jobs:
     runs-on: ubuntu-latest
     name: deploy
     env:
-      gh_token: ${{ secrets.github_token }}
-      ORG_GRADLE_PROJECT_nexus_user: ${{ secrets.nexus_user }}
-      ORG_GRADLE_PROJECT_nexus_pass: ${{ secrets.nexus_pass }}
-      ORG_GRADLE_PROJECT_gpg_passphrase: ${{ secrets.gpg_passphrase }}
-      ORG_GRADLE_PROJECT_gpg_key64: ${{ secrets.gpg_key64 }}
+      gh_token: ${{ secrets.EQUO_IDE_GITHUB }}
+      ORG_GRADLE_PROJECT_nexus_user: ${{ secrets.NEXUS_USER }}
+      ORG_GRADLE_PROJECT_nexus_pass: ${{ secrets.NEXUS_PASS }}
+      ORG_GRADLE_PROJECT_gpg_passphrase: ${{ secrets.GPG_PASSPHRASE }}
+      ORG_GRADLE_PROJECT_gpg_key64: ${{ secrets.GPG_KEY }}
     steps:
       - uses: actions/checkout@v3
       - name: jdk 11
@@ -44,11 +44,11 @@ jobs:
         run: |
           ./gradlew :solstice:changelogPush -Prelease=true --stacktrace --warning-mode all
           ./gradlew :plugin-maven:changelogPush -Prelease=true --stacktrace --warning-mode all
-          ./gradlew :plugin-gradle:changelogPush -Prelease=true -Pgradle.publish.key=${{ secrets.gradle_portal_key }} -Pgradle.publish.secret=${{ secrets.gradle_portal_secret }} --stacktrace --warning-mode all
+          ./gradlew :plugin-gradle:changelogPush -Prelease=true -Pgradle.publish.key=${{ secrets.GRADLE_PORTAL_KEY }} -Pgradle.publish.secret=${{ secrets.GRADLE_PORTAL_SECRET }} --stacktrace --warning-mode all
       - name: publish just plugin-gradle
         if: "${{ github.event.inputs.to_publish == 'plugin-gradle' }}"
         run: |
-          ./gradlew :plugin-gradle:changelogPush -Prelease=true -Pgradle.publish.key=${{ secrets.gradle_portal_key }} -Pgradle.publish.secret=${{ secrets.gradle_portal_secret }} --stacktrace --warning-mode all
+          ./gradlew :plugin-gradle:changelogPush -Prelease=true -Pgradle.publish.key=${{ secrets.GRADLE_PORTAL_KEY }} -Pgradle.publish.secret=${{ secrets.GRADLE_PORTAL_SECRET }} --stacktrace --warning-mode all
       - name: publish just plugin-maven
         if: "${{ github.event.inputs.to_publish == 'plugin-maven' }}"
         run: |
