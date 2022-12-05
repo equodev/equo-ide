@@ -11,7 +11,7 @@ name: deploy
 on:
   workflow_dispatch:
     inputs:
-      to_pblish:
+      to_publish:
         description: 'What to publish'
         required: true
         default: 'all'
@@ -34,6 +34,7 @@ jobs:
       - name: gradle caching
         uses: gradle/gradle-build-action@v2
       - name: publish all
+        if: to_publish == 'all'
         env:
           gh_token: ${{ secrets.github_token }}
           ORG_GRADLE_PROJECT_nexus_user: ${{ secrets.nexus_user }}
@@ -44,3 +45,23 @@ jobs:
           ./gradlew :solstice:changelogPush -Prelease=true --stacktrace --warning-mode all
           ./gradlew :plugin-maven:changelogPush -Prelease=true --stacktrace --warning-mode all
           ./gradlew :plugin-gradle:changelogPush -Prelease=true -Pgradle.publish.key=${{ secrets.gradle_portal_key }} -Pgradle.publish.secret=${{ secrets.gradle_portal_secret }} --stacktrace --warning-mode all
+      - name: publish plugin-gradle
+        if: to_publish == 'plugin-gradle'
+        env:
+          gh_token: ${{ secrets.github_token }}
+          ORG_GRADLE_PROJECT_nexus_user: ${{ secrets.nexus_user }}
+          ORG_GRADLE_PROJECT_nexus_pass: ${{ secrets.nexus_pass }}
+          ORG_GRADLE_PROJECT_gpg_passphrase: ${{ secrets.gpg_passphrase }}
+          ORG_GRADLE_PROJECT_gpg_key64: ${{ secrets.gpg_key64 }}
+        run: |
+          ./gradlew :plugin-gradle:changelogPush -Prelease=true -Pgradle.publish.key=${{ secrets.gradle_portal_key }} -Pgradle.publish.secret=${{ secrets.gradle_portal_secret }} --stacktrace --warning-mode all
+      - name: publish plugin-maven
+        if: to_publish == 'plugin-maven'
+        env:
+          gh_token: ${{ secrets.github_token }}
+          ORG_GRADLE_PROJECT_nexus_user: ${{ secrets.nexus_user }}
+          ORG_GRADLE_PROJECT_nexus_pass: ${{ secrets.nexus_pass }}
+          ORG_GRADLE_PROJECT_gpg_passphrase: ${{ secrets.gpg_passphrase }}
+          ORG_GRADLE_PROJECT_gpg_key64: ${{ secrets.gpg_key64 }}
+        run: |
+          ./gradlew :plugin-maven:changelogPush -Prelease=true --stacktrace --warning-mode all
