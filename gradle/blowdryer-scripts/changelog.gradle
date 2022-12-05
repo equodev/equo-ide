@@ -67,17 +67,11 @@ if (tasks.names.contains('changelogCheck')) {
 		// ensures that changelog bump and push only happens if the publish was successful
 		tasks.named('changelogBump').configure {
 			if (requireEnablePublishing(it)) {
-				if (plugins.hasPlugin('maven-publish')) {
-					if (plugins.hasPlugin('io.github.gradle-nexus.publish-plugin')) {
-						String pubName = plugins.hasPlugin('java-gradle-plugin') ? 'PluginMaven' : 'MavenJava'
-						dependsOn "publish${pubName}PublicationToSonatypeRepository"
-						// only the root project has closeSonatypeStagingRepository, and it finalizes all publishToSonatype tasks
-						// https://github.com/gradle-nexus/publish-plugin
-						dependsOn rootProject.tasks.named('closeAndReleaseSonatypeStagingRepository')
-					} else {
-						dependsOn "publishAllPublicationsToGitLabRepository"
-					}
-				}
+				String pubName = plugins.hasPlugin('java-gradle-plugin') ? 'PluginMaven' : 'MavenJava'
+				dependsOn "publish${pubName}PublicationToSonatypeRepository"
+				// only the root project has closeSonatypeStagingRepository, and it finalizes all publishToSonatype tasks
+				// https://github.com/gradle-nexus/publish-plugin
+				dependsOn rootProject.tasks.named('closeAndReleaseSonatypeStagingRepository')
 				// if we have a gradle plugin, we need to push it up to the plugin portal too
 				if (tasks.names.contains('publishPlugins')) {
 					dependsOn tasks.named('publishPlugins')
@@ -103,15 +97,9 @@ if (tasks.names.contains('changelogCheck')) {
 		}
 		parent.tasks.named('changelogBump').configure {
 			if (requireEnablePublishing(it)) {
-				if (childProject.plugins.hasPlugin('maven-publish')) {
-					if (rootProject.plugins.hasPlugin('io.github.gradle-nexus.publish-plugin')) {
-						String pubName = childProject.plugins.hasPlugin('java-gradle-plugin') ? 'PluginMaven' : 'MavenJava'
-						dependsOn childProject.tasks.named("publish${pubName}PublicationToSonatypeRepository")
-						dependsOn rootProject.tasks.named('closeAndReleaseSonatypeStagingRepository')
-					} else {
-						dependsOn childProject.tasks.named("publishAllPublicationsToGitLabRepository")
-					}
-				}
+				String pubName = childProject.plugins.hasPlugin('java-gradle-plugin') ? 'PluginMaven' : 'MavenJava'
+				dependsOn childProject.tasks.named("publish${pubName}PublicationToSonatypeRepository")
+				dependsOn rootProject.tasks.named('closeAndReleaseSonatypeStagingRepository')
 				if (childProject.tasks.names.contains('publishPlugins')) {
 					dependsOn childProject.tasks.named('publishPlugins')
 				}
