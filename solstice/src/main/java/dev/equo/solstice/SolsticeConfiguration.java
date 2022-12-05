@@ -82,6 +82,13 @@ public class SolsticeConfiguration {
 		return new File(installDir, NestedBundles.DIR);
 	}
 
+	public List<String> okayIfActivatorFails() {
+		return Arrays.asList(
+				"org.eclipse.debug.ui", // org.eclipse.ui.PlatformUI.getWorkbench(PlatformUI.java:117)
+				"org.eclipse.help.ui", // org.eclipse.ui.PlatformUI.getWorkbench(PlatformUI.java:117)
+				"");
+	}
+
 	public List<String> okayIfMissingBundle() {
 		return Arrays.asList(
 				"javax.annotation",

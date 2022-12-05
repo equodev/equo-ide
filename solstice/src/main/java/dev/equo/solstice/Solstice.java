@@ -93,8 +93,12 @@ public class Solstice extends ServiceRegistry {
 		for (ShimBundle bundle : bundles) {
 			try {
 				bundle.activate();
-			} catch (Exception e) {
-				logger.warn("Error while activating " + bundle, e);
+			} catch (ActivatorException e) {
+				if (cfg.okayIfActivatorFails().contains(bundle.getSymbolicName())) {
+					logger.warn(e.bundle + " activator exception but okayIfActivatorFails", e);
+				} else {
+					throw Unchecked.wrap(e);
+				}
 			}
 		}
 	}
@@ -512,7 +516,11 @@ public class Solstice extends ServiceRegistry {
 
 		@Override
 		public void start(int options) {
-			activate();
+			try {
+				activate();
+			} catch (ActivatorException e) {
+				throw Unchecked.wrap(e);
+			}
 		}
 
 		///////////////////
@@ -522,7 +530,7 @@ public class Solstice extends ServiceRegistry {
 
 		private boolean activating = false;
 
-		private void activate() {
+		private void activate() throws ActivatorException {
 			if (activating) {
 				return;
 			}
@@ -553,12 +561,7 @@ public class Solstice extends ServiceRegistry {
 										+ " (add it to okayIfMissingPackage)");
 					}
 				} else {
-					try {
-						bundle.activate();
-					} catch (Exception e) {
-						logger.error(
-								"{} failed to activate, was imported by {}, caused by {}", bundle, this, e);
-					}
+					bundle.activate();
 				}
 				pkg = missingPkg();
 			}
@@ -566,12 +569,7 @@ public class Solstice extends ServiceRegistry {
 				logger.info("{} requires {}", this, required);
 				ShimBundle bundle = bundleByName(required);
 				if (bundle != null) {
-					try {
-						bundle.activate();
-					} catch (Exception e) {
-						logger.error(
-								"{} failed to activate, was required by {}, caused by {}", required, this, e);
-					}
+					bundle.activate();
 				} else {
 					if (!cfg.okayIfMissingBundle().contains(required)) {
 						throw new IllegalArgumentException(
@@ -598,7 +596,11 @@ public class Solstice extends ServiceRegistry {
 					var bundleActivator = c.newInstance();
 					bundleActivator.start(this);
 				} catch (Exception e) {
-					logger.error(this + " Bundle-Activator " + activator + " failed to start", e);
+					if (cfg.okayIfActivatorFails().contains(getSymbolicName())) {
+						logger.warn(this + " Bundle-Activator failed but okayIfActivatorFails", e);
+					} else {
+						throw new ActivatorException(this, e);
+					}
 				}
 			}
 			state = ACTIVE;
@@ -777,6 +779,15 @@ public class Solstice extends ServiceRegistry {
 			} else {
 				return null;
 			}
+		}
+	}
+
+	static class ActivatorException extends Exception {
+		final ShimBundle bundle;
+
+		ActivatorException(ShimBundle bundle, Exception cause) {
+			super(cause);
+			this.bundle = bundle;
 		}
 	}
 }
