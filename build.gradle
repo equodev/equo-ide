@@ -1,13 +1,12 @@
 plugins {
 	id 'com.diffplug.blowdryer'
-	id 'io.github.gradle-nexus.publish-plugin'
 }
 allprojects {
 	apply from: 干.file('spotless.gradle')
 }
-
 spotless {
 	groovyGradle {
 		target '*.gradle', 'gradle/blowdryer-scripts/**/*.gradle'
 	}
 }
+apply from: 干.file('sonatype.gradle')
