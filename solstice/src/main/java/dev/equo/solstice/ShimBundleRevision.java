@@ -20,9 +20,9 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.wiring.BundleCapability;
 
 class ShimBundleRevision extends Unimplemented.BundleRevision {
-	private final Bundle bundle;
+	private final Solstice.ShimBundle bundle;
 
-	public ShimBundleRevision(Bundle bundle) {
+	ShimBundleRevision(Solstice.ShimBundle bundle) {
 		this.bundle = Objects.requireNonNull(bundle);
 	}
 
@@ -38,7 +38,6 @@ class ShimBundleRevision extends Unimplemented.BundleRevision {
 
 	@Override
 	public int getTypes() {
-		// TODO: this should return TYPE_FRAGMENT if it is a fragment
-		return 0;
+		return bundle.fragmentHost() != null ? TYPE_FRAGMENT : 0;
 	}
 }

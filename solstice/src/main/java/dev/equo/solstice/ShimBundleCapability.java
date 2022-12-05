@@ -13,13 +13,12 @@
  *******************************************************************************/
 package dev.equo.solstice;
 
-import org.osgi.framework.Bundle;
 import org.osgi.framework.wiring.BundleRevision;
 
 class ShimBundleCapability extends Unimplemented.BundleCapability {
 	private final ShimBundleRevision revision;
 
-	public ShimBundleCapability(Bundle bundle) {
+	ShimBundleCapability(Solstice.ShimBundle bundle) {
 		this.revision = new ShimBundleRevision(bundle);
 	}
 

@@ -22,13 +22,13 @@ import java.lang.reflect.Constructor;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.TreeSet;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Function;
 import java.util.jar.Attributes;
@@ -105,6 +105,7 @@ public class Solstice extends ServiceRegistry {
 	}
 
 	private final List<ShimBundle> bundles = new ArrayList<>();
+	private final TreeSet<String> pkgs = new TreeSet<>();
 
 	private void discoverAndSortBundles() {
 		Enumeration<URL> manifests =
@@ -134,6 +135,16 @@ public class Solstice extends ServiceRegistry {
 						return o1.symbolicName != null ? -1 : 1;
 					}
 				});
+		for (var bundle : bundles) {
+			var host = bundle.fragmentHost();
+			if (host != null) {
+				var hostBundle = bundleByName(host);
+				if (hostBundle == null) {
+					throw new IllegalArgumentException("Fragment " + bundle + " needs missing " + host);
+				}
+				hostBundle.addFragment(bundle);
+			}
+		}
 	}
 
 	public ShimBundle bundleByName(String name) {
@@ -149,6 +160,15 @@ public class Solstice extends ServiceRegistry {
 		String sourceString = "jar:" + source.toExternalForm() + "!";
 		for (ShimBundle bundle : bundles) {
 			if (sourceString.equals(bundle.jarUrl)) {
+				return bundle;
+			}
+		}
+		return null;
+	}
+
+	private ShimBundle bundleForPkg(String targetPkg) {
+		for (var bundle : bundles) {
+			if (bundle.pkgExports.contains(targetPkg)) {
 				return bundle;
 			}
 		}
@@ -329,8 +349,9 @@ public class Solstice extends ServiceRegistry {
 	static final Attributes.Name SYMBOLIC_NAME = new Attributes.Name(Constants.BUNDLE_SYMBOLICNAME);
 	static final Attributes.Name ACTIVATOR = new Attributes.Name(Constants.BUNDLE_ACTIVATOR);
 	static final Attributes.Name REQUIRE_BUNDLE = new Attributes.Name(Constants.REQUIRE_BUNDLE);
-	static final List<String> IGNORED_HEADERS =
-			Arrays.asList(Constants.IMPORT_PACKAGE, Constants.EXPORT_PACKAGE);
+	static final Attributes.Name IMPORT_PACKAGE = new Attributes.Name(Constants.IMPORT_PACKAGE);
+	static final Attributes.Name EXPORT_PACKAGE = new Attributes.Name(Constants.EXPORT_PACKAGE);
+
 	static final String MANIFEST_PATH = "/META-INF/MANIFEST.MF";
 
 	public class ShimBundle extends BundleContextDelegate implements Unimplemented.Bundle {
@@ -339,6 +360,8 @@ public class Solstice extends ServiceRegistry {
 		final @Nullable String symbolicName;
 		final List<String> requiredBundles;
 		final Hashtable<String, String> headers;
+		final List<ShimBundle> fragments = new ArrayList<>();
+		final List<String> pkgImports, pkgExports;
 
 		ShimBundle(URL manifestURL) {
 			super(Solstice.this);
@@ -382,16 +405,44 @@ public class Solstice extends ServiceRegistry {
 					requiredBundles.addAll(additional);
 				}
 			}
+			pkgImports = parsePackages(manifest.getMainAttributes().get(IMPORT_PACKAGE));
+			pkgExports = parsePackages(manifest.getMainAttributes().get(EXPORT_PACKAGE));
+			// if we export a package, we don't actually have to import it, that's just for letting
+			// multiple bundles define the same classes, which is a dubious feature to support
+			// https://access.redhat.com/documentation/en-us/red_hat_jboss_fuse/6.3/html/managing_osgi_dependencies/importexport
+			pkgImports.removeAll(pkgExports);
+
 			headers = new Hashtable<>();
 			manifest
 					.getMainAttributes()
 					.forEach(
 							(key, value) -> {
 								String keyStr = key.toString();
-								if (!IGNORED_HEADERS.contains(keyStr)) {
+								if (!Constants.IMPORT_PACKAGE.equals(keyStr)
+										&& !Constants.EXPORT_PACKAGE.equals(keyStr)) {
 									headers.put(keyStr, value.toString());
 								}
 							});
+		}
+
+		private void addFragment(ShimBundle bundle) {
+			fragments.add(bundle);
+		}
+
+		String fragmentHost() {
+			var host = headers.get(Constants.FRAGMENT_HOST);
+			if (host == null) {
+				return null;
+			}
+			var idx = host.indexOf(';');
+			return idx == -1 ? host : host.substring(0, idx);
+		}
+
+		private List<String> parsePackages(Object attribute) {
+			if (attribute == null) {
+				return Collections.emptyList();
+			}
+			return parseManifestHeaderSimple(attribute.toString());
 		}
 
 		private List<String> requiredBundles(Manifest manifest) {
@@ -399,8 +450,12 @@ public class Solstice extends ServiceRegistry {
 			if (requireBundle == null) {
 				return Collections.emptyList();
 			}
+			return parseManifestHeaderSimple(requireBundle);
+		}
 
-			String[] bundlesAndVersions = requireBundle.split(",");
+		/** Parse out a manifest header, and ignore the versions */
+		private List<String> parseManifestHeaderSimple(String in) {
+			String[] bundlesAndVersions = in.split(",");
 			List<String> required = new ArrayList<>(bundlesAndVersions.length);
 			for (String s : bundlesAndVersions) {
 				int attrDelim = s.indexOf(';');
@@ -474,13 +529,30 @@ public class Solstice extends ServiceRegistry {
 			activating = true;
 
 			logger.info("Request activate {}", this);
+			pkgs.addAll(pkgExports);
 			if ("org.eclipse.osgi".equals(symbolicName)) {
 				state = ACTIVE;
 				// skip org.eclipse.osgi on purpose
 				logger.info("  skipping because of shim implementation");
 				return;
 			}
-
+			String pkg = missingPkg();
+			while (pkg != null) {
+				var bundle = bundleForPkg(pkg);
+				logger.info("{} import {} package {}", this, bundle, pkg);
+				if (bundle == null) {
+					logger.error("No bundle for package {} needed by {}", pkg, this);
+					pkgs.add(pkg);
+				} else {
+					try {
+						bundle.activate();
+					} catch (Exception e) {
+						logger.error(
+								"{} failed to activate, was imported by {}, caused by {}", bundle, this, e);
+					}
+				}
+				pkg = missingPkg();
+			}
 			for (var required : requiredBundles) {
 				logger.info("{} requires {}", this, required);
 				ShimBundle bundle = bundleByName(required);
@@ -521,6 +593,15 @@ public class Solstice extends ServiceRegistry {
 			logger.info("\\FINISH ACTIVATE {}", this);
 		}
 
+		private String missingPkg() {
+			for (var pkg : pkgImports) {
+				if (!pkgs.contains(pkg)) {
+					return pkg;
+				}
+			}
+			return null;
+		}
+
 		@Override
 		public int getState() {
 			return state;
@@ -551,7 +632,11 @@ public class Solstice extends ServiceRegistry {
 
 		private String stripLeadingAddTrailingSlash(String path) {
 			path = stripLeadingSlash(path);
-			return path.endsWith("/") ? path : (path + "/");
+			if (path.isEmpty() || path.equals("/")) {
+				return "";
+			} else {
+				return path.endsWith("/") ? path : (path + "/");
+			}
 		}
 
 		@Override
@@ -580,9 +665,6 @@ public class Solstice extends ServiceRegistry {
 
 		@Override
 		public URL getResource(String name) {
-			// TODO: according to spec, we should search in this bundle first,
-			// and then after that from the classloader, but we are only using
-			// this bundle
 			ZipEntry entry = parseFromZip(zip -> zip.getEntry(stripLeadingSlash(name)));
 			if (entry != null) {
 				return getEntry(name);
@@ -615,6 +697,15 @@ public class Solstice extends ServiceRegistry {
 
 		@Override
 		public Enumeration<URL> findEntries(String path, String filePattern, boolean recurse) {
+			var urls = new ArrayList<URL>();
+			findEntries(urls, path, filePattern, recurse);
+			return Collections.enumeration(urls);
+		}
+
+		private void findEntries(List<URL> urls, String path, String filePattern, boolean recurse) {
+			for (var fragment : fragments) {
+				fragment.findEntries(urls, path, filePattern, recurse);
+			}
 			var pathFinal = stripLeadingAddTrailingSlash(path);
 			var pattern = Pattern.compile(filePattern.replace(".", "\\.").replace("*", ".*"));
 			var pathsWithinZip =
@@ -642,11 +733,9 @@ public class Solstice extends ServiceRegistry {
 								return zipPaths;
 							});
 			try {
-				var urls = new ArrayList<URL>();
 				for (var withinZip : pathsWithinZip) {
 					urls.add(new URL(jarUrl + "/" + withinZip));
 				}
-				return Collections.enumeration(urls);
 			} catch (MalformedURLException e) {
 				throw Unchecked.wrap(e);
 			}
