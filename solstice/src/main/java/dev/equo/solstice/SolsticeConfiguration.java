@@ -64,11 +64,7 @@ public class SolsticeConfiguration {
 	}
 
 	public List<String> startOrder() {
-		return Arrays.asList(
-				"org.eclipse.equinox.registry",
-				"org.apache.felix.scr",
-				"org.eclipse.equinox.cm",
-				"org.eclipse.core.runtime");
+		return Arrays.asList();
 	}
 
 	public Map<String, List<String>> additionalDeps() {
