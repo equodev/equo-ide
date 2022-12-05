@@ -429,7 +429,7 @@ public class Solstice extends ServiceRegistry {
 			fragments.add(bundle);
 		}
 
-		private String fragmentHost() {
+		String fragmentHost() {
 			var host = headers.get(Constants.FRAGMENT_HOST);
 			if (host == null) {
 				return null;
