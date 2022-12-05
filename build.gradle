@@ -9,4 +9,5 @@ spotless {
 		target '*.gradle', 'gradle/blowdryer-scripts/**/*.gradle'
 	}
 }
+group = 干.proj('maven_group', 'the maven group')
 apply from: 干.file('sonatype.gradle')
