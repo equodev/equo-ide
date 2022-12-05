@@ -1,5 +1,6 @@
 plugins {
 	id 'com.diffplug.blowdryer'
+	id 'io.github.gradle-nexus.publish-plugin'
 }
 allprojects {
 	apply from: 干.file('spotless.gradle')
