@@ -34,7 +34,7 @@ jobs:
       - name: gradle caching
         uses: gradle/gradle-build-action@v2
       - name: publish all
-        if: to_publish == 'all'
+        if: "${{ github.event.inputs.to_publish == 'all' }}"
         env:
           gh_token: ${{ secrets.github_token }}
           ORG_GRADLE_PROJECT_nexus_user: ${{ secrets.nexus_user }}
@@ -46,7 +46,7 @@ jobs:
           ./gradlew :plugin-maven:changelogPush -Prelease=true --stacktrace --warning-mode all
           ./gradlew :plugin-gradle:changelogPush -Prelease=true -Pgradle.publish.key=${{ secrets.gradle_portal_key }} -Pgradle.publish.secret=${{ secrets.gradle_portal_secret }} --stacktrace --warning-mode all
       - name: publish plugin-gradle
-        if: to_publish == 'plugin-gradle'
+        if: "${{ github.event.inputs.to_publish == 'plugin-gradle' }}"
         env:
           gh_token: ${{ secrets.github_token }}
           ORG_GRADLE_PROJECT_nexus_user: ${{ secrets.nexus_user }}
@@ -56,7 +56,7 @@ jobs:
         run: |
           ./gradlew :plugin-gradle:changelogPush -Prelease=true -Pgradle.publish.key=${{ secrets.gradle_portal_key }} -Pgradle.publish.secret=${{ secrets.gradle_portal_secret }} --stacktrace --warning-mode all
       - name: publish plugin-maven
-        if: to_publish == 'plugin-maven'
+        if: "${{ github.event.inputs.to_publish == 'plugin-maven' }}"
         env:
           gh_token: ${{ secrets.github_token }}
           ORG_GRADLE_PROJECT_nexus_user: ${{ secrets.nexus_user }}
