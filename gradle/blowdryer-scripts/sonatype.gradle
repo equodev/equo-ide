@@ -4,8 +4,8 @@ if (project.findProperty('release') != 'true') {
 	return
 }
 
-def nexus_user     = 干.proj('nexus_user', 'username for nexus/mavencentral (or unset enable_publishing)')
-def nexus_pass     = 干.proj('nexus_pass', 'password for nexus/mavencentral (or unset enable_publishing)')
+def nexus_user     = 干.proj('nexus_user', 'username for nexus/mavencentral (or unset release)')
+def nexus_pass     = 干.proj('nexus_pass', 'password for nexus/mavencentral (or unset release)')
 def gpg_key64      = 干.proj('gpg_key64',      'gpg --export-secret-keys --armor <key-id>')
 def gpg_passphrase = 干.proj('gpg_passphrase', 'passphrase for unlocking gpg_key')
 

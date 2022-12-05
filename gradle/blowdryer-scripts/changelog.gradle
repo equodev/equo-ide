@@ -44,11 +44,11 @@ if (changelog_per_project) {
 }
 
 def requireEnablePublishing(Task task) {
-	if (project.findProperty('enable_publishing') == 'true') {
+	if (project.findProperty('release') == 'true') {
 		return true
 	} else {
 		task.doFirst {
-			throw new Error("Cannot run " + task + " without specifying enable_publishing=true")
+			throw new Error("Cannot run " + task + " without specifying release=true")
 		}
 		return false
 	}
