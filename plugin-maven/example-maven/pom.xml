@@ -22,17 +22,8 @@
       <plugin>
         <groupId>dev.equo.ide</groupId>
         <artifactId>equo-ide-maven-plugin</artifactId>
+        <version>0.1.1</version>
       </plugin>
     </plugins>
-
-    <pluginManagement><!-- lock down plugin versions to avoid using Maven defaults (may be moved to a parent pom) -->
-      <plugins>
-        <plugin><!-- or add this to pom.xml/<project><build><pluginManagement><plugins> -->
-          <groupId>dev.equo.ide</groupId>
-          <artifactId>equo-ide-maven-plugin</artifactId>
-          <version>0.1.1</version>
-        </plugin>
-      </plugins>
-    </pluginManagement>
   </build>
 </project>

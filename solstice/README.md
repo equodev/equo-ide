@@ -1,5 +1,9 @@
 # Solstice: OSGi with a single classloader
 
+[![Maven Plugin](https://img.shields.io/maven-central/v/dev.equo.ide/solstice?color=blue&label=dev.equo.ide%3Asolstice)](https://search.maven.org/artifact/dev.equo.ide/solstice)
+[![Changelog](https://img.shields.io/badge/changelog-here-blue)](CHANGELOG.md)
+[![Javadoc](https://img.shields.io/badge/javadoc-here-blue)](https://javadoc.io/doc/dev.equo.ide/solstice)
+
 ## Why
 
 TODO
