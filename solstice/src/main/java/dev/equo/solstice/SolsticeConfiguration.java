@@ -25,12 +25,8 @@ import java.util.Map;
 import java.util.PropertyResourceBundle;
 import java.util.TreeMap;
 import javax.xml.parsers.SAXParserFactory;
-import org.eclipse.equinox.log.ExtendedLogReaderService;
-import org.eclipse.equinox.log.ExtendedLogService;
 import org.eclipse.osgi.framework.log.FrameworkLog;
 import org.eclipse.osgi.framework.log.FrameworkLogEntry;
-import org.eclipse.osgi.internal.log.ExtendedLogReaderServiceFactory;
-import org.eclipse.osgi.internal.log.ExtendedLogServiceFactory;
 import org.eclipse.osgi.service.datalocation.Location;
 import org.eclipse.osgi.service.debug.DebugOptions;
 import org.eclipse.osgi.service.debug.DebugTrace;
@@ -41,8 +37,6 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.FrameworkEvent;
 import org.osgi.service.log.LogLevel;
-import org.osgi.service.log.LogService;
-import org.osgi.service.log.LoggerFactory;
 
 public class SolsticeConfiguration {
 	private File installDir;
@@ -107,6 +101,7 @@ public class SolsticeConfiguration {
 
 	public List<String> okayIfMissingPackage() {
 		return Arrays.asList(
+				"COM.newmonics.PercClassLoader",
 				"java.awt",
 				"java.io",
 				"java.lang",
@@ -186,7 +181,9 @@ public class SolsticeConfiguration {
 				"org.w3c.dom",
 				"org.w3c.dom.bootstrap",
 				"org.w3c.dom.css",
-				"org.w3c.dom.ls");
+				"org.w3c.dom.ls",
+				"sun.misc",
+				"sun.reflect");
 	}
 
 	public void bootstrapServices(Bundle systemBundle, BundleContext context) {
@@ -195,6 +192,7 @@ public class SolsticeConfiguration {
 		context.registerService(
 				BundleLocalization.class,
 				(bundle, locale) -> {
+					// TODO: we don't handle locale
 					String localization = bundle.getHeaders().get(Constants.BUNDLE_LOCALIZATION);
 					if (localization == null) {
 						throw new IllegalArgumentException("No localization for " + bundle);
@@ -215,20 +213,8 @@ public class SolsticeConfiguration {
 		context.registerService(
 				SAXParserFactory.class, SAXParserFactory.newInstance(), Dictionaries.empty());
 
-		var logReaderFactory = new ExtendedLogReaderServiceFactory(99, LogLevel.INFO);
-		var logWriterFactory = new ExtendedLogServiceFactory(logReaderFactory, false);
-		context.registerService(
-				new String[] {
-					ExtendedLogService.class.getName(),
-					LogService.class.getName(),
-					LoggerFactory.class.getName()
-				},
-				logWriterFactory.getService(systemBundle, null),
-				Dictionaries.empty());
-		context.registerService(
-				ExtendedLogReaderService.class,
-				logReaderFactory.getService(systemBundle, null),
-				Dictionaries.empty());
+		var serviceManager = new ShimLogServiceManager(100, LogLevel.INFO, false);
+		serviceManager.start(context);
 
 		context.registerService(
 				org.osgi.service.condition.Condition.class,
