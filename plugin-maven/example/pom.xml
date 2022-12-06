@@ -30,7 +30,7 @@
         <plugin><!-- or add this to pom.xml/<project><build><pluginManagement><plugins> -->
           <groupId>dev.equo.ide</groupId>
           <artifactId>equo-ide-maven-plugin</artifactId>
-          <version>0.1.0</version>
+          <version>0.1.1</version>
         </plugin>
       </plugins>
     </pluginManagement>

@@ -1,3 +1,3 @@
 plugins {
-	id 'dev.equo.ide' version '0.1.0'
+	id 'dev.equo.ide' version '0.1.1'
 }
