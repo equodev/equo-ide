@@ -855,7 +855,7 @@ public class Solstice extends ServiceRegistry {
 		@Override
 		public <A> A adapt(Class<A> type) {
 			if (BundleWiring.class.equals(type)) {
-				return (A) new ShimBundleWiring();
+				return state == Bundle.INSTALLED ? null : (A) new ShimBundleWiring(this);
 			} else if (BundleStartLevel.class.equals(type)) {
 				return (A)
 						new Unimplemented.BundleStartLevel() {

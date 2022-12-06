@@ -37,6 +37,11 @@ class ShimBundleRevision extends Unimplemented.BundleRevision {
 	}
 
 	@Override
+	public org.osgi.framework.wiring.BundleWiring getWiring() {
+		return new ShimBundleWiring(bundle);
+	}
+
+	@Override
 	public int getTypes() {
 		return bundle.fragmentHost() != null ? TYPE_FRAGMENT : 0;
 	}

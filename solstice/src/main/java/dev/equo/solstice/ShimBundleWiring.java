@@ -13,13 +13,31 @@
  *******************************************************************************/
 package dev.equo.solstice;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import org.osgi.framework.wiring.BundleWire;
 
 class ShimBundleWiring extends Unimplemented.BundleWiring {
+	private final Solstice.ShimBundle bundle;
+
+	ShimBundleWiring(Solstice.ShimBundle bundle) {
+		this.bundle = Objects.requireNonNull(bundle);
+	}
+
 	@Override
 	public List<BundleWire> getRequiredWires(String namespace) {
+		return Collections.emptyList();
+	}
+
+	@Override
+	public org.osgi.framework.wiring.BundleRevision getRevision() {
+		return new ShimBundleRevision(bundle);
+	}
+
+	@Override
+	public Collection<String> listResources(String path, String filePattern, int options) {
 		return Collections.emptyList();
 	}
 
