@@ -27,7 +27,9 @@ import java.util.Collections;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Function;
@@ -90,14 +92,51 @@ public class Solstice extends ServiceRegistry {
 		for (var b : bundles) {
 			logger.info("  {}", b);
 		}
-		for (ShimBundle bundle : bundles) {
+		for (var bundle : bundles) {
 			try {
-				bundle.activate();
-			} catch (Exception e) {
-				logger.warn("Error while activating " + bundle, e);
+				bundle.tryActivate();
+			} catch (ActivatorException e) {
+				if (cfg.okayIfActivatorFails().contains(bundle.getSymbolicName())) {
+					logger.warn(e.bundle + " activator exception but okayIfActivatorFails", e);
+				} else {
+					throw Unchecked.wrap(e);
+				}
 			}
 		}
 	}
+
+	public void activateWorkbenchBundles() {
+		if (workbenchIsActive) {
+			throw new IllegalStateException("Can only be called once!");
+		}
+		workbenchIsActive = true;
+		logger.info("Workbench has been instantiated, activating bundles which require the workbench");
+		for (var bundle : workbenchQueue) {
+			bundle.activating = false;
+		}
+		for (var bundle : workbenchQueue) {
+			try {
+				bundle.tryActivate();
+			} catch (ActivatorException e) {
+				if (cfg.okayIfActivatorFails().contains(bundle.getSymbolicName())) {
+					logger.warn(e.bundle + " activator exception but okayIfActivatorFails", e);
+				} else {
+					throw Unchecked.wrap(e);
+				}
+			}
+		}
+	}
+
+	private void addToWorkbenchQueue(ShimBundle bundle) {
+		if (workbenchIsActive) {
+			throw new IllegalStateException(
+					"This should only happen before the workbench has activated.");
+		}
+		workbenchQueue.add(bundle);
+	}
+
+	private boolean workbenchIsActive = false;
+	private Set<ShimBundle> workbenchQueue = new LinkedHashSet<>();
 
 	@Override
 	protected Bundle systemBundle() {
@@ -512,7 +551,11 @@ public class Solstice extends ServiceRegistry {
 
 		@Override
 		public void start(int options) {
-			activate();
+			try {
+				tryActivate();
+			} catch (ActivatorException e) {
+				throw Unchecked.wrap(e);
+			}
 		}
 
 		///////////////////
@@ -522,9 +565,17 @@ public class Solstice extends ServiceRegistry {
 
 		private boolean activating = false;
 
-		private void activate() {
+		/** Returns false if the bundle cannot activate yet because of "requiresWorkbench" */
+		private boolean tryActivate() throws ActivatorException {
 			if (activating) {
-				return;
+				return true;
+			}
+			if (!workbenchIsActive) {
+				if (cfg.requiresWorkbench().contains(symbolicName)) {
+					logger.info("Activating {} will wait for workbench", this);
+					addToWorkbenchQueue(this);
+					return false;
+				}
 			}
 			activating = true;
 
@@ -534,21 +585,29 @@ public class Solstice extends ServiceRegistry {
 				state = ACTIVE;
 				// skip org.eclipse.osgi on purpose
 				logger.info("  skipping because of shim implementation");
-				return;
+				return true;
 			}
 			String pkg = missingPkg();
 			while (pkg != null) {
 				var bundle = bundleForPkg(pkg);
 				logger.info("{} import {} package {}", this, bundle, pkg);
 				if (bundle == null) {
-					logger.error("No bundle for package {} needed by {}", pkg, this);
-					pkgs.add(pkg);
+					if (cfg.okayIfMissingPackage().contains(pkg)) {
+						pkgs.add(pkg);
+						logger.info("  missing but okayIfMissingPackage so no problem");
+					} else {
+						throw new IllegalArgumentException(
+								"MISSING PACKAGE "
+										+ pkg
+										+ " imported by "
+										+ this
+										+ " (add it to okayIfMissingPackage)");
+					}
 				} else {
-					try {
-						bundle.activate();
-					} catch (Exception e) {
-						logger.error(
-								"{} failed to activate, was imported by {}, caused by {}", bundle, this, e);
+					if (!bundle.tryActivate()) {
+						addToWorkbenchQueue(this);
+						logger.info("Activating {} delayed because an Import-Package needs workbench", this);
+						return false;
 					}
 				}
 				pkg = missingPkg();
@@ -557,18 +616,21 @@ public class Solstice extends ServiceRegistry {
 				logger.info("{} requires {}", this, required);
 				ShimBundle bundle = bundleByName(required);
 				if (bundle != null) {
-					try {
-						bundle.activate();
-					} catch (Exception e) {
-						logger.error(
-								"{} failed to activate, was required by {}, caused by {}", required, this, e);
+					if (!bundle.tryActivate()) {
+						addToWorkbenchQueue(this);
+						logger.info("Activating {} delayed because a Require-Bundle needs workbench", this);
+						return false;
 					}
 				} else {
-					if (!cfg.okayIfMissing().contains(required)) {
-						logger.error("{} is missing, was required by {}", required, this);
-						throw new IllegalArgumentException(required + " IS MISSING, needed by " + this);
+					if (!cfg.okayIfMissingBundle().contains(required)) {
+						throw new IllegalArgumentException(
+								"MISSING BUNDLE "
+										+ required
+										+ " needed by "
+										+ this
+										+ " (add it to okayIfMissingBundle)");
 					} else {
-						logger.info("  missing but okayIfMissing so no problem");
+						logger.info("  missing but okayIfMissingBundle so no problem");
 					}
 				}
 			}
@@ -585,12 +647,17 @@ public class Solstice extends ServiceRegistry {
 					var bundleActivator = c.newInstance();
 					bundleActivator.start(this);
 				} catch (Exception e) {
-					logger.error(this + " Bundle-Activator " + activator + " failed to start", e);
+					if (cfg.okayIfActivatorFails().contains(getSymbolicName())) {
+						logger.warn(this + " Bundle-Activator failed but okayIfActivatorFails", e);
+					} else {
+						throw new ActivatorException(this, e);
+					}
 				}
 			}
 			state = ACTIVE;
 			notifyBundleListeners(BundleEvent.STARTED, this);
 			logger.info("\\FINISH ACTIVATE {}", this);
+			return true;
 		}
 
 		private String missingPkg() {
@@ -764,6 +831,15 @@ public class Solstice extends ServiceRegistry {
 			} else {
 				return null;
 			}
+		}
+	}
+
+	static class ActivatorException extends Exception {
+		final ShimBundle bundle;
+
+		ActivatorException(ShimBundle bundle, Exception cause) {
+			super(cause);
+			this.bundle = bundle;
 		}
 	}
 }
