@@ -10,7 +10,7 @@
 - downloads, configures, and launches an instance of the Eclipse IDE
 - ensures that all of your devs have a zero-effort and perfectly repeatable IDE setup process
 
-Use it like this with `gradlew equoIde`:
+Use it like this with `gradlew equoIde`
 
 ```gradle
 plugins {
