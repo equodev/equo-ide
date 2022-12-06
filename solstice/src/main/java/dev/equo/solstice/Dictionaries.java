@@ -18,7 +18,6 @@ import java.util.Collections;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.Map;
 
 class Dictionaries {
 	static <T> Enumeration<T> enumeration(T... values) {
@@ -93,13 +92,15 @@ class Dictionaries {
 		return table;
 	}
 
-	public static <K, V> Dictionary<K, V> toDictionary(Map<K, V> in) {
+	public static <K, V> Dictionary<K, V> copy(Dictionary<K, V> in) {
 		if (in.isEmpty()) {
 			return empty();
 		} else {
 			var table = new Hashtable<K, V>();
-			for (var e : in.entrySet()) {
-				table.put(e.getKey(), e.getValue());
+			var keys = in.keys();
+			while (keys.hasMoreElements()) {
+				var key = keys.nextElement();
+				table.put(key, in.get(key));
 			}
 			return table;
 		}
