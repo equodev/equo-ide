@@ -27,7 +27,9 @@ import java.util.Collections;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Function;
@@ -90,7 +92,7 @@ public class Solstice extends ServiceRegistry {
 		for (var b : bundles) {
 			logger.info("  {}", b);
 		}
-		for (ShimBundle bundle : bundles) {
+		for (var bundle : bundles) {
 			try {
 				bundle.activate();
 			} catch (ActivatorException e) {
@@ -102,6 +104,27 @@ public class Solstice extends ServiceRegistry {
 			}
 		}
 	}
+
+	public void activateWorkbenchBundles() {
+		if (workbenchIsActive) {
+			throw new IllegalStateException("Can only be called once!");
+		}
+		workbenchIsActive = true;
+		for (var bundle : waitingForWorkbench) {
+			try {
+				bundle.activate();
+			} catch (ActivatorException e) {
+				if (cfg.okayIfActivatorFails().contains(bundle.getSymbolicName())) {
+					logger.warn(e.bundle + " activator exception but okayIfActivatorFails", e);
+				} else {
+					throw Unchecked.wrap(e);
+				}
+			}
+		}
+	}
+
+	private boolean workbenchIsActive = false;
+	private Set<ShimBundle> waitingForWorkbench = new LinkedHashSet<>();
 
 	@Override
 	protected Bundle systemBundle() {
@@ -533,6 +556,13 @@ public class Solstice extends ServiceRegistry {
 		private void activate() throws ActivatorException {
 			if (activating) {
 				return;
+			}
+			if (!workbenchIsActive) {
+				// TODO: if other bundles are depending on us, they need to delay also
+				if (cfg.requiresWorkbench().contains(symbolicName)) {
+					waitingForWorkbench.add(this);
+					return;
+				}
 			}
 			activating = true;
 

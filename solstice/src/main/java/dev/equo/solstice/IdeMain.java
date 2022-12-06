@@ -21,6 +21,7 @@ import org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher;
 import org.eclipse.equinox.app.IApplicationContext;
 import org.eclipse.osgi.service.runnable.ApplicationLauncher;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.application.IWorkbenchConfigurer;
 import org.eclipse.ui.internal.ide.application.DelayedEventsProcessor;
 import org.eclipse.ui.internal.ide.application.IDEWorkbenchAdvisor;
 import org.osgi.framework.InvalidSyntaxException;
@@ -65,7 +66,16 @@ class IdeMain {
 		var display = PlatformUI.createDisplay();
 		// processor must be created before we start event loop
 		var processor = new DelayedEventsProcessor(display);
-		int exitCode = PlatformUI.createAndRunWorkbench(display, new IDEWorkbenchAdvisor(processor));
+		int exitCode =
+				PlatformUI.createAndRunWorkbench(
+						display,
+						new IDEWorkbenchAdvisor(processor) {
+							@Override
+							public void initialize(IWorkbenchConfigurer configurer) {
+								osgiShim.activateWorkbenchBundles();
+								super.initialize(configurer);
+							}
+						});
 		if (exitCode == PlatformUI.RETURN_OK) {
 			System.exit(0);
 		} else {

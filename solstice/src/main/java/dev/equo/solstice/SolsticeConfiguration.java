@@ -19,6 +19,7 @@ import java.io.InputStream;
 import java.io.Writer;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.PropertyResourceBundle;
@@ -83,10 +84,11 @@ public class SolsticeConfiguration {
 	}
 
 	public List<String> okayIfActivatorFails() {
-		return Arrays.asList(
-				"org.eclipse.debug.ui", // org.eclipse.ui.PlatformUI.getWorkbench(PlatformUI.java:117)
-				"org.eclipse.help.ui", // org.eclipse.ui.PlatformUI.getWorkbench(PlatformUI.java:117)
-				"");
+		return Collections.emptyList();
+	}
+
+	public List<String> requiresWorkbench() {
+		return Arrays.asList("org.eclipse.debug.ui", "org.eclipse.help.ui");
 	}
 
 	public List<String> okayIfMissingBundle() {
