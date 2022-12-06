@@ -14,18 +14,18 @@ Use it like this with `mvn equo-ide:launch`
 
 ```xml
 <plugin><!-- add this to pom.xml/<project><build><plugins> -->
-    <groupId>dev.equo.ide</groupId>
-    <artifactId>equo-ide-maven-plugin</artifactId>
-    <version>{{ latest version at top of page }}</version>
-    <configuration>
-        <release>4.26.0</release>
-    </configuration>
+  <groupId>dev.equo.ide</groupId>
+  <artifactId>equo-ide-maven-plugin</artifactId>
+  <version>{{ latest version at top of page }}</version>
+  <configuration>
+     <release>4.26</release>
+  </configuration>
 </plugin>
 
 <!-- or use equo on all your maven projects by putting this into ~/.m2/settings.xml -->
 <settings> 
   <pluginGroups>
-     <pluginGroup>dev.equo.ide</pluginGroup>
+    <pluginGroup>dev.equo.ide</pluginGroup>
   </pluginGroups>
   ...
 ```

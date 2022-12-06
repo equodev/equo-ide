@@ -17,7 +17,7 @@ plugins {
   id 'dev.equo.ide' version '{{ latest version at top of page }}'
 }
 equoIde { // launch with gradlew equoIde
-  release '4.26.0'
+  release '4.26'
 }
 ```
 
