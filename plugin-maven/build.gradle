@@ -25,7 +25,9 @@ apply from: 干.file('maven.gradle')
 apply from: 干.file('sonatype.gradle')
 apply plugin: 'de.benediktritter.maven-plugin-development'
 mavenPlugin {
+	name = 'equo-ide-maven-plugin'
 	artifactId = 'equo-ide-maven-plugin'
+	description = 干.proj('gradlePlugin_equoIde_desc', 'Marketing description of EquoIDE')
 }
 jar.manifest.attributes.put('Implementation-Version', spotlessChangelog.versionNext)
 test {

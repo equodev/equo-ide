@@ -21,3 +21,9 @@ apply from: 干.file('sonatype.gradle')
 test {
 	useJUnitPlatform()
 }
+
+spotless {
+	groovyGradle {
+		target '*.gradle', 'example/*.gradle'
+	}
+}

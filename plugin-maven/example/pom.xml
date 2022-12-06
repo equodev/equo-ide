@@ -1,0 +1,38 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+ 
+  <groupId>dev.equo.ide</groupId>
+  <artifactId>ide-usage-example</artifactId>
+  <version>1.0-SNAPSHOT</version>
+ 
+  <name>equo-ide-usage-example</name>
+
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.11</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>dev.equo.ide</groupId>
+        <artifactId>equo-ide-maven-plugin</artifactId>
+      </plugin>
+    </plugins>
+
+    <pluginManagement><!-- lock down plugin versions to avoid using Maven defaults (may be moved to a parent pom) -->
+      <plugins>
+        <plugin><!-- or add this to pom.xml/<project><build><pluginManagement><plugins> -->
+          <groupId>dev.equo.ide</groupId>
+          <artifactId>equo-ide-maven-plugin</artifactId>
+          <version>0.1.0</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+</project>
