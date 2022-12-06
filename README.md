@@ -1,16 +1,16 @@
 # <image align="left" src=".github/equo_logo.svg"> Equo IDE: IDE as a build artifact
 
-[![Gradle Plugin](https://img.shields.io/gradle-plugin-portal/v/dev.equo.ide?color=blue&label=gradle%20plugin)](https://plugins.gradle.org/plugin/dev.equo.ide)
+[![Gradle Plugin](https://img.shields.io/gradle-plugin-portal/v/dev.equo.ide?color=blue&label=gradle%20plugin)](plugin-gradle)
 [![Maven Plugin](https://img.shields.io/maven-central/v/dev.equo.ide/equo-ide-maven-plugin?color=blue&label=maven%20plugin)](https://central.sonatype.dev/artifact/dev.equo.ide/equo-ide-maven-plugin/0.1.1/versions)
 [![Solstice OSGi](https://img.shields.io/maven-central/v/dev.equo.ide/solstice?color=blue&label=solstice%20OSGi)](https://github.com/equodev/equo-ide/tree/main/solstice)
 
 **PUBLIC BETA! Try it out, but it's not production ready yet. [Join our mailing list](https://equo.dev/ide) to be notified when it's ready.**
 
-- a build plugin for Gradle and Maven
+- a build plugin for [Gradle](plugin-gradle) and Maven
 - downloads, configures, and launches an instance of the Eclipse IDE
 - ensures that all of your devs have a zero-effort and perfectly repeatable IDE setup process
 
-Use it like this in Gradle with `gradlew equoIde`:
+Use it like this in Gradle with `gradlew equoIde` ([more info](plugin-gradle))
 
 ```gradle
 plugins {
