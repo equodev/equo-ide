@@ -5,6 +5,9 @@
 .gradle/
 build/
 
+# maven
+target/
+
 # eclipse
 .metadata
 bin/
