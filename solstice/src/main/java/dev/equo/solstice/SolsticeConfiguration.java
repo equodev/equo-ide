@@ -16,7 +16,6 @@ package dev.equo.solstice;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Writer;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Collections;
@@ -26,7 +25,6 @@ import java.util.PropertyResourceBundle;
 import java.util.TreeMap;
 import javax.xml.parsers.SAXParserFactory;
 import org.eclipse.osgi.framework.log.FrameworkLog;
-import org.eclipse.osgi.framework.log.FrameworkLogEntry;
 import org.eclipse.osgi.service.datalocation.Location;
 import org.eclipse.osgi.service.debug.DebugOptions;
 import org.eclipse.osgi.service.debug.DebugTrace;
@@ -35,7 +33,6 @@ import org.eclipse.osgi.service.localization.BundleLocalization;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
-import org.osgi.framework.FrameworkEvent;
 import org.osgi.service.log.LogLevel;
 
 public class SolsticeConfiguration {
@@ -220,34 +217,7 @@ public class SolsticeConfiguration {
 				org.osgi.service.condition.Condition.class,
 				new org.osgi.service.condition.Condition() {},
 				Dictionaries.of("osgi.condition.id", "true"));
-
-		context.registerService(
-				FrameworkLog.class,
-				new FrameworkLog() {
-					@Override
-					public void log(FrameworkEvent frameworkEvent) {}
-
-					@Override
-					public void log(FrameworkLogEntry logEntry) {}
-
-					@Override
-					public void setWriter(Writer newWriter, boolean append) {}
-
-					@Override
-					public void setFile(File newFile, boolean append) {}
-
-					@Override
-					public File getFile() {
-						return null;
-					}
-
-					@Override
-					public void setConsoleLog(boolean consoleLog) {}
-
-					@Override
-					public void close() {}
-				},
-				Dictionaries.empty());
+		context.registerService(FrameworkLog.class, new ShimFrameworkLog(), Dictionaries.empty());
 
 		context.registerService(
 				DebugOptions.class,
