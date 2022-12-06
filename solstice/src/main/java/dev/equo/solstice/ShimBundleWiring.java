@@ -13,6 +13,7 @@
  *******************************************************************************/
 package dev.equo.solstice;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -38,7 +39,14 @@ class ShimBundleWiring extends Unimplemented.BundleWiring {
 
 	@Override
 	public Collection<String> listResources(String path, String filePattern, int options) {
-		return Collections.emptyList();
+		boolean recurse = (options & LISTRESOURCES_RECURSE) == LISTRESOURCES_RECURSE;
+		var urls = bundle.findEntries(path, filePattern, recurse);
+		List<String> asStrings = new ArrayList<>();
+		while (urls.hasMoreElements()) {
+			var url = urls.nextElement();
+			asStrings.add(url.toExternalForm());
+		}
+		return asStrings;
 	}
 
 	@Override
