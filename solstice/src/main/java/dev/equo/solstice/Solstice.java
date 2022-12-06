@@ -94,7 +94,7 @@ public class Solstice extends ServiceRegistry {
 		}
 		for (var bundle : bundles) {
 			try {
-				bundle.activate();
+				bundle.tryActivate();
 			} catch (ActivatorException e) {
 				if (cfg.okayIfActivatorFails().contains(bundle.getSymbolicName())) {
 					logger.warn(e.bundle + " activator exception but okayIfActivatorFails", e);
@@ -110,9 +110,13 @@ public class Solstice extends ServiceRegistry {
 			throw new IllegalStateException("Can only be called once!");
 		}
 		workbenchIsActive = true;
-		for (var bundle : waitingForWorkbench) {
+		logger.info("Workbench has been instantiated, activating bundles which require the workbench");
+		for (var bundle : workbenchQueue) {
+			bundle.activating = false;
+		}
+		for (var bundle : workbenchQueue) {
 			try {
-				bundle.activate();
+				bundle.tryActivate();
 			} catch (ActivatorException e) {
 				if (cfg.okayIfActivatorFails().contains(bundle.getSymbolicName())) {
 					logger.warn(e.bundle + " activator exception but okayIfActivatorFails", e);
@@ -123,8 +127,16 @@ public class Solstice extends ServiceRegistry {
 		}
 	}
 
+	private void addToWorkbenchQueue(ShimBundle bundle) {
+		if (workbenchIsActive) {
+			throw new IllegalStateException(
+					"This should only happen before the workbench has activated.");
+		}
+		workbenchQueue.add(bundle);
+	}
+
 	private boolean workbenchIsActive = false;
-	private Set<ShimBundle> waitingForWorkbench = new LinkedHashSet<>();
+	private Set<ShimBundle> workbenchQueue = new LinkedHashSet<>();
 
 	@Override
 	protected Bundle systemBundle() {
@@ -540,7 +552,7 @@ public class Solstice extends ServiceRegistry {
 		@Override
 		public void start(int options) {
 			try {
-				activate();
+				tryActivate();
 			} catch (ActivatorException e) {
 				throw Unchecked.wrap(e);
 			}
@@ -553,15 +565,16 @@ public class Solstice extends ServiceRegistry {
 
 		private boolean activating = false;
 
-		private void activate() throws ActivatorException {
+		/** Returns false if the bundle cannot activate yet because of "requiresWorkbench" */
+		private boolean tryActivate() throws ActivatorException {
 			if (activating) {
-				return;
+				return true;
 			}
 			if (!workbenchIsActive) {
-				// TODO: if other bundles are depending on us, they need to delay also
 				if (cfg.requiresWorkbench().contains(symbolicName)) {
-					waitingForWorkbench.add(this);
-					return;
+					logger.info("Activating {} will wait for workbench", this);
+					addToWorkbenchQueue(this);
+					return false;
 				}
 			}
 			activating = true;
@@ -572,7 +585,7 @@ public class Solstice extends ServiceRegistry {
 				state = ACTIVE;
 				// skip org.eclipse.osgi on purpose
 				logger.info("  skipping because of shim implementation");
-				return;
+				return true;
 			}
 			String pkg = missingPkg();
 			while (pkg != null) {
@@ -591,7 +604,11 @@ public class Solstice extends ServiceRegistry {
 										+ " (add it to okayIfMissingPackage)");
 					}
 				} else {
-					bundle.activate();
+					if (!bundle.tryActivate()) {
+						addToWorkbenchQueue(this);
+						logger.info("Activating {} delayed because an Import-Package needs workbench", this);
+						return false;
+					}
 				}
 				pkg = missingPkg();
 			}
@@ -599,7 +616,11 @@ public class Solstice extends ServiceRegistry {
 				logger.info("{} requires {}", this, required);
 				ShimBundle bundle = bundleByName(required);
 				if (bundle != null) {
-					bundle.activate();
+					if (!bundle.tryActivate()) {
+						addToWorkbenchQueue(this);
+						logger.info("Activating {} delayed because a Require-Bundle needs workbench", this);
+						return false;
+					}
 				} else {
 					if (!cfg.okayIfMissingBundle().contains(required)) {
 						throw new IllegalArgumentException(
@@ -636,6 +657,7 @@ public class Solstice extends ServiceRegistry {
 			state = ACTIVE;
 			notifyBundleListeners(BundleEvent.STARTED, this);
 			logger.info("\\FINISH ACTIVATE {}", this);
+			return true;
 		}
 
 		private String missingPkg() {
