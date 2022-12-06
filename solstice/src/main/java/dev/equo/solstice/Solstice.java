@@ -49,7 +49,6 @@ import org.osgi.framework.BundleEvent;
 import org.osgi.framework.BundleListener;
 import org.osgi.framework.Constants;
 import org.osgi.framework.FrameworkListener;
-import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.Version;
 import org.osgi.framework.namespace.IdentityNamespace;
 import org.osgi.framework.startlevel.BundleStartLevel;
@@ -335,8 +334,8 @@ public class Solstice extends ServiceRegistry {
 						var requiredBundle = requirementFilter.get(IdentityNamespace.IDENTITY_NAMESPACE);
 						var bundle = bundleByName(requiredBundle);
 						return Collections.singleton(new ShimBundleCapability(bundle));
-					} catch (InvalidSyntaxException e) {
-						throw new IllegalArgumentException("Filter specifiation invalid:\n" + filterSpec, e);
+					} catch (Exception e) {
+						throw Unimplemented.onPurpose();
 					}
 				}
 			};

@@ -36,6 +36,8 @@ import org.osgi.service.packageadmin.RequiredBundle;
 
 class Unimplemented {
 	static RuntimeException onPurpose() {
+		//		com.diffplug.common.debug.StackDumper.dump("About to die");
+		//		System.exit(1);
 		return new UnsupportedOperationException(
 				"Solstice believes that this method is not actually needed.");
 	}
