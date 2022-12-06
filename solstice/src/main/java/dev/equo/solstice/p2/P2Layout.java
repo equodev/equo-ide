@@ -14,12 +14,11 @@
 package dev.equo.solstice.p2;
 
 import java.io.File;
-import java.io.IOException;
 
 public class P2Layout {
 	public static final String root = "https://download.eclipse.org/eclipse/updates/";
 
-	public static void main(String[] args) throws IOException, P2Client.NotFoundException {
+	public static void main(String[] args) throws Exception {
 		var cacheDir = new File("build/cache");
 		try (var client = new P2Client(cacheDir)) {
 			client.open(root + "4.25/");

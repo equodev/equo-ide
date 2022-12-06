@@ -18,7 +18,11 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.regex.Pattern;
@@ -34,6 +38,7 @@ import org.osgi.framework.Version;
 import org.tukaani.xz.XZInputStream;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 public class P2Client implements AutoCloseable {
@@ -48,15 +53,15 @@ public class P2Client implements AutoCloseable {
 		client = new OkHttpClient.Builder().cache(cache).build();
 	}
 
-	public Dir open(String url) throws IOException, NotFoundException {
-		return new Dir(url);
+	public DeepDir open(String url) throws Exception {
+		return new DeepDir(url);
 	}
 
 	private String getString(String url) throws IOException, NotFoundException {
 		var request = new Request.Builder().url(url).build();
 		try (var response = client.newCall(request).execute()) {
 			if (response.code() == 404) {
-				throw new NotFoundException();
+				throw new NotFoundException(url);
 			}
 			return response.body().string();
 		}
@@ -66,18 +71,20 @@ public class P2Client implements AutoCloseable {
 		var request = new Request.Builder().url(url).build();
 		try (var response = client.newCall(request).execute()) {
 			if (response.code() == 404) {
-				throw new NotFoundException();
+				throw new NotFoundException(url);
 			}
 			return response.body().bytes();
 		}
 	}
 
-	static class NotFoundException extends Exception {}
+	static class NotFoundException extends Exception {
+		NotFoundException(String url) {
+			super(url);
+		}
+	}
 
 	private static final Pattern p2metadata =
 			Pattern.compile("metadata\\.repository\\.factory\\.order=(.*),");
-	private static final Pattern p2artifact =
-			Pattern.compile("artifact\\.repository\\.factory\\.order=(.*),");
 
 	private static String getGroup1(String content, Pattern pattern) {
 		var matcher = pattern.matcher(content);
@@ -85,33 +92,65 @@ public class P2Client implements AutoCloseable {
 		return matcher.group(1);
 	}
 
-	public class Dir {
+	class DeepDir {
+		private List<String> contentXmlUrls = new ArrayList<>();
+
+		DeepDir(String rootUrl) throws Exception {
+			var queue = new ArrayDeque<Dir>();
+			queue.push(new Dir(rootUrl));
+			while (!queue.isEmpty()) {
+				var dir = queue.pop();
+				if (!dir.isComposite()) {
+					contentXmlUrls.add(dir.url + dir.metadataTarget);
+				} else {
+					var children = dir.parseComposite(dir.resolveXml());
+					for (var child : children) {
+						try {
+							queue.push(new Dir(dir.url + child + "/"));
+						} catch (NotFoundException e) {
+							contentXmlUrls.add(dir.url + child + "/content.xml");
+						}
+					}
+				}
+			}
+		}
+	}
+
+	class Dir {
+		String url;
+		String metadataTarget;
+
 		Dir(String url) throws IOException, NotFoundException {
+			this.url = url;
 			if (!url.endsWith("/")) {
 				throw new IllegalArgumentException("URL needs to end with /" + url);
 			}
 			var p2index = getString(url + "p2.index");
-			var metadata = getGroup1(p2index, p2metadata);
-			var artifact = getGroup1(p2index, p2artifact);
-			System.out.println("~~~~~~~~");
-			System.out.println("METADATA");
-			System.out.println("~~~~~~~~");
-			System.out.println(getContent(url, metadata));
-
-			System.out.println("");
-			System.out.println("~~~~~~~~");
-			System.out.println("ARTIFACT");
-			System.out.println("~~~~~~~~");
-			System.out.println(getContent(url, artifact));
+			String metadataTarget = getGroup1(p2index, p2metadata).trim();
+			if (metadataTarget.indexOf(',') == -1) {
+				this.metadataTarget = metadataTarget;
+			} else {
+				this.metadataTarget =
+						Arrays.stream(metadataTarget.split(","))
+								.map(String::trim)
+								.filter(s -> s.endsWith(".xml"))
+								.findFirst()
+								.get();
+			}
 		}
 
-		private String getContent(String root, String target) throws IOException {
-			if (!target.endsWith(".xml")) {
-				throw new IllegalArgumentException("Expected to end with .xml, was " + target);
+		private boolean isComposite() {
+			return metadataTarget.startsWith("composite");
+		}
+
+		private String resolveXml() throws IOException {
+			if (!metadataTarget.endsWith(".xml")) {
+				throw new IllegalArgumentException("Expected to end with .xml, was " + metadataTarget);
 			}
 
-			var xzUrl = root + target + ".xz";
-			var jarUrl = root + target.substring(0, target.length() - ".xml".length()) + ".jar";
+			var xzUrl = url + metadataTarget + ".xz";
+			var jarUrl =
+					url + metadataTarget.substring(0, metadataTarget.length() - ".xml".length()) + ".jar";
 
 			try {
 				var bytes = getBytes(xzUrl);
@@ -126,17 +165,35 @@ public class P2Client implements AutoCloseable {
 				var bytes = getBytes(jarUrl);
 				try (var zipStream = new ZipInputStream(new ByteArrayInputStream(bytes))) {
 					ZipEntry entry = zipStream.getNextEntry();
-					if (entry.getName().equals(target)) {
+					if (entry.getName().equals(metadataTarget)) {
 						return new String(zipStream.readAllBytes(), StandardCharsets.UTF_8);
 					} else {
 						throw new IllegalArgumentException(
-								"Expected to find " + target + " but was " + entry.getName());
+								"Expected to find " + metadataTarget + " but was " + entry.getName());
 					}
 				}
 			} catch (NotFoundException e) {
 				// no problem, just tell what we tried
 			}
-			throw new IllegalArgumentException("Could not find content at\n" + xzUrl + "\n" + jarUrl);
+			throw new IllegalArgumentException(
+					"Could not find " + metadataTarget + " at\n" + xzUrl + "\n" + jarUrl);
+		}
+
+		private List<String> parseComposite(String content) throws Exception {
+			return parseDocument(
+					content,
+					doc -> {
+						var childLocations = new ArrayList<String>();
+						Node childrenNode = doc.getDocumentElement().getElementsByTagName("children").item(0);
+						NodeList children = childrenNode.getChildNodes();
+						for (int i = 0; i < children.getLength(); ++i) {
+							Node node = children.item(i);
+							if ("child".equals(node.getNodeName())) {
+								childLocations.add(node.getAttributes().getNamedItem("location").getNodeValue());
+							}
+						}
+						return childLocations;
+					});
 		}
 	}
 
@@ -145,17 +202,8 @@ public class P2Client implements AutoCloseable {
 		cache.close();
 	}
 
-	private static Map<String, String> parseFromFile(
-			File artifactsJar, Function<String, String> keyExtractor) throws IOException {
-		//        Box.Nullable<Map<String, String>> value = Box.Nullable.ofNull();
-		//        ZipMisc.read(artifactsJar, "artifacts.xml", input -> {
-		//            value.set(Errors.rethrow().get(() -> parse(input, keyExtractor)));
-		//        });
-		//        return Objects.requireNonNull(value.get());
-		throw new IllegalArgumentException();
-	}
-
-	static Map<String, String> parse(InputStream inputStream, Function<String, String> keyExtractor)
+	private static Map<String, String> parse(
+			InputStream inputStream, Function<String, String> keyExtractor)
 			throws ParserConfigurationException, SAXException, IOException {
 		Map<String, String> map = new HashMap<>();
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -180,12 +228,26 @@ public class P2Client implements AutoCloseable {
 
 	static String calculateMavenCentralVersion(String bundleId, String bundleVersion) {
 		Version parsed = Version.parseVersion(bundleVersion);
-		if (ICU_BUNDLE_ID.equals(bundleId) && parsed.getMicro() == 0) {
+		if ("com.ibm.icu".equals(bundleId) && parsed.getMicro() == 0) {
 			return parsed.getMajor() + "." + parsed.getMinor();
 		} else {
 			return parsed.getMajor() + "." + parsed.getMinor() + "." + parsed.getMicro();
 		}
 	}
 
-	private static final String ICU_BUNDLE_ID = "com.ibm.icu";
+	private static <T> T parseDocument(String content, Function<Document, T> parser)
+			throws Exception {
+		var dbf = DocumentBuilderFactory.newInstance();
+		var db = dbf.newDocumentBuilder();
+		var bytes = content.getBytes(StandardCharsets.UTF_8);
+		try (var stream = new ByteArrayInputStream(bytes)) {
+			var doc = db.parse(stream);
+			return parser.apply(doc);
+		} catch (Exception e) {
+			System.err.println("/ERROR WHILE PARSING BELOW");
+			System.err.println(content);
+			System.err.println("\\ERROR WHILE PARSING ABOVE");
+			throw e;
+		}
+	}
 }
