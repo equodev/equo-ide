@@ -29,6 +29,7 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -284,7 +285,44 @@ public class Solstice extends ServiceRegistry {
 				}
 			};
 
-	final PackageAdmin packageAdmin = new Unimplemented.PackageAdmin() {};
+	final PackageAdmin packageAdmin =
+			new Unimplemented.PackageAdmin() {
+				@Override
+				public int getBundleType(org.osgi.framework.Bundle bundle) {
+					if (bundle instanceof ShimBundle && ((ShimBundle) bundle).fragmentHost() != null) {
+						return BUNDLE_TYPE_FRAGMENT;
+					}
+					return 0;
+				}
+
+				@Override
+				public Bundle[] getBundles(String symbolicName, String versionRange) {
+					var bundle = bundleByName(symbolicName);
+					return (bundle == null) ? new Bundle[0] : new Bundle[] {bundle};
+				}
+
+				@Override
+				public Bundle[] getHosts(Bundle bundle) {
+					if (bundle instanceof ShimBundle) {
+						var fragmentHost = ((ShimBundle) bundle).fragmentHost();
+						if (fragmentHost != null) {
+							return getBundles(fragmentHost, null);
+						}
+					}
+					return new Bundle[0];
+				}
+
+				@Override
+				public Bundle[] getFragments(Bundle bundle) {
+					List<Bundle> fragments = new ArrayList<>();
+					for (var candidate : bundles) {
+						if (Objects.equals(candidate.fragmentHost(), bundle.getSymbolicName())) {
+							fragments.add(candidate);
+						}
+					}
+					return fragments.toArray(new Bundle[0]);
+				}
+			};
 
 	final FrameworkWiring frameworkWiring =
 			new Unimplemented.FrameworkWiring() {

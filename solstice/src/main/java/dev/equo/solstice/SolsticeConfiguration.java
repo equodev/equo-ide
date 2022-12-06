@@ -34,6 +34,7 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.service.log.LogLevel;
+import org.osgi.service.packageadmin.PackageAdmin;
 
 public class SolsticeConfiguration {
 	private File installDir;
@@ -203,6 +204,8 @@ public class SolsticeConfiguration {
 				},
 				Dictionaries.empty());
 		context.registerService(EnvironmentInfo.class, new ShimEnvironmentInfo(), Dictionaries.empty());
+		context.registerService(
+				PackageAdmin.class, systemBundle.adapt(PackageAdmin.class), Dictionaries.empty());
 
 		ShimLocation.set(context, new File(installDir, "instance"), Location.INSTANCE_AREA_TYPE);
 		ShimLocation.set(context, new File(installDir, "install"), Location.INSTALL_AREA_TYPE);
