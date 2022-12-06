@@ -16,6 +16,7 @@ String VER_SLF4J = '2.0.5'
 dependencies {
 	implementation 'com.diffplug.durian:durian-swt.os:4.1.1'
 	implementation 'org.apache.felix:org.apache.felix.scr:2.2.4'
+	implementation 'org.objenesis:objenesis:3.3'
 
 	compileOnly 'com.google.code.findbugs:jsr305:3.0.2'
 	compileOnly 'com.google.code.findbugs:annotations:3.0.1'

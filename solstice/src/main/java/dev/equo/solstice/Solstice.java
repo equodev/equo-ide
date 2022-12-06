@@ -29,6 +29,7 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -48,7 +49,6 @@ import org.osgi.framework.BundleEvent;
 import org.osgi.framework.BundleListener;
 import org.osgi.framework.Constants;
 import org.osgi.framework.FrameworkListener;
-import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.Version;
 import org.osgi.framework.namespace.IdentityNamespace;
 import org.osgi.framework.startlevel.BundleStartLevel;
@@ -284,7 +284,44 @@ public class Solstice extends ServiceRegistry {
 				}
 			};
 
-	final PackageAdmin packageAdmin = new Unimplemented.PackageAdmin() {};
+	final PackageAdmin packageAdmin =
+			new Unimplemented.PackageAdmin() {
+				@Override
+				public int getBundleType(org.osgi.framework.Bundle bundle) {
+					if (bundle instanceof ShimBundle && ((ShimBundle) bundle).fragmentHost() != null) {
+						return BUNDLE_TYPE_FRAGMENT;
+					}
+					return 0;
+				}
+
+				@Override
+				public Bundle[] getBundles(String symbolicName, String versionRange) {
+					var bundle = bundleByName(symbolicName);
+					return (bundle == null) ? new Bundle[0] : new Bundle[] {bundle};
+				}
+
+				@Override
+				public Bundle[] getHosts(Bundle bundle) {
+					if (bundle instanceof ShimBundle) {
+						var fragmentHost = ((ShimBundle) bundle).fragmentHost();
+						if (fragmentHost != null) {
+							return getBundles(fragmentHost, null);
+						}
+					}
+					return new Bundle[0];
+				}
+
+				@Override
+				public Bundle[] getFragments(Bundle bundle) {
+					List<Bundle> fragments = new ArrayList<>();
+					for (var candidate : bundles) {
+						if (Objects.equals(candidate.fragmentHost(), bundle.getSymbolicName())) {
+							fragments.add(candidate);
+						}
+					}
+					return fragments.toArray(new Bundle[0]);
+				}
+			};
 
 	final FrameworkWiring frameworkWiring =
 			new Unimplemented.FrameworkWiring() {
@@ -297,8 +334,8 @@ public class Solstice extends ServiceRegistry {
 						var requiredBundle = requirementFilter.get(IdentityNamespace.IDENTITY_NAMESPACE);
 						var bundle = bundleByName(requiredBundle);
 						return Collections.singleton(new ShimBundleCapability(bundle));
-					} catch (InvalidSyntaxException e) {
-						throw new IllegalArgumentException("Filter specifiation invalid:\n" + filterSpec, e);
+					} catch (Exception e) {
+						throw Unimplemented.onPurpose();
 					}
 				}
 			};
@@ -817,7 +854,7 @@ public class Solstice extends ServiceRegistry {
 		@Override
 		public <A> A adapt(Class<A> type) {
 			if (BundleWiring.class.equals(type)) {
-				return (A) new ShimBundleWiring();
+				return state == Bundle.INSTALLED ? null : (A) new ShimBundleWiring(this);
 			} else if (BundleStartLevel.class.equals(type)) {
 				return (A)
 						new Unimplemented.BundleStartLevel() {

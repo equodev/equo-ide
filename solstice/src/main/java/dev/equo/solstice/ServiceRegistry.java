@@ -301,7 +301,7 @@ abstract class ServiceRegistry implements BundleContext {
 			this.id = globalId.getAndIncrement();
 			this.objectClass = objectClass;
 			if (properties != null) {
-				this.properties = (Dictionary<String, Object>) properties;
+				this.properties = Dictionaries.copy((Dictionary<String, Object>) properties);
 			} else {
 				this.properties = Dictionaries.empty();
 			}
