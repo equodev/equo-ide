@@ -20,20 +20,21 @@ equoIde { // launch with gradlew equoIde
 or like this in Maven with `mvn equo-ide:launch`:
 
 ```xml
-<settings> <!-- put this in ~/.m2/settings.xml -->
+<plugin><!-- add this to pom.xml/<project><build><plugins> -->
+    <groupId>dev.equo.ide</groupId>
+    <artifactId>equo-ide-maven-plugin</artifactId>
+    <version>${equo.ide.version}</version>
+    <configuration>
+        <release>4.26.0</release>
+    </configuration>
+</plugin>
+
+<!-- or use equo on all your maven projects by putting this into ~/.m2/settings.xml -->
+<settings> 
   <pluginGroups>
      <pluginGroup>dev.equo.ide</pluginGroup>
   </pluginGroups>
   ...
-
-<plugin><!-- or add this to pom.xml/<project><build><pluginManagement><plugins> -->
-  <groupId>dev.equo.ide</groupId>
-  <artifactId>equo-ide-maven-plugin</artifactId>
-  <version>${equo.ide.version}</version>
-  <configuration>
-    <release>4.26.0</release>
-  </configuration>
-</plugin>
 ```
 
 ## How it works
