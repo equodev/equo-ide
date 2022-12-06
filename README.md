@@ -14,7 +14,7 @@ Use it like this in Gradle with `gradlew equoIde`:
 
 ```gradle
 plugins {
-  id 'dev.equo.ide'
+  id 'dev.equo.ide' version '{{ latest version at top of page }}'
 }
 equoIde { // launch with gradlew equoIde
   release '4.26.0'
@@ -27,7 +27,7 @@ or like this in Maven with `mvn equo-ide:launch`:
 <plugin><!-- add this to pom.xml/<project><build><plugins> -->
     <groupId>dev.equo.ide</groupId>
     <artifactId>equo-ide-maven-plugin</artifactId>
-    <version>${equo.ide.version}</version>
+    <version>{{ latest version at top of page }}</version>
     <configuration>
         <release>4.26.0</release>
     </configuration>
