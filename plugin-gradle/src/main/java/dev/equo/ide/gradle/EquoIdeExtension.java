@@ -15,9 +15,11 @@ package dev.equo.ide.gradle;
 
 import dev.equo.solstice.p2.JdtSetup;
 
+/** The DSL inside the equoIde block. */
 public class EquoIdeExtension {
 	String jdtVersion = JdtSetup.DEFAULT_VERSION;
 
+	/** Sets which eclipse release to use, such as "4.25", "4.26", or a future release. */
 	public void release(String version) {
 		if (version.indexOf('/') != -1) {
 			throw new IllegalArgumentException("Version should not have any slashes");
