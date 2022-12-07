@@ -120,9 +120,7 @@ public class P2Client implements AutoCloseable {
 				units.addAll(parseContentXml(session, contentXml));
 			}
 			units.sort(Comparator.comparing(unit -> unit.id));
-			for (var unit : units) {
-				System.out.println(unit);
-			}
+			session.dump();
 		}
 	}
 

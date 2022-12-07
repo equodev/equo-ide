@@ -14,13 +14,30 @@
 package dev.equo.solstice.p2;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.eclipse.osgi.internal.framework.FilterImpl;
 import org.osgi.framework.InvalidSyntaxException;
 
 class P2Session {
-	static class ProvidesRequires {
+	public void dump() {
+		int[] count = new int[1000];
+		map.forEach(
+				(namespace, nameMap) -> {
+					nameMap.forEach(
+							(name, pair) -> {
+								++count[pair.getRequires().size()];
+								++count[pair.getProvides().size()];
+							});
+				});
+		for (int i = 0; i < count.length; ++i) {
+			System.out.println(i + "," + count[i]);
+		}
+	}
+
+	static class Pair {
 		private Object provides;
 		private Object requires;
 
@@ -32,7 +49,8 @@ class P2Session {
 			requires = add(requires, unit);
 		}
 
-		static Object add(Object existing, Unit toAdd) {
+		/** FYI, profiling against Eclips 4.25 p2 shows that 57% of all pair fields don't need a List. */
+		private static Object add(Object existing, Unit toAdd) {
 			if (existing == null) {
 				return toAdd;
 			} else if (existing instanceof Unit) {
@@ -45,13 +63,31 @@ class P2Session {
 				return existing;
 			}
 		}
+
+		private static List<Unit> get(Object existing) {
+			if (existing == null) {
+				return Collections.emptyList();
+			} else if (existing instanceof Unit) {
+				return Collections.singletonList((Unit) existing);
+			} else {
+				return (ArrayList<Unit>) existing;
+			}
+		}
+
+		public List<Unit> getProvides() {
+			return get(provides);
+		}
+
+		public List<Unit> getRequires() {
+			return get(requires);
+		}
 	}
 
-	private final Map<String, Map<String, ProvidesRequires>> map = new HashMap<>();
+	private final Map<String, Map<String, Pair>> map = new HashMap<>();
 
-	private ProvidesRequires forName(String namespace, String name) {
+	private Pair forName(String namespace, String name) {
 		var perName = map.computeIfAbsent(namespace, unused -> new HashMap<>());
-		return perName.computeIfAbsent(name, unused -> new ProvidesRequires());
+		return perName.computeIfAbsent(name, unused -> new Pair());
 	}
 
 	public void requires(String namespace, String name, Unit unit) {
