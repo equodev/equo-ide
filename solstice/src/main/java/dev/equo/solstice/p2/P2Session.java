@@ -25,14 +25,14 @@ import org.jetbrains.annotations.NotNull;
 import org.osgi.framework.InvalidSyntaxException;
 
 public class P2Session {
-	List<Unit> units = new ArrayList<>();
+	List<P2Unit> units = new ArrayList<>();
 
 	public void populateFrom(P2Client client, String url) throws Exception {
 		client.addUnits(this, url);
 	}
 
-	public List<Unit> getUnitsWithProperty(String key, String value) {
-		List<Unit> matches = new ArrayList<>();
+	public List<P2Unit> getUnitsWithProperty(String key, String value) {
+		List<P2Unit> matches = new ArrayList<>();
 		for (var unit : units) {
 			if (Objects.equals(value, unit.properties.get(key))) {
 				matches.add(unit);
@@ -41,7 +41,7 @@ public class P2Session {
 		return matches;
 	}
 
-	public Unit getUnitById(String id) {
+	public P2Unit getUnitById(String id) {
 		for (var unit : units) {
 			if (id.equals(unit.id)) {
 				return unit;
@@ -52,10 +52,10 @@ public class P2Session {
 
 	public String listAllCategories() {
 		var builder = new StringBuilder();
-		var units = getUnitsWithProperty(Unit.P2_TYPE_CATEGORY, "true");
+		var units = getUnitsWithProperty(P2Unit.P2_TYPE_CATEGORY, "true");
 		for (var unit : units) {
-			var name = unit.properties.get(Unit.P2_NAME);
-			var desc = unit.properties.get(Unit.P2_DESC);
+			var name = unit.properties.get(P2Unit.P2_NAME);
+			var desc = unit.properties.get(P2Unit.P2_DESC);
 			builder.append(unit.id);
 			builder.append('\n');
 			builder.append("  ");
@@ -69,10 +69,10 @@ public class P2Session {
 
 	public String listAllFeatures() {
 		var builder = new StringBuilder();
-		var units = getUnitsWithProperty(Unit.P2_TYPE_FEATURE, "true");
+		var units = getUnitsWithProperty(P2Unit.P2_TYPE_FEATURE, "true");
 		for (var unit : units) {
-			var name = unit.properties.get(Unit.P2_NAME);
-			var desc = unit.properties.get(Unit.P2_DESC);
+			var name = unit.properties.get(P2Unit.P2_NAME);
+			var desc = unit.properties.get(P2Unit.P2_DESC);
 			if (name == null) {
 				name = "(None)";
 			}
@@ -107,50 +107,50 @@ public class P2Session {
 			this.name = name;
 		}
 
-		private void add(Unit unit) {
+		private void add(P2Unit unit) {
 			field = add(field, unit);
 		}
 
 		public boolean hasOnlyOne() {
-			return field instanceof Unit;
+			return field instanceof P2Unit;
 		}
 
-		public Unit getOnlyOne() {
-			return (Unit) field;
+		public P2Unit getOnlyOne() {
+			return (P2Unit) field;
 		}
 
-		public List<Unit> get() {
+		public List<P2Unit> get() {
 			return get(field);
 		}
 
 		private void sort() {
 			if (field instanceof ArrayList) {
-				((ArrayList<Unit>) field).sort(Comparator.reverseOrder());
+				((ArrayList<P2Unit>) field).sort(Comparator.reverseOrder());
 			}
 		}
 
 		/** FYI, profiling against Eclipse 4.25 shows that 95% of these don't need a list. */
-		private static Object add(Object existing, Unit toAdd) {
+		private static Object add(Object existing, P2Unit toAdd) {
 			if (existing == null) {
 				return toAdd;
-			} else if (existing instanceof Unit) {
+			} else if (existing instanceof P2Unit) {
 				var list = new ArrayList<>();
 				list.add(existing);
 				list.add(toAdd);
 				return list;
 			} else {
-				((ArrayList<Unit>) existing).add(toAdd);
+				((ArrayList<P2Unit>) existing).add(toAdd);
 				return existing;
 			}
 		}
 
-		private static List<Unit> get(Object existing) {
+		private static List<P2Unit> get(Object existing) {
 			if (existing == null) {
 				return Collections.emptyList();
-			} else if (existing instanceof Unit) {
-				return Collections.singletonList((Unit) existing);
+			} else if (existing instanceof P2Unit) {
+				return Collections.singletonList((P2Unit) existing);
 			} else {
-				return (ArrayList<Unit>) existing;
+				return (ArrayList<P2Unit>) existing;
 			}
 		}
 
@@ -172,7 +172,7 @@ public class P2Session {
 		return perName.computeIfAbsent(name, unused -> new Providers(name));
 	}
 
-	void provides(String namespace, String name, Unit unit) {
+	void provides(String namespace, String name, P2Unit unit) {
 		requires(namespace, name).add(unit);
 	}
 

@@ -18,11 +18,11 @@ import java.util.List;
 import java.util.TreeSet;
 
 public class P2Resolution {
-	TreeSet<Unit> resolved = new TreeSet<>();
+	TreeSet<P2Unit> resolved = new TreeSet<>();
 	List<UnmetRequirement> unmetRequirements = new ArrayList<>();
 	List<ResolvedWithFirst> resolvedWithFirst = new ArrayList<>();
 
-	public void resolve(Unit toResolve) {
+	public void resolve(P2Unit toResolve) {
 		if (!resolved.add(toResolve)) {
 			return;
 		}
@@ -52,16 +52,16 @@ public class P2Resolution {
 		return mavenCoords;
 	}
 
-	public List<Unit> jarsNotOnMavenCentral() {
-		var notOnMaven = new ArrayList<Unit>();
+	public List<P2Unit> jarsNotOnMavenCentral() {
+		var notOnMaven = new ArrayList<P2Unit>();
 		for (var unit : resolved) {
 			if (unit.getMavenCentralCoord() != null) {
 				continue;
 			}
-			if ("true".equals(unit.properties.get(Unit.P2_TYPE_FEATURE))) {
+			if ("true".equals(unit.properties.get(P2Unit.P2_TYPE_FEATURE))) {
 				continue;
 			}
-			if ("true".equals(unit.properties.get(Unit.P2_TYPE_CATEGORY))) {
+			if ("true".equals(unit.properties.get(P2Unit.P2_TYPE_CATEGORY))) {
 				continue;
 			}
 			notOnMaven.add(unit);
@@ -70,20 +70,20 @@ public class P2Resolution {
 	}
 
 	static class UnmetRequirement {
-		final Unit target;
+		final P2Unit target;
 		final P2Session.Providers unmet;
 
-		UnmetRequirement(Unit target, P2Session.Providers unmet) {
+		UnmetRequirement(P2Unit target, P2Session.Providers unmet) {
 			this.target = target;
 			this.unmet = unmet;
 		}
 	}
 
 	static class ResolvedWithFirst {
-		final Unit target;
+		final P2Unit target;
 		final P2Session.Providers withFirst;
 
-		ResolvedWithFirst(Unit target, P2Session.Providers withFirst) {
+		ResolvedWithFirst(P2Unit target, P2Session.Providers withFirst) {
 			this.target = target;
 			this.withFirst = withFirst;
 		}

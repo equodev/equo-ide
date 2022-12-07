@@ -216,7 +216,7 @@ public class P2Client implements AutoCloseable {
 					for (int i = 0; i < unitNodes.getLength(); ++i) {
 						Node node = unitNodes.item(i);
 						if ("unit".equals(node.getNodeName())) {
-							session.units.add(new Unit(session, folder, node));
+							session.units.add(new P2Unit(session, folder, node));
 						}
 					}
 					return null;
