@@ -19,6 +19,8 @@ import java.util.TreeSet;
 
 public class P2Resolution {
 	TreeSet<String> exclude = new TreeSet<>();
+	List<String> excludePrefix = new ArrayList<>();
+	List<String> excludeSuffix = new ArrayList<>();
 	TreeSet<P2Unit> resolved = new TreeSet<>();
 	List<UnmetRequirement> unmetRequirements = new ArrayList<>();
 	List<ResolvedWithFirst> resolvedWithFirst = new ArrayList<>();
@@ -27,7 +29,16 @@ public class P2Resolution {
 		exclude.add(toExclude);
 	}
 
+	public void excludePrefix(String prefix) {
+		excludePrefix.add(prefix);
+	}
+
 	public void resolve(P2Unit toResolve) {
+		for (var prefix : excludePrefix) {
+			if (toResolve.id.startsWith(prefix)) {
+				return;
+			}
+		}
 		if (exclude.contains(toResolve.id) || !resolved.add(toResolve)) {
 			return;
 		}
@@ -46,9 +57,22 @@ public class P2Resolution {
 		}
 	}
 
+	private Iterable<P2Unit> jars() {
+		var jars = new ArrayList<P2Unit>();
+		for (var unit : resolved) {
+			if (unit.id.endsWith("feature.jar")
+					|| "true".equals(unit.properties.get(P2Unit.P2_TYPE_FEATURE))
+					|| "true".equals(unit.properties.get(P2Unit.P2_TYPE_CATEGORY))) {
+				continue;
+			}
+			jars.add(unit);
+		}
+		return jars;
+	}
+
 	public List<String> jarsOnMavenCentral() {
 		var mavenCoords = new ArrayList<String>();
-		for (var unit : resolved) {
+		for (var unit : jars()) {
 			var coord = unit.getMavenCentralCoord();
 			if (coord != null) {
 				mavenCoords.add(coord);
@@ -59,14 +83,8 @@ public class P2Resolution {
 
 	public List<P2Unit> jarsNotOnMavenCentral() {
 		var notOnMaven = new ArrayList<P2Unit>();
-		for (var unit : resolved) {
+		for (var unit : jars()) {
 			if (unit.getMavenCentralCoord() != null) {
-				continue;
-			}
-			if ("true".equals(unit.properties.get(P2Unit.P2_TYPE_FEATURE))) {
-				continue;
-			}
-			if ("true".equals(unit.properties.get(P2Unit.P2_TYPE_CATEGORY))) {
 				continue;
 			}
 			notOnMaven.add(unit);

@@ -45,12 +45,10 @@ class P2Unit implements Comparable<P2Unit> {
 		}
 	}
 
-	private final String MAVEN_CENTRAL_MIRROR = "eclipse.maven.central.mirror";
-
 	public @Nullable String getMavenCentralCoord() {
 		var repo = properties.get(MAVEN_REPOSITORY);
-		if (!MAVEN_CENTRAL_MIRROR.equals(repo)) {
-			return null;
+		if (!MavenCentralMapping.MIRROR.equals(repo)) {
+			return MavenCentralMapping.getMavenCentralCoord(this);
 		}
 		var group = properties.get(P2Unit.MAVEN_GROUP_ID);
 		var artifact = properties.get(P2Unit.MAVEN_ARTIFACT_ID);
