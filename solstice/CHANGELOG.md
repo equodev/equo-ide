@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+
+## [0.3.1] - 2022-12-07
 ### Fixed
 - Javadoc on all public classes.
 
