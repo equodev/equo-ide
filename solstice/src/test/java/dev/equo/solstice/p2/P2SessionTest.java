@@ -13,6 +13,7 @@
  *******************************************************************************/
 package dev.equo.solstice.p2;
 
+import com.diffplug.common.swt.os.SwtPlatform;
 import java.io.File;
 import java.util.stream.Collectors;
 import org.assertj.core.api.Assertions;
@@ -49,6 +50,30 @@ public class P2SessionTest {
 		Assertions.assertThat(notOnMavenCentral)
 				.isEqualTo(
 						"com.jcraft.jsch,com.sun.el,javax.annotation,javax.el,javax.inject,org.apache.ant,org.apache.batik.constants,org.apache.batik.css,org.apache.batik.i18n,org.apache.batik.util,org.apache.commons.codec,org.apache.commons.jxpath,org.apache.commons.logging,org.apache.httpcomponents.client5.httpclient5,org.apache.httpcomponents.client5.httpclient5-win,org.apache.httpcomponents.core5.httpcore5,org.apache.httpcomponents.core5.httpcore5-h2,org.apache.jasper.glassfish,org.apache.lucene.analyzers-common,org.apache.lucene.analyzers-smartcn,org.apache.lucene.core,org.apache.xmlgraphics,org.bouncycastle.bcpg,org.bouncycastle.bcprov,org.hamcrest.core,org.junit,org.slf4j.api,org.w3c.css.sac,org.w3c.dom.events,org.w3c.dom.smil,org.w3c.dom.svg");
+	}
+
+	@Test
+	public void testQueryPlatformSpecific() throws Exception {
+		var session = populateSession();
+		var query = new P2Query();
+		query.resolve(session.getUnitById("org.eclipse.swt"));
+
+		var notOnMavenCentral =
+				query.jarsNotOnMavenCentral().stream()
+						.map(unit -> unit.id)
+						.collect(Collectors.joining(","));
+		Assertions.assertThat(notOnMavenCentral).isEmpty();
+
+		var jarsAllPlatforms = query.jarsOnMavenCentral().stream().collect(Collectors.joining(","));
+		Assertions.assertThat(jarsAllPlatforms)
+				.isEqualTo(
+						"org.eclipse.platform:org.eclipse.swt:3.121.0,org.eclipse.platform:org.eclipse.swt.cocoa.macosx.aarch64:3.121.0,org.eclipse.platform:org.eclipse.swt.cocoa.macosx.x86_64:3.121.0,org.eclipse.platform:org.eclipse.swt.gtk.linux.aarch64:3.121.0,org.eclipse.platform:org.eclipse.swt.gtk.linux.ppc64le:3.121.0,org.eclipse.platform:org.eclipse.swt.gtk.linux.x86_64:3.121.0,org.eclipse.platform:org.eclipse.swt.win32.win32.x86_64:3.121.0");
+
+		query.setPlatform(SwtPlatform.parseWsOsArch("cocoa.macosx.aarch64"));
+		var jarsOnMac = query.jarsOnMavenCentral().stream().collect(Collectors.joining(","));
+		Assertions.assertThat(jarsOnMac)
+				.isEqualTo(
+						"org.eclipse.platform:org.eclipse.swt:3.121.0,org.eclipse.platform:org.eclipse.swt.cocoa.macosx.aarch64:3.121.0");
 	}
 
 	@Test

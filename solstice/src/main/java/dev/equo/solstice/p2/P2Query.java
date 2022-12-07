@@ -13,9 +13,12 @@
  *******************************************************************************/
 package dev.equo.solstice.p2;
 
+import com.diffplug.common.swt.os.SwtPlatform;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.TreeSet;
+import javax.annotation.Nullable;
 
 public class P2Query {
 	TreeSet<String> exclude = new TreeSet<>();
@@ -24,6 +27,7 @@ public class P2Query {
 	TreeSet<P2Unit> resolved = new TreeSet<>();
 	List<UnmetRequirement> unmetRequirements = new ArrayList<>();
 	List<ResolvedWithFirst> resolvedWithFirst = new ArrayList<>();
+	@Nullable SwtPlatform platform;
 
 	public void exclude(String toExclude) {
 		exclude.add(toExclude);
@@ -31,6 +35,10 @@ public class P2Query {
 
 	public void excludePrefix(String prefix) {
 		excludePrefix.add(prefix);
+	}
+
+	public void setPlatform(@Nullable SwtPlatform platform) {
+		this.platform = platform;
 	}
 
 	public void resolve(P2Unit toResolve) {
@@ -58,6 +66,12 @@ public class P2Query {
 	}
 
 	private Iterable<P2Unit> jars() {
+		var props = new HashMap<String, String>();
+		if (platform != null) {
+			props.put("osgi.os", platform.getOs());
+			props.put("osgi.ws", platform.getWs());
+			props.put("osgi.arch", platform.getArch());
+		}
 		var jars = new ArrayList<P2Unit>();
 		for (var unit : resolved) {
 			if (unit.id.endsWith("feature.jar")
@@ -65,8 +79,9 @@ public class P2Query {
 					|| "true".equals(unit.properties.get(P2Unit.P2_TYPE_CATEGORY))) {
 				continue;
 			}
-			if (unit.filter != null) {}
-
+			if (platform != null && unit.filter != null && !unit.filter.matches(props)) {
+				continue;
+			}
 			jars.add(unit);
 		}
 		return jars;
