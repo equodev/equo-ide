@@ -16,30 +16,23 @@ package dev.equo.solstice.p2;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import okhttp3.Cache;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import org.osgi.framework.Version;
 import org.tukaani.xz.XZInputStream;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
 public class P2Client implements AutoCloseable {
 	private final File cacheDir;
@@ -93,9 +86,10 @@ public class P2Client implements AutoCloseable {
 	}
 
 	class DeepDir {
-		private List<String> contentXmlUrls = new ArrayList<>();
+		List<Unit> units = new ArrayList<>();
 
 		DeepDir(String rootUrl) throws Exception {
+			List<String> contentXmlUrls = new ArrayList<>();
 			var queue = new ArrayDeque<Dir>();
 			queue.push(new Dir(rootUrl));
 			while (!queue.isEmpty()) {
@@ -103,7 +97,7 @@ public class P2Client implements AutoCloseable {
 				if (!dir.isComposite()) {
 					contentXmlUrls.add(dir.url + dir.metadataTarget);
 				} else {
-					var children = dir.parseComposite(dir.resolveXml());
+					var children = parseComposite(resolveXml(dir.url, dir.metadataTarget));
 					for (var child : children) {
 						try {
 							queue.push(new Dir(dir.url + child + "/"));
@@ -113,8 +107,24 @@ public class P2Client implements AutoCloseable {
 					}
 				}
 			}
+
+			for (var content : contentXmlUrls) {
+				if (!content.endsWith("/" + CONTENT_XML)) {
+					throw new IllegalArgumentException(
+							"Expected " + content + " to ends with /" + CONTENT_XML);
+				}
+				int splitPoint = content.length() - CONTENT_XML.length();
+				var contentXml =
+						resolveXml(content.substring(0, splitPoint), content.substring(splitPoint));
+				units.addAll(parseContentXml(contentXml));
+			}
+			for (var unit : units) {
+				System.out.println(unit);
+			}
 		}
 	}
+
+	private static final String CONTENT_XML = "content.xml";
 
 	class Dir {
 		String url;
@@ -142,59 +152,42 @@ public class P2Client implements AutoCloseable {
 		private boolean isComposite() {
 			return metadataTarget.startsWith("composite");
 		}
+	}
 
-		private String resolveXml() throws IOException {
-			if (!metadataTarget.endsWith(".xml")) {
-				throw new IllegalArgumentException("Expected to end with .xml, was " + metadataTarget);
-			}
-
-			var xzUrl = url + metadataTarget + ".xz";
-			var jarUrl =
-					url + metadataTarget.substring(0, metadataTarget.length() - ".xml".length()) + ".jar";
-
-			try {
-				var bytes = getBytes(xzUrl);
-				try (var stream = new XZInputStream(new ByteArrayInputStream(bytes))) {
-					return new String(stream.readAllBytes(), StandardCharsets.UTF_8);
-				}
-			} catch (NotFoundException e) {
-				// no problem, just keep trying
-			}
-
-			try {
-				var bytes = getBytes(jarUrl);
-				try (var zipStream = new ZipInputStream(new ByteArrayInputStream(bytes))) {
-					ZipEntry entry = zipStream.getNextEntry();
-					if (entry.getName().equals(metadataTarget)) {
-						return new String(zipStream.readAllBytes(), StandardCharsets.UTF_8);
-					} else {
-						throw new IllegalArgumentException(
-								"Expected to find " + metadataTarget + " but was " + entry.getName());
-					}
-				}
-			} catch (NotFoundException e) {
-				// no problem, just tell what we tried
-			}
-			throw new IllegalArgumentException(
-					"Could not find " + metadataTarget + " at\n" + xzUrl + "\n" + jarUrl);
+	private String resolveXml(String url, String metadataTarget) throws IOException {
+		if (!metadataTarget.endsWith(".xml")) {
+			throw new IllegalArgumentException("Expected to end with .xml, was " + metadataTarget);
 		}
 
-		private List<String> parseComposite(String content) throws Exception {
-			return parseDocument(
-					content,
-					doc -> {
-						var childLocations = new ArrayList<String>();
-						Node childrenNode = doc.getDocumentElement().getElementsByTagName("children").item(0);
-						NodeList children = childrenNode.getChildNodes();
-						for (int i = 0; i < children.getLength(); ++i) {
-							Node node = children.item(i);
-							if ("child".equals(node.getNodeName())) {
-								childLocations.add(node.getAttributes().getNamedItem("location").getNodeValue());
-							}
-						}
-						return childLocations;
-					});
+		var xzUrl = url + metadataTarget + ".xz";
+		var jarUrl =
+				url + metadataTarget.substring(0, metadataTarget.length() - ".xml".length()) + ".jar";
+
+		try {
+			var bytes = getBytes(xzUrl);
+			try (var stream = new XZInputStream(new ByteArrayInputStream(bytes))) {
+				return new String(stream.readAllBytes(), StandardCharsets.UTF_8);
+			}
+		} catch (NotFoundException e) {
+			// no problem, just keep trying
 		}
+
+		try {
+			var bytes = getBytes(jarUrl);
+			try (var zipStream = new ZipInputStream(new ByteArrayInputStream(bytes))) {
+				ZipEntry entry = zipStream.getNextEntry();
+				if (entry.getName().equals(metadataTarget)) {
+					return new String(zipStream.readAllBytes(), StandardCharsets.UTF_8);
+				} else {
+					throw new IllegalArgumentException(
+							"Expected to find " + metadataTarget + " but was " + entry.getName());
+				}
+			}
+		} catch (NotFoundException e) {
+			// no problem, just tell what we tried
+		}
+		throw new IllegalArgumentException(
+				"Could not find " + metadataTarget + " at\n" + xzUrl + "\n" + jarUrl);
 	}
 
 	@Override
@@ -202,37 +195,38 @@ public class P2Client implements AutoCloseable {
 		cache.close();
 	}
 
-	private static Map<String, String> parse(
-			InputStream inputStream, Function<String, String> keyExtractor)
-			throws ParserConfigurationException, SAXException, IOException {
-		Map<String, String> map = new HashMap<>();
-		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-		DocumentBuilder db = dbf.newDocumentBuilder();
-		Document doc = db.parse(inputStream);
-		Node artifacts = doc.getDocumentElement().getElementsByTagName("artifacts").item(0);
-		for (int i = 0; i < artifacts.getChildNodes().getLength(); ++i) {
-			Node artifact = artifacts.getChildNodes().item(i);
-			if ("artifact".equals(artifact.getNodeName())) {
-				String classifier = artifact.getAttributes().getNamedItem("classifier").getNodeValue();
-				if ("osgi.bundle".equals(classifier)) {
-					String bundleId = artifact.getAttributes().getNamedItem("id").getNodeValue();
-					String bundleVersion = artifact.getAttributes().getNamedItem("version").getNodeValue();
-					String key = keyExtractor.apply(bundleId);
-					String version = calculateMavenCentralVersion(bundleId, bundleVersion);
-					map.put(key, version);
-				}
-			}
-		}
-		return map;
+	private static List<String> parseComposite(String content) throws Exception {
+		return parseDocument(
+				content,
+				doc -> {
+					var childLocations = new ArrayList<String>();
+					Node childrenNode = doc.getDocumentElement().getElementsByTagName("children").item(0);
+					NodeList children = childrenNode.getChildNodes();
+					for (int i = 0; i < children.getLength(); ++i) {
+						Node node = children.item(i);
+						if ("child".equals(node.getNodeName())) {
+							childLocations.add(node.getAttributes().getNamedItem("location").getNodeValue());
+						}
+					}
+					return childLocations;
+				});
 	}
 
-	static String calculateMavenCentralVersion(String bundleId, String bundleVersion) {
-		Version parsed = Version.parseVersion(bundleVersion);
-		if ("com.ibm.icu".equals(bundleId) && parsed.getMicro() == 0) {
-			return parsed.getMajor() + "." + parsed.getMinor();
-		} else {
-			return parsed.getMajor() + "." + parsed.getMinor() + "." + parsed.getMicro();
-		}
+	private static List<Unit> parseContentXml(String content) throws Exception {
+		return parseDocument(
+				content,
+				doc -> {
+					var units = new ArrayList<Unit>();
+					var unitNodes =
+							doc.getDocumentElement().getElementsByTagName("units").item(0).getChildNodes();
+					for (int i = 0; i < unitNodes.getLength(); ++i) {
+						Node node = unitNodes.item(i);
+						if ("unit".equals(node.getNodeName())) {
+							units.add(new Unit(node));
+						}
+					}
+					return units;
+				});
 	}
 
 	private static <T> T parseDocument(String content, Function<Document, T> parser)
