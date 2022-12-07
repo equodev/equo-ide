@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+### Added
+- Changes to allow end users to set the release manually.
 
 ## [0.2.0] - 2022-12-07
 ### Added
