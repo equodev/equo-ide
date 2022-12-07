@@ -30,7 +30,8 @@ public class NestedJarsNeededForTest {
 		var content = new StringBuilder();
 		var base = nestedJarFolder.getParentFile().getParentFile().getParentFile().getAbsolutePath();
 		for (var nestedJar : nestedJars) {
-			content.append(nestedJar.getValue().getAbsolutePath().substring(base.length() + 1));
+			content.append(
+					nestedJar.getValue().getAbsolutePath().substring(base.length() + 1).replace('\\', '/'));
 			content.append('\n');
 		}
 		Files.write(
