@@ -15,6 +15,7 @@ package dev.equo.ide.maven;
 
 import com.diffplug.common.swt.os.SwtPlatform;
 import dev.equo.solstice.NestedBundles;
+import dev.equo.solstice.p2.JdtSetup;
 import dev.equo.solstice.p2.P2Client;
 import dev.equo.solstice.p2.P2Query;
 import dev.equo.solstice.p2.P2Session;
@@ -86,7 +87,7 @@ public class LaunchMojo extends AbstractMojo {
 			var cacheDir = new File(installDir, "p2-metadata");
 			var session = new P2Session();
 			try (var client = new P2Client(cacheDir)) {
-				session.populateFrom(client, "https://download.eclipse.org/eclipse/updates/4.25/");
+				session.populateFrom(client, JdtSetup.URL);
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
@@ -96,7 +97,7 @@ public class LaunchMojo extends AbstractMojo {
 			if (equoTestOnlyTrue) {
 				query.resolve(session.getUnitById("org.eclipse.swt"));
 			} else {
-				query.resolve(session.getUnitById("org.eclipse.releng.java.languages.categoryIU"));
+				JdtSetup.mavenCoordinate(query, session);
 			}
 			for (var coordinate : query.jarsOnMavenCentral()) {
 				deps.add(new Dependency(new DefaultArtifact(coordinate), null, null, excludeTransitive));

@@ -14,6 +14,7 @@
 package dev.equo.ide.gradle;
 
 import com.diffplug.common.swt.os.SwtPlatform;
+import dev.equo.solstice.p2.JdtSetup;
 import dev.equo.solstice.p2.P2Client;
 import dev.equo.solstice.p2.P2Query;
 import dev.equo.solstice.p2.P2Session;
@@ -63,7 +64,7 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 		var cacheDir = new File(installDir, "p2-metadata");
 		var session = new P2Session();
 		try (var client = new P2Client(cacheDir)) {
-			session.populateFrom(client, "https://download.eclipse.org/eclipse/updates/4.25/");
+			session.populateFrom(client, JdtSetup.URL);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -73,7 +74,7 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 		if (equoTestOnly) {
 			query.resolve(session.getUnitById("org.eclipse.swt"));
 		} else {
-			query.resolve(session.getUnitById("org.eclipse.releng.java.languages.categoryIU"));
+			JdtSetup.mavenCoordinate(query, session);
 		}
 		query
 				.jarsOnMavenCentral()
