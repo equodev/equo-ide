@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+### Added
+- Support for win/mac/linux.
 
 ## [0.1.1] - 2022-12-06
 - Most of the Eclipse JDT UI now lights up, but we're still having problems with the JDT project nature.
