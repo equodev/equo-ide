@@ -41,7 +41,7 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 			throw new GradleException("equoIde requires Gradle 6.0 or later");
 		}
 		EquoIdeExtension extension = project.getExtensions().create(EQUO_IDE, EquoIdeExtension.class);
-		Configuration configuration = createConfiguration(project);
+		Configuration configuration = createConfiguration(project, EQUO_IDE);
 
 		project.getRepositories().mavenCentral();
 		try {
@@ -99,11 +99,11 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 						});
 	}
 
-	private Configuration createConfiguration(Project project) {
+	private Configuration createConfiguration(Project project, String name) {
 		return project
 				.getConfigurations()
 				.create(
-						EQUO_IDE,
+						name,
 						config -> {
 							config.attributes(
 									attr -> {
