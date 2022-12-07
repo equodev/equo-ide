@@ -43,7 +43,13 @@ public class GradlePluginTest extends GradleHarness {
 	@Test
 	@Disabled
 	public void equoIde() throws IOException {
-		setFile("build.gradle").toLines("plugins { id 'dev.equo.ide' }", "equoIde {", "}");
+		setFile("build.gradle")
+				.toLines(
+						"plugins { id 'dev.equo.ide' }",
+						"equoIde {",
+						"  release '4.26'",
+						"}",
+						"// (placeholder so GPJ formats this nicely)");
 		gradleRunner().withArguments("equoIde", "--stacktrace").forwardOutput().build();
 	}
 }

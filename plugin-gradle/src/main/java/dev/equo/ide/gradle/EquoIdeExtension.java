@@ -13,4 +13,13 @@
  *******************************************************************************/
 package dev.equo.ide.gradle;
 
-public class EquoIdeExtension {}
+public class EquoIdeExtension {
+	String jdtVersion = "4.26";
+
+	public void release(String version) {
+		if (version.indexOf('/') != -1) {
+			throw new IllegalArgumentException("Version should not have any slashes");
+		}
+		jdtVersion = version;
+	}
+}
