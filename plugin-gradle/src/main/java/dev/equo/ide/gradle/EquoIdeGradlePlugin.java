@@ -14,7 +14,9 @@
 package dev.equo.ide.gradle;
 
 import com.diffplug.common.swt.os.SwtPlatform;
-import dev.equo.solstice.P2AsMaven;
+import dev.equo.solstice.p2.P2Client;
+import dev.equo.solstice.p2.P2Query;
+import dev.equo.solstice.p2.P2Session;
 import java.io.File;
 import java.io.IOException;
 import java.util.regex.Matcher;
@@ -54,12 +56,32 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 		} catch (IOException e) {
 			throw new GradleException("Unable to determine solstice version", e);
 		}
-		for (String dep : P2AsMaven.jdtDeps()) {
-			project.getDependencies().add(EQUO_IDE, dep);
-		}
 
 		boolean equoTestOnly = "true".equals(project.findProperty("equoTestOnly"));
+
 		var installDir = new File(project.getBuildDir(), EQUO_IDE);
+		var cacheDir = new File(installDir, "p2-metadata");
+		var session = new P2Session();
+		try (var client = new P2Client(cacheDir)) {
+			session.populateFrom(client, "https://download.eclipse.org/eclipse/updates/4.25/");
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+
+		var query = new P2Query();
+		query.setPlatform(SwtPlatform.getRunning());
+		if (equoTestOnly) {
+			query.resolve(session.getUnitById("org.eclipse.swt"));
+		} else {
+			query.resolve(session.getUnitById("org.eclipse.releng.java.languages.categoryIU"));
+		}
+		query
+				.jarsOnMavenCentral()
+				.forEach(
+						coordinate -> {
+							project.getDependencies().add(EQUO_IDE, coordinate);
+						});
+
 		project
 				.getTasks()
 				.register(
