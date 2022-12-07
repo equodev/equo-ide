@@ -629,7 +629,7 @@ public class Solstice extends ServiceRegistry {
 				var bundle = bundleForPkg(pkg);
 				logger.info("{} import {} package {}", this, bundle, pkg);
 				if (bundle == null) {
-					if (cfg.okayIfMissingPackage().contains(pkg)) {
+					if (cfg.okayIfMissingPackage(pkg)) {
 						pkgs.add(pkg);
 						logger.info("  missing but okayIfMissingPackage so no problem");
 					} else {
