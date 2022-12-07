@@ -40,7 +40,8 @@ public class MavenJarsNeededForTest {
 		}
 
 		var query = new P2Query();
-		// this could be SwtPlatfrom.getRunning(), but for CI it's important for the list to be cross-platform
+		// this could be SwtPlatfrom.getRunning(), but for CI it's important for the list to be
+		// cross-platform
 		query.setPlatform(SwtPlatform.parseWsOsArch("x.x.x"));
 		query.excludePrefix("org.apache.felix.gogo");
 		query.excludePrefix("org.eclipse.equinox.console");
