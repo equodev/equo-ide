@@ -23,6 +23,7 @@ import java.nio.file.Files;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -38,6 +39,17 @@ public class MavenPluginTest {
 						"-DequoTestOnly=true");
 		Assertions.assertThat(output).contains("exit code: 0");
 		Assertions.assertThat(output).matches("(?s)(.*)stdout: Loaded (\\d+) bundles(.*)");
+	}
+
+	@Disabled
+	@Test
+	public void integrationTestReal() throws IOException, InterruptedException {
+		setFile("pom.xml").toResource("/dev/equo/ide/maven/pom.xml");
+		var output =
+				NestedBundles.consoleExec(
+						rootFolder(),
+						"mvn",
+						"dev.equo.ide:equo-ide-maven-plugin:" + pluginVersion() + ":launch");
 	}
 
 	private static String pluginVersion() throws IOException {
