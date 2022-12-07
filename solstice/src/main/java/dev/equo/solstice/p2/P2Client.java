@@ -20,7 +20,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 import java.util.function.Function;
 import java.util.regex.Pattern;
@@ -52,8 +51,35 @@ public class P2Client implements AutoCloseable {
 		cache.close();
 	}
 
-	DeepDir open(P2Session session, String url) throws Exception {
-		return new DeepDir(session, url);
+	private static final String CONTENT_XML = "content.xml";
+
+	void addUnits(P2Session session, String url) throws Exception {
+		Unchecked.ThrowingConsumer<Folder> addUnits =
+				(Folder root) -> {
+					if (!root.metadataName.equals(CONTENT_XML)) {
+						throw new IllegalArgumentException(
+								"Expected endsWith /" + CONTENT_XML + " but was " + root.url + root.metadataName);
+					}
+					var contentXml = resolveXml(root.url, root.metadataName);
+					parseContentXml(session, root, contentXml);
+				};
+		var queue = new ArrayDeque<Folder>();
+		queue.push(new Folder(url));
+		while (!queue.isEmpty()) {
+			var dir = queue.pop();
+			if (!dir.isComposite()) {
+				addUnits.accept(new Folder(dir.url, dir.metadataName));
+			} else {
+				var children = parseComposite(resolveXml(dir.url, dir.metadataName));
+				for (var child : children) {
+					try {
+						queue.push(new Folder(dir.url + child + "/"));
+					} catch (NotFoundException e) {
+						addUnits.accept(new Folder(dir.url + child + "/", CONTENT_XML));
+					}
+				}
+			}
+		}
 	}
 
 	private String getString(String url) throws IOException, NotFoundException {
@@ -91,60 +117,21 @@ public class P2Client implements AutoCloseable {
 		return matcher.group(1);
 	}
 
-	class DeepDir {
-		List<Unit> units = new ArrayList<>();
+	class Folder {
+		final String url;
+		final String metadataName;
 
-		DeepDir(P2Session session, String rootUrl) throws Exception {
-			List<String> contentXmlUrls = new ArrayList<>();
-			var queue = new ArrayDeque<Dir>();
-			queue.push(new Dir(rootUrl));
-			while (!queue.isEmpty()) {
-				var dir = queue.pop();
-				if (!dir.isComposite()) {
-					contentXmlUrls.add(dir.url + dir.metadataTarget);
-				} else {
-					var children = parseComposite(resolveXml(dir.url, dir.metadataTarget));
-					for (var child : children) {
-						try {
-							queue.push(new Dir(dir.url + child + "/"));
-						} catch (NotFoundException e) {
-							contentXmlUrls.add(dir.url + child + "/content.xml");
-						}
-					}
-				}
-			}
-
-			for (var content : contentXmlUrls) {
-				if (!content.endsWith("/" + CONTENT_XML)) {
-					throw new IllegalArgumentException(
-							"Expected " + content + " to ends with /" + CONTENT_XML);
-				}
-				int splitPoint = content.length() - CONTENT_XML.length();
-				var contentXml =
-						resolveXml(content.substring(0, splitPoint), content.substring(splitPoint));
-				units.addAll(parseContentXml(session, contentXml));
-			}
-			units.sort(Comparator.comparing(unit -> unit.id));
-		}
-	}
-
-	private static final String CONTENT_XML = "content.xml";
-
-	class Dir {
-		String url;
-		String metadataTarget;
-
-		Dir(String url) throws IOException, NotFoundException {
-			this.url = url;
+		Folder(String url) throws IOException, NotFoundException {
 			if (!url.endsWith("/")) {
 				throw new IllegalArgumentException("URL needs to end with /" + url);
 			}
+			this.url = url;
 			var p2index = getString(url + "p2.index");
 			String metadataTarget = getGroup1(p2index, p2metadata).trim();
 			if (metadataTarget.indexOf(',') == -1) {
-				this.metadataTarget = metadataTarget;
+				this.metadataName = metadataTarget;
 			} else {
-				this.metadataTarget =
+				this.metadataName =
 						Arrays.stream(metadataTarget.split(","))
 								.map(String::trim)
 								.filter(s -> s.endsWith(".xml"))
@@ -153,8 +140,16 @@ public class P2Client implements AutoCloseable {
 			}
 		}
 
+		Folder(String url, String metadataTarget) {
+			if (!url.endsWith("/")) {
+				throw new IllegalArgumentException("URL needs to end with /" + url);
+			}
+			this.url = url;
+			this.metadataName = metadataTarget;
+		}
+
 		private boolean isComposite() {
-			return metadataTarget.startsWith("composite");
+			return metadataName.startsWith("composite");
 		}
 	}
 
@@ -211,20 +206,20 @@ public class P2Client implements AutoCloseable {
 				});
 	}
 
-	private static List<Unit> parseContentXml(P2Session session, String content) throws Exception {
-		return parseDocument(
+	private static void parseContentXml(P2Session session, Folder folder, String content)
+			throws Exception {
+		parseDocument(
 				content,
 				doc -> {
-					var units = new ArrayList<Unit>();
 					var unitNodes =
 							doc.getDocumentElement().getElementsByTagName("units").item(0).getChildNodes();
 					for (int i = 0; i < unitNodes.getLength(); ++i) {
 						Node node = unitNodes.item(i);
 						if ("unit".equals(node.getNodeName())) {
-							units.add(new Unit(session, node));
+							session.units.add(new Unit(session, folder, node));
 						}
 					}
-					return units;
+					return null;
 				});
 	}
 

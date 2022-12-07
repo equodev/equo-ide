@@ -13,19 +13,8 @@
  *******************************************************************************/
 package dev.equo.solstice.p2;
 
-import java.io.File;
-
-public class P2Layout {
-	public static final String root = "https://download.eclipse.org/eclipse/updates/";
-
-	public static void main(String[] args) throws Exception {
-		var cacheDir = new File("build/cache");
-		var session = new P2Session();
-		try (var client = new P2Client(cacheDir)) {
-			client.addUnits(session, root + "4.25/");
-		}
-		session.sort();
-
-		System.out.println(session.collectAllCategories());
+class Unchecked {
+	interface ThrowingConsumer<T> {
+		void accept(T input) throws Exception;
 	}
 }

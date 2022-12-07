@@ -20,13 +20,13 @@ import java.util.TreeSet;
 import org.eclipse.osgi.internal.framework.FilterImpl;
 import org.w3c.dom.Node;
 
-class Unit {
+class Unit implements Comparable<Unit> {
 	final String id, version;
 	FilterImpl filter;
 	final TreeMap<String, String> properties = new TreeMap<>();
 	final TreeSet<P2Session.Providers> requires = new TreeSet<>();
 
-	public Unit(P2Session session, Node rootNode) {
+	Unit(P2Session session, P2Client.Folder index, Node rootNode) {
 		id = rootNode.getAttributes().getNamedItem("id").getNodeValue();
 		version = rootNode.getAttributes().getNamedItem("version").getNodeValue();
 		var nodeList = rootNode.getChildNodes();
@@ -102,11 +102,40 @@ class Unit {
 					builder.append(value);
 					builder.append('\n');
 				});
+		for (var r : requires) {
+			builder.append("  req ");
+			builder.append(r.name);
+			builder.append('\n');
+		}
 		builder.setLength(builder.length() - 1);
 		return builder.toString();
 	}
 
+	public static final String MAVEN_GROUP_ID = "maven-groupId";
+	public static final String MAVEN_ARTIFACT_ID = "maven-artifactId";
+	public static final String MAVEN_VERSION = "maven-version";
+	public static final String MAVEN_REPOSITORY = "maven-repository";
+	public static final String MAVEN_TYPE = "maven-type";
+	public static final String P2_NAME = "org.eclipse.equinox.p2.name";
+	public static final String P2_DESC = "org.eclipse.equinox.p2.description";
+	public static final String P2_TYPE_CATEGORY = "org.eclipse.equinox.p2.type.category";
 	private static final List<String> PROP_FILTER =
 			Arrays.asList(
-					"maven-groupId", "maven-artifactId", "maven-version", "maven-repository", "maven-type");
+					MAVEN_GROUP_ID,
+					MAVEN_ARTIFACT_ID,
+					MAVEN_VERSION,
+					MAVEN_REPOSITORY,
+					MAVEN_TYPE,
+					P2_NAME,
+					P2_DESC,
+					P2_TYPE_CATEGORY);
+
+	@Override
+	public int compareTo(Unit o) {
+		if (id.equals(o.id)) {
+			return version.compareTo(o.version);
+		} else {
+			return id.compareTo(o.id);
+		}
+	}
 }

@@ -15,16 +15,60 @@ package dev.equo.solstice.p2;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import org.eclipse.osgi.internal.framework.FilterImpl;
 import org.jetbrains.annotations.NotNull;
 import org.osgi.framework.InvalidSyntaxException;
 
-class P2Session {
+public class P2Session {
+	List<Unit> units = new ArrayList<>();
+
+	public void populateFrom(P2Client client, String url) throws Exception {
+		client.addUnits(this, url);
+	}
+
+	public List<Unit> getUnitsWithProperty(String key, String value) {
+		List<Unit> matches = new ArrayList<>();
+		for (var unit : units) {
+			if (Objects.equals(value, unit.properties.get(key))) {
+				matches.add(unit);
+			}
+		}
+		return matches;
+	}
+
+	public String collectAllCategories() {
+		var builder = new StringBuilder();
+		var units = getUnitsWithProperty(Unit.P2_TYPE_CATEGORY, "true");
+		for (var unit : units) {
+			var name = unit.properties.get(Unit.P2_NAME);
+			var desc = unit.properties.get(Unit.P2_DESC);
+			builder.append(unit.id);
+			builder.append('\n');
+			builder.append("  ");
+			builder.append(name);
+			builder.append(": ");
+			builder.append(desc.replace("\n", "").replace("\r", ""));
+			builder.append('\n');
+		}
+		return builder.toString();
+	}
+
+	public void sort() {
+		units.sort(Comparator.naturalOrder());
+		for (var submap : providerRegistry.values()) {
+			for (Providers value : submap.values()) {
+				value.sort();
+			}
+		}
+	}
+
 	static class Providers implements Comparable<Providers> {
-		private final String name;
+		final String name;
 		private Object field;
 
 		private Providers(String name) {
@@ -37,6 +81,12 @@ class P2Session {
 
 		public List<Unit> get() {
 			return get(field);
+		}
+
+		private void sort() {
+			if (field instanceof ArrayList) {
+				((ArrayList<Unit>) field).sort(Comparator.naturalOrder());
+			}
 		}
 
 		/** FYI, profiling against Eclipse 4.25 shows that 95% of these don't need a list. */
@@ -83,7 +133,7 @@ class P2Session {
 
 	private final Map<String, FilterImpl> filterCache = new HashMap<>();
 
-	public FilterImpl parseFilter(String filter) {
+	FilterImpl parseFilter(String filter) {
 		return filterCache.computeIfAbsent(
 				filter,
 				f -> {
