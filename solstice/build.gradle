@@ -247,7 +247,7 @@ pluginsFromEclipse.remove('org.eclipse.jdt.junit4.runtime')
 apply plugin: 'com.diffplug.eclipse.mavencentral'
 eclipseMavenCentral {
 	release '4.25.0', {
-		compileOnly 'org.eclipse.osgi'
+		implementation 'org.eclipse.osgi'
 		compileOnly 'org.eclipse.core.runtime'
 		// only needed for IdeMain
 		compileOnly 'org.eclipse.ui.ide.application'

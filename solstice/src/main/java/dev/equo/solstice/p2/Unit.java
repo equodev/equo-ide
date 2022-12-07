@@ -16,30 +16,28 @@ package dev.equo.solstice.p2;
 import java.util.Arrays;
 import java.util.List;
 import java.util.TreeMap;
-import java.util.TreeSet;
+import org.eclipse.osgi.internal.framework.FilterImpl;
 import org.w3c.dom.Node;
 
 public class Unit {
 	public final String id, version;
-	private String filter;
+	private FilterImpl filter;
 	private final TreeMap<String, String> properties = new TreeMap<>();
-	private final TreeMap<String, TreeSet<String>> requires = new TreeMap<>();
-	private final TreeMap<String, TreeSet<String>> provides = new TreeMap<>();
 
-	public Unit(Node rootNode) {
+	public Unit(P2Session session, Node rootNode) {
 		id = rootNode.getAttributes().getNamedItem("id").getNodeValue();
 		version = rootNode.getAttributes().getNamedItem("version").getNodeValue();
 		var nodeList = rootNode.getChildNodes();
 		for (int i = 0; i < nodeList.getLength(); ++i) {
 			var node = nodeList.item(i);
 			if ("filter".equals(node.getNodeName())) {
-				filter = node.getTextContent().trim();
+				filter = session.parseFilter(node.getTextContent().trim());
 			} else if ("properties".equals(node.getNodeName())) {
 				parseProperties(node);
 			} else if ("provides".equals(node.getNodeName())) {
-				parseProvides(node);
+				parseProvides(session, node);
 			} else if ("requires".equals(node.getNodeName())) {
-				parseRequires(node);
+				parseRequires(session, node);
 			}
 		}
 	}
@@ -59,32 +57,28 @@ public class Unit {
 		}
 	}
 
-	private void parseProvides(Node providesRoot) {
+	private void parseProvides(P2Session session, Node providesRoot) {
 		var providesNodes = providesRoot.getChildNodes();
 		for (int i = 0; i < providesNodes.getLength(); ++i) {
 			var node = providesNodes.item(i);
 			if ("provided".equals(node.getNodeName())) {
 				var namespace = node.getAttributes().getNamedItem("namespace").getNodeValue();
 				var name = node.getAttributes().getNamedItem("name").getNodeValue();
-				addNode(provides, namespace, name);
+				session.provides(namespace, name, this);
 			}
 		}
 	}
 
-	private void parseRequires(Node providesRoot) {
+	private void parseRequires(P2Session session, Node providesRoot) {
 		var providesNodes = providesRoot.getChildNodes();
 		for (int i = 0; i < providesNodes.getLength(); ++i) {
 			var node = providesNodes.item(i);
 			if ("required".equals(node.getNodeName())) {
 				var namespace = node.getAttributes().getNamedItem("namespace").getNodeValue();
 				var name = node.getAttributes().getNamedItem("name").getNodeValue();
-				addNode(requires, namespace, name);
+				session.requires(namespace, name, this);
 			}
 		}
-	}
-
-	private void addNode(TreeMap<String, TreeSet<String>> map, String key, String value) {
-		map.computeIfAbsent(key, unused -> new TreeSet<>()).add(value);
 	}
 
 	@Override
@@ -104,22 +98,6 @@ public class Unit {
 					builder.append(key);
 					builder.append('=');
 					builder.append(value);
-					builder.append('\n');
-				});
-		requires.forEach(
-				(key, list) -> {
-					builder.append("  requires ");
-					builder.append(key);
-					builder.append('=');
-					builder.append(list.toString());
-					builder.append('\n');
-				});
-		provides.forEach(
-				(key, list) -> {
-					builder.append("  provides ");
-					builder.append(key);
-					builder.append('=');
-					builder.append(list.toString());
 					builder.append('\n');
 				});
 		builder.setLength(builder.length() - 1);

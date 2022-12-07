@@ -47,8 +47,8 @@ public class P2Client implements AutoCloseable {
 		client = new OkHttpClient.Builder().cache(cache).build();
 	}
 
-	public DeepDir open(String url) throws Exception {
-		return new DeepDir(url);
+	public DeepDir open(P2Session session, String url) throws Exception {
+		return new DeepDir(session, url);
 	}
 
 	private String getString(String url) throws IOException, NotFoundException {
@@ -89,7 +89,7 @@ public class P2Client implements AutoCloseable {
 	class DeepDir {
 		List<Unit> units = new ArrayList<>();
 
-		DeepDir(String rootUrl) throws Exception {
+		DeepDir(P2Session session, String rootUrl) throws Exception {
 			List<String> contentXmlUrls = new ArrayList<>();
 			var queue = new ArrayDeque<Dir>();
 			queue.push(new Dir(rootUrl));
@@ -117,7 +117,7 @@ public class P2Client implements AutoCloseable {
 				int splitPoint = content.length() - CONTENT_XML.length();
 				var contentXml =
 						resolveXml(content.substring(0, splitPoint), content.substring(splitPoint));
-				units.addAll(parseContentXml(contentXml));
+				units.addAll(parseContentXml(session, contentXml));
 			}
 			units.sort(Comparator.comparing(unit -> unit.id));
 			for (var unit : units) {
@@ -214,7 +214,7 @@ public class P2Client implements AutoCloseable {
 				});
 	}
 
-	private static List<Unit> parseContentXml(String content) throws Exception {
+	private static List<Unit> parseContentXml(P2Session session, String content) throws Exception {
 		return parseDocument(
 				content,
 				doc -> {
@@ -224,7 +224,7 @@ public class P2Client implements AutoCloseable {
 					for (int i = 0; i < unitNodes.getLength(); ++i) {
 						Node node = unitNodes.item(i);
 						if ("unit".equals(node.getNodeName())) {
-							units.add(new Unit(node));
+							units.add(new Unit(session, node));
 						}
 					}
 					return units;

@@ -20,8 +20,9 @@ public class P2Layout {
 
 	public static void main(String[] args) throws Exception {
 		var cacheDir = new File("build/cache");
+		var session = new P2Session();
 		try (var client = new P2Client(cacheDir)) {
-			client.open(root + "4.25/");
+			client.open(session, root + "4.25/");
 		}
 	}
 }
