@@ -17,7 +17,17 @@ import java.io.File;
 import java.util.Arrays;
 import org.osgi.framework.InvalidSyntaxException;
 
-class IdeMain {
+/**
+ * A main method for launching an IDE using Solstice. It supports the following command line
+ * arguments
+ *
+ * <ul>
+ *   <li>{@code -installDir C:\SomeDir} determines where the IDE will store its data.
+ *   <li>{@code -equoTestOnly true} signals that instead of running an IDE, just activate all
+ *       bundles then shut down. Useful for integration testing.
+ * </ul>
+ */
+public class IdeMain {
 	public static void main(String[] args) throws InvalidSyntaxException {
 		var argList = Arrays.asList(args);
 		int idx = argList.indexOf("-installDir");

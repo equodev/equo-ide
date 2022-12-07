@@ -63,6 +63,10 @@ import org.osgi.service.packageadmin.PackageAdmin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * A single-classloader implementation of OSGi which eagerly loads all the OSGi plugins it can find
+ * on the classpath.
+ */
 public class Solstice extends ServiceRegistry {
 	private static Solstice instance;
 

@@ -20,6 +20,10 @@ import java.util.List;
 import java.util.TreeSet;
 import javax.annotation.Nullable;
 
+/**
+ * Follows the dependency information of a set of {@link dev.equo.solstice.p2.P2Unit} so that they
+ * can be resolved from maven or directly from p2 if necessary.
+ */
 public class P2Query {
 	TreeSet<String> exclude = new TreeSet<>();
 	List<String> excludePrefix = new ArrayList<>();

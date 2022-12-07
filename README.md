@@ -4,7 +4,7 @@
 [![Maven Plugin](https://img.shields.io/maven-central/v/dev.equo.ide/equo-ide-maven-plugin?color=blue&label=maven%20plugin)](plugin-maven)
 [![Solstice OSGi](https://img.shields.io/maven-central/v/dev.equo.ide/solstice?color=blue&label=solstice%20OSGi)](solstice)
 
-**PUBLIC BETA! Try it out, but it's not production ready yet. [Join our mailing list](https://equo.dev/ide) to be notified when it's ready.**
+**PUBLIC BETA! Try it out, but it's not production ready yet. [Join our mailing list](https://equo.dev/ide) to be notified when it's ready.** The gradle plugin works a lot better than the maven plugin for now.
 
 - a build plugin for [Gradle](plugin-gradle) and [Maven](plugin-maven)
 - downloads, configures, and launches an instance of the Eclipse IDE

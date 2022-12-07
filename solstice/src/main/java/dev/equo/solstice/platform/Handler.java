@@ -19,6 +19,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
 
+/** This allows us to intercept platform:// URLs (the name is determine by our package). */
 public class Handler extends URLStreamHandler {
 	private static final String PKG = "dev.equo.solstice";
 	private static final String CONTENT_PATH_PROP = "java.protocol.handler.pkgs";

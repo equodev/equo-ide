@@ -24,6 +24,7 @@ import org.eclipse.osgi.internal.framework.FilterImpl;
 import org.jetbrains.annotations.NotNull;
 import org.osgi.framework.InvalidSyntaxException;
 
+/** In-memory store of all p2 metadata, especially provides/requires dependency information. */
 public class P2Session {
 	List<P2Unit> units = new ArrayList<>();
 
