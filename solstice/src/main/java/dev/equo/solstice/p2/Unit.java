@@ -13,6 +13,7 @@
  *******************************************************************************/
 package dev.equo.solstice.p2;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.TreeMap;
@@ -23,6 +24,7 @@ public class Unit {
 	public final String id, version;
 	private FilterImpl filter;
 	private final TreeMap<String, String> properties = new TreeMap<>();
+	private final List<P2Session.Providers> requires = new ArrayList<>();
 
 	public Unit(P2Session session, Node rootNode) {
 		id = rootNode.getAttributes().getNamedItem("id").getNodeValue();
@@ -76,7 +78,7 @@ public class Unit {
 			if ("required".equals(node.getNodeName())) {
 				var namespace = node.getAttributes().getNamedItem("namespace").getNodeValue();
 				var name = node.getAttributes().getNamedItem("name").getNodeValue();
-				session.requires(namespace, name, this);
+				requires.add(session.requires(namespace, name));
 			}
 		}
 	}

@@ -23,13 +23,16 @@ import org.osgi.framework.InvalidSyntaxException;
 
 class P2Session {
 	public void dump() {
-		int[] count = new int[1000];
+		int[] count = new int[4];
 		map.forEach(
 				(namespace, nameMap) -> {
 					nameMap.forEach(
 							(name, pair) -> {
-								++count[pair.getRequires().size()];
-								++count[pair.getProvides().size()];
+								int idx = pair.get().size();
+								if (idx >= count.length) {
+									idx = count.length - 1;
+								}
+								++count[idx];
 							});
 				});
 		for (int i = 0; i < count.length; ++i) {
@@ -37,19 +40,23 @@ class P2Session {
 		}
 	}
 
-	static class Pair {
-		private Object provides;
-		private Object requires;
+	public static class Providers {
+		private final String name;
+		private Object field;
 
-		void addProvides(Unit unit) {
-			provides = add(provides, unit);
+		private Providers(String name) {
+			this.name = name;
 		}
 
-		void addRequires(Unit unit) {
-			requires = add(requires, unit);
+		private void add(Unit unit) {
+			field = add(field, unit);
 		}
 
-		/** FYI, profiling against Eclips 4.25 p2 shows that 57% of all pair fields don't need a List. */
+		public List<Unit> get() {
+			return get(field);
+		}
+
+		/** FYI, profiling against Eclipse 4.25 shows that 95% of these don't need a list. */
 		private static Object add(Object existing, Unit toAdd) {
 			if (existing == null) {
 				return toAdd;
@@ -73,29 +80,21 @@ class P2Session {
 				return (ArrayList<Unit>) existing;
 			}
 		}
-
-		public List<Unit> getProvides() {
-			return get(provides);
-		}
-
-		public List<Unit> getRequires() {
-			return get(requires);
-		}
 	}
 
-	private final Map<String, Map<String, Pair>> map = new HashMap<>();
+	private final Map<String, Map<String, Providers>> map = new HashMap<>();
 
-	private Pair forName(String namespace, String name) {
+	private Providers forName(String namespace, String name) {
 		var perName = map.computeIfAbsent(namespace, unused -> new HashMap<>());
-		return perName.computeIfAbsent(name, unused -> new Pair());
+		return perName.computeIfAbsent(name, unused -> new Providers(name));
 	}
 
-	public void requires(String namespace, String name, Unit unit) {
-		forName(namespace, name).addRequires(unit);
+	public Providers requires(String namespace, String name) {
+		return forName(namespace, name);
 	}
 
 	public void provides(String namespace, String name, Unit unit) {
-		forName(namespace, name).addProvides(unit);
+		forName(namespace, name).add(unit);
 	}
 
 	private final Map<String, FilterImpl> filterCache = new HashMap<>();
