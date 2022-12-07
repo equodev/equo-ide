@@ -48,6 +48,9 @@ public class LaunchMojo extends AbstractMojo {
 	@Parameter(property = "equoTestOnly")
 	private String equoTestOnly;
 
+	@Parameter(property = "release")
+	private String release;
+
 	@Parameter(defaultValue = "${project.build.directory}", required = true, readonly = true)
 	private File buildDir;
 
@@ -87,7 +90,10 @@ public class LaunchMojo extends AbstractMojo {
 			var cacheDir = new File(installDir, "p2-metadata");
 			var session = new P2Session();
 			try (var client = new P2Client(cacheDir)) {
-				session.populateFrom(client, JdtSetup.URL);
+				if (release == null) {
+					release = JdtSetup.DEFAULT_VERSION;
+				}
+				session.populateFrom(client, JdtSetup.URL_BASE + release + "/");
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}

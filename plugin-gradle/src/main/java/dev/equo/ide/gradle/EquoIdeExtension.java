@@ -13,4 +13,15 @@
  *******************************************************************************/
 package dev.equo.ide.gradle;
 
-public class EquoIdeExtension {}
+import dev.equo.solstice.p2.JdtSetup;
+
+public class EquoIdeExtension {
+	String jdtVersion = JdtSetup.DEFAULT_VERSION;
+
+	public void release(String version) {
+		if (version.indexOf('/') != -1) {
+			throw new IllegalArgumentException("Version should not have any slashes");
+		}
+		jdtVersion = version;
+	}
+}

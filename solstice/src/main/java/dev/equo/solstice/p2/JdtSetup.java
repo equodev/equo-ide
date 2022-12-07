@@ -15,7 +15,8 @@ package dev.equo.solstice.p2;
 
 /** This is kludge placeholder, will not be in 1.0. */
 public class JdtSetup {
-	public static String URL = "https://download.eclipse.org/eclipse/updates/4.25/";
+	public static String DEFAULT_VERSION = "4.26";
+	public static String URL_BASE = "https://download.eclipse.org/eclipse/updates/";
 
 	public static void mavenCoordinate(P2Query query, P2Session session) {
 		query.excludePrefix("org.apache.felix.gogo");

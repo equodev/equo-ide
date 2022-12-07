@@ -34,7 +34,7 @@ public class MavenJarsNeededForTest {
 		var cacheDir = new File("build/solstice-testSetup-metadata");
 		var session = new P2Session();
 		try (var client = new P2Client(cacheDir)) {
-			session.populateFrom(client, JdtSetup.URL);
+			session.populateFrom(client, JdtSetup.URL_BASE + JdtSetup.DEFAULT_VERSION + "/");
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}

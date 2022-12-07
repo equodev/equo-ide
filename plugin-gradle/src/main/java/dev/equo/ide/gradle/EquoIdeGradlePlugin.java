@@ -61,28 +61,30 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 		boolean equoTestOnly = "true".equals(project.findProperty("equoTestOnly"));
 
 		var installDir = new File(project.getBuildDir(), EQUO_IDE);
-		var cacheDir = new File(installDir, "p2-metadata");
-		var session = new P2Session();
-		try (var client = new P2Client(cacheDir)) {
-			session.populateFrom(client, JdtSetup.URL);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
+		project.afterEvaluate(
+				unused -> {
+					var cacheDir = new File(installDir, "p2-metadata");
+					var session = new P2Session();
+					try (var client = new P2Client(cacheDir)) {
+						session.populateFrom(client, JdtSetup.URL_BASE + extension.jdtVersion + "/");
+					} catch (Exception e) {
+						throw new RuntimeException(e);
+					}
 
-		var query = new P2Query();
-		query.setPlatform(SwtPlatform.getRunning());
-		if (equoTestOnly) {
-			query.resolve(session.getUnitById("org.eclipse.swt"));
-		} else {
-			JdtSetup.mavenCoordinate(query, session);
-		}
-		query
-				.jarsOnMavenCentral()
-				.forEach(
-						coordinate -> {
-							project.getDependencies().add(EQUO_IDE, coordinate);
-						});
-
+					var query = new P2Query();
+					query.setPlatform(SwtPlatform.getRunning());
+					if (equoTestOnly) {
+						query.resolve(session.getUnitById("org.eclipse.swt"));
+					} else {
+						JdtSetup.mavenCoordinate(query, session);
+					}
+					query
+							.jarsOnMavenCentral()
+							.forEach(
+									coordinate -> {
+										project.getDependencies().add(EQUO_IDE, coordinate);
+									});
+				});
 		project
 				.getTasks()
 				.register(
