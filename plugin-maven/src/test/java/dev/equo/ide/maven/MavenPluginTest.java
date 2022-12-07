@@ -23,13 +23,11 @@ import java.nio.file.Files;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 public class MavenPluginTest {
 	@Test
-	@Disabled
 	public void integrationTest() throws IOException, InterruptedException {
 		setFile("pom.xml").toResource("/dev/equo/ide/maven/pom.xml");
 		var output =

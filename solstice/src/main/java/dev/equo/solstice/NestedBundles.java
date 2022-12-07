@@ -30,8 +30,6 @@ import java.util.Map;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 import org.osgi.framework.Constants;
 
 /**
@@ -71,16 +69,16 @@ public abstract class NestedBundles {
 			javaCmd = "java";
 		}
 
+		File classpathJar = JavaExecWinFriendly.toJarWithClasspath(cp);
+		classpathJar.deleteOnExit();
+
 		List<String> command = new ArrayList<>();
 		command.add(javaCmd);
 		if (OS.getRunning().isMac()) {
 			command.add("-XstartOnFirstThread");
 		}
 		command.add("-classpath");
-		command.add(
-				StreamSupport.stream(cp.spliterator(), false)
-						.map(File::getAbsolutePath)
-						.collect(Collectors.joining(":")));
+		command.add(classpathJar.getAbsolutePath());
 		command.add(mainClass);
 		for (var arg : args) {
 			command.add(arg);

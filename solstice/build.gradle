@@ -13,10 +13,30 @@ jar.manifest.attributes.put('Implementation-Version', spotlessChangelog.versionN
 
 String VER_SLF4J = '2.0.5'
 
+sourceSets {
+	testSetup1 {
+		compileClasspath += sourceSets.main.output
+		runtimeClasspath += sourceSets.main.output
+	}
+	testSetup2 {
+		compileClasspath += sourceSets.main.output
+		runtimeClasspath += sourceSets.main.output
+	}
+}
+configurations {
+	testImplementation.extendsFrom(testSetup2Implementation)
+}
+
 dependencies {
-	implementation 'com.diffplug.durian:durian-swt.os:4.1.1'
+	api 'com.diffplug.durian:durian-swt.os:4.1.1'
 	implementation 'org.apache.felix:org.apache.felix.scr:2.2.4'
+	// needed to shim out parts of the runtime
 	implementation 'org.objenesis:objenesis:3.3'
+	// needed to navigate p2
+	implementation 'org.tukaani:xz:1.9'
+	testSetup1Implementation 'org.tukaani:xz:1.9'
+	implementation 'com.squareup.okhttp3:okhttp:4.10.0'
+	testSetup1Implementation 'com.squareup.okhttp3:okhttp:4.10.0'
 
 	compileOnly 'com.google.code.findbugs:jsr305:3.0.2'
 	compileOnly 'com.google.code.findbugs:annotations:3.0.1'
@@ -27,22 +47,21 @@ dependencies {
 	testImplementation "org.assertj:assertj-core:$VER_ASSERTJ"
 }
 
-sourceSets {
-	testSetup {
-		compileClasspath += sourceSets.main.output
-		runtimeClasspath += sourceSets.main.output
-	}
+file('mavenJarsNeededForTest').readLines().forEach {
+	dependencies.testSetup2Implementation it
 }
-configurations {
-	testImplementation.extendsFrom(testSetupImplementation)
-}
-
 file('nestedJarsNeededForTest').readLines().forEach {
 	dependencies.testImplementation files(it)
 }
 
+tasks.register('mavenJarsNeededForTest', JavaExec) {
+	classpath = sourceSets.testSetup1.runtimeClasspath
+	mainClass = 'dev.equo.solstice.MavenJarsNeededForTest'
+}
+
 tasks.register('nestedJarsNeededForTest', JavaExec) {
-	classpath = sourceSets.testSetup.runtimeClasspath
+	dependsOn 'mavenJarsNeededForTest'
+	classpath = sourceSets.testSetup2.runtimeClasspath
 	mainClass = 'dev.equo.solstice.NestedJarsNeededForTest'
 }
 tasks.named('test') {
@@ -54,203 +73,20 @@ tasks.named('test') {
 }
 
 dependencies {
-	testSetupImplementation 'org.eclipse.jetty:jetty-util:11.0.12'
-	testSetupImplementation 'org.eclipse.jetty:jetty-server:11.0.12'
-	testSetupImplementation 'junit:junit:4.13.2'
-	testSetupImplementation 'com.jcraft:jsch:0.1.55'
-	testSetupImplementation 'org.apache.lucene:lucene-analyzers-common:8.4.1'
-	testSetupImplementation 'javax.inject:javax.inject:1'
+	testSetup1Implementation 'com.diffplug.durian:durian-swt.os:4.1.1'
 }
-
-def pluginsFromEclipse = [
-	// seems important
-	'org.eclipse.emf.edit',
-	'org.eclipse.e4.ui.progress',
-	// feature org.eclipse.emf.ecore (and emf.common)
-	'org.eclipse.core.runtime',
-	'org.eclipse.emf.common',
-	'org.eclipse.emf.ecore',
-	'org.eclipse.emf.ecore.change',
-	'org.eclipse.emf.ecore.xmi',
-	// feature org.eclipse.help
-	'org.eclipse.equinox.http.jetty',
-	'org.eclipse.equinox.http.registry',
-	'org.eclipse.equinox.http.servlet',
-	'org.eclipse.equinox.jsp.jasper',
-	'org.eclipse.equinox.jsp.jasper.registry',
-	'org.eclipse.help.base',
-	'org.eclipse.help.ui',
-	'org.eclipse.help.webapp',
-	'org.eclipse.core.net',
-	'org.eclipse.equinox.security',
-	// feature org.eclipse.platform
-	'org.eclipse.rcp',
-	'org.eclipse.help',
-	'org.eclipse.compare.core',
-	'org.eclipse.compare',
-	'org.eclipse.compare.win32',
-	'org.eclipse.core.filebuffers',
-	'org.eclipse.core.filesystem',
-	'org.eclipse.core.net',
-	'org.eclipse.core.net.linux',
-	'org.eclipse.core.net.win32',
-	'org.eclipse.core.net.win32.x86_64',
-	'org.eclipse.core.resources',
-	'org.eclipse.debug.core',
-	'org.eclipse.debug.ui',
-	'org.eclipse.e4.ui.ide',
-	'org.eclipse.equinox.event',
-	'org.eclipse.ltk.core.refactoring',
-	'org.eclipse.ltk.ui.refactoring',
-	'org.eclipse.platform',
-	'org.eclipse.platform.doc.user',
-	'org.eclipse.search',
-	'org.eclipse.text.quicksearch',
-	'org.eclipse.team.core',
-	'org.eclipse.team.ui',
-	'org.eclipse.text',
-	'org.eclipse.jface.text',
-	'org.eclipse.ui.console',
-	'org.eclipse.ui.intro',
-	'org.eclipse.ui.intro.universal',
-	'org.eclipse.ui.cheatsheets',
-	'org.eclipse.ui.browser',
-	'org.eclipse.ui.genericeditor',
-	'org.eclipse.ui.monitoring',
-	'org.eclipse.ui.navigator',
-	'org.eclipse.ui.navigator.resources',
-	'org.eclipse.ui.net',
-	'org.eclipse.ui.workbench.texteditor',
-	'org.eclipse.ui.views',
-	'org.eclipse.ui.editors',
-	'org.eclipse.ui.externaltools',
-	'org.eclipse.ui.ide',
-	'org.eclipse.ui.ide.application',
-	'org.eclipse.ui.win32',
-	'org.eclipse.core.filesystem.macosx',
-	'org.eclipse.core.variables',
-	'org.eclipse.ui.forms',
-	'org.eclipse.ui.views.properties.tabbed',
-	'org.eclipse.equinox.security',
-	'org.eclipse.equinox.security.ui',
-	'org.eclipse.equinox.security.macosx',
-	'org.eclipse.core.externaltools',
-	'org.eclipse.ui.themes',
-	'org.eclipse.core.runtime',
-	'org.eclipse.ui.intro.quicklinks',
-	'org.eclipse.team.genericeditor.diff.extension',
-	'org.eclipse.urischeme',
-	'org.eclipse.ui.views.log',
-	'org.eclipse.debug.ui.launchview',
-	// feature org.eclipse.e4.rcp
-	'org.eclipse.e4.core.services',
-	'org.eclipse.e4.ui.workbench.swt',
-	'org.eclipse.e4.core.commands',
-	'org.eclipse.e4.ui.bindings',
-	'org.eclipse.e4.ui.model.workbench',
-	'org.eclipse.e4.ui.services',
-	'org.eclipse.e4.ui.workbench.renderers.swt',
-	'org.eclipse.e4.ui.workbench',
-	'org.eclipse.e4.ui.css.core',
-	'org.eclipse.e4.ui.css.swt',
-	'org.eclipse.e4.core.di',
-	'org.eclipse.e4.core.contexts',
-	'org.eclipse.e4.core.di.extensions',
-	'org.eclipse.e4.ui.css.swt.theme',
-	'org.eclipse.e4.ui.di',
-	'org.eclipse.e4.ui.widgets',
-	'org.eclipse.e4.ui.workbench.renderers.swt.cocoa',
-	'org.eclipse.equinox.common',
-	'org.eclipse.equinox.event',
-	'org.eclipse.core.commands',
-	'org.eclipse.core.contenttype',
-	'org.eclipse.core.databinding',
-	'org.eclipse.core.databinding.beans',
-	'org.eclipse.core.databinding.observable',
-	'org.eclipse.core.databinding.property',
-	'org.eclipse.core.expressions',
-	'org.eclipse.core.jobs',
-	'org.eclipse.core.runtime',
-	'org.eclipse.equinox.app',
-	'org.eclipse.equinox.launcher',
-	'org.eclipse.equinox.preferences',
-	'org.osgi.service.prefs',
-	'org.eclipse.equinox.registry',
-	'org.eclipse.osgi',
-	'org.eclipse.osgi.compatibility.state',
-	'org.eclipse.osgi.services',
-	'org.eclipse.osgi.util',
-	'org.eclipse.swt',
-	'org.eclipse.jface',
-	'org.eclipse.jface.databinding',
-	'org.eclipse.e4.ui.workbench3',
-	'org.eclipse.e4.ui.workbench.addons.swt',
-	'org.eclipse.equinox.bidi',
-	'org.eclipse.e4.ui.dialogs',
-	'org.eclipse.e4.emf.xpath',
-	'org.eclipse.e4.core.di.annotations',
-	'org.eclipse.e4.core.di.extensions.supplier',
-	'org.eclipse.urischeme',
-	'org.osgi.util.function',
-	'org.osgi.util.promise',
-	'org.osgi.util.measurement',
-	'org.osgi.util.position',
-	'org.osgi.util.xml',
-	'org.osgi.service.cm',
-	'org.osgi.service.component',
-	'org.osgi.service.device',
-	'org.osgi.service.event',
-	'org.osgi.service.metatype',
-	'org.osgi.service.provisioning',
-	'org.osgi.service.upnp',
-	'org.osgi.service.useradmin',
-	'org.osgi.service.wireadmin',
-	// feature org.eclipse.rcp
-	'org.eclipse.help',
-	'org.eclipse.ui',
-	'org.eclipse.ui.workbench',
-	'org.eclipse.update.configurator',
-	'org.eclipse.rcp',
-	'org.eclipse.ui.cocoa',
-	'com.ibm.icu',
-	// feature org.eclipse.jdt
-	'org.eclipse.jdt',
-	'org.eclipse.jdt.apt.core',
-	'org.eclipse.jdt.apt.ui',
-	'org.eclipse.jdt.apt.pluggable.core',
-	'org.eclipse.jdt.compiler.apt',
-	'org.eclipse.jdt.compiler.tool',
-	'org.eclipse.jdt.core',
-	'org.eclipse.jdt.core.formatterapp',
-	'org.eclipse.jdt.annotation',
-	'org.eclipse.jdt.core.manipulation',
-	'org.eclipse.jdt.debug.ui',
-	'org.eclipse.jdt.debug',
-	'org.eclipse.jdt.junit',
-	'org.eclipse.jdt.junit.core',
-	'org.eclipse.jdt.junit.runtime',
-	'org.eclipse.jdt.junit4.runtime',
-	'org.eclipse.jdt.junit5.runtime',
-	'org.eclipse.jdt.launching',
-	'org.eclipse.jdt.ui',
-	'org.eclipse.jdt.doc.user',
-	'org.eclipse.jdt.launching.macosx',
-	'org.eclipse.jdt.launching.ui.macosx'
-]
-
-pluginsFromEclipse.remove('org.eclipse.jdt.junit4.runtime')
 
 apply plugin: 'com.diffplug.eclipse.mavencentral'
 eclipseMavenCentral {
 	release '4.25.0', {
-		compileOnly 'org.eclipse.osgi'
+		api 'org.eclipse.osgi'
+		implementation 'org.osgi.service.component'
 		compileOnly 'org.eclipse.core.runtime'
 		// only needed for IdeMain
 		compileOnly 'org.eclipse.ui.ide.application'
 
-		pluginsFromEclipse.each {plugin ->
-			dep 'testSetupImplementation', plugin
-		}
+		dep 'testSetup1Implementation', 'org.eclipse.osgi'
+
 		useNativesForRunningPlatform()
 		constrainTransitivesToThisRelease()
 	}

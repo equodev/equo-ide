@@ -14,7 +14,10 @@
 package dev.equo.ide.gradle;
 
 import com.diffplug.common.swt.os.SwtPlatform;
-import dev.equo.solstice.P2AsMaven;
+import dev.equo.solstice.p2.JdtSetup;
+import dev.equo.solstice.p2.P2Client;
+import dev.equo.solstice.p2.P2Query;
+import dev.equo.solstice.p2.P2Session;
 import java.io.File;
 import java.io.IOException;
 import java.util.regex.Matcher;
@@ -38,7 +41,7 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 			throw new GradleException("equoIde requires Gradle 6.0 or later");
 		}
 		EquoIdeExtension extension = project.getExtensions().create(EQUO_IDE, EquoIdeExtension.class);
-		Configuration configuration = createConfiguration(project);
+		Configuration configuration = createConfiguration(project, EQUO_IDE);
 
 		project.getRepositories().mavenCentral();
 		try {
@@ -54,12 +57,32 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 		} catch (IOException e) {
 			throw new GradleException("Unable to determine solstice version", e);
 		}
-		for (String dep : P2AsMaven.jdtDeps()) {
-			project.getDependencies().add(EQUO_IDE, dep);
-		}
 
 		boolean equoTestOnly = "true".equals(project.findProperty("equoTestOnly"));
+
 		var installDir = new File(project.getBuildDir(), EQUO_IDE);
+		var cacheDir = new File(installDir, "p2-metadata");
+		var session = new P2Session();
+		try (var client = new P2Client(cacheDir)) {
+			session.populateFrom(client, JdtSetup.URL);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+
+		var query = new P2Query();
+		query.setPlatform(SwtPlatform.getRunning());
+		if (equoTestOnly) {
+			query.resolve(session.getUnitById("org.eclipse.swt"));
+		} else {
+			JdtSetup.mavenCoordinate(query, session);
+		}
+		query
+				.jarsOnMavenCentral()
+				.forEach(
+						coordinate -> {
+							project.getDependencies().add(EQUO_IDE, coordinate);
+						});
+
 		project
 				.getTasks()
 				.register(
@@ -76,11 +99,11 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 						});
 	}
 
-	private Configuration createConfiguration(Project project) {
+	private Configuration createConfiguration(Project project, String name) {
 		return project
 				.getConfigurations()
 				.create(
-						EQUO_IDE,
+						name,
 						config -> {
 							config.attributes(
 									attr -> {

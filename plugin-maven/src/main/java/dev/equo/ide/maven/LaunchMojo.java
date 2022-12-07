@@ -15,7 +15,10 @@ package dev.equo.ide.maven;
 
 import com.diffplug.common.swt.os.SwtPlatform;
 import dev.equo.solstice.NestedBundles;
-import dev.equo.solstice.P2AsMaven;
+import dev.equo.solstice.p2.JdtSetup;
+import dev.equo.solstice.p2.P2Client;
+import dev.equo.solstice.p2.P2Query;
+import dev.equo.solstice.p2.P2Session;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -58,6 +61,7 @@ public class LaunchMojo extends AbstractMojo {
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		try {
 			System.setProperty("osgi.platform", SwtPlatform.getRunning().toString());
+			boolean equoTestOnlyTrue = "true".equals(equoTestOnly);
 
 			List<Dependency> deps = new ArrayList<>();
 			deps.add(
@@ -78,7 +82,24 @@ public class LaunchMojo extends AbstractMojo {
 							new Exclusion("javax.annotation", "javax.annotation-api", "*", "*"),
 							new Exclusion("org.eclipse.platform", "org.eclipse.swt.gtk.linux.aarch64", "*", "*"),
 							new Exclusion("org.eclipse.platform", "org.eclipse.swt.gtk.linux.arm", "*", "*"));
-			for (var coordinate : P2AsMaven.jdtDeps()) {
+
+			var installDir = new File(buildDir, "equoIde");
+			var cacheDir = new File(installDir, "p2-metadata");
+			var session = new P2Session();
+			try (var client = new P2Client(cacheDir)) {
+				session.populateFrom(client, JdtSetup.URL);
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+
+			var query = new P2Query();
+			query.setPlatform(SwtPlatform.getRunning());
+			if (equoTestOnlyTrue) {
+				query.resolve(session.getUnitById("org.eclipse.swt"));
+			} else {
+				JdtSetup.mavenCoordinate(query, session);
+			}
+			for (var coordinate : query.jarsOnMavenCentral()) {
 				deps.add(new Dependency(new DefaultArtifact(coordinate), null, null, excludeTransitive));
 			}
 			CollectRequest collectRequest = new CollectRequest(deps, null, repositories);
@@ -90,13 +111,12 @@ public class LaunchMojo extends AbstractMojo {
 			for (var artifact : dependencyResult.getArtifactResults()) {
 				files.add(artifact.getArtifact().getFile());
 			}
-			var installDir = new File(buildDir, "equoIde");
+
 			var nestedJarFolder = new File(installDir, NestedBundles.DIR);
 			for (var nested : NestedBundles.inFiles(files).extractAllNestedJars(nestedJarFolder)) {
 				files.add(nested.getValue());
 			}
 
-			boolean equoTestOnlyTrue = "true".equals(equoTestOnly);
 			String result =
 					NestedBundles.javaExec(
 							"dev.equo.solstice.IdeMain",

@@ -24,7 +24,6 @@ import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.TaskAction;
-import org.gradle.process.ExecOperations;
 
 public abstract class EquoIdeTask extends DefaultTask {
 	@Internal
@@ -38,9 +37,6 @@ public abstract class EquoIdeTask extends DefaultTask {
 
 	@Internal
 	public abstract Property<Boolean> getIsTestOnly();
-
-	@Inject
-	public abstract ExecOperations getExecOperations();
 
 	@Inject
 	public abstract ObjectFactory getObjectFactory();

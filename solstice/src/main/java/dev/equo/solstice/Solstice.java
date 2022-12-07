@@ -52,6 +52,7 @@ import org.osgi.framework.FrameworkListener;
 import org.osgi.framework.Version;
 import org.osgi.framework.namespace.IdentityNamespace;
 import org.osgi.framework.startlevel.BundleStartLevel;
+import org.osgi.framework.startlevel.FrameworkStartLevel;
 import org.osgi.framework.wiring.BundleCapability;
 import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.framework.wiring.BundleWiring;
@@ -273,6 +274,9 @@ public class Solstice extends ServiceRegistry {
 						return (A) packageAdmin;
 					} else if (type.equals(FrameworkWiring.class)) {
 						return (A) frameworkWiring;
+					} else if (type.equals(FrameworkStartLevel.class)) {
+						// TODO: figure out who needs this and why
+						return (A) new Unimplemented.FrameworkStartLevel() {};
 					} else {
 						throw new UnsupportedOperationException(type.getName());
 					}
@@ -629,7 +633,7 @@ public class Solstice extends ServiceRegistry {
 				var bundle = bundleForPkg(pkg);
 				logger.info("{} import {} package {}", this, bundle, pkg);
 				if (bundle == null) {
-					if (cfg.okayIfMissingPackage().contains(pkg)) {
+					if (cfg.okayIfMissingPackage(pkg)) {
 						pkgs.add(pkg);
 						logger.info("  missing but okayIfMissingPackage so no problem");
 					} else {

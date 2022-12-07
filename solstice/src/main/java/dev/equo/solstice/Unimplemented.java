@@ -517,4 +517,31 @@ class Unimplemented {
 			throw onPurpose();
 		}
 	}
+
+	interface FrameworkStartLevel extends org.osgi.framework.startlevel.FrameworkStartLevel {
+		@Override
+		default int getStartLevel() {
+			throw onPurpose();
+		}
+
+		@Override
+		default void setStartLevel(int startlevel, FrameworkListener... listeners) {
+			throw onPurpose();
+		}
+
+		@Override
+		default int getInitialBundleStartLevel() {
+			throw onPurpose();
+		}
+
+		@Override
+		default void setInitialBundleStartLevel(int startlevel) {
+			throw onPurpose();
+		}
+
+		@Override
+		default org.osgi.framework.Bundle getBundle() {
+			throw onPurpose();
+		}
+	}
 }

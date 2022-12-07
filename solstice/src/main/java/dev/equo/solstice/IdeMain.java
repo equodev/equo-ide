@@ -15,20 +15,10 @@ package dev.equo.solstice;
 
 import java.io.File;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher;
-import org.eclipse.equinox.app.IApplicationContext;
-import org.eclipse.osgi.service.runnable.ApplicationLauncher;
-import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.application.IWorkbenchConfigurer;
-import org.eclipse.ui.internal.ide.application.DelayedEventsProcessor;
-import org.eclipse.ui.internal.ide.application.IDEWorkbenchAdvisor;
 import org.osgi.framework.InvalidSyntaxException;
-import org.osgi.service.application.ApplicationException;
 
 class IdeMain {
-	public static void main(String[] args) throws InvalidSyntaxException, ApplicationException {
+	public static void main(String[] args) throws InvalidSyntaxException {
 		var argList = Arrays.asList(args);
 		int idx = argList.indexOf("-installDir");
 		SolsticeConfiguration cfg;
@@ -46,37 +36,8 @@ class IdeMain {
 			return;
 		}
 
-		var appServices =
-				osgiShim.getServiceReferences(
-						org.osgi.service.application.ApplicationDescriptor.class,
-						"(service.pid=org.eclipse.ui.ide.workbench)");
-		if (appServices.size() != 1) {
-			throw new IllegalArgumentException("Expected exactly one application, got " + appServices);
-		}
-
-		var appDescriptor = osgiShim.getService(appServices.iterator().next());
-
-		var appLauncher = new EclipseAppLauncher(osgiShim, false, false, null, null);
-		osgiShim.registerService(ApplicationLauncher.class, appLauncher, Dictionaries.empty());
-
-		Map<String, Object> appProps = new HashMap<>();
-		appProps.put(IApplicationContext.APPLICATION_ARGS, new String[] {});
-		var appHandle = appDescriptor.launch(appProps);
-
-		var display = PlatformUI.createDisplay();
-		// processor must be created before we start event loop
-		var processor = new DelayedEventsProcessor(display);
-		int exitCode =
-				PlatformUI.createAndRunWorkbench(
-						display,
-						new IDEWorkbenchAdvisor(processor) {
-							@Override
-							public void initialize(IWorkbenchConfigurer configurer) {
-								osgiShim.activateWorkbenchBundles();
-								super.initialize(configurer);
-							}
-						});
-		if (exitCode == PlatformUI.RETURN_OK) {
+		int exitCode = IdeMainUi.main(osgiShim);
+		if (exitCode == 0) {
 			System.exit(0);
 		} else {
 			System.err.println("Unexpected exit code: " + exitCode);

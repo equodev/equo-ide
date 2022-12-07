@@ -11,12 +11,10 @@
  * Contributors:
  *     EquoTech, Inc. - initial API and implementation
  *******************************************************************************/
-package dev.equo.solstice;
+package dev.equo.solstice.p2;
 
-import org.osgi.framework.InvalidSyntaxException;
-
-public class IdeMainTest {
-	public static void main(String[] args) throws InvalidSyntaxException {
-		IdeMain.main(args);
+class Unchecked {
+	interface ThrowingConsumer<T> {
+		void accept(T input) throws Exception;
 	}
 }

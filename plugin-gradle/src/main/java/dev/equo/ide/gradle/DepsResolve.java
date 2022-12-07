@@ -45,7 +45,7 @@ class DepsResolve {
 					props
 							.get(PluginUnderTestMetadata.IMPLEMENTATION_CLASSPATH_PROP_KEY)
 							.toString()
-							.split(":");
+							.split(File.pathSeparator);
 			var result = new ArrayList<>();
 			for (var jarOrFolder : cp) {
 				if (jarOrFolder.endsWith(".jar")) {
