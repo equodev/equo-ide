@@ -276,9 +276,7 @@ public class Solstice extends ServiceRegistry {
 						return (A) frameworkWiring;
 					} else if (type.equals(FrameworkStartLevel.class)) {
 						// TODO: figure out who needs this and why
-						return (A) new Unimplemented.FrameworkStartLevel(){
-
-						};
+						return (A) new Unimplemented.FrameworkStartLevel() {};
 					} else {
 						throw new UnsupportedOperationException(type.getName());
 					}

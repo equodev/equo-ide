@@ -41,6 +41,7 @@ public class MavenJarsNeededForTest {
 		var query = new P2Query();
 		query.setPlatform(SwtPlatform.parseWsOsArch("cocoa.macosx.aarch64"));
 		query.excludePrefix("org.apache.felix.gogo");
+		query.excludePrefix("org.eclipse.equinox.console");
 		query.excludePrefix("org.eclipse.equinox.p2");
 		query.resolve(session.getUnitById("org.eclipse.releng.java.languages.categoryIU"));
 		query.resolve(session.getUnitById("org.eclipse.platform.ide.categoryIU"));

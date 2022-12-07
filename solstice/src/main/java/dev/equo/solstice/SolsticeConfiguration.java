@@ -85,6 +85,7 @@ public class SolsticeConfiguration {
 
 	public List<String> okayIfMissingBundle() {
 		return Arrays.asList(
+				"com.jcraft.jsch",
 				"javax.annotation",
 				"javax.inject",
 				"org.apache.ant",
