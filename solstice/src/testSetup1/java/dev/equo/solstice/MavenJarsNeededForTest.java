@@ -40,7 +40,8 @@ public class MavenJarsNeededForTest {
 		}
 
 		var query = new P2Query();
-		query.setPlatform(SwtPlatform.parseWsOsArch("cocoa.macosx.aarch64"));
+		// this could be SwtPlatfrom.getRunning(), but for CI it's important for the list to be cross-platform
+		query.setPlatform(SwtPlatform.parseWsOsArch("x.x.x"));
 		query.excludePrefix("org.apache.felix.gogo");
 		query.excludePrefix("org.eclipse.equinox.console");
 		query.excludePrefix("org.eclipse.equinox.p2");
