@@ -248,6 +248,7 @@ apply plugin: 'com.diffplug.eclipse.mavencentral'
 eclipseMavenCentral {
 	release '4.25.0', {
 		implementation 'org.eclipse.osgi'
+		implementation 'org.osgi.service.component'
 		compileOnly 'org.eclipse.core.runtime'
 		// only needed for IdeMain
 		compileOnly 'org.eclipse.ui.ide.application'
