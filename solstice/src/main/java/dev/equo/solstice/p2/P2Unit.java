@@ -75,12 +75,24 @@ class P2Unit implements Comparable<P2Unit> {
 					if (value.startsWith("%")) {
 						needsReplacing.put(value, name);
 					}
-				} else if (name.startsWith(df_LT) && !needsReplacing.isEmpty()) {
-					var replaceKey = "%" + name.substring(df_LT.length());
-					var keyThatNeedsReplacement = needsReplacing.remove(replaceKey);
-					if (keyThatNeedsReplacement != null) {
-						String value = propNode.getAttributes().getNamedItem("value").getNodeValue();
-						properties.put(keyThatNeedsReplacement, value);
+				}
+			}
+		}
+		if (!needsReplacing.isEmpty()) {
+			for (int i = 0; i < propertyNodes.getLength(); ++i) {
+				var propNode = propertyNodes.item(i);
+				if ("property".equals(propNode.getNodeName())) {
+					var name = propNode.getAttributes().getNamedItem("name").getNodeValue();
+					if (name.startsWith(df_LT) && !needsReplacing.isEmpty()) {
+						var replaceKey = "%" + name.substring(df_LT.length());
+						var keyThatNeedsReplacement = needsReplacing.remove(replaceKey);
+						if (keyThatNeedsReplacement != null) {
+							String value = propNode.getAttributes().getNamedItem("value").getNodeValue();
+							properties.put(keyThatNeedsReplacement, value);
+							if (needsReplacing.isEmpty()) {
+								break;
+							}
+						}
 					}
 				}
 			}
