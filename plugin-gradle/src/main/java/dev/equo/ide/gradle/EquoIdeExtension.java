@@ -13,8 +13,10 @@
  *******************************************************************************/
 package dev.equo.ide.gradle;
 
+import dev.equo.solstice.p2.JdtSetup;
+
 public class EquoIdeExtension {
-	String jdtVersion = "4.26";
+	String jdtVersion = JdtSetup.DEFAULT_VERSION;
 
 	public void release(String version) {
 		if (version.indexOf('/') != -1) {
