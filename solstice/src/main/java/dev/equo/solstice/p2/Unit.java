@@ -46,18 +46,31 @@ class Unit implements Comparable<Unit> {
 
 	private void parseProperties(Node node) {
 		var propertyNodes = node.getChildNodes();
+		var needsReplacing = new TreeMap<String, String>();
 		for (int i = 0; i < propertyNodes.getLength(); ++i) {
 			var propNode = propertyNodes.item(i);
 			if ("property".equals(propNode.getNodeName())) {
 				var name = propNode.getAttributes().getNamedItem("name").getNodeValue();
 				var idx = PROP_FILTER.indexOf(name);
 				if (idx != -1) {
-					properties.put(
-							PROP_FILTER.get(idx), propNode.getAttributes().getNamedItem("value").getNodeValue());
+					String value = propNode.getAttributes().getNamedItem("value").getNodeValue();
+					properties.put(PROP_FILTER.get(idx), value);
+					if (value.startsWith("%")) {
+						needsReplacing.put(value, name);
+					}
+				} else if (name.startsWith(df_LT) && !needsReplacing.isEmpty()) {
+					var replaceKey = "%" + name.substring(df_LT.length());
+					var keyThatNeedsReplacement = needsReplacing.remove(replaceKey);
+					if (keyThatNeedsReplacement != null) {
+						String value = propNode.getAttributes().getNamedItem("value").getNodeValue();
+						properties.put(keyThatNeedsReplacement, value);
+					}
 				}
 			}
 		}
 	}
+
+	private static final String df_LT = "df_LT.";
 
 	private void parseProvides(P2Session session, Node providesRoot) {
 		var providesNodes = providesRoot.getChildNodes();
@@ -119,6 +132,7 @@ class Unit implements Comparable<Unit> {
 	public static final String P2_NAME = "org.eclipse.equinox.p2.name";
 	public static final String P2_DESC = "org.eclipse.equinox.p2.description";
 	public static final String P2_TYPE_CATEGORY = "org.eclipse.equinox.p2.type.category";
+	public static final String P2_TYPE_FEATURE = "org.eclipse.equinox.p2.type.group";
 	private static final List<String> PROP_FILTER =
 			Arrays.asList(
 					MAVEN_GROUP_ID,
@@ -128,7 +142,8 @@ class Unit implements Comparable<Unit> {
 					MAVEN_TYPE,
 					P2_NAME,
 					P2_DESC,
-					P2_TYPE_CATEGORY);
+					P2_TYPE_CATEGORY,
+					P2_TYPE_FEATURE);
 
 	@Override
 	public int compareTo(Unit o) {

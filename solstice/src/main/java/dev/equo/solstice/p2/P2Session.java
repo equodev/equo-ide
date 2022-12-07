@@ -41,12 +41,35 @@ public class P2Session {
 		return matches;
 	}
 
-	public String collectAllCategories() {
+	public String listAllCategories() {
 		var builder = new StringBuilder();
 		var units = getUnitsWithProperty(Unit.P2_TYPE_CATEGORY, "true");
 		for (var unit : units) {
 			var name = unit.properties.get(Unit.P2_NAME);
 			var desc = unit.properties.get(Unit.P2_DESC);
+			builder.append(unit.id);
+			builder.append('\n');
+			builder.append("  ");
+			builder.append(name);
+			builder.append(": ");
+			builder.append(desc.replace("\n", "").replace("\r", ""));
+			builder.append('\n');
+		}
+		return builder.toString();
+	}
+
+	public String listAllFeatures() {
+		var builder = new StringBuilder();
+		var units = getUnitsWithProperty(Unit.P2_TYPE_FEATURE, "true");
+		for (var unit : units) {
+			var name = unit.properties.get(Unit.P2_NAME);
+			var desc = unit.properties.get(Unit.P2_DESC);
+			if (name == null) {
+				name = "(None)";
+			}
+			if (desc == null) {
+				desc = "(None)";
+			}
 			builder.append(unit.id);
 			builder.append('\n');
 			builder.append("  ");
