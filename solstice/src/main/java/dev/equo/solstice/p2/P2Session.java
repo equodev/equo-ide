@@ -41,6 +41,15 @@ public class P2Session {
 		return matches;
 	}
 
+	public Unit getUnitById(String id) {
+		for (var unit : units) {
+			if (id.equals(unit.id)) {
+				return unit;
+			}
+		}
+		throw new IllegalArgumentException("No such unit id " + id);
+	}
+
 	public String listAllCategories() {
 		var builder = new StringBuilder();
 		var units = getUnitsWithProperty(Unit.P2_TYPE_CATEGORY, "true");
@@ -102,13 +111,21 @@ public class P2Session {
 			field = add(field, unit);
 		}
 
+		public boolean hasOnlyOne() {
+			return field instanceof Unit;
+		}
+
+		public Unit getOnlyOne() {
+			return (Unit) field;
+		}
+
 		public List<Unit> get() {
 			return get(field);
 		}
 
 		private void sort() {
 			if (field instanceof ArrayList) {
-				((ArrayList<Unit>) field).sort(Comparator.naturalOrder());
+				((ArrayList<Unit>) field).sort(Comparator.reverseOrder());
 			}
 		}
 
@@ -140,6 +157,11 @@ public class P2Session {
 		@Override
 		public int compareTo(@NotNull Providers o) {
 			return name.compareTo(o.name);
+		}
+
+		@Override
+		public String toString() {
+			return name;
 		}
 	}
 

@@ -18,15 +18,32 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 public class P2SessionTest {
-	private File cacheDir = new File("build/solstice-test/" + P2SessionTest.class.getSimpleName());
+	private P2Session populateSession() throws Exception {
+		File cacheDir = new File("build/solstice-test/" + P2SessionTest.class.getSimpleName());
+		var session = new P2Session();
+		try (var client = new P2Client(cacheDir)) {
+			session.populateFrom(client, "https://download.eclipse.org/eclipse/updates/4.25/");
+		}
+		session.sort();
+		return session;
+	}
+
+	@Test
+	public void testResolution() throws Exception {
+		var session = populateSession();
+		var resolution = new P2Resolution();
+		resolution.resolve(session.getUnitById("org.eclipse.platform.ide.categoryIU"));
+		for (var s : resolution.jarsOnMavenCentral()) {
+			System.out.println("maven: " + s);
+		}
+		for (var u : resolution.jarsNotOnMavenCentral()) {
+			System.out.println("p2only: " + u);
+		}
+	}
 
 	@Test
 	public void testCategories() throws Exception {
-		var session = new P2Session();
-		try (var client = new P2Client(cacheDir)) {
-			client.addUnits(session, "https://download.eclipse.org/eclipse/updates/4.25/");
-		}
-		session.sort();
+		var session = populateSession();
 		Assertions.assertThat(session.listAllCategories())
 				.isEqualTo(
 						"I20220831-1800.Default\n"
@@ -57,11 +74,7 @@ public class P2SessionTest {
 
 	@Test
 	public void testFeatures() throws Exception {
-		var session = new P2Session();
-		try (var client = new P2Client(cacheDir)) {
-			client.addUnits(session, "https://download.eclipse.org/eclipse/updates/4.25/");
-		}
-		session.sort();
+		var session = populateSession();
 		Assertions.assertThat(session.listAllFeatures())
 				.isEqualTo(
 						"eclipse-junit-tests\n"
