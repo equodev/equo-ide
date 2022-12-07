@@ -15,7 +15,6 @@ package dev.equo.solstice.p2;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import org.w3c.dom.Node;
@@ -24,8 +23,8 @@ public class Unit {
 	public final String id, version;
 	private String filter;
 	private final TreeMap<String, String> properties = new TreeMap<>();
-	private final Map<String, TreeSet<String>> requires = new TreeMap<>();
-	private final Map<String, TreeSet<String>> provides = new TreeMap<>();
+	private final TreeMap<String, TreeSet<String>> requires = new TreeMap<>();
+	private final TreeMap<String, TreeSet<String>> provides = new TreeMap<>();
 
 	public Unit(Node rootNode) {
 		id = rootNode.getAttributes().getNamedItem("id").getNodeValue();
@@ -38,9 +37,9 @@ public class Unit {
 			} else if ("properties".equals(node.getNodeName())) {
 				parseProperties(node);
 			} else if ("provides".equals(node.getNodeName())) {
-
+				parseProvides(node);
 			} else if ("requires".equals(node.getNodeName())) {
-
+				parseRequires(node);
 			}
 		}
 	}
@@ -58,6 +57,34 @@ public class Unit {
 				}
 			}
 		}
+	}
+
+	private void parseProvides(Node providesRoot) {
+		var providesNodes = providesRoot.getChildNodes();
+		for (int i = 0; i < providesNodes.getLength(); ++i) {
+			var node = providesNodes.item(i);
+			if ("provided".equals(node.getNodeName())) {
+				var namespace = node.getAttributes().getNamedItem("namespace").getNodeValue();
+				var name = node.getAttributes().getNamedItem("name").getNodeValue();
+				addNode(provides, namespace, name);
+			}
+		}
+	}
+
+	private void parseRequires(Node providesRoot) {
+		var providesNodes = providesRoot.getChildNodes();
+		for (int i = 0; i < providesNodes.getLength(); ++i) {
+			var node = providesNodes.item(i);
+			if ("required".equals(node.getNodeName())) {
+				var namespace = node.getAttributes().getNamedItem("namespace").getNodeValue();
+				var name = node.getAttributes().getNamedItem("name").getNodeValue();
+				addNode(requires, namespace, name);
+			}
+		}
+	}
+
+	private void addNode(TreeMap<String, TreeSet<String>> map, String key, String value) {
+		map.computeIfAbsent(key, unused -> new TreeSet<>()).add(value);
 	}
 
 	@Override
