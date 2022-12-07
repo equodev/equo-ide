@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+
+## [0.2.0] - 2022-12-07
 ### Added
 - The `dev.equo.solstice.p2` package which has a simple implementation of p2.
 
