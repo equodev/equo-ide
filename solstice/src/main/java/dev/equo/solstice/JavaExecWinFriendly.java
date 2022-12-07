@@ -44,7 +44,7 @@ class JavaExecWinFriendly {
 					new PrintWriter(
 							new BufferedWriter(new OutputStreamWriter(zip, StandardCharsets.UTF_8)))) {
 				pw.println("Manifest-Version: 1.0");
-				StringBuilder bufferClassPath = new StringBuilder();
+				StringBuilder bufferClassPath = new StringBuilder("Class-Path: ");
 				for (File file : files) {
 					if (bufferClassPath.length() != 0) {
 						bufferClassPath.append(' ');
