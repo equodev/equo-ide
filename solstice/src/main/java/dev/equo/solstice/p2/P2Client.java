@@ -20,6 +20,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.function.Function;
 import java.util.regex.Pattern;
@@ -118,6 +119,7 @@ public class P2Client implements AutoCloseable {
 						resolveXml(content.substring(0, splitPoint), content.substring(splitPoint));
 				units.addAll(parseContentXml(contentXml));
 			}
+			units.sort(Comparator.comparing(unit -> unit.id));
 			for (var unit : units) {
 				System.out.println(unit);
 			}

@@ -19,15 +19,28 @@ import java.util.TreeSet;
 import org.w3c.dom.Node;
 
 public class Unit {
-	private final String id, version;
+	public final String id, version;
 	private String filter;
 	private final TreeMap<String, String> properties = new TreeMap<>();
 	private final Map<String, TreeSet<String>> requires = new TreeMap<>();
 	private final Map<String, TreeSet<String>> provides = new TreeMap<>();
 
-	public Unit(Node node) {
-		id = node.getAttributes().getNamedItem("id").getNodeValue();
-		version = node.getAttributes().getNamedItem("version").getNodeValue();
+	public Unit(Node rootNode) {
+		id = rootNode.getAttributes().getNamedItem("id").getNodeValue();
+		version = rootNode.getAttributes().getNamedItem("version").getNodeValue();
+		var nodeList = rootNode.getChildNodes();
+		for (int i = 0; i < nodeList.getLength(); ++i) {
+			var node = nodeList.item(i);
+			if ("filter".equals(node.getNodeName())) {
+				filter = node.getTextContent().trim();
+			} else if ("properties".equals(node.getNodeName())) {
+
+			} else if ("provides".equals(node.getNodeName())) {
+
+			} else if ("requires".equals(node.getNodeName())) {
+
+			}
+		}
 	}
 
 	@Override
@@ -51,23 +64,19 @@ public class Unit {
 				});
 		requires.forEach(
 				(key, list) -> {
-					for (var value : list) {
-						builder.append("  requires ");
-						builder.append(key);
-						builder.append('=');
-						builder.append(value);
-						builder.append('\n');
-					}
+					builder.append("  requires ");
+					builder.append(key);
+					builder.append('=');
+					builder.append(list.toString());
+					builder.append('\n');
 				});
 		provides.forEach(
 				(key, list) -> {
-					for (var value : list) {
-						builder.append("  provides ");
-						builder.append(key);
-						builder.append('=');
-						builder.append(value);
-						builder.append('\n');
-					}
+					builder.append("  provides ");
+					builder.append(key);
+					builder.append('=');
+					builder.append(list.toString());
+					builder.append('\n');
 				});
 		builder.setLength(builder.length() - 1);
 		return builder.toString();
