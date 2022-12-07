@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeSet;
 
-public class P2Resolution {
+public class P2Query {
 	TreeSet<String> exclude = new TreeSet<>();
 	List<String> excludePrefix = new ArrayList<>();
 	List<String> excludeSuffix = new ArrayList<>();
@@ -65,6 +65,8 @@ public class P2Resolution {
 					|| "true".equals(unit.properties.get(P2Unit.P2_TYPE_CATEGORY))) {
 				continue;
 			}
+			if (unit.filter != null) {}
+
 			jars.add(unit);
 		}
 		return jars;
