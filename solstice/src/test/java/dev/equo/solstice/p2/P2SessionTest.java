@@ -32,12 +32,13 @@ public class P2SessionTest {
 	public void testResolution() throws Exception {
 		var session = populateSession();
 		var resolution = new P2Resolution();
+		resolution.exclude("org.apache.ant");
 		resolution.resolve(session.getUnitById("org.eclipse.platform.ide.categoryIU"));
 		for (var s : resolution.jarsOnMavenCentral()) {
 			System.out.println("maven: " + s);
 		}
 		for (var u : resolution.jarsNotOnMavenCentral()) {
-			System.out.println("p2only: " + u);
+			System.out.println("p2only: " + u.id);
 		}
 	}
 

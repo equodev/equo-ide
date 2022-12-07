@@ -18,12 +18,17 @@ import java.util.List;
 import java.util.TreeSet;
 
 public class P2Resolution {
+	TreeSet<String> exclude = new TreeSet<>();
 	TreeSet<P2Unit> resolved = new TreeSet<>();
 	List<UnmetRequirement> unmetRequirements = new ArrayList<>();
 	List<ResolvedWithFirst> resolvedWithFirst = new ArrayList<>();
 
+	public void exclude(String toExclude) {
+		exclude.add(toExclude);
+	}
+
 	public void resolve(P2Unit toResolve) {
-		if (!resolved.add(toResolve)) {
+		if (exclude.contains(toResolve.id) || !resolved.add(toResolve)) {
 			return;
 		}
 		for (var requirement : toResolve.requires) {
