@@ -13,6 +13,8 @@
  *******************************************************************************/
 package dev.equo.solstice.p2;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -34,11 +36,26 @@ public class Unit {
 			if ("filter".equals(node.getNodeName())) {
 				filter = node.getTextContent().trim();
 			} else if ("properties".equals(node.getNodeName())) {
-
+				parseProperties(node);
 			} else if ("provides".equals(node.getNodeName())) {
 
 			} else if ("requires".equals(node.getNodeName())) {
 
+			}
+		}
+	}
+
+	private void parseProperties(Node node) {
+		var propertyNodes = node.getChildNodes();
+		for (int i = 0; i < propertyNodes.getLength(); ++i) {
+			var propNode = propertyNodes.item(i);
+			if ("property".equals(propNode.getNodeName())) {
+				var name = propNode.getAttributes().getNamedItem("name").getNodeValue();
+				var idx = PROP_FILTER.indexOf(name);
+				if (idx != -1) {
+					properties.put(
+							PROP_FILTER.get(idx), propNode.getAttributes().getNamedItem("value").getNodeValue());
+				}
 			}
 		}
 	}
@@ -81,4 +98,8 @@ public class Unit {
 		builder.setLength(builder.length() - 1);
 		return builder.toString();
 	}
+
+	private static final List<String> PROP_FILTER =
+			Arrays.asList(
+					"maven-groupId", "maven-artifactId", "maven-version", "maven-repository", "maven-type");
 }
