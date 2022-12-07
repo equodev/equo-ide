@@ -25,7 +25,7 @@ import org.eclipse.ui.internal.ide.application.IDEWorkbenchAdvisor;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.service.application.ApplicationException;
 
-public class IdeMainUi {
+class IdeMainUi {
 	static int main(Solstice osgiShim) throws InvalidSyntaxException {
 		var appServices =
 				osgiShim.getServiceReferences(

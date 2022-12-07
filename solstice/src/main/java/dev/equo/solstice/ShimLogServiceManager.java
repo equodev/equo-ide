@@ -30,7 +30,7 @@ import org.osgi.service.log.LoggerFactory;
 import org.osgi.service.log.admin.LoggerAdmin;
 
 /** Stripped down version of org.eclipse.osgi.internal.log.LogServiceManager */
-public class ShimLogServiceManager {
+class ShimLogServiceManager {
 	private static final String[] LOGSERVICE_CLASSES = {
 		LogService.class.getName(), LoggerFactory.class.getName(), ExtendedLogService.class.getName()
 	};

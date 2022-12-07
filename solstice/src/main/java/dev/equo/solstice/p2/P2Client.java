@@ -34,6 +34,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+/** Performs network requests and parsing against a P2 repository, aided by caching. */
 public class P2Client implements AutoCloseable {
 	private final File cacheDir;
 	private final Cache cache;

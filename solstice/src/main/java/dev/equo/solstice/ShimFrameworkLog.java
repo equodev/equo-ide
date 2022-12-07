@@ -42,7 +42,7 @@ import org.osgi.framework.FrameworkEvent;
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-public class ShimFrameworkLog implements FrameworkLog {
+class ShimFrameworkLog implements FrameworkLog {
 	private File file;
 	private Writer writer;
 	private boolean consoleLog = false;

@@ -22,7 +22,10 @@
       <plugin>
         <groupId>dev.equo.ide</groupId>
         <artifactId>equo-ide-maven-plugin</artifactId>
-        <version>0.2.0</version>
+        <version>0.3.0</version>
+        <configuration>
+          <release>4.25</release>
+        </configuration>
       </plugin>
     </plugins>
   </build>
