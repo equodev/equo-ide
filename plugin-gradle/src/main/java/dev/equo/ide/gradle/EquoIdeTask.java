@@ -51,6 +51,9 @@ public abstract class EquoIdeTask extends DefaultTask {
 
 		var installDir = getInstallDir().get();
 		var nestedJarFolder = new File(installDir, NestedBundles.DIR);
+
+		// TODO: on windows, we are getting a jetbrains annotation jar that doesn't exist. Why?
+		cp = cp.filter(file -> file.exists());
 		var allNested =
 				NestedBundles.inFiles(cp).extractAllNestedJars(nestedJarFolder).stream()
 						.map(e -> e.getValue())
