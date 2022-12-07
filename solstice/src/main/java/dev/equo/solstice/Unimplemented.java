@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.Dictionary;
 import java.util.List;
 import java.util.Map;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkListener;
 import org.osgi.framework.ServiceReference;
@@ -514,6 +515,33 @@ class Unimplemented {
 
 		@Override
 		public org.osgi.framework.Bundle getBundle() {
+			throw onPurpose();
+		}
+	}
+
+	interface FrameworkStartLevel extends org.osgi.framework.startlevel.FrameworkStartLevel {
+		@Override
+		default int getStartLevel() {
+			throw onPurpose();
+		}
+
+		@Override
+		default void setStartLevel(int startlevel, FrameworkListener... listeners) {
+			throw onPurpose();
+		}
+
+		@Override
+		default int getInitialBundleStartLevel() {
+			throw onPurpose();
+		}
+
+		@Override
+		default void setInitialBundleStartLevel(int startlevel) {
+			throw onPurpose();
+		}
+
+		@Override
+		default org.osgi.framework.Bundle getBundle() {
 			throw onPurpose();
 		}
 	}
