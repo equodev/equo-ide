@@ -21,7 +21,7 @@ import javax.annotation.Nullable;
 import org.eclipse.osgi.internal.framework.FilterImpl;
 import org.w3c.dom.Node;
 
-class P2Unit implements Comparable<P2Unit> {
+public class P2Unit implements Comparable<P2Unit> {
 	final String id, version;
 	FilterImpl filter;
 	final TreeMap<String, String> properties = new TreeMap<>();

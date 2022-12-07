@@ -26,7 +26,6 @@ public class P2SessionTest {
 		try (var client = new P2Client(cacheDir)) {
 			session.populateFrom(client, "https://download.eclipse.org/eclipse/updates/4.25/");
 		}
-		session.sort();
 		return session;
 	}
 

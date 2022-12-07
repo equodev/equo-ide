@@ -29,6 +29,16 @@ public class P2Session {
 
 	public void populateFrom(P2Client client, String url) throws Exception {
 		client.addUnits(this, url);
+		sort();
+	}
+
+	private void sort() {
+		units.sort(Comparator.naturalOrder());
+		for (var submap : providerRegistry.values()) {
+			for (Providers value : submap.values()) {
+				value.sort();
+			}
+		}
 	}
 
 	public List<P2Unit> getUnitsWithProperty(String key, String value) {
@@ -88,15 +98,6 @@ public class P2Session {
 			builder.append('\n');
 		}
 		return builder.toString();
-	}
-
-	public void sort() {
-		units.sort(Comparator.naturalOrder());
-		for (var submap : providerRegistry.values()) {
-			for (Providers value : submap.values()) {
-				value.sort();
-			}
-		}
 	}
 
 	static class Providers implements Comparable<Providers> {
