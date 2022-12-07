@@ -19,28 +19,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.eclipse.osgi.internal.framework.FilterImpl;
+import org.jetbrains.annotations.NotNull;
 import org.osgi.framework.InvalidSyntaxException;
 
 class P2Session {
-	public void dump() {
-		int[] count = new int[4];
-		map.forEach(
-				(namespace, nameMap) -> {
-					nameMap.forEach(
-							(name, pair) -> {
-								int idx = pair.get().size();
-								if (idx >= count.length) {
-									idx = count.length - 1;
-								}
-								++count[idx];
-							});
-				});
-		for (int i = 0; i < count.length; ++i) {
-			System.out.println(i + "," + count[i]);
-		}
-	}
-
-	public static class Providers {
+	static class Providers implements Comparable<Providers> {
 		private final String name;
 		private Object field;
 
@@ -80,21 +63,22 @@ class P2Session {
 				return (ArrayList<Unit>) existing;
 			}
 		}
+
+		@Override
+		public int compareTo(@NotNull Providers o) {
+			return name.compareTo(o.name);
+		}
 	}
 
-	private final Map<String, Map<String, Providers>> map = new HashMap<>();
+	private final Map<String, Map<String, Providers>> providerRegistry = new HashMap<>();
 
-	private Providers forName(String namespace, String name) {
-		var perName = map.computeIfAbsent(namespace, unused -> new HashMap<>());
+	Providers requires(String namespace, String name) {
+		var perName = providerRegistry.computeIfAbsent(namespace, unused -> new HashMap<>());
 		return perName.computeIfAbsent(name, unused -> new Providers(name));
 	}
 
-	public Providers requires(String namespace, String name) {
-		return forName(namespace, name);
-	}
-
-	public void provides(String namespace, String name, Unit unit) {
-		forName(namespace, name).add(unit);
+	void provides(String namespace, String name, Unit unit) {
+		requires(namespace, name).add(unit);
 	}
 
 	private final Map<String, FilterImpl> filterCache = new HashMap<>();

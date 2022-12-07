@@ -40,14 +40,19 @@ public class P2Client implements AutoCloseable {
 	private final Cache cache;
 	private final OkHttpClient client;
 
-	P2Client(File cacheDir) {
+	public P2Client(File cacheDir) {
 		this.cacheDir = cacheDir;
 		long maxSize = 50L * 1024L * 1024L; // 50 MiB
 		cache = new Cache(cacheDir, maxSize);
 		client = new OkHttpClient.Builder().cache(cache).build();
 	}
 
-	public DeepDir open(P2Session session, String url) throws Exception {
+	@Override
+	public void close() throws IOException {
+		cache.close();
+	}
+
+	DeepDir open(P2Session session, String url) throws Exception {
 		return new DeepDir(session, url);
 	}
 
@@ -120,7 +125,6 @@ public class P2Client implements AutoCloseable {
 				units.addAll(parseContentXml(session, contentXml));
 			}
 			units.sort(Comparator.comparing(unit -> unit.id));
-			session.dump();
 		}
 	}
 
@@ -188,11 +192,6 @@ public class P2Client implements AutoCloseable {
 		}
 		throw new IllegalArgumentException(
 				"Could not find " + metadataTarget + " at\n" + xzUrl + "\n" + jarUrl);
-	}
-
-	@Override
-	public void close() throws IOException {
-		cache.close();
 	}
 
 	private static List<String> parseComposite(String content) throws Exception {

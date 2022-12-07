@@ -13,18 +13,18 @@
  *******************************************************************************/
 package dev.equo.solstice.p2;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.TreeMap;
+import java.util.TreeSet;
 import org.eclipse.osgi.internal.framework.FilterImpl;
 import org.w3c.dom.Node;
 
-public class Unit {
-	public final String id, version;
-	private FilterImpl filter;
-	private final TreeMap<String, String> properties = new TreeMap<>();
-	private final List<P2Session.Providers> requires = new ArrayList<>();
+class Unit {
+	final String id, version;
+	FilterImpl filter;
+	final TreeMap<String, String> properties = new TreeMap<>();
+	final TreeSet<P2Session.Providers> requires = new TreeSet<>();
 
 	public Unit(P2Session session, Node rootNode) {
 		id = rootNode.getAttributes().getNamedItem("id").getNodeValue();
