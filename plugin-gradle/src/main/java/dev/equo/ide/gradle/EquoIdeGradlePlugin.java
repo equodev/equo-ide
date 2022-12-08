@@ -14,12 +14,14 @@
 package dev.equo.ide.gradle;
 
 import com.diffplug.common.swt.os.SwtPlatform;
+import dev.equo.solstice.p2.CacheLocations;
 import dev.equo.solstice.p2.JdtSetup;
 import dev.equo.solstice.p2.P2Client;
 import dev.equo.solstice.p2.P2Query;
 import dev.equo.solstice.p2.P2Session;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.gradle.api.GradleException;
@@ -63,9 +65,8 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 		var installDir = new File(project.getBuildDir(), EQUO_IDE);
 		project.afterEvaluate(
 				unused -> {
-					var cacheDir = new File(installDir, "p2-metadata");
 					var session = new P2Session();
-					try (var client = new P2Client(cacheDir)) {
+					try (var client = new P2Client()) {
 						session.populateFrom(client, JdtSetup.URL_BASE + extension.jdtVersion + "/");
 					} catch (Exception e) {
 						throw new RuntimeException(e);

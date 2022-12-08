@@ -87,9 +87,8 @@ public class LaunchMojo extends AbstractMojo {
 							new Exclusion("org.eclipse.platform", "org.eclipse.swt.gtk.linux.arm", "*", "*"));
 
 			var installDir = new File(buildDir, "equoIde");
-			var cacheDir = new File(installDir, "p2-metadata");
 			var session = new P2Session();
-			try (var client = new P2Client(cacheDir)) {
+			try (var client = new P2Client()) {
 				if (release == null) {
 					release = JdtSetup.DEFAULT_VERSION;
 				}
