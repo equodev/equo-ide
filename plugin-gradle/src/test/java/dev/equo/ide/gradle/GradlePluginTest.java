@@ -29,8 +29,46 @@ public class GradlePluginTest extends GradleHarness {
 	}
 
 	@Test
+	public void p2repoArgCheck() throws IOException {
+		setFile("build.gradle")
+				.toLines(
+						"plugins { id 'dev.equo.ide' }",
+						"equoIde {",
+						"  p2repo 'https://somerepo'",
+						"  install 'org.eclipse.swt'",
+						"}");
+		var noSlash =
+				gradleRunner().withArguments("equoIde").buildAndFail().getOutput().replace("\r", "");
+		Assertions.assertThat(noSlash)
+				.contains(
+						"> Must end with /\n"
+								+ "  p2repo(\"https://somerepo\")   <- WRONG\n"
+								+ "  p2repo(\"https://somerepo/\")  <- CORRECT");
+		setFile("build.gradle")
+				.toLines(
+						"plugins { id 'dev.equo.ide' }",
+						"equoIde {",
+						"  p2repo 'https://somerepo//'",
+						"  install 'org.eclipse.swt'",
+						"}");
+		var doubleSlash =
+				gradleRunner().withArguments("equoIde").buildAndFail().getOutput().replace("\r", "");
+		Assertions.assertThat(doubleSlash)
+				.contains(
+						"> Must end with a single /\n"
+								+ "  p2repo(\"https://somerepo//\")  <- WRONG\n"
+								+ "  p2repo(\"https://somerepo/\")   <- CORRECT");
+	}
+
+	@Test
 	public void equoIdeTestOnly() throws IOException {
-		setFile("build.gradle").toLines("plugins { id 'dev.equo.ide' }", "equoIde {", "}");
+		setFile("build.gradle")
+				.toLines(
+						"plugins { id 'dev.equo.ide' }",
+						"equoIde {",
+						"  p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'",
+						"  install 'org.eclipse.swt'",
+						"}");
 		var output =
 				gradleRunner()
 						.withArguments("equoIde", "-PequoTestOnly=true", "--stacktrace")
