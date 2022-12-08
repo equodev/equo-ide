@@ -42,6 +42,19 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 		if (gradleIsTooOld(project)) {
 			throw new GradleException("equoIde requires Gradle 6.0 or later");
 		}
+
+		// let the user override cache locations from ~/.gradle/gradle.properties
+		for (Field field : CacheLocations.class.getFields()) {
+			Object value = project.findProperty("equo_" + field.getName());
+			if (value != null) {
+				try {
+					field.set(null, new File(value.toString()));
+				} catch (IllegalAccessException e) {
+					throw new RuntimeException(e);
+				}
+			}
+		}
+
 		EquoIdeExtension extension = project.getExtensions().create(EQUO_IDE, EquoIdeExtension.class);
 		Configuration configuration = createConfiguration(project, EQUO_IDE);
 
