@@ -41,7 +41,10 @@ class Table {
 		RIGHT
 	}
 
-	/** Returns a formatted table string. */
+	public static <T> String getTable(Collection<T> objects, TableColumn.Data<T>... columns) {
+		return getTable(objects, Arrays.asList(columns));
+	}
+
 	public static <T> String getTable(Collection<T> objects, List<TableColumn.Data<T>> columns) {
 		String[][] data = new String[objects.size()][];
 
