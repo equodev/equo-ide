@@ -15,8 +15,17 @@ package dev.equo.solstice.p2;
 
 /** Determines whether and where a P2Unit is available in a Maven repo. */
 public class MavenStatus implements Comparable<MavenStatus> {
+	/**
+	 * This unit is available on Maven Central because of a property {@code maven-repository =
+	 * eclipse.maven.central.mirror}
+	 */
 	public static String MAVEN_CENTRAL = "mavenCentral";
+	/**
+	 * This unit is probably available on Maven Central because of the logic in <a
+	 * href="https://github.com/equodev/equo-ide/blob/main/solstice/src/main/java/dev/equo/solstice/p2/MavenCentralMapping.java">MavenCentralMapping.java</a>
+	 */
 	public static String MAVEN_CENTRAL_INFERRED = "mavenCentral?";
+	/** This unit is only available in p2. */
 	public static String P2 = "p2";
 
 	private final String coordinate;
@@ -27,10 +36,14 @@ public class MavenStatus implements Comparable<MavenStatus> {
 		this.repo = repo;
 	}
 
+	/**
+	 * {@link #repo()} is equal to either {@link #MAVEN_CENTRAL} or {@link #MAVEN_CENTRAL_INFERRED}
+	 */
 	public boolean isOnMavenCentral() {
 		return repo.equals(MAVEN_CENTRAL) || repo.equals(MAVEN_CENTRAL_INFERRED);
 	}
 
+	/** group:artifact:version for maven or id:version for p2 */
 	public String coordinate() {
 		return coordinate;
 	}
