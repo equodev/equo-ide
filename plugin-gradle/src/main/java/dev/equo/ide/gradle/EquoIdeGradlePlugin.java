@@ -19,6 +19,7 @@ import dev.equo.solstice.p2.JdtSetup;
 import dev.equo.solstice.p2.P2Client;
 import dev.equo.solstice.p2.P2Query;
 import dev.equo.solstice.p2.P2Session;
+import dev.equo.solstice.p2.WorkspaceRegistry;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -75,7 +76,6 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 
 		boolean equoTestOnly = "true".equals(project.findProperty("equoTestOnly"));
 
-		var installDir = new File(project.getBuildDir(), EQUO_IDE);
 		project.afterEvaluate(
 				unused -> {
 					var session = new P2Session();
@@ -99,6 +99,7 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 										project.getDependencies().add(EQUO_IDE, coordinate);
 									});
 				});
+		var workspaceDir = WorkspaceRegistry.instance().workspaceDir(project.getProjectDir());
 		project
 				.getTasks()
 				.register(
@@ -111,7 +112,7 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 							task.getIsTestOnly().set(equoTestOnly);
 							task.getExtension().set(extension);
 							task.getClassPath().set(configuration);
-							task.getInstallDir().set(installDir);
+							task.getWorkspaceDir().set(workspaceDir);
 						});
 	}
 
