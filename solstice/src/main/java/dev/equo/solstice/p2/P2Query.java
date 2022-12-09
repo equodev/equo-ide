@@ -82,7 +82,7 @@ public class P2Query {
 		}
 	}
 
-	private Iterable<P2Unit> jars() {
+	public Iterable<P2Unit> jars() {
 		var props = new HashMap<String, String>();
 		if (platform != null) {
 			props.put("osgi.os", platform.getOs());
@@ -107,9 +107,9 @@ public class P2Query {
 	public List<String> jarsOnMavenCentral() {
 		var mavenCoords = new ArrayList<String>();
 		for (var unit : jars()) {
-			var coord = unit.getMavenCentralCoord();
-			if (coord != null) {
-				mavenCoords.add(coord);
+			var mavenState = MavenStatus.forUnit(unit);
+			if (mavenState.isOnMavenCentral()) {
+				mavenCoords.add(mavenState.coordinate());
 			}
 		}
 		return mavenCoords;
@@ -118,10 +118,10 @@ public class P2Query {
 	public List<P2Unit> jarsNotOnMavenCentral() {
 		var notOnMaven = new ArrayList<P2Unit>();
 		for (var unit : jars()) {
-			if (unit.getMavenCentralCoord() != null) {
-				continue;
+			var mavenState = MavenStatus.forUnit(unit);
+			if (!mavenState.isOnMavenCentral()) {
+				notOnMaven.add(unit);
 			}
-			notOnMaven.add(unit);
 		}
 		return notOnMaven;
 	}

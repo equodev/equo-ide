@@ -17,7 +17,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import javax.annotation.Nullable;
 import org.eclipse.osgi.internal.framework.FilterImpl;
 import org.w3c.dom.Node;
 
@@ -44,20 +43,6 @@ public class P2Unit implements Comparable<P2Unit> {
 				parseRequires(session, node);
 			}
 		}
-	}
-
-	public @Nullable String getMavenCentralCoord() {
-		var repo = properties.get(MAVEN_REPOSITORY);
-		if (!MavenCentralMapping.MIRROR.equals(repo)) {
-			return MavenCentralMapping.getMavenCentralCoord(this);
-		}
-		var group = properties.get(P2Unit.MAVEN_GROUP_ID);
-		var artifact = properties.get(P2Unit.MAVEN_ARTIFACT_ID);
-		var version = properties.get(P2Unit.MAVEN_VERSION);
-		if (group == null || artifact == null || version == null) {
-			return null;
-		}
-		return group + ":" + artifact + ":" + version;
 	}
 
 	private void parseProperties(Node node) {
