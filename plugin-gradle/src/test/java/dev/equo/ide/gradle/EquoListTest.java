@@ -18,7 +18,7 @@ import org.junit.jupiter.api.Test;
 
 public class EquoListTest extends GradleHarness {
 	@Test
-	public void p2repoArgCheck() throws IOException {
+	public void swtList() throws IOException {
 		setFile("build.gradle")
 				.toLines(
 						"plugins { id 'dev.equo.ide' }",
@@ -41,6 +41,30 @@ public class EquoListTest extends GradleHarness {
 								+ "| org.eclipse.platform:org.eclipse.swt.gtk.linux.x86_64:3.122.0     | mavenCentral? |\n"
 								+ "| org.eclipse.platform:org.eclipse.swt.win32.win32.x86_64:3.122.0   | mavenCentral? |\n"
 								+ "| org.eclipse.platform:org.eclipse.swt:3.122.0                      | mavenCentral? |\n"
-								+ "+-------------------------------------------------------------------+---------------+\n");
+								+ "+-------------------------------------------------------------------+---------------+\n\n");
+	}
+
+	@Test
+	public void swtListCsv() throws IOException {
+		setFile("build.gradle")
+				.toLines(
+						"plugins { id 'dev.equo.ide' }",
+						"equoIde {",
+						"  p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'",
+						"  install 'org.eclipse.swt'",
+						"  filter {",
+						"    setPlatform(null)",
+						"  }",
+						"}");
+		runAndAssert("equoList", "--format=csv")
+				.contains(
+						"maven coordinate / p2 id,repo\n"
+								+ "org.eclipse.platform:org.eclipse.swt.cocoa.macosx.aarch64:3.122.0,mavenCentral?\n"
+								+ "org.eclipse.platform:org.eclipse.swt.cocoa.macosx.x86_64:3.122.0,mavenCentral?\n"
+								+ "org.eclipse.platform:org.eclipse.swt.gtk.linux.aarch64:3.122.0,mavenCentral?\n"
+								+ "org.eclipse.platform:org.eclipse.swt.gtk.linux.ppc64le:3.122.0,mavenCentral?\n"
+								+ "org.eclipse.platform:org.eclipse.swt.gtk.linux.x86_64:3.122.0,mavenCentral?\n"
+								+ "org.eclipse.platform:org.eclipse.swt.win32.win32.x86_64:3.122.0,mavenCentral?\n"
+								+ "org.eclipse.platform:org.eclipse.swt:3.122.0,mavenCentral?\n\n");
 	}
 }
