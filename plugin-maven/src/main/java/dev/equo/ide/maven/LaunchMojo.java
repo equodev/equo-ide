@@ -19,6 +19,7 @@ import dev.equo.solstice.p2.JdtSetup;
 import dev.equo.solstice.p2.P2Client;
 import dev.equo.solstice.p2.P2Query;
 import dev.equo.solstice.p2.P2Session;
+import dev.equo.solstice.p2.WorkspaceRegistry;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -51,8 +52,8 @@ public class LaunchMojo extends AbstractMojo {
 	@Parameter(property = "release")
 	private String release;
 
-	@Parameter(defaultValue = "${project.build.directory}", required = true, readonly = true)
-	private File buildDir;
+	@Parameter(defaultValue = "${project.basedir}", required = true, readonly = true)
+	private File baseDir;
 
 	@Parameter(defaultValue = "${repositorySystemSession}", required = true, readonly = true)
 	private RepositorySystemSession repositorySystemSession;
@@ -86,7 +87,7 @@ public class LaunchMojo extends AbstractMojo {
 							new Exclusion("org.eclipse.platform", "org.eclipse.swt.gtk.linux.aarch64", "*", "*"),
 							new Exclusion("org.eclipse.platform", "org.eclipse.swt.gtk.linux.arm", "*", "*"));
 
-			var installDir = new File(buildDir, "equoIde");
+			var workspaceDir = WorkspaceRegistry.instance().workspaceDir(baseDir);
 			var session = new P2Session();
 			try (var client = new P2Client()) {
 				if (release == null) {
@@ -117,7 +118,7 @@ public class LaunchMojo extends AbstractMojo {
 				files.add(artifact.getArtifact().getFile());
 			}
 
-			var nestedJarFolder = new File(installDir, NestedBundles.DIR);
+			var nestedJarFolder = new File(workspaceDir, NestedBundles.DIR);
 			for (var nested : NestedBundles.inFiles(files).extractAllNestedJars(nestedJarFolder)) {
 				files.add(nested.getValue());
 			}
@@ -127,7 +128,7 @@ public class LaunchMojo extends AbstractMojo {
 							"dev.equo.solstice.IdeMain",
 							files,
 							"-installDir",
-							installDir.getAbsolutePath(),
+							workspaceDir.getAbsolutePath(),
 							"-equoTestOnly",
 							Boolean.toString(equoTestOnlyTrue));
 			System.out.println(result);
