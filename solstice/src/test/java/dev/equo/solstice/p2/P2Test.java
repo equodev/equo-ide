@@ -35,8 +35,7 @@ public class P2Test {
 		query.exclude("org.eclipse.rcp_root");
 		query.excludePrefix("tooling");
 		query.resolve("org.eclipse.platform.ide.categoryIU");
-		var table = AsciiTable.mavenStatus(query.jars());
-		Assertions.assertThat(table)
+		Assertions.assertThat(ConsoleTable.mavenStatus(query.jars(), ConsoleTable.Format.ASCII))
 				.isEqualTo(
 						"+---------------------------------------------------------------------------------+---------------+\n"
 								+ "| maven coordinate / p2 id                                                        | repo          |\n"
@@ -309,7 +308,7 @@ public class P2Test {
 		var session = populateSession();
 		var query = session.query();
 		query.resolve("org.eclipse.swt");
-		Assertions.assertThat(AsciiTable.mavenStatus(query.jars()))
+		Assertions.assertThat(ConsoleTable.mavenStatus(query.jars(), ConsoleTable.Format.ASCII))
 				.isEqualTo(
 						"+-------------------------------------------------------------------+---------------+\n"
 								+ "| maven coordinate / p2 id                                          | repo          |\n"
@@ -324,7 +323,7 @@ public class P2Test {
 								+ "+-------------------------------------------------------------------+---------------+\n");
 
 		query.setPlatform(SwtPlatform.parseWsOsArch("cocoa.macosx.aarch64"));
-		Assertions.assertThat(AsciiTable.mavenStatus(query.jars()))
+		Assertions.assertThat(ConsoleTable.mavenStatus(query.jars(), ConsoleTable.Format.ASCII))
 				.isEqualTo(
 						"+-------------------------------------------------------------------+---------------+\n"
 								+ "| maven coordinate / p2 id                                          | repo          |\n"
@@ -338,7 +337,7 @@ public class P2Test {
 	public void testCategories() throws Exception {
 		var session = populateSession();
 		var units = session.getUnitsWithProperty(P2Unit.P2_TYPE_CATEGORY, "true");
-		Assertions.assertThat(AsciiTable.nameAndDescription(units))
+		Assertions.assertThat(ConsoleTable.nameAndDescription(units, ConsoleTable.Format.ASCII))
 				.isEqualTo(
 						"+----------------------------------------------+----------------------------------------------+\n"
 								+ "| id                                           | name                                         |\n"

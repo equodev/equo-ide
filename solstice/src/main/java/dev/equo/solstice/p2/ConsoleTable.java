@@ -17,9 +17,15 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 
-public class AsciiTable {
-	/** Returns an ascii table with the {@link MavenStatus} of all its units. */
-	public static String mavenStatus(Iterable<P2Unit> units) {
+/** Formats P2Unit for display at the console. */
+public class ConsoleTable {
+	public enum Format {
+		ASCII,
+		CSV
+	}
+
+	/** Returns a table with the {@link MavenStatus} of all its units. */
+	public static String mavenStatus(Iterable<P2Unit> units, Format kind) {
 		var mavenStates = new ArrayList<MavenStatus>();
 		for (var unit : units) {
 			mavenStates.add(MavenStatus.forUnit(unit));
@@ -28,10 +34,11 @@ public class AsciiTable {
 
 		var coordinate = new TableColumn("maven coordinate / p2 id").with(MavenStatus::coordinate);
 		var repo = new TableColumn("repo").with(MavenStatus::repo);
-		return Table.getTable(mavenStates, coordinate, repo);
+		return Table.getTable(kind, mavenStates, coordinate, repo);
 	}
 
-	public static String nameAndDescription(Collection<P2Unit> units) {
+	/** Returns a table with the id and name of all its units. */
+	public static String nameAndDescription(Collection<P2Unit> units, Format kind) {
 		var id = new TableColumn("id").with(P2Unit::getId);
 		var name =
 				new TableColumn("name")
@@ -40,6 +47,6 @@ public class AsciiTable {
 									var n = u.properties.get(P2Unit.P2_NAME);
 									return n != null ? n : "(null)";
 								});
-		return Table.getTable(units, id, name);
+		return Table.getTable(kind, units, id, name);
 	}
 }
