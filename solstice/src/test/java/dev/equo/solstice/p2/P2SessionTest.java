@@ -14,16 +14,14 @@
 package dev.equo.solstice.p2;
 
 import com.diffplug.common.swt.os.SwtPlatform;
-import java.io.File;
 import java.util.stream.Collectors;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 public class P2SessionTest {
 	private P2Session populateSession() throws Exception {
-		File cacheDir = new File("build/solstice-test/" + P2SessionTest.class.getSimpleName());
 		var session = new P2Session();
-		try (var client = new P2Client(cacheDir)) {
+		try (var client = new P2Client()) {
 			session.populateFrom(client, "https://download.eclipse.org/eclipse/updates/4.25/");
 		}
 		return session;

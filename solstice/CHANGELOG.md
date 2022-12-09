@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+### Added
+- Centralized cache locations for p2 metadata, p2 bundles, and also EquoIDE installations/workspaces. 
 
 ## [0.3.1] - 2022-12-07
 ### Fixed

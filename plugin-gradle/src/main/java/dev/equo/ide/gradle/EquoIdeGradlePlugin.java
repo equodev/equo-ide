@@ -14,12 +14,15 @@
 package dev.equo.ide.gradle;
 
 import com.diffplug.common.swt.os.SwtPlatform;
+import dev.equo.solstice.p2.CacheLocations;
 import dev.equo.solstice.p2.JdtSetup;
 import dev.equo.solstice.p2.P2Client;
 import dev.equo.solstice.p2.P2Query;
 import dev.equo.solstice.p2.P2Session;
+import dev.equo.solstice.p2.WorkspaceRegistry;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.gradle.api.GradleException;
@@ -40,6 +43,19 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 		if (gradleIsTooOld(project)) {
 			throw new GradleException("equoIde requires Gradle 6.0 or later");
 		}
+
+		// let the user override cache locations from ~/.gradle/gradle.properties
+		for (Field field : CacheLocations.class.getFields()) {
+			Object value = project.findProperty("equo_" + field.getName());
+			if (value != null) {
+				try {
+					field.set(null, new File(value.toString()));
+				} catch (IllegalAccessException e) {
+					throw new RuntimeException(e);
+				}
+			}
+		}
+
 		EquoIdeExtension extension = project.getExtensions().create(EQUO_IDE, EquoIdeExtension.class);
 		Configuration configuration = createConfiguration(project, EQUO_IDE);
 
@@ -60,12 +76,10 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 
 		boolean equoTestOnly = "true".equals(project.findProperty("equoTestOnly"));
 
-		var installDir = new File(project.getBuildDir(), EQUO_IDE);
 		project.afterEvaluate(
 				unused -> {
-					var cacheDir = new File(installDir, "p2-metadata");
 					var session = new P2Session();
-					try (var client = new P2Client(cacheDir)) {
+					try (var client = new P2Client()) {
 						session.populateFrom(client, JdtSetup.URL_BASE + extension.jdtVersion + "/");
 					} catch (Exception e) {
 						throw new RuntimeException(e);
@@ -85,6 +99,7 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 										project.getDependencies().add(EQUO_IDE, coordinate);
 									});
 				});
+		var workspaceDir = WorkspaceRegistry.instance().workspaceDir(project.getProjectDir());
 		project
 				.getTasks()
 				.register(
@@ -97,7 +112,7 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 							task.getIsTestOnly().set(equoTestOnly);
 							task.getExtension().set(extension);
 							task.getClassPath().set(configuration);
-							task.getInstallDir().set(installDir);
+							task.getWorkspaceDir().set(workspaceDir);
 						});
 	}
 

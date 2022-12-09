@@ -18,7 +18,6 @@ import dev.equo.solstice.p2.JdtSetup;
 import dev.equo.solstice.p2.P2Client;
 import dev.equo.solstice.p2.P2Query;
 import dev.equo.solstice.p2.P2Session;
-import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -31,9 +30,8 @@ public class MavenJarsNeededForTest {
 	 * change.
 	 */
 	public static void main(String[] args) throws IOException {
-		var cacheDir = new File("build/solstice-testSetup-metadata");
 		var session = new P2Session();
-		try (var client = new P2Client(cacheDir)) {
+		try (var client = new P2Client()) {
 			session.populateFrom(client, JdtSetup.URL_BASE + JdtSetup.DEFAULT_VERSION + "/");
 		} catch (Exception e) {
 			throw new RuntimeException(e);

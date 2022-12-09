@@ -33,7 +33,7 @@ public abstract class EquoIdeTask extends DefaultTask {
 	public abstract Property<FileCollection> getClassPath();
 
 	@Internal
-	public abstract Property<File> getInstallDir();
+	public abstract Property<File> getWorkspaceDir();
 
 	@Internal
 	public abstract Property<Boolean> getIsTestOnly();
@@ -45,8 +45,8 @@ public abstract class EquoIdeTask extends DefaultTask {
 	public void launch() throws IOException, InterruptedException {
 		var cp = getClassPath().get();
 
-		var installDir = getInstallDir().get();
-		var nestedJarFolder = new File(installDir, NestedBundles.DIR);
+		var workspaceDir = getWorkspaceDir().get();
+		var nestedJarFolder = new File(workspaceDir, NestedBundles.DIR);
 		var allNested =
 				NestedBundles.inFiles(cp).extractAllNestedJars(nestedJarFolder).stream()
 						.map(e -> e.getValue())
@@ -58,7 +58,7 @@ public abstract class EquoIdeTask extends DefaultTask {
 						"dev.equo.solstice.IdeMain",
 						cp.plus(nestedFileCollection),
 						"-installDir",
-						installDir.getAbsolutePath(),
+						workspaceDir.getAbsolutePath(),
 						"-equoTestOnly",
 						Boolean.toString(getIsTestOnly().get()));
 		System.out.println(result);

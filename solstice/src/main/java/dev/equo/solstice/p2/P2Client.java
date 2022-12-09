@@ -14,7 +14,6 @@
 package dev.equo.solstice.p2;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayDeque;
@@ -36,14 +35,12 @@ import org.w3c.dom.NodeList;
 
 /** Performs network requests and parsing against a P2 repository, aided by caching. */
 public class P2Client implements AutoCloseable {
-	private final File cacheDir;
 	private final Cache cache;
 	private final OkHttpClient client;
 
-	public P2Client(File cacheDir) {
-		this.cacheDir = cacheDir;
+	public P2Client() {
 		long maxSize = 50L * 1024L * 1024L; // 50 MiB
-		cache = new Cache(cacheDir, maxSize);
+		cache = new Cache(CacheLocations.p2metadata(), maxSize);
 		client = new OkHttpClient.Builder().cache(cache).build();
 	}
 
