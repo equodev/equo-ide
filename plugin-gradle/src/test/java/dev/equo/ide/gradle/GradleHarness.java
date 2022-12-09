@@ -19,6 +19,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import org.assertj.core.api.AbstractStringAssert;
+import org.assertj.core.api.Assertions;
 import org.gradle.testkit.runner.GradleRunner;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.io.TempDir;
@@ -71,6 +73,16 @@ public class GradleHarness {
 		public File toLines(String... lines) throws IOException {
 			return toContent(String.join("\n", Arrays.asList(lines)));
 		}
+	}
+
+	protected AbstractStringAssert<?> runAndAssert(String... args) throws IOException {
+		var output = gradleRunner().withArguments(args).build().getOutput().replace("\r", "");
+		return Assertions.assertThat(output);
+	}
+
+	protected AbstractStringAssert<?> runFailAndAssert(String... args) throws IOException {
+		var output = gradleRunner().withArguments(args).buildAndFail().getOutput().replace("\r", "");
+		return Assertions.assertThat(output);
 	}
 
 	protected GradleRunner gradleRunner() throws IOException {

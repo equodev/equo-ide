@@ -14,18 +14,19 @@
 package dev.equo.ide.gradle;
 
 import java.io.IOException;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-public class GradlePluginTest extends GradleHarness {
+public class EquoIdeTest extends GradleHarness {
 	@Test
 	public void tasks() throws IOException {
 		setFile("build.gradle").toLines("plugins { id 'dev.equo.ide' }", "equoIde {", "}");
-		String output =
-				gradleRunner().withArguments("tasks", "--stacktrace").build().getOutput().replace("\r", "");
-		Assertions.assertThat(output)
-				.contains("IDE tasks\n" + "---------\n" + "equoIde - Launches EquoIDE");
+		runAndAssert("tasks", "--stacktrace")
+				.contains(
+						"IDE tasks\n"
+								+ "---------\n"
+								+ "equoIde - Launches EquoIDE\n"
+								+ "equoList - Lists the p2 dependencies of EquoIDE\n\n");
 	}
 
 	@Test
@@ -37,9 +38,7 @@ public class GradlePluginTest extends GradleHarness {
 						"  p2repo 'https://somerepo'",
 						"  install 'org.eclipse.swt'",
 						"}");
-		var noSlash =
-				gradleRunner().withArguments("equoIde").buildAndFail().getOutput().replace("\r", "");
-		Assertions.assertThat(noSlash)
+		runFailAndAssert("equoIde")
 				.contains(
 						"> Must end with /\n"
 								+ "  p2repo(\"https://somerepo\")   <- WRONG\n"
@@ -51,9 +50,7 @@ public class GradlePluginTest extends GradleHarness {
 						"  p2repo 'https://somerepo//'",
 						"  install 'org.eclipse.swt'",
 						"}");
-		var doubleSlash =
-				gradleRunner().withArguments("equoIde").buildAndFail().getOutput().replace("\r", "");
-		Assertions.assertThat(doubleSlash)
+		runFailAndAssert("equoIde")
 				.contains(
 						"> Must end with a single /\n"
 								+ "  p2repo(\"https://somerepo//\")  <- WRONG\n"
@@ -69,13 +66,9 @@ public class GradlePluginTest extends GradleHarness {
 						"  p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'",
 						"  install 'org.eclipse.swt'",
 						"}");
-		var output =
-				gradleRunner()
-						.withArguments("equoIde", "-PequoTestOnly=true", "--stacktrace")
-						.build()
-						.getOutput();
-		Assertions.assertThat(output).contains("exit code: 0");
-		Assertions.assertThat(output).matches("(?s)(.*)stdout: Loaded (\\d+) bundles(.*)");
+		runAndAssert("equoIde", "-PequoTestOnly=true", "--stacktrace")
+				.contains("exit code: 0")
+				.matches("(?s)(.*)stdout: Loaded (\\d+) bundles(.*)");
 	}
 
 	@Test
