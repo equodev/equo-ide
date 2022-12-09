@@ -51,14 +51,14 @@ public class EquoIdeExtension {
 			throw new IllegalArgumentException("Version should not have any slashes");
 		}
 		p2repo("https://download.eclipse.org/eclipse/updates/" + version + "/");
-		targets.add("org.eclipse.releng.java.languages.categoryIU");
-		targets.add("org.eclipse.platform.ide.categoryIU");
-		queryHandler =
+		install("org.eclipse.releng.java.languages.categoryIU");
+		install("org.eclipse.platform.ide.categoryIU");
+		filter(
 				query -> {
 					query.excludePrefix("org.apache.felix.gogo");
 					query.excludePrefix("org.eclipse.equinox.console");
 					query.excludePrefix("org.eclipse.equinox.p2");
-				};
+				});
 	}
 
 	public void p2repo(String p2) {
