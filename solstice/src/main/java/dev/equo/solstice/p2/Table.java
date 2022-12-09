@@ -41,11 +41,41 @@ class Table {
 		RIGHT
 	}
 
-	public static <T> String getTable(Collection<T> objects, TableColumn.Data<T>... columns) {
+	public static <T> String getTable(
+			ConsoleTable.Format kind, Collection<T> objects, TableColumn.Data<T>... columns) {
+		if (kind == ConsoleTable.Format.CSV) {
+			var builder = new StringBuilder();
+			for (var column : columns) {
+				builder.append(column.column.header);
+				builder.append(',');
+			}
+			builder.setCharAt(builder.length() - 1, '\n');
+
+			for (var o : objects) {
+				for (var column : columns) {
+					var cell = column.getter.apply(o);
+					if (cell.indexOf(',') != -1 || cell.indexOf('"') != -1) {
+						cell = cell.replace("\"", "\"\"");
+						cell = "\"" + cell + "\"";
+					}
+					builder.append(cell);
+					builder.append(',');
+				}
+				builder.setCharAt(builder.length() - 1, '\n');
+			}
+			return builder.toString();
+		} else if (kind == ConsoleTable.Format.ASCII) {
+			return getTable(objects, columns);
+		} else {
+			throw new IllegalArgumentException("Unknown kind " + kind);
+		}
+	}
+
+	private static <T> String getTable(Collection<T> objects, TableColumn.Data<T>... columns) {
 		return getTable(objects, Arrays.asList(columns));
 	}
 
-	public static <T> String getTable(Collection<T> objects, List<TableColumn.Data<T>> columns) {
+	private static <T> String getTable(Collection<T> objects, List<TableColumn.Data<T>> columns) {
 		String[][] data = new String[objects.size()][];
 
 		Iterator<T> iter = objects.iterator();
@@ -68,18 +98,7 @@ class Table {
 	}
 
 	/** Returns a formatted table string. */
-	public static String getTable(String[] header, String[][] data) {
-		TableColumn[] headerCol =
-				Arrays.asList(header).stream()
-						.map(h -> new TableColumn(h))
-						.collect(Collectors.toList())
-						.toArray(new TableColumn[header.length]);
-
-		return getTable(headerCol, data);
-	}
-
-	/** Returns a formatted table string. */
-	public static String getTable(TableColumn[] headerObjs, String[][] data) {
+	private static String getTable(TableColumn[] headerObjs, String[][] data) {
 		if (data == null || data.length == 0) {
 			throw new IllegalArgumentException("Please provide valid data : " + data);
 		}
