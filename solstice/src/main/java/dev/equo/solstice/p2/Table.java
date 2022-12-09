@@ -35,6 +35,12 @@ import java.util.stream.Collectors;
  * limitations under the License.
  */
 class Table {
+	enum Align {
+		LEFT,
+		CENTER,
+		RIGHT
+	}
+
 	/** Returns a formatted table string. */
 	public static <T> String getTable(Collection<T> objects, List<TableColumn.Data<T>> columns) {
 		String[][] data = new String[objects.size()][];
@@ -129,12 +135,10 @@ class Table {
 
 		StringBuilder rowBuilder = new StringBuilder();
 		String formattedData = null;
-		TableAlign align;
+		Align align;
 
 		for (int i = 0; i < colCount; i++) {
-
-			align = isHeader ? TableAlign.HEADER_DEFAULT : TableAlign.DATA_DEFAULT;
-
+			align = Table.Align.LEFT;
 			if (headerObjs != null && i < headerObjs.length) {
 				if (isHeader) {
 					align = headerObjs[i].headerAlign;
@@ -158,7 +162,7 @@ class Table {
 		return rowBuilder.append("\n").toString();
 	}
 
-	private static String getFormattedData(int maxLength, String data, TableAlign align) {
+	private static String getFormattedData(int maxLength, String data, Align align) {
 		if (data.length() > maxLength) {
 			return data;
 		}
@@ -166,11 +170,11 @@ class Table {
 		boolean toggle = true;
 
 		while (data.length() < maxLength) {
-			if (align == TableAlign.LEFT) {
+			if (align == Table.Align.LEFT) {
 				data = data + " ";
-			} else if (align == TableAlign.RIGHT) {
+			} else if (align == Table.Align.RIGHT) {
 				data = " " + data;
-			} else if (align == TableAlign.CENTER) {
+			} else if (align == Table.Align.CENTER) {
 				if (toggle) {
 					data = " " + data;
 					toggle = false;

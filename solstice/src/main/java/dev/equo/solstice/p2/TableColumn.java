@@ -31,16 +31,16 @@ import java.util.function.Function;
  */
 class TableColumn {
 	public final String header;
-	public final TableAlign headerAlign;
-	public final TableAlign dataAlign;
+	public final Table.Align headerAlign;
+	public final Table.Align dataAlign;
 
 	/** A Column with a name. */
 	public TableColumn(String headerName) {
-		this(headerName, TableAlign.HEADER_DEFAULT, TableAlign.DATA_DEFAULT);
+		this(headerName, Table.Align.LEFT, Table.Align.LEFT);
 	}
 
 	/** A Column with a name and alignment. */
-	public TableColumn(String header, TableAlign headerAlign, TableAlign dataAlign) {
+	public TableColumn(String header, Table.Align headerAlign, Table.Align dataAlign) {
 		this.header = header;
 		this.headerAlign = headerAlign;
 		this.dataAlign = dataAlign;
