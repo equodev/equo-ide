@@ -35,7 +35,7 @@ public class P2Test {
 		query.exclude("org.eclipse.rcp_root");
 		query.excludePrefix("tooling");
 		query.resolve("org.eclipse.platform.ide.categoryIU");
-		var table = AsciiTable.mavenTable(query.jars());
+		var table = AsciiTable.mavenStatus(query.jars());
 		Assertions.assertThat(table)
 				.isEqualTo(
 						"+---------------------------------------------------------------------------------+---------------+\n"
@@ -309,7 +309,7 @@ public class P2Test {
 		var session = populateSession();
 		var query = session.query();
 		query.resolve("org.eclipse.swt");
-		Assertions.assertThat(AsciiTable.mavenTable(query.jars()))
+		Assertions.assertThat(AsciiTable.mavenStatus(query.jars()))
 				.isEqualTo(
 						"+-------------------------------------------------------------------+---------------+\n"
 								+ "| maven coordinate / p2 id                                          | repo          |\n"
@@ -324,7 +324,7 @@ public class P2Test {
 								+ "+-------------------------------------------------------------------+---------------+\n");
 
 		query.setPlatform(SwtPlatform.parseWsOsArch("cocoa.macosx.aarch64"));
-		Assertions.assertThat(AsciiTable.mavenTable(query.jars()))
+		Assertions.assertThat(AsciiTable.mavenStatus(query.jars()))
 				.isEqualTo(
 						"+-------------------------------------------------------------------+---------------+\n"
 								+ "| maven coordinate / p2 id                                          | repo          |\n"
@@ -337,32 +337,25 @@ public class P2Test {
 	@Test
 	public void testCategories() throws Exception {
 		var session = populateSession();
-		Assertions.assertThat(session.listAllCategories())
+		var units = session.getUnitsWithProperty(P2Unit.P2_TYPE_CATEGORY, "true");
+		Assertions.assertThat(AsciiTable.nameAndDescription(units))
 				.isEqualTo(
-						"I20220831-1800.Default\n"
-								+ "  Uncategorized: Default category for otherwise uncategorized features\n"
-								+ "org.eclipse.equinox.target.categoryIU\n"
-								+ "  Equinox Target Components: Features especially useful to install as PDE runtime targets.\n"
-								+ "org.eclipse.pde.api.tools.ee.categoryIU\n"
-								+ "  API Tools Execution Environment Descriptions: API Tools Execution Environment Descriptions.\n"
-								+ "org.eclipse.platform.ide.categoryIU\n"
-								+ "  Eclipse Platform: Minimum version of Eclipse: no source or API documentation, no PDE or JDT.\n"
-								+ "org.eclipse.platform.sdk.categoryIU\n"
-								+ "  Eclipse Platform SDK: Minimum version of Eclipse with source and documentation, no PDE or JDT.\n"
-								+ "org.eclipse.rcp.categoryIU\n"
-								+ "  Eclipse RCP Target Components: Features to use as PDE runtime target, while developing RCP applications.\n"
-								+ "org.eclipse.releng.categoryIU\n"
-								+ "  Releng Tools: Tools handy for committers, such as to fix copyright headings and a POM version checker.\n"
-								+ "org.eclipse.releng.cvs.categoryIU\n"
-								+ "  Eclipse CVS Client: Tools to allow working with CVS repositories.\n"
-								+ "org.eclipse.releng.java.languages.categoryIU\n"
-								+ "  Eclipse Java Development Tools: Tools to allow development with Java.\n"
-								+ "org.eclipse.releng.pde.categoryIU\n"
-								+ "  Eclipse Plugin Development Tools: Tools to develop bundles, plugins and features.\n"
-								+ "org.eclipse.releng.testsIU\n"
-								+ "  Eclipse Tests, Tools, Examples, and Extras: Collection of Misc. Features, such as unit tests, SWT and e4 tools, examples, and compatibility features not shipped as part of main SDK, but which some people may desire in creating products based on previous versions of Eclipse.\n"
-								+ "org.eclipse.sdk.ide.categoryIU\n"
-								+ "  Eclipse SDK: The full version of Eclipse, with source and documentation: Platform, JDT and PDE.\n");
+						"+----------------------------------------------+----------------------------------------------+\n"
+								+ "| id                                           | name                                         |\n"
+								+ "+----------------------------------------------+----------------------------------------------+\n"
+								+ "| I20220831-1800.Default                       | Uncategorized                                |\n"
+								+ "| org.eclipse.equinox.target.categoryIU        | Equinox Target Components                    |\n"
+								+ "| org.eclipse.pde.api.tools.ee.categoryIU      | API Tools Execution Environment Descriptions |\n"
+								+ "| org.eclipse.platform.ide.categoryIU          | Eclipse Platform                             |\n"
+								+ "| org.eclipse.platform.sdk.categoryIU          | Eclipse Platform SDK                         |\n"
+								+ "| org.eclipse.rcp.categoryIU                   | Eclipse RCP Target Components                |\n"
+								+ "| org.eclipse.releng.categoryIU                | Releng Tools                                 |\n"
+								+ "| org.eclipse.releng.cvs.categoryIU            | Eclipse CVS Client                           |\n"
+								+ "| org.eclipse.releng.java.languages.categoryIU | Eclipse Java Development Tools               |\n"
+								+ "| org.eclipse.releng.pde.categoryIU            | Eclipse Plugin Development Tools             |\n"
+								+ "| org.eclipse.releng.testsIU                   | Eclipse Tests, Tools, Examples, and Extras   |\n"
+								+ "| org.eclipse.sdk.ide.categoryIU               | Eclipse SDK                                  |\n"
+								+ "+----------------------------------------------+----------------------------------------------+\n");
 	}
 
 	@Test
