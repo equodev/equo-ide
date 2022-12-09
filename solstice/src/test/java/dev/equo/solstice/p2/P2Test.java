@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class P2SessionTest {
+public class P2Test {
 	private P2Session populateSession() throws Exception {
 		var session = new P2Session();
 		try (var client = new P2Client()) {
