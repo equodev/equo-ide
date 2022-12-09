@@ -33,6 +33,10 @@ public class P2Session {
 		sort();
 	}
 
+	public P2Query query() {
+		return new P2Query(this);
+	}
+
 	private void sort() {
 		units.sort(Comparator.naturalOrder());
 		for (var submap : providerRegistry.values()) {

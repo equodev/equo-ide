@@ -30,12 +30,12 @@ public class P2SessionTest {
 	@Test
 	public void testQuery() throws Exception {
 		var session = populateSession();
-		var query = new P2Query();
+		var query = session.query();
 		query.exclude("a.jre.javase");
 		query.exclude("org.eclipse.platform_root");
 		query.exclude("org.eclipse.rcp_root");
 		query.excludePrefix("tooling");
-		query.resolve(session.getUnitById("org.eclipse.platform.ide.categoryIU"));
+		query.resolve("org.eclipse.platform.ide.categoryIU");
 		var jars = query.jarsOnMavenCentral().stream().collect(Collectors.joining(","));
 		Assertions.assertThat(jars)
 				.isEqualTo(
@@ -52,8 +52,8 @@ public class P2SessionTest {
 	@Test
 	public void testQueryPlatformSpecific() throws Exception {
 		var session = populateSession();
-		var query = new P2Query();
-		query.resolve(session.getUnitById("org.eclipse.swt"));
+		var query = session.query();
+		query.resolve("org.eclipse.swt");
 
 		var notOnMavenCentral =
 				query.jarsNotOnMavenCentral().stream()

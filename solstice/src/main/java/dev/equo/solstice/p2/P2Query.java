@@ -25,13 +25,22 @@ import javax.annotation.Nullable;
  * can be resolved from maven or directly from p2 if necessary.
  */
 public class P2Query {
-	TreeSet<String> exclude = new TreeSet<>();
-	List<String> excludePrefix = new ArrayList<>();
-	List<String> excludeSuffix = new ArrayList<>();
-	TreeSet<P2Unit> resolved = new TreeSet<>();
-	List<UnmetRequirement> unmetRequirements = new ArrayList<>();
-	List<ResolvedWithFirst> resolvedWithFirst = new ArrayList<>();
-	@Nullable SwtPlatform platform;
+	private P2Session session;
+
+	P2Query(P2Session session) {
+		this.session = session;
+	}
+
+	private TreeSet<String> exclude = new TreeSet<>();
+	private List<String> excludePrefix = new ArrayList<>();
+	private TreeSet<P2Unit> resolved = new TreeSet<>();
+	private List<UnmetRequirement> unmetRequirements = new ArrayList<>();
+	private List<ResolvedWithFirst> resolvedWithFirst = new ArrayList<>();
+	private @Nullable SwtPlatform platform;
+
+	public P2Session getSession() {
+		return session;
+	}
 
 	public void exclude(String toExclude) {
 		exclude.add(toExclude);
@@ -45,7 +54,11 @@ public class P2Query {
 		this.platform = platform;
 	}
 
-	public void resolve(P2Unit toResolve) {
+	public void resolve(String idToResolve) {
+		resolve(session.getUnitById(idToResolve));
+	}
+
+	private void resolve(P2Unit toResolve) {
 		for (var prefix : excludePrefix) {
 			if (toResolve.id.startsWith(prefix)) {
 				return;

@@ -17,7 +17,6 @@ import com.diffplug.common.swt.os.SwtPlatform;
 import dev.equo.solstice.NestedBundles;
 import dev.equo.solstice.p2.JdtSetup;
 import dev.equo.solstice.p2.P2Client;
-import dev.equo.solstice.p2.P2Query;
 import dev.equo.solstice.p2.P2Session;
 import dev.equo.solstice.p2.WorkspaceRegistry;
 import java.io.File;
@@ -98,10 +97,10 @@ public class LaunchMojo extends AbstractMojo {
 				throw new RuntimeException(e);
 			}
 
-			var query = new P2Query();
+			var query = session.query();
 			query.setPlatform(SwtPlatform.getRunning());
 			if (equoTestOnlyTrue) {
-				query.resolve(session.getUnitById("org.eclipse.swt"));
+				query.resolve("org.eclipse.swt");
 			} else {
 				JdtSetup.mavenCoordinate(query, session);
 			}

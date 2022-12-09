@@ -22,7 +22,7 @@ public class JdtSetup {
 		query.excludePrefix("org.apache.felix.gogo");
 		query.excludePrefix("org.eclipse.equinox.console");
 		query.excludePrefix("org.eclipse.equinox.p2");
-		query.resolve(session.getUnitById("org.eclipse.releng.java.languages.categoryIU"));
-		query.resolve(session.getUnitById("org.eclipse.platform.ide.categoryIU"));
+		query.resolve("org.eclipse.releng.java.languages.categoryIU");
+		query.resolve("org.eclipse.platform.ide.categoryIU");
 	}
 }
