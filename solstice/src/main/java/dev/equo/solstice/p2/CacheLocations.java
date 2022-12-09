@@ -75,7 +75,7 @@ public class CacheLocations {
 	 * is a problem for single-project builds.
 	 *
 	 * <p>As a workaround, we put all eclipse workspaces in a central location, which is tied to their
-	 * project directory. Whenever a new workspace is created, we do a quick check to make there
+	 * project directory. Whenever a new workspace is created, we do a quick check to make sure there
 	 * aren't any stale workspaces. If the workspace has gone stale, we delete it.
 	 */
 	public static File ideWorkspaces() {
