@@ -16,7 +16,6 @@ package dev.equo.ide.gradle;
 import au.com.origin.snapshots.Expect;
 import au.com.origin.snapshots.junit5.SnapshotExtension;
 import java.io.IOException;
-import java.util.regex.Pattern;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,12 +25,11 @@ public class EquoIdeTest extends GradleHarness {
 	@Test
 	public void tasks(Expect expect) throws IOException {
 		setFile("build.gradle").toLines("plugins { id 'dev.equo.ide' }", "equoIde {", "}");
-		runAndMatchSnapshot(
-				expect, Pattern.compile("IDE tasks(.*)To see all tasks", Pattern.DOTALL), "tasks");
+		run("tasks").snapshotBetween("IDE tasks", "To see all tasks", expect);
 	}
 
 	@Test
-	public void p2repoArgCheck() throws IOException {
+	public void p2repoArgCheck(Expect expect) throws IOException {
 		setFile("build.gradle")
 				.toLines(
 						"plugins { id 'dev.equo.ide' }",
@@ -39,11 +37,11 @@ public class EquoIdeTest extends GradleHarness {
 						"  p2repo 'https://somerepo'",
 						"  install 'org.eclipse.swt'",
 						"}");
-		runFailAndAssert("equoIde")
-				.contains(
-						"> Must end with /\n"
-								+ "  p2repo(\"https://somerepo\")   <- WRONG\n"
-								+ "  p2repo(\"https://somerepo/\")  <- CORRECT");
+		runAndFail("equoIde")
+				.snapshotBetween(
+						"A problem occurred evaluating root project 'under-test'",
+						"* Try:",
+						expect.scenario("no-slash"));
 		setFile("build.gradle")
 				.toLines(
 						"plugins { id 'dev.equo.ide' }",
@@ -51,11 +49,11 @@ public class EquoIdeTest extends GradleHarness {
 						"  p2repo 'https://somerepo//'",
 						"  install 'org.eclipse.swt'",
 						"}");
-		runFailAndAssert("equoIde")
-				.contains(
-						"> Must end with a single /\n"
-								+ "  p2repo(\"https://somerepo//\")  <- WRONG\n"
-								+ "  p2repo(\"https://somerepo/\")   <- CORRECT");
+		runAndFail("equoIde")
+				.snapshotBetween(
+						"A problem occurred evaluating root project 'under-test'",
+						"* Try:",
+						expect.scenario("double-slash"));
 	}
 
 	@Test

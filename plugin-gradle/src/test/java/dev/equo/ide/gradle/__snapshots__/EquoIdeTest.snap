@@ -1,3 +1,19 @@
+dev.equo.ide.gradle.EquoIdeTest.p2repoArgCheck[double-slash]=[
+.
+> Must end with a single /
+  p2repo("https://somerepo//")  <- WRONG
+  p2repo("https://somerepo/")   <- CORRECT
+]
+
+
+dev.equo.ide.gradle.EquoIdeTest.p2repoArgCheck[no-slash]=[
+.
+> Must end with /
+  p2repo("https://somerepo")   <- WRONG
+  p2repo("https://somerepo/")  <- CORRECT
+]
+
+
 dev.equo.ide.gradle.EquoIdeTest.tasks=[
 ---------
 equoIde - Launches EquoIDE

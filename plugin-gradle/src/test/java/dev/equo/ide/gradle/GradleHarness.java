@@ -39,6 +39,7 @@ public class GradleHarness {
 	void copyPluginUnderTestMetadata() throws IOException {
 		var content = Files.readAllBytes(Paths.get(DepsResolve.METADATA_PATH));
 		setFile(DepsResolve.METADATA_PATH).toContent(content);
+		setFile("settings.gradle").toContent("rootProject.name = 'under-test'");
 	}
 
 	/** Returns the root folder (canonicalized to fix OS X issue) */
@@ -82,12 +83,28 @@ public class GradleHarness {
 		return Assertions.assertThat(output);
 	}
 
-	protected void runAndMatchSnapshot(Expect expect, Pattern within, String... args)
-			throws IOException {
-		var output = gradleRunner().withArguments(args).build().getOutput().replace("\r", "");
-		var matcher = within.matcher(output);
-		Assertions.assertThat(matcher.find()).isTrue();
-		expect.toMatchSnapshot(matcher.group(1).trim());
+	protected Output run(String... args) throws IOException {
+		return new Output(gradleRunner().withArguments(args).build().getOutput());
+	}
+
+	protected Output runAndFail(String... args) throws IOException {
+		return new Output(gradleRunner().withArguments(args).buildAndFail().getOutput());
+	}
+
+	public static class Output {
+		private final String output;
+
+		Output(String output) {
+			this.output = output.replace("\r", "");
+		}
+
+		public void snapshotBetween(String before, String after, Expect expect) {
+			var pattern =
+					Pattern.compile(Pattern.quote(before) + "(.*)" + Pattern.quote(after), Pattern.DOTALL);
+			var matcher = pattern.matcher(output);
+			matcher.find();
+			expect.toMatchSnapshot(matcher.group(1).trim());
+		}
 	}
 
 	protected AbstractStringAssert<?> runFailAndAssert(String... args) throws IOException {
@@ -97,6 +114,7 @@ public class GradleHarness {
 
 	protected GradleRunner gradleRunner() throws IOException {
 		return GradleRunner.create()
+				.forwardOutput()
 				.withGradleVersion(oldestGradleForJre())
 				.withProjectDir(rootFolder())
 				.withTestKitDir(rootFolder())
