@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import org.eclipse.osgi.internal.framework.FilterImpl;
 import org.jetbrains.annotations.NotNull;
 import org.osgi.framework.InvalidSyntaxException;
@@ -46,7 +47,7 @@ public class P2Session {
 		}
 	}
 
-	public List<P2Unit> getUnitsWithProperty(String key, String value) {
+	public List<P2Unit> findUnitsWithProperty(String key, String value) {
 		List<P2Unit> matches = new ArrayList<>();
 		for (var unit : units) {
 			if (Objects.equals(value, unit.properties.get(key))) {
@@ -56,6 +57,14 @@ public class P2Session {
 		return matches;
 	}
 
+	public List<P2Unit> findAllUnitsWithId(String id) {
+		return units.stream().filter(unit -> unit.id.equals(id)).collect(Collectors.toList());
+	}
+
+	/**
+	 * Returns the unit with the given id. If there are multiple units with the same id, returns the
+	 * one with the greatest version number.
+	 */
 	public P2Unit getUnitById(String id) {
 		for (var unit : units) {
 			if (id.equals(unit.id)) {
@@ -67,7 +76,7 @@ public class P2Session {
 
 	public String listAllCategories() {
 		var builder = new StringBuilder();
-		var units = getUnitsWithProperty(P2Unit.P2_TYPE_CATEGORY, "true");
+		var units = findUnitsWithProperty(P2Unit.P2_TYPE_CATEGORY, "true");
 		for (var unit : units) {
 			var name = unit.properties.get(P2Unit.P2_NAME);
 			var desc = unit.properties.get(P2Unit.P2_DESC);
@@ -84,7 +93,7 @@ public class P2Session {
 
 	public String listAllFeatures() {
 		var builder = new StringBuilder();
-		var units = getUnitsWithProperty(P2Unit.P2_TYPE_FEATURE, "true");
+		var units = findUnitsWithProperty(P2Unit.P2_TYPE_FEATURE, "true");
 		for (var unit : units) {
 			var name = unit.properties.get(P2Unit.P2_NAME);
 			var desc = unit.properties.get(P2Unit.P2_DESC);
