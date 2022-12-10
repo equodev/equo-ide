@@ -35,7 +35,7 @@ public class P2Test {
 		query.exclude("org.eclipse.rcp_root");
 		query.excludePrefix("tooling");
 		query.resolve("org.eclipse.platform.ide.categoryIU");
-		Assertions.assertThat(ConsoleTable.mavenStatus(query.jars(), ConsoleTable.Format.ASCII))
+		Assertions.assertThat(ConsoleTable.mavenStatus(query.getJars(), ConsoleTable.Format.ASCII))
 				.isEqualTo(
 						"+---------------------------------------------------------------------------------+---------------+\n"
 								+ "| maven coordinate / p2 id                                                        | repo          |\n"
@@ -308,7 +308,7 @@ public class P2Test {
 		var session = populateSession();
 		var query = session.query();
 		query.resolve("org.eclipse.swt");
-		Assertions.assertThat(ConsoleTable.mavenStatus(query.jars(), ConsoleTable.Format.ASCII))
+		Assertions.assertThat(ConsoleTable.mavenStatus(query.getJars(), ConsoleTable.Format.ASCII))
 				.isEqualTo(
 						"+-------------------------------------------------------------------+---------------+\n"
 								+ "| maven coordinate / p2 id                                          | repo          |\n"
@@ -322,8 +322,10 @@ public class P2Test {
 								+ "| org.eclipse.platform:org.eclipse.swt:3.121.0                      | mavenCentral? |\n"
 								+ "+-------------------------------------------------------------------+---------------+\n");
 
-		query.setPlatform(SwtPlatform.parseWsOsArch("cocoa.macosx.aarch64"));
-		Assertions.assertThat(ConsoleTable.mavenStatus(query.jars(), ConsoleTable.Format.ASCII))
+		var macQuery = session.query();
+		macQuery.setPlatform(SwtPlatform.parseWsOsArch("cocoa.macosx.aarch64"));
+		macQuery.resolve("org.eclipse.swt");
+		Assertions.assertThat(ConsoleTable.mavenStatus(macQuery.getJars(), ConsoleTable.Format.ASCII))
 				.isEqualTo(
 						"+-------------------------------------------------------------------+---------------+\n"
 								+ "| maven coordinate / p2 id                                          | repo          |\n"

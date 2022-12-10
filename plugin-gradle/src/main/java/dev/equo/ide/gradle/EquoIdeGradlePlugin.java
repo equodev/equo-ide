@@ -78,7 +78,7 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 					try {
 						var query = extension.performQuery();
 						query
-								.jarsOnMavenCentral()
+								.getJarsOnMavenCentral()
 								.forEach(
 										coordinate -> {
 											project.getDependencies().add(EQUO_IDE, coordinate);

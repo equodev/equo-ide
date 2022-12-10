@@ -104,7 +104,7 @@ public class LaunchMojo extends AbstractMojo {
 			} else {
 				JdtSetup.mavenCoordinate(query, session);
 			}
-			for (var coordinate : query.jarsOnMavenCentral()) {
+			for (var coordinate : query.getJarsOnMavenCentral()) {
 				deps.add(new Dependency(new DefaultArtifact(coordinate), null, null, excludeTransitive));
 			}
 			CollectRequest collectRequest = new CollectRequest(deps, null, repositories);

@@ -17,6 +17,8 @@ import com.diffplug.common.swt.os.SwtPlatform;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.TreeSet;
 import javax.annotation.Nullable;
 
@@ -36,7 +38,7 @@ public class P2Query {
 	private TreeSet<P2Unit> resolved = new TreeSet<>();
 	private List<UnmetRequirement> unmetRequirements = new ArrayList<>();
 	private List<ResolvedWithFirst> resolvedWithFirst = new ArrayList<>();
-	private @Nullable SwtPlatform platform;
+	private Map<String, String> filterProps = new HashMap<String, String>();
 
 	public P2Session getSession() {
 		return session;
@@ -51,20 +53,36 @@ public class P2Query {
 	}
 
 	public void setPlatform(@Nullable SwtPlatform platform) {
-		this.platform = platform;
+		if (platform == null) {
+			filterProps.clear();
+		} else {
+			filterProps.put("osgi.os", platform.getOs());
+			filterProps.put("osgi.ws", platform.getWs());
+			filterProps.put("osgi.arch", platform.getArch());
+		}
 	}
 
 	public void resolve(String idToResolve) {
 		resolve(session.getUnitById(idToResolve));
 	}
 
-	private void resolve(P2Unit toResolve) {
+	private boolean addUnlessExcludedOrAlreadyPresent(P2Unit unit) {
 		for (var prefix : excludePrefix) {
-			if (toResolve.id.startsWith(prefix)) {
-				return;
+			if (unit.id.startsWith(prefix)) {
+				return false;
 			}
 		}
-		if (exclude.contains(toResolve.id) || !resolved.add(toResolve)) {
+		if (exclude.contains(unit.id)) {
+			return false;
+		}
+		if (!filterProps.isEmpty() && unit.filter != null && !unit.filter.matches(filterProps)) {
+			return false;
+		}
+		return resolved.add(unit);
+	}
+
+	private void resolve(P2Unit toResolve) {
+		if (!addUnlessExcludedOrAlreadyPresent(toResolve)) {
 			return;
 		}
 		for (var requirement : toResolve.requires) {
@@ -82,13 +100,7 @@ public class P2Query {
 		}
 	}
 
-	public Iterable<P2Unit> jars() {
-		var props = new HashMap<String, String>();
-		if (platform != null) {
-			props.put("osgi.os", platform.getOs());
-			props.put("osgi.ws", platform.getWs());
-			props.put("osgi.arch", platform.getArch());
-		}
+	public List<P2Unit> getJars() {
 		var jars = new ArrayList<P2Unit>();
 		for (var unit : resolved) {
 			if (unit.id.endsWith("feature.jar")
@@ -96,17 +108,32 @@ public class P2Query {
 					|| "true".equals(unit.properties.get(P2Unit.P2_TYPE_CATEGORY))) {
 				continue;
 			}
-			if (platform != null && unit.filter != null && !unit.filter.matches(props)) {
-				continue;
-			}
 			jars.add(unit);
 		}
 		return jars;
 	}
 
-	public List<String> jarsOnMavenCentral() {
+	public List<P2Unit> getFeatures() {
+		return getUnitsWithProperty(P2Unit.P2_TYPE_CATEGORY, "true");
+	}
+
+	public List<P2Unit> getCategories() {
+		return getUnitsWithProperty(P2Unit.P2_TYPE_CATEGORY, "true");
+	}
+
+	public List<P2Unit> getUnitsWithProperty(String key, String value) {
+		List<P2Unit> matches = new ArrayList<>();
+		for (var unit : resolved) {
+			if (Objects.equals(value, unit.properties.get(key))) {
+				matches.add(unit);
+			}
+		}
+		return matches;
+	}
+
+	public List<String> getJarsOnMavenCentral() {
 		var mavenCoords = new ArrayList<String>();
-		for (var unit : jars()) {
+		for (var unit : getJars()) {
 			var mavenState = MavenStatus.forUnit(unit);
 			if (mavenState.isOnMavenCentral()) {
 				mavenCoords.add(mavenState.coordinate());
@@ -115,15 +142,20 @@ public class P2Query {
 		return mavenCoords;
 	}
 
-	public List<P2Unit> jarsNotOnMavenCentral() {
+	public List<P2Unit> getjarsNotOnMavenCentral() {
 		var notOnMaven = new ArrayList<P2Unit>();
-		for (var unit : jars()) {
+		for (var unit : getJars()) {
 			var mavenState = MavenStatus.forUnit(unit);
 			if (!mavenState.isOnMavenCentral()) {
 				notOnMaven.add(unit);
 			}
 		}
 		return notOnMaven;
+	}
+
+	/** Adds every unit in the session, subject to the query filters. */
+	public void addAllUnits() {
+		session.units.forEach(this::addUnlessExcludedOrAlreadyPresent);
 	}
 
 	static class UnmetRequirement {
