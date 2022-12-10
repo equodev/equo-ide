@@ -13,20 +13,21 @@
  *******************************************************************************/
 package dev.equo.ide.gradle;
 
+import au.com.origin.snapshots.Expect;
+import au.com.origin.snapshots.junit5.SnapshotExtension;
 import java.io.IOException;
+import java.util.regex.Pattern;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
+@ExtendWith({SnapshotExtension.class})
 public class EquoIdeTest extends GradleHarness {
 	@Test
-	public void tasks() throws IOException {
+	public void tasks(Expect expect) throws IOException {
 		setFile("build.gradle").toLines("plugins { id 'dev.equo.ide' }", "equoIde {", "}");
-		runAndAssert("tasks", "--stacktrace")
-				.contains(
-						"IDE tasks\n"
-								+ "---------\n"
-								+ "equoIde - Launches EquoIDE\n"
-								+ "equoList - Lists the p2 dependencies of EquoIDE\n\n");
+		runAndMatchSnapshot(
+				expect, Pattern.compile("IDE tasks(.*)To see all tasks", Pattern.DOTALL), "tasks");
 	}
 
 	@Test

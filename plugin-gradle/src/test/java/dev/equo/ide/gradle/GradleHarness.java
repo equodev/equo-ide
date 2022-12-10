@@ -13,12 +13,14 @@
  *******************************************************************************/
 package dev.equo.ide.gradle;
 
+import au.com.origin.snapshots.Expect;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.regex.Pattern;
 import org.assertj.core.api.AbstractStringAssert;
 import org.assertj.core.api.Assertions;
 import org.gradle.testkit.runner.GradleRunner;
@@ -78,6 +80,14 @@ public class GradleHarness {
 	protected AbstractStringAssert<?> runAndAssert(String... args) throws IOException {
 		var output = gradleRunner().withArguments(args).build().getOutput().replace("\r", "");
 		return Assertions.assertThat(output);
+	}
+
+	protected void runAndMatchSnapshot(Expect expect, Pattern within, String... args)
+			throws IOException {
+		var output = gradleRunner().withArguments(args).build().getOutput().replace("\r", "");
+		var matcher = within.matcher(output);
+		Assertions.assertThat(matcher.find()).isTrue();
+		expect.toMatchSnapshot(matcher.group(1));
 	}
 
 	protected AbstractStringAssert<?> runFailAndAssert(String... args) throws IOException {

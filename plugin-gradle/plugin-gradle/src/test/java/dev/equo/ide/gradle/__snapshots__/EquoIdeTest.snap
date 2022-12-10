@@ -1,0 +1,8 @@
+dev.equo.ide.gradle.EquoIdeTest.tasks=[
+
+---------
+equoIde - Launches EquoIDE
+equoList - Lists the p2 dependencies of EquoIDE
+
+
+]
