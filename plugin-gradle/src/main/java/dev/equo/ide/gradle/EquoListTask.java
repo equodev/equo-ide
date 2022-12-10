@@ -43,6 +43,6 @@ public abstract class EquoListTask extends DefaultTask {
 	public void list() throws Exception {
 		var extension = getExtension().get();
 		var query = extension.performQuery();
-		System.out.println(ConsoleTable.mavenStatus(query.jars(), format));
+		System.out.println(ConsoleTable.mavenStatus(query.getJars(), format));
 	}
 }
