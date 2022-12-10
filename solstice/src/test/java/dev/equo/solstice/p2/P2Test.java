@@ -47,12 +47,16 @@ public class P2Test {
 		var session = populateSession();
 		var query = session.query();
 		query.resolve("org.eclipse.swt");
-		expect.scenario("all-platforms").toMatchSnapshot(ConsoleTable.mavenStatus(query.getJars(), ConsoleTable.Format.ASCII));
+		expect
+				.scenario("all-platforms")
+				.toMatchSnapshot(ConsoleTable.mavenStatus(query.getJars(), ConsoleTable.Format.ASCII));
 
 		var macQuery = session.query();
 		macQuery.setPlatform(SwtPlatform.parseWsOsArch("cocoa.macosx.aarch64"));
 		macQuery.resolve("org.eclipse.swt");
-		expect.scenario("mac-only").toMatchSnapshot(ConsoleTable.mavenStatus(macQuery.getJars(), ConsoleTable.Format.ASCII));
+		expect
+				.scenario("mac-only")
+				.toMatchSnapshot(ConsoleTable.mavenStatus(macQuery.getJars(), ConsoleTable.Format.ASCII));
 	}
 
 	@Test
