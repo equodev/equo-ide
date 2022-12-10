@@ -40,19 +40,25 @@ public class P2Query {
 	private List<ResolvedWithFirst> resolvedWithFirst = new ArrayList<>();
 	private Map<String, String> filterProps = new HashMap<String, String>();
 
-	public P2Session getSession() {
-		return session;
+	private void assertNotUsed() {
+		if (!resolved.isEmpty()) {
+			throw new IllegalStateException(
+					"You must not change any filter properties after you have already called `resolve` or `addAllUnits`.");
+		}
 	}
 
 	public void exclude(String toExclude) {
+		assertNotUsed();
 		exclude.add(toExclude);
 	}
 
 	public void excludePrefix(String prefix) {
+		assertNotUsed();
 		excludePrefix.add(prefix);
 	}
 
 	public void setPlatform(@Nullable SwtPlatform platform) {
+		assertNotUsed();
 		if (platform == null) {
 			filterProps.clear();
 		} else {
@@ -62,6 +68,7 @@ public class P2Query {
 		}
 	}
 
+	/** Resolves the given P2Unit by eagerly traversing all its dependencies. */
 	public void resolve(String idToResolve) {
 		resolve(session.getUnitById(idToResolve));
 	}

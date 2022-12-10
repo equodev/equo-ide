@@ -48,7 +48,7 @@ public class MavenJarsNeededForTest {
 		query.resolve("org.eclipse.equinox.event");
 
 		var content = new StringBuilder();
-		for (var coordinate : query.jarsOnMavenCentral()) {
+		for (var coordinate : query.getJarsOnMavenCentral()) {
 			content.append(coordinate);
 			content.append('\n');
 		}
