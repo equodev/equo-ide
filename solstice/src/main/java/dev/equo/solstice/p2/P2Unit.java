@@ -18,11 +18,13 @@ import java.util.List;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import org.eclipse.osgi.internal.framework.FilterImpl;
+import org.osgi.framework.Version;
 import org.w3c.dom.Node;
 
 /** Usually represents a jar file in a p2 repository, but could also be a "feature" or "group". */
 public class P2Unit implements Comparable<P2Unit> {
 	final String id, version;
+	// TODO: version should be an OSGi version for proper sorting
 	FilterImpl filter;
 	final TreeMap<String, String> properties = new TreeMap<>();
 	final TreeSet<P2Session.Providers> requires = new TreeSet<>();
@@ -169,5 +171,9 @@ public class P2Unit implements Comparable<P2Unit> {
 
 	public String getId() {
 		return id;
+	}
+
+	public Version getVersion() {
+		return Version.parseVersion(version);
 	}
 }

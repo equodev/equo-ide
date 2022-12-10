@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
 /**
@@ -84,7 +85,7 @@ public class P2Query {
 	 * versions of the same id.
 	 */
 	public List<P2Unit> findAllAvailableUnitsById(String id) {
-		return session.findAllUnitsWithId(id);
+		return session.units.stream().filter(u -> u.id.equals(id)).collect(Collectors.toList());
 	}
 
 	private boolean addUnlessExcludedOrAlreadyPresent(P2Unit unit) {

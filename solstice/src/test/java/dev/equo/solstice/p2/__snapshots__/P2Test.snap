@@ -1,24 +1,3 @@
-dev.equo.solstice.p2.P2Test.listCategories=[
-+----------------------------------------------+----------------------------------------------+
-| id                                           | name                                         |
-+----------------------------------------------+----------------------------------------------+
-| I20220831-1800.Default                       | Uncategorized                                |
-| org.eclipse.equinox.target.categoryIU        | Equinox Target Components                    |
-| org.eclipse.pde.api.tools.ee.categoryIU      | API Tools Execution Environment Descriptions |
-| org.eclipse.platform.ide.categoryIU          | Eclipse Platform                             |
-| org.eclipse.platform.sdk.categoryIU          | Eclipse Platform SDK                         |
-| org.eclipse.rcp.categoryIU                   | Eclipse RCP Target Components                |
-| org.eclipse.releng.categoryIU                | Releng Tools                                 |
-| org.eclipse.releng.cvs.categoryIU            | Eclipse CVS Client                           |
-| org.eclipse.releng.java.languages.categoryIU | Eclipse Java Development Tools               |
-| org.eclipse.releng.pde.categoryIU            | Eclipse Plugin Development Tools             |
-| org.eclipse.releng.testsIU                   | Eclipse Tests, Tools, Examples, and Extras   |
-| org.eclipse.sdk.ide.categoryIU               | Eclipse SDK                                  |
-+----------------------------------------------+----------------------------------------------+
-
-]
-
-
 dev.equo.solstice.p2.P2Test.query=[
 +---------------------------------------------------------------------------------+---------------+
 | maven coordinate / p2 id                                                        | repo          |
