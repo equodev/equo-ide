@@ -121,7 +121,7 @@ public class P2Query {
 	}
 
 	public List<P2Unit> getFeatures() {
-		return getUnitsWithProperty(P2Unit.P2_TYPE_CATEGORY, "true");
+		return getUnitsWithProperty(P2Unit.P2_TYPE_FEATURE, "true");
 	}
 
 	public List<P2Unit> getCategories() {
