@@ -87,7 +87,7 @@ public class GradleHarness {
 		var output = gradleRunner().withArguments(args).build().getOutput().replace("\r", "");
 		var matcher = within.matcher(output);
 		Assertions.assertThat(matcher.find()).isTrue();
-		expect.toMatchSnapshot(matcher.group(1));
+		expect.toMatchSnapshot(matcher.group(1).trim());
 	}
 
 	protected AbstractStringAssert<?> runFailAndAssert(String... args) throws IOException {
