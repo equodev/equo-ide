@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.TreeMap;
 import java.util.TreeSet;
 import javax.annotation.Nullable;
 
@@ -35,7 +36,7 @@ public class P2Query {
 
 	private TreeSet<String> exclude = new TreeSet<>();
 	private List<String> excludePrefix = new ArrayList<>();
-	private TreeSet<P2Unit> resolved = new TreeSet<>();
+	private TreeMap<String, P2Unit> resolved = new TreeMap<>();
 	private List<UnmetRequirement> unmetRequirements = new ArrayList<>();
 	private List<ResolvedWithFirst> resolvedWithFirst = new ArrayList<>();
 	private Map<String, String> filterProps = new HashMap<String, String>();
@@ -73,6 +74,19 @@ public class P2Query {
 		resolve(session.getUnitById(idToResolve));
 	}
 
+	/** Returns the unit, if any, which has been resolved at the given id. */
+	public P2Unit findResolvedUnitById(String id) {
+		return resolved.get(id);
+	}
+
+	/**
+	 * Returns every unit available in the parent session with the given id, possibly multiple
+	 * versions of the same id.
+	 */
+	public List<P2Unit> findAllAvailableUnitsById(String id) {
+		return session.findAllUnitsWithId(id);
+	}
+
 	private boolean addUnlessExcludedOrAlreadyPresent(P2Unit unit) {
 		for (var prefix : excludePrefix) {
 			if (unit.id.startsWith(prefix)) {
@@ -85,7 +99,7 @@ public class P2Query {
 		if (!filterProps.isEmpty() && unit.filter != null && !unit.filter.matches(filterProps)) {
 			return false;
 		}
-		return resolved.add(unit);
+		return resolved.putIfAbsent(unit.id, unit) == null;
 	}
 
 	private void resolve(P2Unit toResolve) {
@@ -109,7 +123,7 @@ public class P2Query {
 
 	public List<P2Unit> getJars() {
 		var jars = new ArrayList<P2Unit>();
-		for (var unit : resolved) {
+		for (var unit : resolved.values()) {
 			if (unit.id.endsWith("feature.jar")
 					|| "true".equals(unit.properties.get(P2Unit.P2_TYPE_FEATURE))
 					|| "true".equals(unit.properties.get(P2Unit.P2_TYPE_CATEGORY))) {
@@ -130,7 +144,7 @@ public class P2Query {
 
 	public List<P2Unit> getUnitsWithProperty(String key, String value) {
 		List<P2Unit> matches = new ArrayList<>();
-		for (var unit : resolved) {
+		for (var unit : resolved.values()) {
 			if (Objects.equals(value, unit.properties.get(key))) {
 				matches.add(unit);
 			}

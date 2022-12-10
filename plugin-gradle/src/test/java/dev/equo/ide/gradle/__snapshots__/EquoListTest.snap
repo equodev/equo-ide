@@ -105,14 +105,6 @@ dev.equo.ide.gradle.EquoListTest.allFeatures=[
 dev.equo.ide.gradle.EquoListTest.allJars=[
 id,name
 a.jre.javase,(null)
-a.jre.javase,(null)
-a.jre.javase,(null)
-a.jre.javase,(null)
-a.jre.javase,(null)
-a.jre.javase,(null)
-a.jre.javase,(null)
-a.jre.javase,(null)
-a.jre.javase,(null)
 assertj-core,AssertJ fluent assertions
 bcpg,bcpg
 bcpg.source,Source Bundle for bcpg:1.72.0
@@ -575,8 +567,6 @@ org.eclipse.help.webapp,Help System Webapp
 org.eclipse.help.webapp.source,Help System Webapp Source
 org.eclipse.jdt,Eclipse Java Development Tools
 org.eclipse.jdt.annotation,JDT Annotations for Enhanced Null Analysis
-org.eclipse.jdt.annotation,JDT Annotations for Enhanced Null Analysis
-org.eclipse.jdt.annotation.source,JDT Annotations for Enhanced Null Analysis Source
 org.eclipse.jdt.annotation.source,JDT Annotations for Enhanced Null Analysis Source
 org.eclipse.jdt.apt.core,Java Annotation Processing Core
 org.eclipse.jdt.apt.core.source,Java Annotation Processing Core Source
