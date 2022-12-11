@@ -18,7 +18,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Copyright (C) 2011 K Venkata Sudhakar <kvenkatasudhakar@gmail.com> Modified (C) 2014 and 2022 Ned
@@ -55,9 +54,9 @@ class Table {
 					row[c] = columns[c].getter.apply(o);
 				}
 			}
-			return getTable(rawColumns, rows);
+			return getTable(kind, rawColumns, rows);
 		} else if (kind == ConsoleTable.Format.ASCII) {
-			return getTable(objects, columns);
+			return getTable(objects, Arrays.asList(columns));
 		} else {
 			throw new IllegalArgumentException("Unknown kind " + kind);
 		}
@@ -92,10 +91,6 @@ class Table {
 		}
 	}
 
-	private static <T> String getTable(Collection<T> objects, TableColumn.Data<T>... columns) {
-		return getTable(objects, Arrays.asList(columns));
-	}
-
 	private static <T> String getTable(Collection<T> objects, List<TableColumn.Data<T>> columns) {
 		String[][] data = new String[objects.size()][];
 
@@ -110,11 +105,7 @@ class Table {
 			++i;
 		}
 
-		TableColumn[] rawColumns =
-				columns.stream()
-						.map(c -> c.column)
-						.collect(Collectors.toList())
-						.toArray(new TableColumn[columns.size()]);
+		TableColumn[] rawColumns = columns.stream().map(c -> c.column).toArray(TableColumn[]::new);
 		return getTable(rawColumns, data);
 	}
 
