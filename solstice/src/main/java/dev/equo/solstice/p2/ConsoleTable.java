@@ -40,15 +40,17 @@ public class ConsoleTable {
 
 	/** Returns a table with the id and name of all its units. */
 	public static String nameAndDescription(Collection<P2Unit> units, Format format) {
-		var id = new TableColumn("id").with(P2Unit::getId);
-		var name =
-				new TableColumn("name")
-						.<P2Unit>with(
-								u -> {
-									var n = u.properties.get(P2Unit.P2_NAME);
-									return n != null ? n : "(null)";
-								});
-		return Table.getTable(format, units, id, name);
+		var table = new WordWrapTable();
+		for (var unit : units) {
+			var n = unit.properties.get(P2Unit.P2_NAME);
+			var name = n != null ? n : "(no " + P2Unit.P2_NAME + ")";
+			table.add(unit.id, name);
+			var desc = unit.properties.get(P2Unit.P2_DESC);
+			if (desc != null) {
+				table.add("", desc);
+			}
+		}
+		return table.toString("id", "name \\n description", format);
 	}
 
 	public static String ambiguousRequirements(P2Query query, Format format) {
@@ -154,6 +156,7 @@ public class ConsoleTable {
 		}
 
 		private void add(String key, String value, int maxLen) {
+			value = value.replace("\n", " ").replace("\r", "");
 			if (value.length() <= maxLen) {
 				pairs.add(new Pair(key, value));
 			} else {
