@@ -108,7 +108,15 @@ public class P2Unit implements Comparable<P2Unit> {
 		for (int i = 0; i < providesNodes.getLength(); ++i) {
 			var node = providesNodes.item(i);
 			if ("required".equals(node.getNodeName())) {
-				var namespace = node.getAttributes().getNamedItem("namespace").getNodeValue();
+				var namespaceNode = node.getAttributes().getNamedItem("namespace");
+				if (namespaceNode == null) {
+					// the eclipse corrosion p2 repository has requirements without a namespace, e.g.
+					// <required match='providedCapabilities.exists(x | x.name == $0 &amp;&amp; x.namespace ==
+					// $1)' matchParameters='[&apos;a.jre.javase&apos;,
+					// &apos;org.eclipse.equinox.p2.iu&apos;]' min='0' max='0'>
+					continue;
+				}
+				var namespace = namespaceNode.getNodeValue();
 				if (EXCLUDED_REQUIRE_PROVIDE_NAMESPACES.contains(namespace)) {
 					continue;
 				}
