@@ -1,3 +1,7 @@
 plugins {
-	id 'dev.equo.ide' version '0.3.1'
+  id 'dev.equo.ide' version '0.4.0'
+}
+equoIde {
+  p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'
+  install 'org.eclipse.releng.java.languages.categoryIU'
 }
