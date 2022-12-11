@@ -51,6 +51,21 @@ public class ConsoleTable {
 		return Table.getTable(format, units, id, name);
 	}
 
+	public static String ambiguousResolutions(P2Query query, Format format) {
+		if (query.jarsWithAmbiguousVersions().isEmpty()) {
+			return "No ambiguous jars.";
+		}
+		var candidateJars = new ArrayList<P2Unit>();
+		for (var ambiguousJar : query.jarsWithAmbiguousVersions()) {
+			candidateJars.addAll(query.findAllAvailableUnitsById(ambiguousJar));
+		}
+		var id = new TableColumn("id of ambiguous jar").with(P2Unit::getId);
+		var version = new TableColumn("version").with((P2Unit u) -> u.getVersion().toString());
+		var isResolved =
+				new TableColumn("resolved").<P2Unit>with(u -> query.isResolved(u) ? "[x]" : "[ ]");
+		return Table.getTable(format, candidateJars, id, version, isResolved);
+	}
+
 	public static String detail(Collection<P2Unit> units, Format format) {
 		if (units.isEmpty()) {
 			return "(none)";
@@ -89,7 +104,7 @@ public class ConsoleTable {
 		return table.toString("key", "value", format);
 	}
 
-	private static class WordWrapTable {
+	static class WordWrapTable {
 		private static final int MAX_VALUE_LEN = 50;
 
 		final List<Pair> pairs = new ArrayList<Pair>();

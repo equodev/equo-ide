@@ -1204,6 +1204,7 @@ dev.equo.ide.gradle.EquoListTest.detail=[
 
 
 dev.equo.ide.gradle.EquoListTest.swtList=[
+No ambiguous jars.
 +-------------------------------------------------------------------+---------------+
 | maven coordinate / p2 id                                          | repo          |
 +-------------------------------------------------------------------+---------------+
@@ -1219,6 +1220,7 @@ dev.equo.ide.gradle.EquoListTest.swtList=[
 
 
 dev.equo.ide.gradle.EquoListTest.swtListCsv=[
+No ambiguous jars.
 maven coordinate / p2 id,repo
 org.eclipse.platform:org.eclipse.swt.cocoa.macosx.aarch64:3.122.0,mavenCentral?
 org.eclipse.platform:org.eclipse.swt.cocoa.macosx.x86_64:3.122.0,mavenCentral?

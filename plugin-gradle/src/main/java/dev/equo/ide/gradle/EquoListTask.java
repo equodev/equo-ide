@@ -125,6 +125,7 @@ public abstract class EquoListTask extends DefaultTask {
 	}
 
 	private static void mavenStatus(P2Query query, ConsoleTable.Format format) {
+		System.out.println(ConsoleTable.ambiguousResolutions(query, format));
 		System.out.println(ConsoleTable.mavenStatus(query.getJars(), format));
 	}
 }

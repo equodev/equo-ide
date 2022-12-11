@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
@@ -37,10 +38,12 @@ public class P2Query {
 
 	private TreeSet<String> exclude = new TreeSet<>();
 	private List<String> excludePrefix = new ArrayList<>();
-	private TreeMap<String, P2Unit> resolved = new TreeMap<>();
-	private List<UnmetRequirement> unmetRequirements = new ArrayList<>();
-	private List<ResolvedWithFirst> resolvedWithFirst = new ArrayList<>();
+
 	private Map<String, String> filterProps = new HashMap<String, String>();
+
+	private TreeMap<String, P2Unit> resolved = new TreeMap<>();
+	private TreeMap<P2Session.Providers, TreeSet<P2Unit>> unmetRequirements = new TreeMap<>();
+	private TreeSet<String> resolvedWithLatest = new TreeSet<>();
 
 	private void assertNotUsed() {
 		if (!resolved.isEmpty()) {
@@ -113,13 +116,18 @@ public class P2Query {
 			} else {
 				var units = requirement.get();
 				if (units.isEmpty()) {
-					unmetRequirements.add(new UnmetRequirement(toResolve, requirement));
+					addUnmetRequirement(requirement, toResolve);
 				} else {
 					resolve(units.get(0));
-					resolvedWithFirst.add(new ResolvedWithFirst(toResolve, requirement));
+					resolvedWithLatest.add(units.get(0).id);
 				}
 			}
 		}
+	}
+
+	private void addUnmetRequirement(P2Session.Providers providers, P2Unit needsIt) {
+		var whoNeedsIt = unmetRequirements.computeIfAbsent(providers, unused -> new TreeSet<>());
+		whoNeedsIt.add(needsIt);
 	}
 
 	public List<P2Unit> getJars() {
@@ -180,23 +188,20 @@ public class P2Query {
 		session.units.forEach(this::addUnlessExcludedOrAlreadyPresent);
 	}
 
-	static class UnmetRequirement {
-		final P2Unit target;
-		final P2Session.Providers unmet;
-
-		UnmetRequirement(P2Unit target, P2Session.Providers unmet) {
-			this.target = target;
-			this.unmet = unmet;
-		}
+	public Set<String> jarsWithAmbiguousVersions() {
+		return resolvedWithLatest;
 	}
 
-	static class ResolvedWithFirst {
-		final P2Unit target;
-		final P2Session.Providers withFirst;
+	public boolean isResolved(P2Unit unit) {
+		return resolved.get(unit.getId()) == unit;
+	}
 
-		ResolvedWithFirst(P2Unit target, P2Session.Providers withFirst) {
-			this.target = target;
-			this.withFirst = withFirst;
+	public void resolutionMessages() {
+		StringBuilder builder = new StringBuilder();
+		if (resolvedWithLatest.isEmpty()) {
+			builder.append("No ambiguous versions.");
+		} else {
+			builder.append("The following dependencies had ambiguous versions available:");
 		}
 	}
 }
