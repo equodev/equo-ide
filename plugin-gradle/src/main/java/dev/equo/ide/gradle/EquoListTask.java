@@ -43,6 +43,15 @@ public abstract class EquoListTask extends DefaultTask {
 		return EnumSet.allOf(ConsoleTable.Format.class);
 	}
 
+	private boolean installed = false;
+
+	@Option(
+			option = "installed",
+			description = "lists the jars which were installed and any problems with their requirements")
+	void setInstalled(boolean installed) {
+		this.installed = installed;
+	}
+
 	private All all;
 
 	public enum All {
@@ -84,8 +93,14 @@ public abstract class EquoListTask extends DefaultTask {
 
 	@TaskAction
 	public void list() throws Exception {
-		if (all != null && detail != null) {
-			throw new IllegalArgumentException("Only one of --all, --detail, or --raw may be set");
+		int numArgs = 0;
+		if (installed) ++numArgs;
+		if (all != null) ++numArgs;
+		if (detail != null) ++numArgs;
+		if (raw != null) ++numArgs;
+		if (numArgs != 1) {
+			throw new IllegalArgumentException(
+					"Exactly one of --installed, --all, --detail, or --raw must be set");
 		}
 		var extension = getExtension().get();
 		var query = extension.performQuery();
@@ -95,8 +110,10 @@ public abstract class EquoListTask extends DefaultTask {
 			detail(query, detail, format);
 		} else if (raw != null) {
 			raw(query, raw);
+		} else if (installed) {
+			installed(query, format);
 		} else {
-			mavenStatus(query, format);
+			throw new UnsupportedOperationException("Programming error");
 		}
 	}
 
@@ -145,7 +162,7 @@ public abstract class EquoListTask extends DefaultTask {
 		}
 	}
 
-	private static void mavenStatus(P2Query query, ConsoleTable.Format format) {
+	private static void installed(P2Query query, ConsoleTable.Format format) {
 		System.out.println(ConsoleTable.ambiguousRequirements(query, format));
 		System.out.println(ConsoleTable.unmetRequirements(query, format));
 		System.out.println(ConsoleTable.mavenStatus(query.getJars(), format));

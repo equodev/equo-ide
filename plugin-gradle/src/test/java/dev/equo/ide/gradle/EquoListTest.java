@@ -32,37 +32,22 @@ public class EquoListTest extends GradleHarness {
 						"    setPlatform(null)",
 						"  }",
 						"}");
-		run("equoList", "--stacktrace").snapshotBetween("Task :equoList", "BUILD SUCCESSFUL", expect);
+		run("equoList", "--installed").snapshotBetween("Task :equoList", "BUILD SUCCESSFUL", expect);
 	}
 
 	@Test
-	public void empty(Expect expect) throws IOException {
+	public void installedEmpty(Expect expect) throws IOException {
 		setFile("build.gradle")
 				.toLines(
 						"plugins { id 'dev.equo.ide' }",
 						"equoIde {",
 						"  p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'",
 						"}");
-		run("equoList", "--stacktrace").snapshotBetween("Task :equoList", "BUILD SUCCESSFUL", expect);
+		run("equoList", "--installed").snapshotBetween("Task :equoList", "BUILD SUCCESSFUL", expect);
 	}
 
 	@Test
-	public void swtList(Expect expect) throws IOException {
-		setFile("build.gradle")
-				.toLines(
-						"plugins { id 'dev.equo.ide' }",
-						"equoIde {",
-						"  p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'",
-						"  install 'org.eclipse.swt'",
-						"  filter {",
-						"    setPlatform(null)",
-						"  }",
-						"}");
-		run("equoList", "--stacktrace").snapshotBetween("Task :equoList", "BUILD SUCCESSFUL", expect);
-	}
-
-	@Test
-	public void swtListCsv(Expect expect) throws IOException {
+	public void installedSwt(Expect expect) throws IOException {
 		setFile("build.gradle")
 				.toLines(
 						"plugins { id 'dev.equo.ide' }",
@@ -73,7 +58,23 @@ public class EquoListTest extends GradleHarness {
 						"    setPlatform(null)",
 						"  }",
 						"}");
-		run("equoList", "--format=csv").snapshotBetween("Task :equoList", "BUILD SUCCESSFUL", expect);
+		run("equoList", "--installed").snapshotBetween("Task :equoList", "BUILD SUCCESSFUL", expect);
+	}
+
+	@Test
+	public void installedSwtCsv(Expect expect) throws IOException {
+		setFile("build.gradle")
+				.toLines(
+						"plugins { id 'dev.equo.ide' }",
+						"equoIde {",
+						"  p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'",
+						"  install 'org.eclipse.swt'",
+						"  filter {",
+						"    setPlatform(null)",
+						"  }",
+						"}");
+		run("equoList", "--installed", "--format=csv")
+				.snapshotBetween("Task :equoList", "BUILD SUCCESSFUL", expect);
 	}
 
 	@Test
