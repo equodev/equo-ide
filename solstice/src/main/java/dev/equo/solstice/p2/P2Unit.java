@@ -94,6 +94,9 @@ public class P2Unit implements Comparable<P2Unit> {
 			var node = providesNodes.item(i);
 			if ("provided".equals(node.getNodeName())) {
 				var namespace = node.getAttributes().getNamedItem("namespace").getNodeValue();
+				if (EXCLUDED_REQUIRE_PROVIDE_NAMESPACES.contains(namespace)) {
+					continue;
+				}
 				var name = node.getAttributes().getNamedItem("name").getNodeValue();
 				session.provides(namespace, name, this);
 			}
@@ -106,6 +109,9 @@ public class P2Unit implements Comparable<P2Unit> {
 			var node = providesNodes.item(i);
 			if ("required".equals(node.getNodeName())) {
 				var namespace = node.getAttributes().getNamedItem("namespace").getNodeValue();
+				if (EXCLUDED_REQUIRE_PROVIDE_NAMESPACES.contains(namespace)) {
+					continue;
+				}
 				var name = node.getAttributes().getNamedItem("name").getNodeValue();
 				requires.add(session.requires(namespace, name));
 			}
@@ -137,6 +143,9 @@ public class P2Unit implements Comparable<P2Unit> {
 					P2_DESC,
 					P2_TYPE_CATEGORY,
 					P2_TYPE_FEATURE);
+
+	private static List<String> EXCLUDED_REQUIRE_PROVIDE_NAMESPACES =
+			Arrays.asList("org.eclipse.equinox.p2.eclipse.type", "osgi.ee");
 
 	@Override
 	public int compareTo(P2Unit o) {
