@@ -60,15 +60,13 @@ public class P2Session {
 
 	/** Keeps track of every unit which provides the given capability. */
 	public static class Requirement implements Comparable<Requirement> {
+		final String namespace;
 		final String name;
 		private Object providers;
 
-		private Requirement(String name) {
+		private Requirement(String namespace, String name) {
+			this.namespace = namespace;
 			this.name = name;
-		}
-
-		public String name() {
-			return name;
 		}
 
 		private void add(P2Unit unit) {
@@ -84,7 +82,7 @@ public class P2Session {
 		}
 
 		public List<P2Unit> getProviders() {
-			return getProviders(providers);
+			return get(providers);
 		}
 
 		private void sortProviders() {
@@ -108,7 +106,7 @@ public class P2Session {
 			}
 		}
 
-		private static List<P2Unit> getProviders(Object existing) {
+		private static List<P2Unit> get(Object existing) {
 			if (existing == null) {
 				return Collections.emptyList();
 			} else if (existing instanceof P2Unit) {
@@ -120,12 +118,17 @@ public class P2Session {
 
 		@Override
 		public int compareTo(@NotNull Requirement o) {
-			return name.compareTo(o.name);
+			int byNamespace = namespace.compareTo(o.namespace);
+			if (byNamespace == 0) {
+				return name.compareTo(o.name);
+			} else {
+				return byNamespace;
+			}
 		}
 
 		@Override
 		public String toString() {
-			return name;
+			return namespace + ":" + name;
 		}
 	}
 
@@ -133,7 +136,7 @@ public class P2Session {
 
 	Requirement requires(String namespace, String name) {
 		var perName = requirements.computeIfAbsent(namespace, unused -> new HashMap<>());
-		return perName.computeIfAbsent(name, unused -> new Requirement(name));
+		return perName.computeIfAbsent(name, n -> new Requirement(namespace, n));
 	}
 
 	void provides(String namespace, String name, P2Unit unit) {

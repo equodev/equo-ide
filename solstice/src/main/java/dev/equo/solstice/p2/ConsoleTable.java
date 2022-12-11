@@ -60,7 +60,7 @@ public class ConsoleTable {
 			var candidates = requirement.getProviders();
 			for (int i = 0; i < candidates.size(); ++i) {
 				var candidate = candidates.get(i);
-				var firstCell = i == 0 ? requirement.name : "";
+				var firstCell = i == 0 ? requirement.toString() : "";
 				table.addRow(firstCell, candidate.toString(), query.isResolved(candidate) ? "[x]" : "[ ]");
 			}
 		}
