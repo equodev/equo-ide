@@ -13,12 +13,16 @@
  *******************************************************************************/
 package dev.equo.ide.gradle;
 
+import au.com.origin.snapshots.Expect;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.regex.Pattern;
+import org.assertj.core.api.AbstractStringAssert;
+import org.assertj.core.api.Assertions;
 import org.gradle.testkit.runner.GradleRunner;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.io.TempDir;
@@ -35,6 +39,7 @@ public class GradleHarness {
 	void copyPluginUnderTestMetadata() throws IOException {
 		var content = Files.readAllBytes(Paths.get(DepsResolve.METADATA_PATH));
 		setFile(DepsResolve.METADATA_PATH).toContent(content);
+		setFile("settings.gradle").toContent("rootProject.name = 'under-test'");
 	}
 
 	/** Returns the root folder (canonicalized to fix OS X issue) */
@@ -71,6 +76,40 @@ public class GradleHarness {
 		public File toLines(String... lines) throws IOException {
 			return toContent(String.join("\n", Arrays.asList(lines)));
 		}
+	}
+
+	protected AbstractStringAssert<?> runAndAssert(String... args) throws IOException {
+		var output = gradleRunner().withArguments(args).build().getOutput().replace("\r", "");
+		return Assertions.assertThat(output);
+	}
+
+	protected Output run(String... args) throws IOException {
+		return new Output(gradleRunner().withArguments(args).build().getOutput());
+	}
+
+	protected Output runAndFail(String... args) throws IOException {
+		return new Output(gradleRunner().withArguments(args).buildAndFail().getOutput());
+	}
+
+	public static class Output {
+		private final String output;
+
+		Output(String output) {
+			this.output = output.replace("\r", "");
+		}
+
+		public void snapshotBetween(String before, String after, Expect expect) {
+			var pattern =
+					Pattern.compile(Pattern.quote(before) + "(.*)" + Pattern.quote(after), Pattern.DOTALL);
+			var matcher = pattern.matcher(output);
+			matcher.find();
+			expect.toMatchSnapshot(matcher.group(1).trim());
+		}
+	}
+
+	protected AbstractStringAssert<?> runFailAndAssert(String... args) throws IOException {
+		var output = gradleRunner().withArguments(args).buildAndFail().getOutput().replace("\r", "");
+		return Assertions.assertThat(output);
 	}
 
 	protected GradleRunner gradleRunner() throws IOException {

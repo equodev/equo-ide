@@ -19,7 +19,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import org.eclipse.osgi.internal.framework.FilterImpl;
 import org.jetbrains.annotations.NotNull;
 import org.osgi.framework.InvalidSyntaxException;
@@ -35,23 +34,17 @@ public class P2Session {
 
 	private void sort() {
 		units.sort(Comparator.naturalOrder());
-		for (var submap : providerRegistry.values()) {
-			for (Providers value : submap.values()) {
-				value.sort();
+		for (var namespace : requirements.values()) {
+			for (Requirement requirement : namespace.values()) {
+				requirement.sortProviders();
 			}
 		}
 	}
 
-	public List<P2Unit> getUnitsWithProperty(String key, String value) {
-		List<P2Unit> matches = new ArrayList<>();
-		for (var unit : units) {
-			if (Objects.equals(value, unit.properties.get(key))) {
-				matches.add(unit);
-			}
-		}
-		return matches;
-	}
-
+	/**
+	 * Returns the unit with the given id. If there are multiple units with the same id, returns the
+	 * one with the greatest version number. If there are none, throws an exception.
+	 */
 	public P2Unit getUnitById(String id) {
 		for (var unit : units) {
 			if (id.equals(unit.id)) {
@@ -61,73 +54,40 @@ public class P2Session {
 		throw new IllegalArgumentException("No such unit id " + id);
 	}
 
-	public String listAllCategories() {
-		var builder = new StringBuilder();
-		var units = getUnitsWithProperty(P2Unit.P2_TYPE_CATEGORY, "true");
-		for (var unit : units) {
-			var name = unit.properties.get(P2Unit.P2_NAME);
-			var desc = unit.properties.get(P2Unit.P2_DESC);
-			builder.append(unit.id);
-			builder.append('\n');
-			builder.append("  ");
-			builder.append(name);
-			builder.append(": ");
-			builder.append(desc.replace("\n", "").replace("\r", ""));
-			builder.append('\n');
-		}
-		return builder.toString();
+	public P2Query query() {
+		return new P2Query(this);
 	}
 
-	public String listAllFeatures() {
-		var builder = new StringBuilder();
-		var units = getUnitsWithProperty(P2Unit.P2_TYPE_FEATURE, "true");
-		for (var unit : units) {
-			var name = unit.properties.get(P2Unit.P2_NAME);
-			var desc = unit.properties.get(P2Unit.P2_DESC);
-			if (name == null) {
-				name = "(None)";
-			}
-			if (desc == null) {
-				desc = "(None)";
-			}
-			builder.append(unit.id);
-			builder.append('\n');
-			builder.append("  ");
-			builder.append(name);
-			builder.append(": ");
-			builder.append(desc.replace("\n", "").replace("\r", ""));
-			builder.append('\n');
-		}
-		return builder.toString();
-	}
-
-	static class Providers implements Comparable<Providers> {
+	/** Keeps track of every unit which provides the given capability. */
+	public static class Requirement implements Comparable<Requirement> {
+		final String namespace;
 		final String name;
-		private Object field;
+		private Object providers;
 
-		private Providers(String name) {
+		private Requirement(String namespace, String name) {
+			this.namespace = namespace;
 			this.name = name;
 		}
 
 		private void add(P2Unit unit) {
-			field = add(field, unit);
+			providers = add(providers, unit);
 		}
 
-		public boolean hasOnlyOne() {
-			return field instanceof P2Unit;
+		public boolean hasOnlyOneProvider() {
+			return providers instanceof P2Unit;
 		}
 
-		public P2Unit getOnlyOne() {
-			return (P2Unit) field;
+		public P2Unit getOnlyProvider() {
+			return (P2Unit) providers;
 		}
 
-		public List<P2Unit> get() {
-			return get(field);
+		public List<P2Unit> getProviders() {
+			return get(providers);
 		}
 
-		private void sort() {
-			if (field instanceof ArrayList) {
-				((ArrayList<P2Unit>) field).sort(Comparator.reverseOrder());
+		private void sortProviders() {
+			if (providers instanceof ArrayList) {
+				((ArrayList<P2Unit>) providers).sort(Comparator.naturalOrder());
 			}
 		}
 
@@ -136,8 +96,8 @@ public class P2Session {
 			if (existing == null) {
 				return toAdd;
 			} else if (existing instanceof P2Unit) {
-				var list = new ArrayList<>();
-				list.add(existing);
+				var list = new ArrayList<P2Unit>();
+				list.add((P2Unit) existing);
 				list.add(toAdd);
 				return list;
 			} else {
@@ -157,21 +117,26 @@ public class P2Session {
 		}
 
 		@Override
-		public int compareTo(@NotNull Providers o) {
-			return name.compareTo(o.name);
+		public int compareTo(@NotNull Requirement o) {
+			int byNamespace = namespace.compareTo(o.namespace);
+			if (byNamespace == 0) {
+				return name.compareTo(o.name);
+			} else {
+				return byNamespace;
+			}
 		}
 
 		@Override
 		public String toString() {
-			return name;
+			return namespace + ":" + name;
 		}
 	}
 
-	private final Map<String, Map<String, Providers>> providerRegistry = new HashMap<>();
+	private final Map<String, Map<String, Requirement>> requirements = new HashMap<>();
 
-	Providers requires(String namespace, String name) {
-		var perName = providerRegistry.computeIfAbsent(namespace, unused -> new HashMap<>());
-		return perName.computeIfAbsent(name, unused -> new Providers(name));
+	Requirement requires(String namespace, String name) {
+		var perName = requirements.computeIfAbsent(namespace, unused -> new HashMap<>());
+		return perName.computeIfAbsent(name, n -> new Requirement(namespace, n));
 	}
 
 	void provides(String namespace, String name, P2Unit unit) {

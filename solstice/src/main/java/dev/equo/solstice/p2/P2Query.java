@@ -17,7 +17,12 @@ import com.diffplug.common.swt.os.SwtPlatform;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
 /**
@@ -25,65 +30,116 @@ import javax.annotation.Nullable;
  * can be resolved from maven or directly from p2 if necessary.
  */
 public class P2Query {
-	TreeSet<String> exclude = new TreeSet<>();
-	List<String> excludePrefix = new ArrayList<>();
-	List<String> excludeSuffix = new ArrayList<>();
-	TreeSet<P2Unit> resolved = new TreeSet<>();
-	List<UnmetRequirement> unmetRequirements = new ArrayList<>();
-	List<ResolvedWithFirst> resolvedWithFirst = new ArrayList<>();
-	@Nullable SwtPlatform platform;
+	private P2Session session;
+
+	P2Query(P2Session session) {
+		this.session = session;
+	}
+
+	private TreeSet<String> exclude = new TreeSet<>();
+	private List<String> excludePrefix = new ArrayList<>();
+
+	private Map<String, String> filterProps = new HashMap<String, String>();
+
+	private TreeMap<String, P2Unit> resolved = new TreeMap<>();
+	private TreeMap<P2Session.Requirement, Set<P2Unit>> unmetRequirements = new TreeMap<>();
+	private TreeSet<P2Session.Requirement> ambiguousRequirements = new TreeSet<>();
+
+	private void assertNotUsed() {
+		if (!resolved.isEmpty()) {
+			throw new IllegalStateException(
+					"You must not change any filter properties after you have already called `resolve` or `addAllUnits`.");
+		}
+	}
 
 	public void exclude(String toExclude) {
+		assertNotUsed();
 		exclude.add(toExclude);
 	}
 
 	public void excludePrefix(String prefix) {
+		assertNotUsed();
 		excludePrefix.add(prefix);
 	}
 
 	public void setPlatform(@Nullable SwtPlatform platform) {
-		this.platform = platform;
+		assertNotUsed();
+		if (platform == null) {
+			filterProps.clear();
+		} else {
+			filterProps.put("osgi.os", platform.getOs());
+			filterProps.put("osgi.ws", platform.getWs());
+			filterProps.put("osgi.arch", platform.getArch());
+		}
 	}
 
-	public void resolve(P2Unit toResolve) {
+	/** Resolves the given P2Unit by eagerly traversing all its dependencies. */
+	public void resolve(String idToResolve) {
+		resolve(session.getUnitById(idToResolve));
+	}
+
+	/** Returns the unit, if any, which has been resolved at the given id. */
+	public P2Unit findResolvedUnitById(String id) {
+		return resolved.get(id);
+	}
+
+	/**
+	 * Returns every unit available in the parent session with the given id, possibly multiple
+	 * versions of the same id.
+	 */
+	public List<P2Unit> findAllAvailableUnitsById(String id) {
+		return session.units.stream().filter(u -> u.id.equals(id)).collect(Collectors.toList());
+	}
+
+	private boolean addUnlessExcludedOrAlreadyPresent(P2Unit unit) {
 		for (var prefix : excludePrefix) {
-			if (toResolve.id.startsWith(prefix)) {
-				return;
+			if (unit.id.startsWith(prefix)) {
+				return false;
 			}
 		}
-		if (exclude.contains(toResolve.id) || !resolved.add(toResolve)) {
+		if (exclude.contains(unit.id)) {
+			return false;
+		}
+		if (!filterProps.isEmpty() && unit.filter != null && !unit.filter.matches(filterProps)) {
+			return false;
+		}
+		return resolved.putIfAbsent(unit.id, unit) == null;
+	}
+
+	private void resolve(P2Unit toResolve) {
+		if (!addUnlessExcludedOrAlreadyPresent(toResolve)) {
 			return;
 		}
 		for (var requirement : toResolve.requires) {
-			if (requirement.hasOnlyOne()) {
-				resolve(requirement.getOnlyOne());
+			if (requirement.hasOnlyOneProvider()) {
+				resolve(requirement.getOnlyProvider());
 			} else {
-				var units = requirement.get();
+				var units = requirement.getProviders();
 				if (units.isEmpty()) {
-					unmetRequirements.add(new UnmetRequirement(toResolve, requirement));
+					addUnmetRequirement(requirement, toResolve);
 				} else {
+					// special handling for noise like "java.package:java.lang" is provided by every JRE
+					if (units.stream().anyMatch(u -> u.id.equals("a.jre.javase"))) {
+						continue;
+					}
 					resolve(units.get(0));
-					resolvedWithFirst.add(new ResolvedWithFirst(toResolve, requirement));
+					ambiguousRequirements.add(requirement);
 				}
 			}
 		}
 	}
 
-	private Iterable<P2Unit> jars() {
-		var props = new HashMap<String, String>();
-		if (platform != null) {
-			props.put("osgi.os", platform.getOs());
-			props.put("osgi.ws", platform.getWs());
-			props.put("osgi.arch", platform.getArch());
-		}
+	private void addUnmetRequirement(P2Session.Requirement providers, P2Unit needsIt) {
+		var whoNeedsIt = unmetRequirements.computeIfAbsent(providers, unused -> new TreeSet<>());
+		whoNeedsIt.add(needsIt);
+	}
+
+	public List<P2Unit> getJars() {
 		var jars = new ArrayList<P2Unit>();
-		for (var unit : resolved) {
+		for (var unit : resolved.values()) {
 			if (unit.id.endsWith("feature.jar")
 					|| "true".equals(unit.properties.get(P2Unit.P2_TYPE_FEATURE))
 					|| "true".equals(unit.properties.get(P2Unit.P2_TYPE_CATEGORY))) {
-				continue;
-			}
-			if (platform != null && unit.filter != null && !unit.filter.matches(props)) {
 				continue;
 			}
 			jars.add(unit);
@@ -91,45 +147,80 @@ public class P2Query {
 		return jars;
 	}
 
-	public List<String> jarsOnMavenCentral() {
+	public List<P2Unit> getFeatures() {
+		return getUnitsWithProperty(P2Unit.P2_TYPE_FEATURE, "true");
+	}
+
+	public List<P2Unit> getCategories() {
+		return getUnitsWithProperty(P2Unit.P2_TYPE_CATEGORY, "true");
+	}
+
+	public List<P2Unit> getUnitsWithProperty(String key, String value) {
+		List<P2Unit> matches = new ArrayList<>();
+		for (var unit : resolved.values()) {
+			if (Objects.equals(value, unit.properties.get(key))) {
+				matches.add(unit);
+			}
+		}
+		return matches;
+	}
+
+	public List<String> getJarsOnMavenCentral() {
 		var mavenCoords = new ArrayList<String>();
-		for (var unit : jars()) {
-			var coord = unit.getMavenCentralCoord();
-			if (coord != null) {
-				mavenCoords.add(coord);
+		for (var unit : getJars()) {
+			var mavenState = MavenStatus.forUnit(unit);
+			if (mavenState.isOnMavenCentral()) {
+				mavenCoords.add(mavenState.coordinate());
 			}
 		}
 		return mavenCoords;
 	}
 
-	public List<P2Unit> jarsNotOnMavenCentral() {
+	public List<P2Unit> getjarsNotOnMavenCentral() {
 		var notOnMaven = new ArrayList<P2Unit>();
-		for (var unit : jars()) {
-			if (unit.getMavenCentralCoord() != null) {
-				continue;
+		for (var unit : getJars()) {
+			var mavenState = MavenStatus.forUnit(unit);
+			if (!mavenState.isOnMavenCentral()) {
+				notOnMaven.add(unit);
 			}
-			notOnMaven.add(unit);
 		}
 		return notOnMaven;
 	}
 
-	static class UnmetRequirement {
-		final P2Unit target;
-		final P2Session.Providers unmet;
-
-		UnmetRequirement(P2Unit target, P2Session.Providers unmet) {
-			this.target = target;
-			this.unmet = unmet;
-		}
+	/** Adds every unit in the session, subject to the query filters. */
+	public void addAllUnits() {
+		session.units.forEach(this::addUnlessExcludedOrAlreadyPresent);
 	}
 
-	static class ResolvedWithFirst {
-		final P2Unit target;
-		final P2Session.Providers withFirst;
+	/** Returns every requirement for which there were multiple providers and no clear winner. */
+	public Set<P2Session.Requirement> getAmbiguousRequirements() {
+		// iff all of the "ambiguous" elements ended up getting added, then it's not worth thinking
+		// about
+		var iter = ambiguousRequirements.iterator();
+		while (iter.hasNext()) {
+			var req = iter.next();
+			if (req.getProviders().stream().allMatch(this::isResolved)) {
+				iter.remove();
+			}
+		}
+		return ambiguousRequirements;
+	}
 
-		ResolvedWithFirst(P2Unit target, P2Session.Providers withFirst) {
-			this.target = target;
-			this.withFirst = withFirst;
+	/** Returns every unmet requirement mapped to the units which needed it. */
+	public Map<P2Session.Requirement, Set<P2Unit>> getUnmetRequirements() {
+		return unmetRequirements;
+	}
+
+	public boolean isResolved(P2Unit unit) {
+		return resolved.get(unit.getId()) == unit;
+	}
+
+	public void resolutionMessages() {
+		StringBuilder builder = new StringBuilder();
+		if (ambiguousRequirements.isEmpty()) {
+			builder.append("No ambiguous versions.");
+		} else {
+			builder.append("The following dependencies had ambiguous versions available:");
 		}
 	}
 }

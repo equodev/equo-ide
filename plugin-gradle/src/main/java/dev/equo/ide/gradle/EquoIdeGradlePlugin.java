@@ -15,10 +15,6 @@ package dev.equo.ide.gradle;
 
 import com.diffplug.common.swt.os.SwtPlatform;
 import dev.equo.solstice.p2.CacheLocations;
-import dev.equo.solstice.p2.JdtSetup;
-import dev.equo.solstice.p2.P2Client;
-import dev.equo.solstice.p2.P2Query;
-import dev.equo.solstice.p2.P2Session;
 import dev.equo.solstice.p2.WorkspaceRegistry;
 import java.io.File;
 import java.io.IOException;
@@ -35,6 +31,7 @@ import org.gradle.api.attributes.Bundling;
 public class EquoIdeGradlePlugin implements Plugin<Project> {
 	static final String MINIMUM_GRADLE = "6.0";
 
+	private static final String TASK_GROUP = "IDE";
 	private static final String EQUO_IDE = "equoIde";
 	private static final String $_OSGI_PLATFORM = "${osgi.platform}";
 
@@ -78,26 +75,17 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 
 		project.afterEvaluate(
 				unused -> {
-					var session = new P2Session();
-					try (var client = new P2Client()) {
-						session.populateFrom(client, JdtSetup.URL_BASE + extension.jdtVersion + "/");
+					try {
+						var query = extension.performQuery();
+						query
+								.getJarsOnMavenCentral()
+								.forEach(
+										coordinate -> {
+											project.getDependencies().add(EQUO_IDE, coordinate);
+										});
 					} catch (Exception e) {
 						throw new RuntimeException(e);
 					}
-
-					var query = new P2Query();
-					query.setPlatform(SwtPlatform.getRunning());
-					if (equoTestOnly) {
-						query.resolve(session.getUnitById("org.eclipse.swt"));
-					} else {
-						JdtSetup.mavenCoordinate(query, session);
-					}
-					query
-							.jarsOnMavenCentral()
-							.forEach(
-									coordinate -> {
-										project.getDependencies().add(EQUO_IDE, coordinate);
-									});
 				});
 		var workspaceDir = WorkspaceRegistry.instance().workspaceDir(project.getProjectDir());
 		project
@@ -106,13 +94,24 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 						EQUO_IDE,
 						EquoIdeTask.class,
 						task -> {
-							task.setGroup("IDE");
+							task.setGroup(TASK_GROUP);
 							task.setDescription("Launches EquoIDE");
 
 							task.getIsTestOnly().set(equoTestOnly);
 							task.getExtension().set(extension);
 							task.getClassPath().set(configuration);
 							task.getWorkspaceDir().set(workspaceDir);
+						});
+		project
+				.getTasks()
+				.register(
+						"equoList",
+						EquoListTask.class,
+						task -> {
+							task.setGroup(TASK_GROUP);
+							task.setDescription("Lists the p2 dependencies of EquoIDE");
+
+							task.getExtension().set(extension);
 						});
 	}
 

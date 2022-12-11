@@ -16,7 +16,6 @@ package dev.equo.solstice;
 import com.diffplug.common.swt.os.SwtPlatform;
 import dev.equo.solstice.p2.JdtSetup;
 import dev.equo.solstice.p2.P2Client;
-import dev.equo.solstice.p2.P2Query;
 import dev.equo.solstice.p2.P2Session;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -37,19 +36,19 @@ public class MavenJarsNeededForTest {
 			throw new RuntimeException(e);
 		}
 
-		var query = new P2Query();
+		var query = session.query();
 		// this could be SwtPlatfrom.getRunning(), but for CI it's important for the list to be
 		// cross-platform
 		query.setPlatform(SwtPlatform.parseWsOsArch("x.x.x"));
 		query.excludePrefix("org.apache.felix.gogo");
 		query.excludePrefix("org.eclipse.equinox.console");
 		query.excludePrefix("org.eclipse.equinox.p2");
-		query.resolve(session.getUnitById("org.eclipse.releng.java.languages.categoryIU"));
-		query.resolve(session.getUnitById("org.eclipse.platform.ide.categoryIU"));
-		query.resolve(session.getUnitById("org.eclipse.equinox.event"));
+		query.resolve("org.eclipse.releng.java.languages.categoryIU");
+		query.resolve("org.eclipse.platform.ide.categoryIU");
+		query.resolve("org.eclipse.equinox.event");
 
 		var content = new StringBuilder();
-		for (var coordinate : query.jarsOnMavenCentral()) {
+		for (var coordinate : query.getJarsOnMavenCentral()) {
 			content.append(coordinate);
 			content.append('\n');
 		}

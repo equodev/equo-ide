@@ -13,6 +13,7 @@ dependencies {
 	implementation 'com.diffplug.durian:durian-swt.os:4.1.1'
 	testImplementation "org.junit.jupiter:junit-jupiter:$VER_JUNIT"
 	testImplementation "org.assertj:assertj-core:$VER_ASSERTJ"
+	testImplementation "io.github.origin-energy:java-snapshot-testing-junit5:$VER_SNAPSHOT_TESTING"
 	testImplementation gradleTestKit()
 }
 apply from: 干.file('maven.gradle')
@@ -20,6 +21,9 @@ apply from: 干.file('sonatype.gradle')
 
 test {
 	useJUnitPlatform()
+	if (System.env['CI'] == null) {
+		systemProperty "updateSnapshot", ""
+	}
 }
 
 spotless {

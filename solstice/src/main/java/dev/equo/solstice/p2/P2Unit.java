@@ -13,24 +13,35 @@
  *******************************************************************************/
 package dev.equo.solstice.p2;
 
+import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import javax.annotation.Nullable;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import org.eclipse.osgi.internal.framework.FilterImpl;
+import org.osgi.framework.Version;
 import org.w3c.dom.Node;
 
 /** Usually represents a jar file in a p2 repository, but could also be a "feature" or "group". */
 public class P2Unit implements Comparable<P2Unit> {
-	final String id, version;
+	final Node rootNode;
+	final String id;
+	final Version version;
+	// TODO: version should be an OSGi version for proper sorting
 	FilterImpl filter;
 	final TreeMap<String, String> properties = new TreeMap<>();
-	final TreeSet<P2Session.Providers> requires = new TreeSet<>();
+	final TreeSet<P2Session.Requirement> requires = new TreeSet<>();
 
 	P2Unit(P2Session session, P2Client.Folder index, Node rootNode) {
+		this.rootNode = rootNode;
 		id = rootNode.getAttributes().getNamedItem("id").getNodeValue();
-		version = rootNode.getAttributes().getNamedItem("version").getNodeValue();
+		version = Version.parseVersion(rootNode.getAttributes().getNamedItem("version").getNodeValue());
 		var nodeList = rootNode.getChildNodes();
 		for (int i = 0; i < nodeList.getLength(); ++i) {
 			var node = nodeList.item(i);
@@ -44,20 +55,6 @@ public class P2Unit implements Comparable<P2Unit> {
 				parseRequires(session, node);
 			}
 		}
-	}
-
-	public @Nullable String getMavenCentralCoord() {
-		var repo = properties.get(MAVEN_REPOSITORY);
-		if (!MavenCentralMapping.MIRROR.equals(repo)) {
-			return MavenCentralMapping.getMavenCentralCoord(this);
-		}
-		var group = properties.get(P2Unit.MAVEN_GROUP_ID);
-		var artifact = properties.get(P2Unit.MAVEN_ARTIFACT_ID);
-		var version = properties.get(P2Unit.MAVEN_VERSION);
-		if (group == null || artifact == null || version == null) {
-			return null;
-		}
-		return group + ":" + artifact + ":" + version;
 	}
 
 	private void parseProperties(Node node) {
@@ -106,6 +103,9 @@ public class P2Unit implements Comparable<P2Unit> {
 			var node = providesNodes.item(i);
 			if ("provided".equals(node.getNodeName())) {
 				var namespace = node.getAttributes().getNamedItem("namespace").getNodeValue();
+				if (EXCLUDED_REQUIRE_PROVIDE_NAMESPACES.contains(namespace)) {
+					continue;
+				}
 				var name = node.getAttributes().getNamedItem("name").getNodeValue();
 				session.provides(namespace, name, this);
 			}
@@ -117,7 +117,18 @@ public class P2Unit implements Comparable<P2Unit> {
 		for (int i = 0; i < providesNodes.getLength(); ++i) {
 			var node = providesNodes.item(i);
 			if ("required".equals(node.getNodeName())) {
-				var namespace = node.getAttributes().getNamedItem("namespace").getNodeValue();
+				var namespaceNode = node.getAttributes().getNamedItem("namespace");
+				if (namespaceNode == null) {
+					// the eclipse corrosion p2 repository has requirements without a namespace, e.g.
+					// <required match='providedCapabilities.exists(x | x.name == $0 &amp;&amp; x.namespace ==
+					// $1)' matchParameters='[&apos;a.jre.javase&apos;,
+					// &apos;org.eclipse.equinox.p2.iu&apos;]' min='0' max='0'>
+					continue;
+				}
+				var namespace = namespaceNode.getNodeValue();
+				if (EXCLUDED_REQUIRE_PROVIDE_NAMESPACES.contains(namespace)) {
+					continue;
+				}
 				var name = node.getAttributes().getNamedItem("name").getNodeValue();
 				requires.add(session.requires(namespace, name));
 			}
@@ -126,30 +137,7 @@ public class P2Unit implements Comparable<P2Unit> {
 
 	@Override
 	public String toString() {
-		StringBuilder builder = new StringBuilder();
-		builder.append(id);
-		builder.append(" v=");
-		builder.append(version);
-		if (filter != null) {
-			builder.append(" filter=");
-			builder.append(filter);
-		}
-		builder.append('\n');
-		properties.forEach(
-				(key, value) -> {
-					builder.append("  prop ");
-					builder.append(key);
-					builder.append('=');
-					builder.append(value);
-					builder.append('\n');
-				});
-		for (var r : requires) {
-			builder.append("  req ");
-			builder.append(r.name);
-			builder.append('\n');
-		}
-		builder.setLength(builder.length() - 1);
-		return builder.toString();
+		return id + ":" + version;
 	}
 
 	public static final String MAVEN_GROUP_ID = "maven-groupId";
@@ -173,10 +161,13 @@ public class P2Unit implements Comparable<P2Unit> {
 					P2_TYPE_CATEGORY,
 					P2_TYPE_FEATURE);
 
+	private static List<String> EXCLUDED_REQUIRE_PROVIDE_NAMESPACES =
+			Arrays.asList("org.eclipse.equinox.p2.eclipse.type", "osgi.ee");
+
 	@Override
 	public int compareTo(P2Unit o) {
 		if (id.equals(o.id)) {
-			return version.compareTo(o.version);
+			return -version.compareTo(o.version);
 		} else {
 			return id.compareTo(o.id);
 		}
@@ -184,5 +175,33 @@ public class P2Unit implements Comparable<P2Unit> {
 
 	public String getId() {
 		return id;
+	}
+
+	public Version getVersion() {
+		return version;
+	}
+
+	public String rawXml() throws TransformerException {
+		TransformerFactory tf = TransformerFactory.newInstance();
+		Transformer transformer = tf.newTransformer();
+		transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+		transformer.setOutputProperty(OutputKeys.METHOD, "xml");
+		transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+		transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+		transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
+
+		var writer = new StringWriter();
+		transformer.transform(new DOMSource(rootNode), new StreamResult(writer));
+		var raw = writer.toString();
+		var unixEndings = raw.replace("\r", "");
+		var lines = unixEndings.split("\n");
+		var result = new StringBuilder(unixEndings.length());
+		for (var line : lines) {
+			if (!line.trim().isEmpty()) {
+				result.append(line);
+				result.append('\n');
+			}
+		}
+		return result.toString();
 	}
 }
