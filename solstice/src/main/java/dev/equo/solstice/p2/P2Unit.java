@@ -23,7 +23,8 @@ import org.w3c.dom.Node;
 
 /** Usually represents a jar file in a p2 repository, but could also be a "feature" or "group". */
 public class P2Unit implements Comparable<P2Unit> {
-	final String id, version;
+	final String id;
+	final Version version;
 	// TODO: version should be an OSGi version for proper sorting
 	FilterImpl filter;
 	final TreeMap<String, String> properties = new TreeMap<>();
@@ -31,7 +32,7 @@ public class P2Unit implements Comparable<P2Unit> {
 
 	P2Unit(P2Session session, P2Client.Folder index, Node rootNode) {
 		id = rootNode.getAttributes().getNamedItem("id").getNodeValue();
-		version = rootNode.getAttributes().getNamedItem("version").getNodeValue();
+		version = Version.parseVersion(rootNode.getAttributes().getNamedItem("version").getNodeValue());
 		var nodeList = rootNode.getChildNodes();
 		for (int i = 0; i < nodeList.getLength(); ++i) {
 			var node = nodeList.item(i);
@@ -163,7 +164,7 @@ public class P2Unit implements Comparable<P2Unit> {
 	@Override
 	public int compareTo(P2Unit o) {
 		if (id.equals(o.id)) {
-			return version.compareTo(o.version);
+			return -version.compareTo(o.version);
 		} else {
 			return id.compareTo(o.id);
 		}
@@ -174,6 +175,6 @@ public class P2Unit implements Comparable<P2Unit> {
 	}
 
 	public Version getVersion() {
-		return Version.parseVersion(version);
+		return version;
 	}
 }

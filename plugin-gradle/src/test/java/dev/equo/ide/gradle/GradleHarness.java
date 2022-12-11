@@ -114,7 +114,6 @@ public class GradleHarness {
 
 	protected GradleRunner gradleRunner() throws IOException {
 		return GradleRunner.create()
-				.forwardOutput()
 				.withGradleVersion(oldestGradleForJre())
 				.withProjectDir(rootFolder())
 				.withTestKitDir(rootFolder())

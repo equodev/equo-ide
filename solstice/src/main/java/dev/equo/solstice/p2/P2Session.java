@@ -84,7 +84,7 @@ public class P2Session {
 
 		private void sort() {
 			if (field instanceof ArrayList) {
-				((ArrayList<P2Unit>) field).sort(Comparator.reverseOrder());
+				((ArrayList<P2Unit>) field).sort(Comparator.naturalOrder());
 			}
 		}
 
@@ -93,8 +93,8 @@ public class P2Session {
 			if (existing == null) {
 				return toAdd;
 			} else if (existing instanceof P2Unit) {
-				var list = new ArrayList<>();
-				list.add(existing);
+				var list = new ArrayList<P2Unit>();
+				list.add((P2Unit) existing);
 				list.add(toAdd);
 				return list;
 			} else {

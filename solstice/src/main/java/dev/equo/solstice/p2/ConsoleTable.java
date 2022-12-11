@@ -52,10 +52,17 @@ public class ConsoleTable {
 	}
 
 	public static String detail(Collection<P2Unit> units, Format format) {
+		if (units.isEmpty()) {
+			return "(none)";
+		}
 		var table = new WordWrapTable();
+		var first = units.iterator().next();
 		for (var unit : units) {
+			if (unit != first) {
+				table.add("---", "---");
+			}
 			table.add("id", unit.id);
-			table.add("version", unit.version);
+			table.add("version", unit.version.toString());
 			var mavenStatus = MavenStatus.forUnit(unit);
 			if (mavenStatus != null) {
 				table.add("maven coordinate", mavenStatus.coordinate());
