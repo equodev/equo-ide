@@ -67,6 +67,21 @@ public class ConsoleTable {
 		return table.toString(format);
 	}
 
+	public static String unmetRequirements(P2Query query, Format format) {
+		if (query.getUnmetRequirements().isEmpty()) {
+			return "No unmet requirements.";
+		}
+		var table = new NColumnTable("unmet requirement", "needed by");
+		for (var unmet : query.getUnmetRequirements().entrySet()) {
+			var neededByFirst = unmet.getValue().iterator().next();
+			for (var neededBy : unmet.getValue()) {
+				var firstCell = neededBy == neededByFirst ? unmet.getKey().toString() : "";
+				table.addRow(firstCell, neededBy.toString());
+			}
+		}
+		return table.toString(format);
+	}
+
 	static class NColumnTable {
 		private final TableColumn[] headers;
 		private final List<String[]> rows = new ArrayList<>();

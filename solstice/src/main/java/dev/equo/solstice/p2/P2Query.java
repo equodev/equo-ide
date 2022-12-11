@@ -42,7 +42,7 @@ public class P2Query {
 	private Map<String, String> filterProps = new HashMap<String, String>();
 
 	private TreeMap<String, P2Unit> resolved = new TreeMap<>();
-	private TreeMap<P2Session.Requirement, TreeSet<P2Unit>> unmetRequirements = new TreeMap<>();
+	private TreeMap<P2Session.Requirement, Set<P2Unit>> unmetRequirements = new TreeMap<>();
 	private TreeSet<P2Session.Requirement> ambiguousRequirements = new TreeSet<>();
 
 	private void assertNotUsed() {
@@ -194,6 +194,10 @@ public class P2Query {
 
 	public Set<P2Session.Requirement> getAmbiguousRequirements() {
 		return ambiguousRequirements;
+	}
+
+	public Map<P2Session.Requirement, Set<P2Unit>> getUnmetRequirements() {
+		return unmetRequirements;
 	}
 
 	public boolean isResolved(P2Unit unit) {

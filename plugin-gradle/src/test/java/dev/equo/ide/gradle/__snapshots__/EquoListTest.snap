@@ -1246,6 +1246,62 @@ dev.equo.ide.gradle.EquoListTest.defaultP2=[
 |                                                             | org.eclipse.jdt.annotation:1.2.100.v20220826-1026         | [ ]      |
 +-------------------------------------------------------------+-----------------------------------------------------------+----------+
 
++-------------------------------------------------+-------------------------------------------------+
+| unmet requirement                               | needed by                                       |
++-------------------------------------------------+-------------------------------------------------+
+| java.package:COM.ibm.netrexx.process            | org.apache.ant:1.10.12.v20211102-1452           |
+| java.package:com.jcraft.jzlib                   | com.jcraft.jsch:0.1.55.v20221112-0806           |
+| java.package:com.sun.media.jai.codec            | org.apache.ant:1.10.12.v20211102-1452           |
+| java.package:com.sun.net.ssl.internal.ssl       | org.apache.ant:1.10.12.v20211102-1452           |
+| java.package:com.sun.tools.javah                | org.apache.ant:1.10.12.v20211102-1452           |
+| java.package:com.sun.tools.javah.oldjavah       | org.apache.ant:1.10.12.v20211102-1452           |
+| java.package:gnu.classpath                      | org.apache.ant:1.10.12.v20211102-1452           |
+| java.package:gnu.gcj                            | org.apache.ant:1.10.12.v20211102-1452           |
+| java.package:javax.activation                   | org.apache.ant:1.10.12.v20211102-1452           |
+| java.package:javax.mail                         | org.apache.ant:1.10.12.v20211102-1452           |
+| java.package:javax.mail.internet                | org.apache.ant:1.10.12.v20211102-1452           |
+| java.package:javax.media.jai                    | org.apache.ant:1.10.12.v20211102-1452           |
+| java.package:jdepend.framework                  | org.apache.ant:1.10.12.v20211102-1452           |
+| java.package:jdepend.textui                     | org.apache.ant:1.10.12.v20211102-1452           |
+| java.package:jdepend.xmlui                      | org.apache.ant:1.10.12.v20211102-1452           |
+| java.package:kaffe.util                         | org.apache.ant:1.10.12.v20211102-1452           |
+| java.package:kotlin                             | junit-jupiter-api:5.9.1                         |
+|                                                 | junit-jupiter-params:5.9.1                      |
+| java.package:kotlin.collections                 | junit-jupiter-api:5.9.1                         |
+| java.package:kotlin.jvm.functions               | junit-jupiter-api:5.9.1                         |
+| java.package:kotlin.jvm.internal                | junit-jupiter-api:5.9.1                         |
+|                                                 | junit-jupiter-params:5.9.1                      |
+| java.package:netrexx.lang                       | org.apache.ant:1.10.12.v20211102-1452           |
+| java.package:org.apache.avalon.framework.logger | org.apache.commons.logging:1.2.0.v20180409-1502 |
+| java.package:org.apache.bcel.classfile          | org.apache.ant:1.10.12.v20211102-1452           |
+| java.package:org.apache.bsf                     | org.apache.ant:1.10.12.v20211102-1452           |
+| java.package:org.apache.commons.net.bsd         | org.apache.ant:1.10.12.v20211102-1452           |
+| java.package:org.apache.commons.net.ftp         | org.apache.ant:1.10.12.v20211102-1452           |
+| java.package:org.apache.commons.net.telnet      | org.apache.ant:1.10.12.v20211102-1452           |
+| java.package:org.apache.env                     | org.apache.ant:1.10.12.v20211102-1452           |
+| java.package:org.apache.harmony.luni.util       | org.apache.ant:1.10.12.v20211102-1452           |
+| java.package:org.apache.log                     | org.apache.commons.logging:1.2.0.v20180409-1502 |
+| java.package:org.apache.log4j                   | org.apache.ant:1.10.12.v20211102-1452           |
+|                                                 | org.apache.commons.logging:1.2.0.v20180409-1502 |
+| java.package:org.apache.oro.text.regex          | org.apache.ant:1.10.12.v20211102-1452           |
+| java.package:org.apache.regexp                  | org.apache.ant:1.10.12.v20211102-1452           |
+| java.package:org.apache.xalan.trace             | org.apache.ant:1.10.12.v20211102-1452           |
+| java.package:org.apache.xalan.transformer       | org.apache.ant:1.10.12.v20211102-1452           |
+| java.package:org.apache.xml.resolver            | org.apache.ant:1.10.12.v20211102-1452           |
+| java.package:org.apache.xml.resolver.helpers    | org.apache.ant:1.10.12.v20211102-1452           |
+| java.package:org.apache.xml.resolver.tools      | org.apache.ant:1.10.12.v20211102-1452           |
+| java.package:org.eclipse.jetty.jmx              | org.eclipse.jetty.io:10.0.12                    |
+|                                                 | org.eclipse.jetty.server:10.0.12                |
+|                                                 | org.eclipse.jetty.servlet:10.0.12               |
+| java.package:org.eclipse.swt.accessibility2     | org.eclipse.swt:3.122.0.v20221123-2302          |
+| java.package:org.junit.Suite                    | org.apache.ant:1.10.12.v20211102-1452           |
+| java.package:sun.nio.ch                         | org.apache.commons.commons-io:2.11.0            |
+| java.package:sun.rmi.rmic                       | org.apache.ant:1.10.12.v20211102-1452           |
+| java.package:sun.tools.javac                    | org.apache.ant:1.10.12.v20211102-1452           |
+| java.package:sun.tools.native2ascii             | org.apache.ant:1.10.12.v20211102-1452           |
+| java.package:weblogic                           | org.apache.ant:1.10.12.v20211102-1452           |
++-------------------------------------------------+-------------------------------------------------+
+
 +--------------------------------------------------------------------------------------------+---------------+
 | maven coordinate / p2 id                                                                   | repo          |
 +--------------------------------------------------------------------------------------------+---------------+
@@ -1482,7 +1538,6 @@ dev.equo.ide.gradle.EquoListTest.defaultP2=[
 | org.eclipse.platform:org.eclipse.ui:3.201.200                                              | mavenCentral? |
 | org.eclipse.platform:org.eclipse.update.configurator:3.4.1000                              | mavenCentral? |
 | org.eclipse.platform:org.eclipse.urischeme:1.2.200                                         | mavenCentral? |
-| a.jre.javase:19.0.0                                                                        | p2            |
 | com.jcraft.jsch:0.1.55.v20221112-0806                                                      | p2            |
 | com.sun.el:2.2.0.v201303151357                                                             | p2            |
 | javax.annotation:1.3.5.v20221112-0806                                                      | p2            |
@@ -1564,6 +1619,12 @@ dev.equo.ide.gradle.EquoListTest.detail=[
 
 dev.equo.ide.gradle.EquoListTest.swtList=[
 No ambiguous requirements.
++---------------------------------------------+----------------------------------------+
+| unmet requirement                           | needed by                              |
++---------------------------------------------+----------------------------------------+
+| java.package:org.eclipse.swt.accessibility2 | org.eclipse.swt:3.122.0.v20221123-2302 |
++---------------------------------------------+----------------------------------------+
+
 +-------------------------------------------------------------------+---------------+
 | maven coordinate / p2 id                                          | repo          |
 +-------------------------------------------------------------------+---------------+
@@ -1580,6 +1641,9 @@ No ambiguous requirements.
 
 dev.equo.ide.gradle.EquoListTest.swtListCsv=[
 No ambiguous requirements.
+unmet requirement,needed by
+java.package:org.eclipse.swt.accessibility2,org.eclipse.swt:3.122.0.v20221123-2302
+
 maven coordinate / p2 id,repo
 org.eclipse.platform:org.eclipse.swt.cocoa.macosx.aarch64:3.122.0,mavenCentral?
 org.eclipse.platform:org.eclipse.swt.cocoa.macosx.x86_64:3.122.0,mavenCentral?
