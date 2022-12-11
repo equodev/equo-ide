@@ -118,6 +118,10 @@ public class P2Query {
 				if (units.isEmpty()) {
 					addUnmetRequirement(requirement, toResolve);
 				} else {
+					// special handling for noise like "java.package:java.lang" is provided by every JRE
+					if (units.stream().anyMatch(u -> u.id.equals("a.jre.javase"))) {
+						continue;
+					}
 					resolve(units.get(0));
 					ambiguousRequirements.add(requirement);
 				}
