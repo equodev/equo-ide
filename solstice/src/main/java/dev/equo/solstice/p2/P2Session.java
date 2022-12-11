@@ -34,9 +34,9 @@ public class P2Session {
 
 	private void sort() {
 		units.sort(Comparator.naturalOrder());
-		for (var submap : providerRegistry.values()) {
-			for (Providers value : submap.values()) {
-				value.sort();
+		for (var namespace : requirements.values()) {
+			for (Requirement requirement : namespace.values()) {
+				requirement.sortProviders();
 			}
 		}
 	}
@@ -58,33 +58,38 @@ public class P2Session {
 		return new P2Query(this);
 	}
 
-	static class Providers implements Comparable<Providers> {
+	/** Keeps track of every unit which provides the given capability. */
+	public static class Requirement implements Comparable<Requirement> {
 		final String name;
-		private Object field;
+		private Object providers;
 
-		private Providers(String name) {
+		private Requirement(String name) {
 			this.name = name;
 		}
 
+		public String name() {
+			return name;
+		}
+
 		private void add(P2Unit unit) {
-			field = add(field, unit);
+			providers = add(providers, unit);
 		}
 
-		public boolean hasOnlyOne() {
-			return field instanceof P2Unit;
+		public boolean hasOnlyOneProvider() {
+			return providers instanceof P2Unit;
 		}
 
-		public P2Unit getOnlyOne() {
-			return (P2Unit) field;
+		public P2Unit getOnlyProvider() {
+			return (P2Unit) providers;
 		}
 
-		public List<P2Unit> get() {
-			return get(field);
+		public List<P2Unit> getProviders() {
+			return getProviders(providers);
 		}
 
-		private void sort() {
-			if (field instanceof ArrayList) {
-				((ArrayList<P2Unit>) field).sort(Comparator.naturalOrder());
+		private void sortProviders() {
+			if (providers instanceof ArrayList) {
+				((ArrayList<P2Unit>) providers).sort(Comparator.naturalOrder());
 			}
 		}
 
@@ -103,7 +108,7 @@ public class P2Session {
 			}
 		}
 
-		private static List<P2Unit> get(Object existing) {
+		private static List<P2Unit> getProviders(Object existing) {
 			if (existing == null) {
 				return Collections.emptyList();
 			} else if (existing instanceof P2Unit) {
@@ -114,7 +119,7 @@ public class P2Session {
 		}
 
 		@Override
-		public int compareTo(@NotNull Providers o) {
+		public int compareTo(@NotNull Requirement o) {
 			return name.compareTo(o.name);
 		}
 
@@ -124,11 +129,11 @@ public class P2Session {
 		}
 	}
 
-	private final Map<String, Map<String, Providers>> providerRegistry = new HashMap<>();
+	private final Map<String, Map<String, Requirement>> requirements = new HashMap<>();
 
-	Providers requires(String namespace, String name) {
-		var perName = providerRegistry.computeIfAbsent(namespace, unused -> new HashMap<>());
-		return perName.computeIfAbsent(name, unused -> new Providers(name));
+	Requirement requires(String namespace, String name) {
+		var perName = requirements.computeIfAbsent(namespace, unused -> new HashMap<>());
+		return perName.computeIfAbsent(name, unused -> new Requirement(name));
 	}
 
 	void provides(String namespace, String name, P2Unit unit) {

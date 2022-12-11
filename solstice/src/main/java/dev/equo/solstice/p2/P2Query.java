@@ -42,8 +42,8 @@ public class P2Query {
 	private Map<String, String> filterProps = new HashMap<String, String>();
 
 	private TreeMap<String, P2Unit> resolved = new TreeMap<>();
-	private TreeMap<P2Session.Providers, TreeSet<P2Unit>> unmetRequirements = new TreeMap<>();
-	private TreeSet<String> resolvedWithLatest = new TreeSet<>();
+	private TreeMap<P2Session.Requirement, TreeSet<P2Unit>> unmetRequirements = new TreeMap<>();
+	private TreeSet<P2Session.Requirement> ambiguousRequirements = new TreeSet<>();
 
 	private void assertNotUsed() {
 		if (!resolved.isEmpty()) {
@@ -111,21 +111,21 @@ public class P2Query {
 			return;
 		}
 		for (var requirement : toResolve.requires) {
-			if (requirement.hasOnlyOne()) {
-				resolve(requirement.getOnlyOne());
+			if (requirement.hasOnlyOneProvider()) {
+				resolve(requirement.getOnlyProvider());
 			} else {
-				var units = requirement.get();
+				var units = requirement.getProviders();
 				if (units.isEmpty()) {
 					addUnmetRequirement(requirement, toResolve);
 				} else {
 					resolve(units.get(0));
-					resolvedWithLatest.add(units.get(0).id);
+					ambiguousRequirements.add(requirement);
 				}
 			}
 		}
 	}
 
-	private void addUnmetRequirement(P2Session.Providers providers, P2Unit needsIt) {
+	private void addUnmetRequirement(P2Session.Requirement providers, P2Unit needsIt) {
 		var whoNeedsIt = unmetRequirements.computeIfAbsent(providers, unused -> new TreeSet<>());
 		whoNeedsIt.add(needsIt);
 	}
@@ -188,8 +188,8 @@ public class P2Query {
 		session.units.forEach(this::addUnlessExcludedOrAlreadyPresent);
 	}
 
-	public Set<String> jarsWithAmbiguousVersions() {
-		return resolvedWithLatest;
+	public Set<P2Session.Requirement> getAmbiguousRequirements() {
+		return ambiguousRequirements;
 	}
 
 	public boolean isResolved(P2Unit unit) {
@@ -198,7 +198,7 @@ public class P2Query {
 
 	public void resolutionMessages() {
 		StringBuilder builder = new StringBuilder();
-		if (resolvedWithLatest.isEmpty()) {
+		if (ambiguousRequirements.isEmpty()) {
 			builder.append("No ambiguous versions.");
 		} else {
 			builder.append("The following dependencies had ambiguous versions available:");
