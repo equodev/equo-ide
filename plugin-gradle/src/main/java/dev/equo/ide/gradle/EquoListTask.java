@@ -47,11 +47,16 @@ public abstract class EquoListTask extends DefaultTask {
 
 	private boolean installed = false;
 
-	@Option(
-			option = "installed",
-			description = "Lists the jars which were installed and any problems with their requirements")
+	@Option(option = "installed", description = "Lists the jars which were installed")
 	void setInstalled(boolean installed) {
 		this.installed = installed;
+	}
+
+	private boolean problems = false;
+
+	@Option(option = "problems", description = "Lists any problems with the installed jars")
+	void setProblems(boolean problems) {
+		this.problems = problems;
 	}
 
 	private All all;
@@ -98,12 +103,13 @@ public abstract class EquoListTask extends DefaultTask {
 	public void list() throws Exception {
 		int numArgs = 0;
 		if (installed) ++numArgs;
+		if (problems) ++numArgs;
 		if (all != null) ++numArgs;
 		if (detail != null) ++numArgs;
 		if (raw != null) ++numArgs;
 		if (numArgs != 1) {
 			throw new IllegalArgumentException(
-					"Exactly one of --installed, --all, --detail, or --raw must be set");
+					"Exactly one of --installed, --problems, --all, --detail, or --raw must be set");
 		}
 		var extension = getExtension().get();
 		var query = extension.performQuery();
@@ -115,6 +121,8 @@ public abstract class EquoListTask extends DefaultTask {
 			raw(query, raw);
 		} else if (installed) {
 			installed(query, format);
+		} else if (problems) {
+			problems(query, format);
 		} else {
 			throw new UnsupportedOperationException("Programming error");
 		}
@@ -166,8 +174,18 @@ public abstract class EquoListTask extends DefaultTask {
 	}
 
 	private static void installed(P2Query query, ConsoleTable.Format format) {
-		System.out.println(ConsoleTable.ambiguousRequirements(query, format));
-		System.out.println(ConsoleTable.unmetRequirements(query, format));
+		int numUnmet = query.getUnmetRequirements().size();
+		int numAmbiguous = query.getAmbiguousRequirements().size();
+		if (numUnmet > 0 || numAmbiguous > 0) {
+			System.out.println(
+					numUnmet + " unmet requirement(s), " + numAmbiguous + " ambigous requirement(s)");
+			System.out.println("for more info: gradlew equoList --problems");
+		}
 		System.out.println(ConsoleTable.mavenStatus(query.getJars(), format));
+	}
+
+	private static void problems(P2Query query, ConsoleTable.Format format) {
+		System.out.println(ConsoleTable.unmetRequirements(query, format));
+		System.out.println(ConsoleTable.ambiguousRequirements(query, format));
 	}
 }

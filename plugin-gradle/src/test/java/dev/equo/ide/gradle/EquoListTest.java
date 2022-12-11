@@ -38,7 +38,10 @@ public class EquoListTest extends GradleHarness {
 						"    setPlatform(null)",
 						"  }",
 						"}");
-		run("equoList", "--installed").snapshotBetween("Task :equoList", "BUILD SUCCESSFUL", expect);
+		run("equoList", "--installed")
+				.snapshotBetween("Task :equoList", "BUILD SUCCESSFUL", expect.scenario("installed"));
+		run("equoList", "--problems")
+				.snapshotBetween("Task :equoList", "BUILD SUCCESSFUL", expect.scenario("problems"));
 	}
 
 	@Test
@@ -49,7 +52,10 @@ public class EquoListTest extends GradleHarness {
 						"equoIde {",
 						"  p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'",
 						"}");
-		run("equoList", "--installed").snapshotBetween("Task :equoList", "BUILD SUCCESSFUL", expect);
+		run("equoList", "--installed")
+				.snapshotBetween("Task :equoList", "BUILD SUCCESSFUL", expect.scenario("installed"));
+		run("equoList", "--problems")
+				.snapshotBetween("Task :equoList", "BUILD SUCCESSFUL", expect.scenario("problems"));
 	}
 
 	@Test
@@ -64,7 +70,10 @@ public class EquoListTest extends GradleHarness {
 						"    setPlatform(null)",
 						"  }",
 						"}");
-		run("equoList", "--installed").snapshotBetween("Task :equoList", "BUILD SUCCESSFUL", expect);
+		run("equoList", "--installed")
+				.snapshotBetween("Task :equoList", "BUILD SUCCESSFUL", expect.scenario("installed"));
+		run("equoList", "--problems")
+				.snapshotBetween("Task :equoList", "BUILD SUCCESSFUL", expect.scenario("problems"));
 	}
 
 	@Test
@@ -80,7 +89,9 @@ public class EquoListTest extends GradleHarness {
 						"  }",
 						"}");
 		run("equoList", "--installed", "--format=csv")
-				.snapshotBetween("Task :equoList", "BUILD SUCCESSFUL", expect);
+				.snapshotBetween("Task :equoList", "BUILD SUCCESSFUL", expect.scenario("installed"));
+		run("equoList", "--problems", "--format=csv")
+				.snapshotBetween("Task :equoList", "BUILD SUCCESSFUL", expect.scenario("problems"));
 	}
 
 	@Test

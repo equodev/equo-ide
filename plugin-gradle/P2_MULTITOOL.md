@@ -71,6 +71,8 @@ In addition to `--all=categories`, you can also pass `--all=features` or `--all=
 
 - A category is the largest p2 concept, representing an entire "product"
 - A feature is a collection of jars and other features, representing a single "feature"
+  - could be a high level feature like `org.eclipse.jdt` (Eclipse Java Development Tools)
+  - or a fine-grained feature like `org.eclipse.jdt.ui.unittest.junit` (JUnit Test runner client for UnitTest View)
 - A jar is a literal jar. Ultimately, our objective is to get the right jars.
 
 If you run `./gradlew --all=jars` you'll get a *lot* of results. To make things easier, you can filter out results you don't care about.
@@ -90,7 +92,7 @@ equoIde {
 
 The filters will apply to every command of the `equoList` debugging tool and also to the `equoIde` launch command.
 
-### equoList --installed
+### `equoList --installed`
 
 Ultimately, the point of `equoList` is to make sure we've got all of the jars we need for `equoIde` to run. That is a function of:
 
