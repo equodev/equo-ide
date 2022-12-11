@@ -36,6 +36,17 @@ public class EquoListTest extends GradleHarness {
 	}
 
 	@Test
+	public void empty(Expect expect) throws IOException {
+		setFile("build.gradle")
+				.toLines(
+						"plugins { id 'dev.equo.ide' }",
+						"equoIde {",
+						"  p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'",
+						"}");
+		run("equoList", "--stacktrace").snapshotBetween("Task :equoList", "BUILD SUCCESSFUL", expect);
+	}
+
+	@Test
 	public void swtList(Expect expect) throws IOException {
 		setFile("build.gradle")
 				.toLines(
