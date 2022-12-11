@@ -14,6 +14,7 @@
 package dev.equo.ide.gradle;
 
 import dev.equo.solstice.p2.ConsoleTable;
+import dev.equo.solstice.p2.P2Query;
 import dev.equo.solstice.p2.P2Unit;
 import java.util.Collection;
 import java.util.EnumSet;
@@ -77,58 +78,53 @@ public abstract class EquoListTask extends DefaultTask {
 		var extension = getExtension().get();
 		var query = extension.performQuery();
 		if (all != null) {
-			query.addAllUnits();
-			List<P2Unit> unitsToList;
-			switch (all) {
-				case CATEGORIES:
-					unitsToList = query.getCategories();
-					break;
-				case FEATURES:
-					unitsToList = query.getFeatures();
-					break;
-				case JARS:
-					unitsToList = query.getJars();
-					break;
-				default:
-					throw new IllegalArgumentException("Unknown " + all);
-			}
-			System.out.println(ConsoleTable.nameAndDescription(unitsToList, format));
+			all(query, all, format);
 		} else if (detail != null) {
-			var resolved = query.findResolvedUnitById(detail);
-			var allAvailable = query.findAllAvailableUnitsById(detail);
-			if (allAvailable.size() == 1) {
-				System.out.print("1 unit available with id " + detail);
-				if (resolved != null) {
-					System.out.println(" : [[" + resolved.getVersion() + " included by install]]");
-				} else {
-					System.out.println(" : " + allAvailable.get(0).getVersion() + " not included by install");
-				}
-			} else {
-				System.out.print(allAvailable.size() + " units available with id " + detail);
-				for (var v : allAvailable) {
-					if (v == allAvailable.get(0)) {
-						System.out.print(" : ");
-					}
-
-					if (v == resolved) {
-						System.out.print("[[");
-					}
-					System.out.print(v.getVersion());
-					if (v == resolved) {
-						System.out.print("]] ");
-					} else {
-						System.out.print(" ");
-					}
-				}
-				if (resolved != null) {
-					System.out.println("[[included by install]]");
-				} else {
-					System.out.println("none included by install");
-				}
-			}
-			System.out.println(ConsoleTable.detail(allAvailable, format));
+			detail(query, detail, format);
 		} else {
-			System.out.println(ConsoleTable.mavenStatus(query.getJars(), format));
+			mavenStatus(query, format);
 		}
+	}
+
+	private static void all(P2Query query, All all, ConsoleTable.Format format) {
+		query.addAllUnits();
+		List<P2Unit> unitsToList;
+		switch (all) {
+			case CATEGORIES:
+				unitsToList = query.getCategories();
+				break;
+			case FEATURES:
+				unitsToList = query.getFeatures();
+				break;
+			case JARS:
+				unitsToList = query.getJars();
+				break;
+			default:
+				throw new IllegalArgumentException("Unknown " + all);
+		}
+		System.out.println(ConsoleTable.nameAndDescription(unitsToList, format));
+	}
+
+	private static void detail(P2Query query, String detail, ConsoleTable.Format format) {
+		var resolved = query.findResolvedUnitById(detail);
+		var allAvailable = query.findAllAvailableUnitsById(detail);
+		if (allAvailable.size() == 1) {
+			System.out.println("1 unit available with id " + detail);
+		} else {
+			System.out.println(allAvailable.size() + " units available with id " + detail);
+		}
+		for (var v : allAvailable) {
+			System.out.print("  " + v.getVersion());
+			if (v == resolved) {
+				System.out.println("  [x] included by install");
+			} else {
+				System.out.println("  [ ] not included by install");
+			}
+		}
+		System.out.println(ConsoleTable.detail(allAvailable, format));
+	}
+
+	private static void mavenStatus(P2Query query, ConsoleTable.Format format) {
+		System.out.println(ConsoleTable.mavenStatus(query.getJars(), format));
 	}
 }
