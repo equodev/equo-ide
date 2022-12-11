@@ -44,16 +44,37 @@ class Table {
 	public static <T> String getTable(
 			ConsoleTable.Format kind, Collection<T> objects, TableColumn.Data<T>... columns) {
 		if (kind == ConsoleTable.Format.CSV) {
+			var rawColumns = Arrays.stream(columns).map(c -> c.column).toArray(TableColumn[]::new);
+			var iter = objects.iterator();
+			var rows = new String[objects.size()][];
+			for (int r = 0; r < rows.length; ++r) {
+				var row = new String[columns.length];
+				rows[r] = row;
+				var o = iter.next();
+				for (int c = 0; c < row.length; ++c) {
+					row[c] = columns[c].getter.apply(o);
+				}
+			}
+			return getTable(rawColumns, rows);
+		} else if (kind == ConsoleTable.Format.ASCII) {
+			return getTable(objects, columns);
+		} else {
+			throw new IllegalArgumentException("Unknown kind " + kind);
+		}
+	}
+
+	public static String getTable(
+			ConsoleTable.Format format, TableColumn[] columns, String[][] data) {
+		if (format == ConsoleTable.Format.CSV) {
 			var builder = new StringBuilder();
 			for (var column : columns) {
-				builder.append(column.column.header);
+				builder.append(column.header);
 				builder.append(',');
 			}
 			builder.setCharAt(builder.length() - 1, '\n');
 
-			for (var o : objects) {
-				for (var column : columns) {
-					var cell = column.getter.apply(o);
+			for (var row : data) {
+				for (var cell : row) {
 					if (cell.indexOf(',') != -1 || cell.indexOf('"') != -1) {
 						cell = cell.replace("\"", "\"\"");
 						cell = "\"" + cell + "\"";
@@ -64,10 +85,10 @@ class Table {
 				builder.setCharAt(builder.length() - 1, '\n');
 			}
 			return builder.toString();
-		} else if (kind == ConsoleTable.Format.ASCII) {
-			return getTable(objects, columns);
+		} else if (format == ConsoleTable.Format.ASCII) {
+			return getTable(columns, data);
 		} else {
-			throw new IllegalArgumentException("Unknown kind " + kind);
+			throw new IllegalArgumentException("Unknown format " + format);
 		}
 	}
 
