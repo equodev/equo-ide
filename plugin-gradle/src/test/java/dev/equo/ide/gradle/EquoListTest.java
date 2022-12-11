@@ -22,6 +22,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 @ExtendWith({SnapshotExtension.class})
 public class EquoListTest extends GradleHarness {
 	@Test
+	public void defaultP2(Expect expect) throws IOException {
+		setFile("build.gradle").toContent("plugins { id 'dev.equo.ide' }");
+		run("equoList", "--stacktrace").snapshotBetween("Task :equoList", "BUILD SUCCESSFUL", expect);
+	}
+
+	@Test
 	public void swtList(Expect expect) throws IOException {
 		setFile("build.gradle")
 				.toLines(
@@ -33,7 +39,7 @@ public class EquoListTest extends GradleHarness {
 						"    setPlatform(null)",
 						"  }",
 						"}");
-		run("equoList").snapshotBetween("Task :equoList", "BUILD SUCCESSFUL", expect);
+		run("equoList", "--stacktrace").snapshotBetween("Task :equoList", "BUILD SUCCESSFUL", expect);
 	}
 
 	@Test
