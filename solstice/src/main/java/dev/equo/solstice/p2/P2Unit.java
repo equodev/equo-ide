@@ -28,7 +28,7 @@ public class P2Unit implements Comparable<P2Unit> {
 	// TODO: version should be an OSGi version for proper sorting
 	FilterImpl filter;
 	final TreeMap<String, String> properties = new TreeMap<>();
-	final TreeSet<P2Session.Providers> requires = new TreeSet<>();
+	final TreeSet<P2Session.Requirement> requires = new TreeSet<>();
 
 	P2Unit(P2Session session, P2Client.Folder index, Node rootNode) {
 		id = rootNode.getAttributes().getNamedItem("id").getNodeValue();
@@ -114,30 +114,7 @@ public class P2Unit implements Comparable<P2Unit> {
 
 	@Override
 	public String toString() {
-		StringBuilder builder = new StringBuilder();
-		builder.append(id);
-		builder.append(" v=");
-		builder.append(version);
-		if (filter != null) {
-			builder.append(" filter=");
-			builder.append(filter);
-		}
-		builder.append('\n');
-		properties.forEach(
-				(key, value) -> {
-					builder.append("  prop ");
-					builder.append(key);
-					builder.append('=');
-					builder.append(value);
-					builder.append('\n');
-				});
-		for (var r : requires) {
-			builder.append("  req ");
-			builder.append(r.name);
-			builder.append('\n');
-		}
-		builder.setLength(builder.length() - 1);
-		return builder.toString();
+		return id + ":" + version;
 	}
 
 	public static final String MAVEN_GROUP_ID = "maven-groupId";
