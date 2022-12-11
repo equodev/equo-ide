@@ -1532,19 +1532,6 @@ dev.equo.ide.gradle.EquoListTest.defaultP2=[
 +-------------------------------------------------------------+-----------------------------------------------------------+----------+
 | ambiguous requirement                                       | candidate                                                 | resolved |
 +-------------------------------------------------------------+-----------------------------------------------------------+----------+
-| java.package:org.apache.batik.util                          | org.apache.batik.constants:1.16.0.v20221027-0840          | [x]      |
-|                                                             | org.apache.batik.util:1.16.0.v20221027-0840               | [x]      |
-| java.package:org.apache.commons.io                          | org.apache.commons.commons-io:2.11.0                      | [x]      |
-|                                                             | org.apache.commons.commons-io:2.11.0                      | [x]      |
-| java.package:org.apache.commons.io.output                   | org.apache.commons.commons-io:2.11.0                      | [x]      |
-|                                                             | org.apache.commons.commons-io:2.11.0                      | [x]      |
-| java.package:org.eclipse.core.internal.runtime              | org.eclipse.core.runtime:3.26.100.v20221021-0005          | [x]      |
-|                                                             | org.eclipse.equinox.common:3.17.0.v20221108-1156          | [x]      |
-| java.package:org.eclipse.core.runtime                       | org.eclipse.core.runtime:3.26.100.v20221021-0005          | [x]      |
-|                                                             | org.eclipse.equinox.common:3.17.0.v20221108-1156          | [x]      |
-|                                                             | org.eclipse.equinox.registry:3.11.200.v20220817-1601      | [x]      |
-| java.package:org.eclipse.equinox.log                        | org.eclipse.equinox.supplement:1.10.600.v20220726-1348    | [x]      |
-|                                                             | org.eclipse.osgi:3.18.200.v20221116-1324                  | [x]      |
 | java.package:org.eclipse.jdt.core.compiler                  | org.eclipse.jdt.core:3.32.0.v20221108-1853                | [x]      |
 |                                                             | org.eclipse.jdt.core.compiler.batch:3.32.0.v20221108-1853 | [ ]      |
 | java.package:org.eclipse.jdt.internal.compiler              | org.eclipse.jdt.core:3.32.0.v20221108-1853                | [x]      |
@@ -1565,34 +1552,8 @@ dev.equo.ide.gradle.EquoListTest.defaultP2=[
 |                                                             | org.eclipse.jdt.core.compiler.batch:3.32.0.v20221108-1853 | [ ]      |
 | java.package:org.eclipse.jdt.internal.compiler.tool         | org.eclipse.jdt.compiler.tool:1.3.200.v20220802-0458      | [x]      |
 |                                                             | org.eclipse.jdt.core.compiler.batch:3.32.0.v20221108-1853 | [ ]      |
-| java.package:org.eclipse.osgi.framework.console             | org.eclipse.equinox.supplement:1.10.600.v20220726-1348    | [x]      |
-|                                                             | org.eclipse.osgi:3.18.200.v20221116-1324                  | [x]      |
-| java.package:org.eclipse.osgi.framework.eventmgr            | org.eclipse.equinox.supplement:1.10.600.v20220726-1348    | [x]      |
-|                                                             | org.eclipse.osgi:3.18.200.v20221116-1324                  | [x]      |
-| java.package:org.eclipse.osgi.framework.log                 | org.eclipse.equinox.supplement:1.10.600.v20220726-1348    | [x]      |
-|                                                             | org.eclipse.osgi:3.18.200.v20221116-1324                  | [x]      |
-| java.package:org.eclipse.osgi.report.resolution             | org.eclipse.equinox.supplement:1.10.600.v20220726-1348    | [x]      |
-|                                                             | org.eclipse.osgi:3.18.200.v20221116-1324                  | [x]      |
-| java.package:org.eclipse.osgi.service.datalocation          | org.eclipse.equinox.supplement:1.10.600.v20220726-1348    | [x]      |
-|                                                             | org.eclipse.osgi:3.18.200.v20221116-1324                  | [x]      |
-| java.package:org.eclipse.osgi.service.debug                 | org.eclipse.equinox.supplement:1.10.600.v20220726-1348    | [x]      |
-|                                                             | org.eclipse.osgi:3.18.200.v20221116-1324                  | [x]      |
-| java.package:org.eclipse.osgi.service.environment           | org.eclipse.equinox.supplement:1.10.600.v20220726-1348    | [x]      |
-|                                                             | org.eclipse.osgi:3.18.200.v20221116-1324                  | [x]      |
-| java.package:org.eclipse.osgi.service.localization          | org.eclipse.equinox.supplement:1.10.600.v20220726-1348    | [x]      |
-|                                                             | org.eclipse.osgi:3.18.200.v20221116-1324                  | [x]      |
-| java.package:org.eclipse.osgi.service.runnable              | org.eclipse.equinox.supplement:1.10.600.v20220726-1348    | [x]      |
-|                                                             | org.eclipse.osgi:3.18.200.v20221116-1324                  | [x]      |
-| java.package:org.eclipse.osgi.service.urlconversion         | org.eclipse.equinox.supplement:1.10.600.v20220726-1348    | [x]      |
-|                                                             | org.eclipse.osgi:3.18.200.v20221116-1324                  | [x]      |
-| java.package:org.eclipse.osgi.storagemanager                | org.eclipse.equinox.supplement:1.10.600.v20220726-1348    | [x]      |
-|                                                             | org.eclipse.osgi:3.18.200.v20221116-1324                  | [x]      |
-| java.package:org.eclipse.osgi.util                          | org.eclipse.equinox.supplement:1.10.600.v20220726-1348    | [x]      |
-|                                                             | org.eclipse.osgi:3.18.200.v20221116-1324                  | [x]      |
 | java.package:org.osgi.service.component.annotations         | org.eclipse.osgi.services:3.11.100.v20221006-1531         | [x]      |
 |                                                             | org.osgi.service.component.annotations:1.5.0.202109301733 | [ ]      |
-| java.package:org.osgi.service.log                           | org.eclipse.osgi:3.18.200.v20221116-1324                  | [x]      |
-|                                                             | org.eclipse.osgi.services:3.11.100.v20221006-1531         | [x]      |
 | org.eclipse.equinox.p2.iu:org.eclipse.jdt.annotation        | org.eclipse.jdt.annotation:2.2.700.v20220826-1026         | [x]      |
 |                                                             | org.eclipse.jdt.annotation:1.2.100.v20220826-1026         | [ ]      |
 | org.eclipse.equinox.p2.iu:org.eclipse.jdt.annotation.source | org.eclipse.jdt.annotation.source:2.2.700.v20220826-1026  | [x]      |

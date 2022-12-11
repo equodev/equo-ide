@@ -192,10 +192,21 @@ public class P2Query {
 		session.units.forEach(this::addUnlessExcludedOrAlreadyPresent);
 	}
 
+	/** Returns every requirement for which there were multiple providers and no clear winner. */
 	public Set<P2Session.Requirement> getAmbiguousRequirements() {
+		// iff all of the "ambiguous" elements ended up getting added, then it's not worth thinking
+		// about
+		var iter = ambiguousRequirements.iterator();
+		while (iter.hasNext()) {
+			var req = iter.next();
+			if (req.getProviders().stream().allMatch(this::isResolved)) {
+				iter.remove();
+			}
+		}
 		return ambiguousRequirements;
 	}
 
+	/** Returns every unmet requirement mapped to the units which needed it. */
 	public Map<P2Session.Requirement, Set<P2Unit>> getUnmetRequirements() {
 		return unmetRequirements;
 	}
