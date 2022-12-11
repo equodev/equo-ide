@@ -1521,6 +1521,42 @@ dev.equo.ide.gradle.EquoListTest.detail=[
 ]
 
 
+dev.equo.ide.gradle.EquoListTest.help=[
+Detailed task information for equoList
+
+Path
+     :equoList
+
+Type
+     EquoListTask (dev.equo.ide.gradle.EquoListTask)
+
+Options
+     --all     Lists the id and name of all [categories|features|jars] which meet the filter criteria
+               Available values are:
+                    CATEGORIES
+                    FEATURES
+                    JARS
+
+     --detail     Lists properties and requirements for all available versions of the given unit id
+
+     --format     Determines output format (can be combined with all other commands)
+                  Available values are:
+                       ASCII
+                       CSV
+
+     --installed     Lists the jars which were installed and any problems with their requirements
+
+     --raw     Lists the raw xml for all available versions of the given unit id
+
+Description
+     Lists the p2 dependencies of an Eclipse application
+
+Group
+     IDE
+
+]
+
+
 dev.equo.ide.gradle.EquoListTest.installedEmpty=[
 No ambiguous requirements.
 No unmet requirements.

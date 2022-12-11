@@ -33,7 +33,9 @@ public abstract class EquoListTask extends DefaultTask {
 
 	private ConsoleTable.Format format = ConsoleTable.Format.ASCII;
 
-	@Option(option = "format", description = "Output format")
+	@Option(
+			option = "format",
+			description = "Determines output format (can be combined with all other commands)")
 	void setFormat(ConsoleTable.Format format) {
 		this.format = format;
 	}
@@ -47,7 +49,7 @@ public abstract class EquoListTask extends DefaultTask {
 
 	@Option(
 			option = "installed",
-			description = "lists the jars which were installed and any problems with their requirements")
+			description = "Lists the jars which were installed and any problems with their requirements")
 	void setInstalled(boolean installed) {
 		this.installed = installed;
 	}
@@ -63,7 +65,7 @@ public abstract class EquoListTask extends DefaultTask {
 	@Option(
 			option = "all",
 			description =
-					"lists the id and name of all [categories|features|jars] which meet the filter criteria")
+					"Lists the id and name of all [categories|features|jars] which meet the filter criteria")
 	void setAll(All all) {
 		this.all = all;
 	}
@@ -77,7 +79,8 @@ public abstract class EquoListTask extends DefaultTask {
 
 	@Option(
 			option = "detail",
-			description = "lists full detail for all available versions of the given unit id")
+			description =
+					"Lists properties and requirements for all available versions of the given unit id")
 	void setDetail(String detail) {
 		this.detail = detail;
 	}
@@ -86,7 +89,7 @@ public abstract class EquoListTask extends DefaultTask {
 
 	@Option(
 			option = "raw",
-			description = "lists raw xml for all available versions of the given unit id")
+			description = "Lists the raw xml for all available versions of the given unit id")
 	void setRaw(String raw) {
 		this.raw = raw;
 	}
