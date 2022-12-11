@@ -62,13 +62,21 @@ public abstract class EquoListTask extends DefaultTask {
 		return EnumSet.allOf(All.class);
 	}
 
+	private String detail;
+
+	@Option(option = "detail", description = "lists full detail for the given unit")
+	void setDetail(String detail) {
+		this.detail = detail;
+	}
+
 	@TaskAction
 	public void list() throws Exception {
+		if (all != null && detail != null) {
+			throw new IllegalArgumentException("Only one of --all and --detail may be set");
+		}
 		var extension = getExtension().get();
 		var query = extension.performQuery();
-		if (all == null) {
-			System.out.println(ConsoleTable.mavenStatus(query.getJars(), format));
-		} else {
+		if (all != null) {
 			query.addAllUnits();
 			List<P2Unit> unitsToList;
 			switch (all) {
@@ -85,6 +93,42 @@ public abstract class EquoListTask extends DefaultTask {
 					throw new IllegalArgumentException("Unknown " + all);
 			}
 			System.out.println(ConsoleTable.nameAndDescription(unitsToList, format));
+		} else if (detail != null) {
+			var resolved = query.findResolvedUnitById(detail);
+			var allAvailable = query.findAllAvailableUnitsById(detail);
+			if (allAvailable.size() == 1) {
+				System.out.print("1 unit available with id " + detail);
+				if (resolved != null) {
+					System.out.println(" : [[" + resolved.getVersion() + " included by install]]");
+				} else {
+					System.out.println(" : " + allAvailable.get(0).getVersion() + " not included by install");
+				}
+			} else {
+				System.out.print(allAvailable.size() + " units available with id " + detail);
+				for (var v : allAvailable) {
+					if (v == allAvailable.get(0)) {
+						System.out.print(" : ");
+					}
+
+					if (v == resolved) {
+						System.out.print("[[");
+					}
+					System.out.print(v.getVersion());
+					if (v == resolved) {
+						System.out.print("]] ");
+					} else {
+						System.out.print(" ");
+					}
+				}
+				if (resolved != null) {
+					System.out.println("[[included by install]]");
+				} else {
+					System.out.println("none included by install");
+				}
+			}
+			System.out.println(ConsoleTable.detail(allAvailable, format));
+		} else {
+			System.out.println(ConsoleTable.mavenStatus(query.getJars(), format));
 		}
 	}
 }
