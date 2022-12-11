@@ -29,9 +29,9 @@ To start, `cd` into the multitool directory where you'll see the `build.gradle` 
 - (On windows, replace `ls` with `dir` and replace `./gradlew` with `gradlew`)
 
 ```console
-p2-multitool % ls
+user@machine p2-multitool % ls
 build           build.gradle    gradle          gradlew         gradlew.bat     P2_MULTITOOL.md
-p2-multitool % ./gradlew equoList --all=categories
+user@machine p2-multitool % ./gradlew equoList --all=categories
 +----------------------------------------------+---------------------------------------------------+
 | id                                           | name \n description                               |
 +----------------------------------------------+---------------------------------------------------+
@@ -105,7 +105,7 @@ equoIde {
 ```
 
 ```console
-p2-multitool % ./gradlew equoList --installed
+user@machine p2-multitool % ./gradlew equoList --installed
 No ambiguous requirements.
 No unmet requirements.
 No jars were specified.
@@ -114,7 +114,7 @@ No jars were specified.
 We haven't specified anything that we want installed, so there are no jars. Looking back at the categories from the first command,
 
 ```console
-p2-multitool % ./gradlew equoList --all=categories
+user@machine p2-multitool % ./gradlew equoList --all=categories
 ...
 | org.eclipse.releng.java.languages.categoryIU | Eclipse Java Development Tools                    |
 |                                              |   Tools to allow development with Java.           |
@@ -131,7 +131,7 @@ equoIde {
 ```
 
 ```console
-p2-multitool % ./gradlew equoList --installed
+user@machine p2-multitool % ./gradlew equoList --installed
 +-------------------------------------------------------------+-----------------------------------------------------------+----------+
 | ambiguous requirement                                       | candidate                                                 | resolved |
 +-------------------------------------------------------------+-----------------------------------------------------------+----------+
