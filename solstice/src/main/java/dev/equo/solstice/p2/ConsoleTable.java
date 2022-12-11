@@ -51,19 +51,44 @@ public class ConsoleTable {
 		return Table.getTable(format, units, id, name);
 	}
 
-	public static String ambiguousResolutions(P2Query query, Format format) {
-		if (query.jarsWithAmbiguousVersions().isEmpty()) {
-			return "No ambiguous jars.";
+	public static String ambiguousRequirements(P2Query query, Format format) {
+		if (query.getAmbiguousRequirements().isEmpty()) {
+			return "No ambiguous requirements.";
 		}
-		var candidateJars = new ArrayList<P2Unit>();
-		for (var ambiguousJar : query.jarsWithAmbiguousVersions()) {
-			candidateJars.addAll(query.findAllAvailableUnitsById(ambiguousJar));
+		var table = new NColumnTable("ambiguous requirement", "candidate", "resolved");
+		for (var requirement : query.getAmbiguousRequirements()) {
+			var candidates = requirement.getProviders();
+			for (int i = 0; i < candidates.size(); ++i) {
+				var candidate = candidates.get(i);
+				var firstCell = i == 0 ? requirement.name : "";
+				table.addRow(firstCell, candidate.toString(), query.isResolved(candidate) ? "[x]" : "[ ]");
+			}
 		}
-		var id = new TableColumn("id of ambiguous jar").with(P2Unit::getId);
-		var version = new TableColumn("version").with((P2Unit u) -> u.getVersion().toString());
-		var isResolved =
-				new TableColumn("resolved").<P2Unit>with(u -> query.isResolved(u) ? "[x]" : "[ ]");
-		return Table.getTable(format, candidateJars, id, version, isResolved);
+		return table.toString(format);
+	}
+
+	static class NColumnTable {
+		private final TableColumn[] headers;
+		private final List<String[]> rows = new ArrayList<>();
+
+		public NColumnTable(String... headers) {
+			this.headers = new TableColumn[headers.length];
+			for (int i = 0; i < headers.length; ++i) {
+				this.headers[i] = new TableColumn(headers[i]);
+			}
+		}
+
+		public void addRow(String... data) {
+			if (data.length != headers.length) {
+				throw new IllegalArgumentException(
+						"Expected " + headers.length + " items but got " + data.length);
+			}
+			rows.add(data);
+		}
+
+		public String toString(Format format) {
+			return Table.getTable(format, headers, rows.toArray(new String[0][]));
+		}
 	}
 
 	public static String detail(Collection<P2Unit> units, Format format) {
@@ -90,10 +115,10 @@ public class ConsoleTable {
 				table.add("prop " + prop.getKey(), prop.getValue());
 			}
 			for (var req : unit.requires) {
-				if (req.hasOnlyOne()) {
-					table.add("req " + req.name, req.getOnlyOne().id);
+				if (req.hasOnlyOneProvider()) {
+					table.add("req " + req.name, req.getOnlyProvider().id);
 				} else {
-					var available = req.get();
+					var available = req.getProviders();
 					table.add("req " + req.name, available.size() + " available");
 					for (var a : available) {
 						table.add("", a.getId() + ":" + a.getVersion());
