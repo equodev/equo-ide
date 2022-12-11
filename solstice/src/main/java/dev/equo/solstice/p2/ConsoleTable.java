@@ -169,7 +169,7 @@ public class ConsoleTable {
 				int i = 0;
 				while (i + maxLen < value.length() && (i = value.lastIndexOf(' ', i + maxLen)) != -1) {
 					lines.add(value.substring(lineStart, i));
-					lineStart = i + 1;
+					lineStart = ++i;
 				}
 				lines.add(value.substring(lineStart));
 				pairs.add(new Pair(key, lines.get(0)));

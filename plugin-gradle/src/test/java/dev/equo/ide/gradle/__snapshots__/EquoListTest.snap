@@ -58,26 +58,22 @@ dev.equo.ide.gradle.EquoListTest.allFeatures=[
 |                                                                       |   This feature provides the ECF core               |
 |                                                                       |   (org.eclipse.ecf) and ECF identity               |
 |                                                                       |   (org.eclipse.ecf.identity) bundles.  These two   |
-|                                                                       |   bundles are required for all other parts of      |
-|                                                                       |   ECF.                                             |
+|                                                                       |   bundles are required for all other parts of ECF. |
 | org.eclipse.ecf.core.feature.source.feature.group                     | ECF Core Feature Developer Resources               |
 |                                                                       |   This feature provides the ECF core               |
 |                                                                       |   (org.eclipse.ecf) and ECF identity               |
 |                                                                       |   (org.eclipse.ecf.identity) bundles.  These two   |
-|                                                                       |   bundles are required for all other parts of      |
-|                                                                       |   ECF.                                             |
+|                                                                       |   bundles are required for all other parts of ECF. |
 | org.eclipse.ecf.core.ssl.feature.feature.group                        | ECF Core SSL Feature                               |
 |                                                                       |   This feature provides the ECF core SSL           |
 |                                                                       |   fragment.  On Equinox-based frameworks, this     |
-|                                                                       |   fragment exposes the Equinox TrustManager to     |
-|                                                                       |   ECF FileTransfer and other ECF-based             |
-|                                                                       |   communications.                                  |
+|                                                                       |   fragment exposes the Equinox TrustManager to ECF |
+|                                                                       |   FileTransfer and other ECF-based communications. |
 | org.eclipse.ecf.core.ssl.feature.source.feature.group                 | ECF Core SSL Feature Developer Resources           |
 |                                                                       |   This feature provides the ECF core SSL           |
 |                                                                       |   fragment.  On Equinox-based frameworks, this     |
-|                                                                       |   fragment exposes the Equinox TrustManager to     |
-|                                                                       |   ECF FileTransfer and other ECF-based             |
-|                                                                       |   communications.                                  |
+|                                                                       |   fragment exposes the Equinox TrustManager to ECF |
+|                                                                       |   FileTransfer and other ECF-based communications. |
 | org.eclipse.ecf.filetransfer.feature.feature.group                    | ECF Filetransfer Feature                           |
 |                                                                       |   This feature provides the ECF Filetransfer API   |
 |                                                                       |   bundle.  This API is used by the Eclipse         |
@@ -93,14 +89,14 @@ dev.equo.ide.gradle.EquoListTest.allFeatures=[
 | org.eclipse.ecf.filetransfer.httpclient5.feature.feature.group        | ECF Apache Httpclient 5 FileTransfer Provider      |
 |                                                                       |   This feature provides the Apache                 |
 |                                                                       |   HttpComponents/HttpClient 5 based FileTransfer   |
-|                                                                       |   provider used by the Eclipse platform to         |
-|                                                                       |   support P2 filetransfer.                         |
+|                                                                       |   provider used by the Eclipse platform to support |
+|                                                                       |   P2 filetransfer.                                 |
 | org.eclipse.ecf.filetransfer.httpclient5.feature.source.feature.group | ECF Apache Httpclient 5 FileTransfer Provider      |
 |                                                                       |   Developer Resources                              |
 |                                                                       |   This feature provides the Apache                 |
 |                                                                       |   HttpComponents/HttpClient 5 based FileTransfer   |
-|                                                                       |   provider used by the Eclipse platform to         |
-|                                                                       |   support P2 filetransfer.                         |
+|                                                                       |   provider used by the Eclipse platform to support |
+|                                                                       |   P2 filetransfer.                                 |
 | org.eclipse.ecf.filetransfer.ssl.feature.feature.group                | ECF Filetransfer SSL Feature                       |
 |                                                                       |   This feature provides the SSL support for the    |
 |                                                                       |   ECF FileTransfer API used by the Eclipse         |
@@ -196,8 +192,8 @@ dev.equo.ide.gradle.EquoListTest.allFeatures=[
 | org.eclipse.equinox.p2.sdk.feature.group                              | Equinox p2, SDK                                    |
 |                                                                       |   All of the bundles and source that comprise      |
 |                                                                       |   the Equinox p2 provisioning platform.  This      |
-|                                                                       |   feature includes the corresponding source and    |
-|                                                                       |   is intended to be added to target platforms at   |
+|                                                                       |   feature includes the corresponding source and is |
+|                                                                       |   intended to be added to target platforms at      |
 |                                                                       |   development time rather than deployed with       |
 |                                                                       |   end-user systems.                                |
 | org.eclipse.equinox.p2.user.ui.feature.group                          | Equinox p2, Provisioning for IDEs.                 |
@@ -212,10 +208,10 @@ dev.equo.ide.gradle.EquoListTest.allFeatures=[
 |                                                                       |   basic OSGi framework support, all implemented    |
 |                                                                       |   compendium services, the p2 provisioning         |
 |                                                                       |   platform and various server-side support         |
-|                                                                       |   bundles. This feature includes the               |
-|                                                                       |   corresponding source and is intended to be       |
-|                                                                       |   added to target platforms at development time    |
-|                                                                       |   rather than deployed with end-user systems.      |
+|                                                                       |   bundles. This feature includes the corresponding |
+|                                                                       |   source and is intended to be added to target     |
+|                                                                       |   platforms at development time rather than        |
+|                                                                       |   deployed with end-user systems.                  |
 | org.eclipse.equinox.server.core.feature.group                         | Core Server Feature                                |
 | org.eclipse.equinox.server.core.source.feature.group                  | Core Server Feature Developer Resources            |
 | org.eclipse.equinox.server.jetty.feature.group                        | Jetty Http Server Feature                          |
@@ -249,8 +245,8 @@ dev.equo.ide.gradle.EquoListTest.allFeatures=[
 | org.eclipse.pde.unittest.junit.source.feature.group                   | Eclipse PDE Plug-in Developer Unit Test support    |
 |                                                                       |   Resources                                        |
 |                                                                       |   Eclipse plug-in development environment Unit     |
-|                                                                       |   Test support, including documentation and        |
-|                                                                       |   source code zips.                                |
+|                                                                       |   Test support, including documentation and source |
+|                                                                       |   code zips.                                       |
 | org.eclipse.platform.feature.group                                    | Eclipse Platform                                   |
 |                                                                       |   Common OS-independent base of the Eclipse        |
 |                                                                       |   platform. (Binary runtime and user               |
@@ -306,42 +302,42 @@ dev.equo.ide.gradle.EquoListTest.allJars=[
 id,name \n description
 a.jre.javase,(no org.eclipse.equinox.p2.name)
 assertj-core,AssertJ fluent assertions
-,Rich and fluent assertions for testing for Java
+,  Rich and fluent assertions for testing for Java
 bcpg,bcpg
 bcpg.source,Source Bundle for bcpg:1.72.0
 bcprov,bcprov
 bcprov.source,Source Bundle for bcprov:1.72.0
 com.google.gson,Gson
-,Gson JSON library
+,  Gson JSON library
 com.google.gson.source,Source Bundle for com.google.gson:2.9.1
 com.ibm.icu,ICU4J
-,International Components for Unicode for Java
+,  International Components for Unicode for Java
 com.ibm.icu.source,Source Bundle for com.ibm.icu:72.1.0
 com.jcraft.jsch,JSch
 com.jcraft.jsch.source,JSch Source
-com.sun.el,Javax Expression Language Reference Implementation
-,Bundle
-,Javax El RI el-impl-2.2.4
+com.sun.el,Javax Expression Language Reference
+,  Implementation Bundle
+,  Javax El RI el-impl-2.2.4
 com.sun.el.source,Javax El Reference Implementation Source Bundle
 com.sun.jna,jna
-,JNA Library
+,  JNA Library
 com.sun.jna.platform,jna-platform
-,JNA Platform Library
+,  JNA Platform Library
 com.sun.jna.platform.source,Source Bundle for com.sun.jna.platform:5.12.1
 com.sun.jna.source,Source Bundle for com.sun.jna:5.12.1
 jakarta.servlet-api,Jakarta Servlet
-,Jakarta Servlet 4.0
+,  Jakarta Servlet 4.0
 jakarta.servlet-api.source,Source Bundle for jakarta.servlet-api:4.0.0
 javax.annotation,Jakarta Annotations API
-,Jakarta Annotations API
+,  Jakarta Annotations API
 javax.annotation.source,Jakarta Annotations API Source
 javax.el,Javax Expression Language Bundle
 javax.el.source,javax.el Source Bundle
 javax.inject,Jakarta Inject
 javax.inject.source,Jakarta Inject Source
 javax.servlet.jsp-api,JavaServer Pages(TM) API
-,Java.net - The Source for Java Technology
-,Collaboration
+,  Java.net - The Source for Java Technology
+,  Collaboration
 javax.servlet.jsp-api.source,Source Bundle for javax.servlet.jsp-api:2.3.3
 junit-jupiter-api,JUnit Jupiter API
 junit-jupiter-api.source,Source Bundle for junit-jupiter-api:5.9.1
@@ -349,7 +345,7 @@ junit-jupiter-engine,JUnit Jupiter Engine
 junit-jupiter-engine.source,Source Bundle for junit-jupiter-engine:5.9.1
 junit-jupiter-migrationsupport,JUnit Jupiter Migration Support
 junit-jupiter-migrationsupport.source,Source Bundle for
-,junit-jupiter-migrationsupport:5.9.1
+,  junit-jupiter-migrationsupport:5.9.1
 junit-jupiter-params,JUnit Jupiter Params
 junit-jupiter-params.source,Source Bundle for junit-jupiter-params:5.9.1
 junit-platform-commons,JUnit Platform Commons
@@ -364,20 +360,20 @@ junit-platform-suite-api,JUnit Platform Suite API
 junit-platform-suite-api.source,Source Bundle for junit-platform-suite-api:1.9.1
 junit-platform-suite-commons,JUnit Platform Suite Commons
 junit-platform-suite-commons.source,Source Bundle for
-,junit-platform-suite-commons:1.9.1
+,  junit-platform-suite-commons:1.9.1
 junit-platform-suite-engine,JUnit Platform Suite Engine
 junit-platform-suite-engine.source,Source Bundle for
-,junit-platform-suite-engine:1.9.1
+,  junit-platform-suite-engine:1.9.1
 junit-vintage-engine,JUnit Vintage Engine
 junit-vintage-engine.source,Source Bundle for junit-vintage-engine:5.9.1
 net.bytebuddy.byte-buddy,Byte Buddy (without dependencies)
-,Byte Buddy is a Java library for creating Java
-,classes at run time.        This artifact is a
-,build of Byte Buddy with all ASM dependencies
-,repackaged into its own name space.
+,  Byte Buddy is a Java library for creating Java
+,  classes at run time.        This artifact is a
+,  build of Byte Buddy with all ASM dependencies
+,  repackaged into its own name space.
 net.bytebuddy.byte-buddy-agent,Byte Buddy agent
-,The Byte Buddy agent offers convenience for
-,attaching an agent to the local or a remote VM.
+,  The Byte Buddy agent offers convenience for
+,  attaching an agent to the local or a remote VM.
 org.apache.ant,Apache Ant
 org.apache.ant.source,Apache Ant Source
 org.apache.batik.constants,Batik constants library
@@ -389,45 +385,45 @@ org.apache.batik.i18n.source,Batik i18n library Source
 org.apache.batik.util,Batik utility library
 org.apache.batik.util.source,Batik utility library Source
 org.apache.commons.codec,Apache Commons Codec
-,The Apache Commons Codec package contains simple
-,encoder and decoders for     various formats such
-,as Base64 and Hexadecimal.  In addition to these 
-,"   widely used encoders and decoders, the codec"
-,package also maintains a     collection of
-,phonetic encoding utilities.
+,  The Apache Commons Codec package contains
+,  simple encoder and decoders for     various
+,  formats such as Base64 and Hexadecimal.  In
+,  addition to these     widely used encoders and
+,"  decoders, the codec package also maintains a    "
+,  collection of phonetic encoding utilities.
 org.apache.commons.codec.source,Apache Commons Codec Source
 org.apache.commons.commons-fileupload,Apache Commons FileUpload
-,The Apache Commons FileUpload component provides a
-,simple yet flexible means of adding support for
-,multipart    file upload functionality to
-,servlets and web applications.
+,  The Apache Commons FileUpload component
+,  provides a simple yet flexible means of adding
+,  support for multipart    file upload
+,  functionality to servlets and web applications.
 org.apache.commons.commons-io,Apache Commons IO
-,The Apache Commons IO library contains utility
-,"classes, stream implementations, file"
-,"filters,file comparators, endian transformation"
-,"classes, and much more."
+,  The Apache Commons IO library contains utility
+,"  classes, stream implementations, file"
+,"  filters,file comparators, endian transformation"
+,"  classes, and much more."
 org.apache.commons.jxpath,Apache Commons JXPath
 org.apache.commons.jxpath.source,Apache Commons JXPath Source
 org.apache.commons.logging,Apache Commons Logging
-,Apache Commons Logging is a thin adapter allowing
-,"configurable bridging to other,    well known"
-,logging systems.
+,  Apache Commons Logging is a thin adapter
+,"  allowing configurable bridging to other,    well"
+,  known logging systems.
 org.apache.commons.logging.source,Apache Commons Logging Source
 org.apache.felix.gogo.command,Apache Felix Gogo Command
-,Provides basic shell commands for Gogo.
+,  Provides basic shell commands for Gogo.
 org.apache.felix.gogo.command.source,Source Bundle for
-,org.apache.felix.gogo.command:1.1.2
+,  org.apache.felix.gogo.command:1.1.2
 org.apache.felix.gogo.runtime,Apache Felix Gogo Runtime
-,Apache Felix Gogo Subproject
+,  Apache Felix Gogo Subproject
 org.apache.felix.gogo.runtime.source,Source Bundle for
-,org.apache.felix.gogo.runtime:1.1.6
+,  org.apache.felix.gogo.runtime:1.1.6
 org.apache.felix.gogo.shell,Apache Felix Gogo Shell
-,Apache Felix Gogo Subproject
+,  Apache Felix Gogo Subproject
 org.apache.felix.gogo.shell.source,Source Bundle for
-,org.apache.felix.gogo.shell:1.1.4
+,  org.apache.felix.gogo.shell:1.1.4
 org.apache.felix.scr,Apache Felix Declarative Services
-,Implementation of the Declarative Services
-,specification 1.5
+,  Implementation of the Declarative Services
+,  specification 1.5
 org.apache.felix.scr.source,Source Bundle for org.apache.felix.scr:2.2.4
 org.apache.httpcomponents.client5.httpclient5,Apache HttpClient
 org.apache.httpcomponents.client5.httpclient5-win,Apache HttpClient5 Win32 Support
@@ -438,10 +434,10 @@ org.apache.httpcomponents.core5.httpcore5-h2,Apache HttpComponents Core HTTP/2
 org.apache.httpcomponents.core5.httpcore5-h2.source,Apache HttpComponents Core HTTP/2 Source
 org.apache.httpcomponents.core5.httpcore5.source,Apache HttpComponents Core5 HTTP/1.1 Source
 org.apache.jasper.glassfish,JSP 2.2 implementation from Glassfish
-,JSP 2.2 reference implementation from Glassfish
+,  JSP 2.2 reference implementation from Glassfish
 org.apache.jasper.glassfish.source,JSP 2.2 implementation from Glassfish Sources
-,JSP 2.2 reference implementation from Glassfish -
-,Source Bundle
+,  JSP 2.2 reference implementation from
+,  Glassfish - Source Bundle
 org.apache.lucene.analyzers-common,Lucene Common Analyzers
 org.apache.lucene.analyzers-common.source,Lucene Common Analyzers Source
 org.apache.lucene.analyzers-smartcn,Lucene Smart Chinese Analyzer
@@ -449,31 +445,31 @@ org.apache.lucene.analyzers-smartcn.source,Lucene Smart Chinese Analyzer Source
 org.apache.lucene.core,Lucene Core
 org.apache.lucene.core.source,Lucene Core Source
 org.apache.sshd.osgi,Apache Mina SSHD :: OSGi
-,The Apache Software Foundation provides support
-,for the Apache community of open-source software
-,projects.    The Apache projects are
-,"characterized by a collaborative, consensus based"
-,"development process, an open and    pragmatic"
-,"software license, and a desire to create high"
-,quality software that leads the way in its field.
-,   We consider ourselves not simply a group of
-,"projects sharing a server, but rather a community"
-,of developers    and users.
+,  The Apache Software Foundation provides
+,  support for the Apache community of open-source
+,  software projects.    The Apache projects are
+,"  characterized by a collaborative, consensus"
+,"  based development process, an open and   "
+,"  pragmatic software license, and a desire to"
+,  create high quality software that leads the way
+,  in its field.    We consider ourselves not
+,"  simply a group of projects sharing a server, but"
+,  rather a community of developers    and users.
 org.apache.sshd.osgi.source,Source Bundle for org.apache.sshd.osgi:2.8.0
 org.apache.xmlgraphics,Apache XML Graphics Commons
 org.apache.xmlgraphics.source,Apache XML Graphics Commons Source
 org.apiguardian.api,apiguardian-api
-,@API Guardian
+,  @API Guardian
 org.apiguardian.api.source,Source Bundle for org.apiguardian.api:1.1.2
 org.eclipse.ant.core,Ant Build Tool Core
 org.eclipse.ant.core.source,Ant Build Tool Core Source
 org.eclipse.ant.launching,Ant Launching Support
 org.eclipse.ant.launching.source,Ant Launching Support Source
 org.eclipse.ant.optional.junit,Eclipse JUnit Fragment for Ant used in Eclipse
-,Test Framework
-,This fragment is required by the Eclipse Test
-,Framework. It allows communication between JUnit
-,and Ant.
+,  Test Framework
+,  This fragment is required by the Eclipse Test
+,  Framework. It allows communication between JUnit
+,  and Ant.
 org.eclipse.ant.tests.core,Ant Core Test Plugin
 org.eclipse.ant.tests.ui,Ant UI Test Plugin
 org.eclipse.ant.ui,Ant UI
@@ -561,7 +557,7 @@ org.eclipse.e4.core.di.extensions,Eclipse Dependency Injection Extensions
 org.eclipse.e4.core.di.extensions.source,Eclipse Dependency Injection Extensions Source
 org.eclipse.e4.core.di.extensions.supplier,Eclipse Dependency Injection Extensions Supplier
 org.eclipse.e4.core.di.extensions.supplier.source,Eclipse Dependency Injection Extensions Supplier
-,Source
+,  Source
 org.eclipse.e4.core.di.source,Eclipse Dependency Injection Source
 org.eclipse.e4.core.services,Eclipse Application Services
 org.eclipse.e4.core.services.source,Eclipse Application Services Source
@@ -631,9 +627,9 @@ org.eclipse.ecf.provider.filetransfer,ECF Filetransfer Provider
 org.eclipse.ecf.provider.filetransfer.httpclient5,ECF HttpComponents 5 Filetransfer Provider
 org.eclipse.ecf.provider.filetransfer.httpclient5.source,ECF HttpComponents 5 Filetransfer Provider Source
 org.eclipse.ecf.provider.filetransfer.httpclient5.win32,ECF HttpComponents 4.5 Filetransfer Windows
-,Components
+,  Components
 org.eclipse.ecf.provider.filetransfer.httpclient5.win32.source,ECF HttpComponents 4.5 Filetransfer Windows
-,Components Source
+,  Components Source
 org.eclipse.ecf.provider.filetransfer.source,ECF Filetransfer Provider Source
 org.eclipse.ecf.provider.filetransfer.ssl,ECF Filetransfer SSL Fragment
 org.eclipse.ecf.provider.filetransfer.ssl.source,ECF Filetransfer SSL Fragment Source
@@ -704,9 +700,9 @@ org.eclipse.equinox.jsp.jasper.registry.source,Jasper Jsp Registry Support Plug-
 org.eclipse.equinox.jsp.jasper.source,Jasper Jsp Support Bundle Source
 org.eclipse.equinox.launcher,Equinox Launcher
 org.eclipse.equinox.launcher.cocoa.macosx,Equinox Launcher MacOSX Cocoa AARCH64/ARM64
-,Fragment
+,  Fragment
 org.eclipse.equinox.launcher.cocoa.macosx.aarch64,Equinox Launcher MacOSX Cocoa AARCH64/ARM64
-,Fragment
+,  Fragment
 org.eclipse.equinox.launcher.cocoa.macosx.x86_64,Equinox Launcher MacOSX Cocoa Fragment
 org.eclipse.equinox.launcher.gtk.linux.aarch64,Equinox Launcher Linux AARCH64 Fragment
 org.eclipse.equinox.launcher.gtk.linux.ppc64le,Equinox Launcher Linux PPC64le Fragment
@@ -719,7 +715,7 @@ org.eclipse.equinox.metatype,Meta Type
 org.eclipse.equinox.metatype.source,Meta Type Source
 org.eclipse.equinox.p2.artifact.repository,Equinox Provisioning Artifact Repository Support
 org.eclipse.equinox.p2.artifact.repository.source,Equinox Provisioning Artifact Repository Support
-,Source
+,  Source
 org.eclipse.equinox.p2.console,Equinox Provisioning Console
 org.eclipse.equinox.p2.console.source,Equinox Provisioning Console Source
 org.eclipse.equinox.p2.core,Equinox Provisioning Core
@@ -736,10 +732,10 @@ org.eclipse.equinox.p2.discovery.compatibility.source,Equinox Provisioning Disco
 org.eclipse.equinox.p2.discovery.source,Equinox Provisioning Discovery Source
 org.eclipse.equinox.p2.engine,Equinox Provisioning Engine
 org.eclipse.equinox.p2.engine.source,Equinox Provisioning Engine Source
-org.eclipse.equinox.p2.extensionlocation,Equinox Provisioning Extension Location Repository
-,Support
-org.eclipse.equinox.p2.extensionlocation.source,Equinox Provisioning Extension Location Repository
-,Support Source
+org.eclipse.equinox.p2.extensionlocation,Equinox Provisioning Extension Location
+,  Repository Support
+org.eclipse.equinox.p2.extensionlocation.source,Equinox Provisioning Extension Location
+,  Repository Support Source
 org.eclipse.equinox.p2.garbagecollector,Equinox Provisioning Garbage Collector
 org.eclipse.equinox.p2.garbagecollector.source,Equinox Provisioning Garbage Collector Source
 org.eclipse.equinox.p2.installer,Equinox Provisioning Installer
@@ -756,7 +752,7 @@ org.eclipse.equinox.p2.publisher,Equinox Provisioning Publisher Infrastructure
 org.eclipse.equinox.p2.publisher.eclipse,Equinox Provisioning Publisher for Eclipse
 org.eclipse.equinox.p2.publisher.eclipse.source,Equinox Provisioning Publisher for Eclipse Source
 org.eclipse.equinox.p2.publisher.source,Equinox Provisioning Publisher Infrastructure
-,Source
+,  Source
 org.eclipse.equinox.p2.reconciler.dropins,Equinox Provisioning Drop-in
 org.eclipse.equinox.p2.reconciler.dropins.source,Equinox Provisioning Drop-in Source
 org.eclipse.equinox.p2.repository,Equinox Provisioning Repository
@@ -784,17 +780,17 @@ org.eclipse.equinox.p2.ui.importexport,Equinox Provisioning Import and Export
 org.eclipse.equinox.p2.ui.importexport.source,Equinox Provisioning Import and Export Source
 org.eclipse.equinox.p2.ui.sdk,Equinox Provisioning Platform Update Support
 org.eclipse.equinox.p2.ui.sdk.scheduler,Equinox Provisioning Platform Automatic Update
-,Support
+,  Support
 org.eclipse.equinox.p2.ui.sdk.scheduler.source,Equinox Provisioning Platform Automatic Update
-,Support Source
+,  Support Source
 org.eclipse.equinox.p2.ui.sdk.source,Equinox Provisioning Platform Update Support
-,Source
+,  Source
 org.eclipse.equinox.p2.ui.source,Equinox Provisioning UI Support Source
 org.eclipse.equinox.p2.updatechecker,Equinox Provisioning Update Checker
 org.eclipse.equinox.p2.updatechecker.source,Equinox Provisioning Update Checker Source
 org.eclipse.equinox.p2.updatesite,Equinox Provisioning Legacy Update Site Support
 org.eclipse.equinox.p2.updatesite.source,Equinox Provisioning Legacy Update Site Support
-,Source
+,  Source
 org.eclipse.equinox.preferences,Eclipse Preferences Mechanism
 org.eclipse.equinox.preferences.source,Eclipse Preferences Mechanism Source
 org.eclipse.equinox.preferences.tests,Preferences Tests
@@ -803,20 +799,20 @@ org.eclipse.equinox.region.source,Region Digraph Source
 org.eclipse.equinox.registry,Extension Registry Support
 org.eclipse.equinox.registry.source,Extension Registry Support Source
 org.eclipse.equinox.security,Equinox Java Authentication and Authorization
-,Service (JAAS)
+,  Service (JAAS)
 org.eclipse.equinox.security.linux,Linux libsecret integration
 org.eclipse.equinox.security.linux.source,Linux libsecret integration Source
 org.eclipse.equinox.security.macosx,OS X Keystore service integration
 org.eclipse.equinox.security.macosx.source,OS X Keystore service integration Source
 org.eclipse.equinox.security.source,Equinox Java Authentication and Authorization
-,Service (JAAS) Source
+,  Service (JAAS) Source
 org.eclipse.equinox.security.tests,Equinox security tests
 org.eclipse.equinox.security.ui,Equinox Security Default UI
 org.eclipse.equinox.security.ui.source,Equinox Security Default UI Source
 org.eclipse.equinox.security.win32.x86_64,Windows Data Protection services integration (64
-,bit)
+,  bit)
 org.eclipse.equinox.security.win32.x86_64.source,Windows Data Protection services integration (64
-,bit) Source
+,  bit) Source
 org.eclipse.equinox.servletbridge,Servletbridge
 org.eclipse.equinox.servletbridge.source,Servletbridge Source
 org.eclipse.equinox.simpleconfigurator,Simple Configurator
@@ -835,7 +831,7 @@ org.eclipse.equinox.weaving.caching,Standard Caching Service for Equinox Aspects
 org.eclipse.equinox.weaving.caching.j9,J9 CachingService Plug-in
 org.eclipse.equinox.weaving.caching.j9.source,J9 CachingService Plug-in Source
 org.eclipse.equinox.weaving.caching.source,Standard Caching Service for Equinox Aspects
-,Source
+,  Source
 org.eclipse.equinox.weaving.hook,Aspect Weaving Hooks Plug-in
 org.eclipse.equinox.weaving.hook.source,Aspect Weaving Hooks Plug-in Source
 org.eclipse.help,Help System Core
@@ -867,7 +863,7 @@ org.eclipse.jdt.core,Java Development Tools Core
 org.eclipse.jdt.core.compiler.batch,Eclipse Compiler for Java(TM)
 org.eclipse.jdt.core.formatterapp,Java Development Tools Formatter Application
 org.eclipse.jdt.core.formatterapp.source,Java Development Tools Formatter Application
-,Source
+,  Source
 org.eclipse.jdt.core.manipulation,Java Code Manipulation Functionality
 org.eclipse.jdt.core.manipulation.source,Java Code Manipulation Functionality Source
 org.eclipse.jdt.core.source,Java Development Tools Core Source
@@ -888,14 +884,14 @@ org.eclipse.jdt.junit.core,Java Development Tools JUnit core support
 org.eclipse.jdt.junit.core.source,Java Development Tools JUnit core support Source
 org.eclipse.jdt.junit.runtime,Java Development Tools JUnit Runtime Support
 org.eclipse.jdt.junit.runtime.source,Java Development Tools JUnit Runtime Support
-,Source
+,  Source
 org.eclipse.jdt.junit.source,Java Development Tools JUnit support Source
 org.eclipse.jdt.junit4.runtime,Java Development Tools JUnit4 Runtime Support
 org.eclipse.jdt.junit4.runtime.source,Java Development Tools JUnit4 Runtime Support
-,Source
+,  Source
 org.eclipse.jdt.junit5.runtime,Java Development Tools JUnit5 Runtime Support
 org.eclipse.jdt.junit5.runtime.source,Java Development Tools JUnit5 Runtime Support
-,Source
+,  Source
 org.eclipse.jdt.launching,Java Development Tools Launching Support
 org.eclipse.jdt.launching.macosx,Mac OS X Launcher
 org.eclipse.jdt.launching.macosx.source,Mac OS X Launcher Source
@@ -910,24 +906,25 @@ org.eclipse.jdt.ui.tests.refactoring,Refactoring Tests Plug-in
 org.eclipse.jdt.ui.unittest.junit,Java Development Tools Unit Test support
 org.eclipse.jdt.ui.unittest.junit.source,Java Development Tools Unit Test support Source
 org.eclipse.jetty.http,Jetty :: Http Utility
-,Jetty module for Jetty :: Http Utility
+,  Jetty module for Jetty :: Http Utility
 org.eclipse.jetty.http.source,Jetty :: Http Utility
 org.eclipse.jetty.io,Jetty :: IO Utility
-,Jetty module for Jetty :: IO Utility
+,  Jetty module for Jetty :: IO Utility
 org.eclipse.jetty.io.source,Jetty :: IO Utility
 org.eclipse.jetty.security,Jetty :: Security
-,Jetty module for Jetty :: Security
+,  Jetty module for Jetty :: Security
 org.eclipse.jetty.security.source,Jetty :: Security
 org.eclipse.jetty.server,Jetty :: Server Core
-,Jetty module for Jetty :: Server Core
+,  Jetty module for Jetty :: Server Core
 org.eclipse.jetty.server.source,Jetty :: Server Core
 org.eclipse.jetty.servlet,Jetty :: Servlet Handling
-,Jetty module for Jetty :: Servlet Handling
+,  Jetty module for Jetty :: Servlet Handling
 org.eclipse.jetty.servlet.source,Jetty :: Servlet Handling
 org.eclipse.jetty.util,Jetty :: Utilities
-,Jetty module for Jetty :: Utilities
+,  Jetty module for Jetty :: Utilities
 org.eclipse.jetty.util.ajax,Jetty :: Utilities :: Ajax(JSON)
-,Jetty module for Jetty :: Utilities :: Ajax(JSON)
+,  Jetty module for Jetty :: Utilities ::
+,  Ajax(JSON)
 org.eclipse.jetty.util.ajax.source,Jetty :: Utilities :: Ajax(JSON)
 org.eclipse.jetty.util.source,Jetty :: Utilities
 org.eclipse.jface,JFace
@@ -956,19 +953,19 @@ org.eclipse.ltk.ui.refactoring,Refactoring UI
 org.eclipse.ltk.ui.refactoring.source,Refactoring UI Source
 org.eclipse.ltk.ui.refactoring.tests,Refactoring UI Test Plug-in
 org.eclipse.osgi,%systemBundle
-,OSGi System Bundle
+,  OSGi System Bundle
 org.eclipse.osgi.compatibility.state,Equinox State and Resolver Compatibility Fragment
-org.eclipse.osgi.compatibility.state.source,Equinox State and Resolver Compatibility Fragment
-,Source
+org.eclipse.osgi.compatibility.state.source,Equinox State and Resolver Compatibility
+,  Fragment Source
 org.eclipse.osgi.services,OSGi Release 4.2.0 Services
-,OSGi Service Platform Release 4.2.0 Service
-,Interfaces and Classes
+,  OSGi Service Platform Release 4.2.0 Service
+,  Interfaces and Classes
 org.eclipse.osgi.services.source,OSGi Release 4.2.0 Services Source
 org.eclipse.osgi.source,OSGi System Bundle Source
 org.eclipse.osgi.tests,Core OSGi Tests
 org.eclipse.osgi.util,OSGi Release 4.2.0 Utility Classes
-,OSGi Service Platform Release 4.2.0 Utility
-,Classes
+,  OSGi Service Platform Release 4.2.0 Utility
+,  Classes
 org.eclipse.osgi.util.source,OSGi Release 4.2.0 Utility Classes Source
 org.eclipse.pde,PDE
 org.eclipse.pde.api.tools,API Tools
@@ -980,7 +977,7 @@ org.eclipse.pde.api.tools.ui,API Tools UI
 org.eclipse.pde.api.tools.ui.source,API Tools UI Source
 org.eclipse.pde.build,Plug-in Development Environment Build Support
 org.eclipse.pde.build.source,Plug-in Development Environment Build Support
-,Source
+,  Source
 org.eclipse.pde.build.tests,Tests Plug-in
 org.eclipse.pde.core,PDE Core
 org.eclipse.pde.core.source,PDE Core Source
@@ -1113,12 +1110,12 @@ org.eclipse.search.source,Search Support Source
 org.eclipse.search.tests,Search Support Tests Plug-in
 org.eclipse.swt,Standard Widget Toolkit
 org.eclipse.swt.cocoa.macosx.aarch64,Standard Widget Toolkit for Mac OS X (Cocoa)
-,AARCH64
+,  AARCH64
 org.eclipse.swt.cocoa.macosx.aarch64.source,Standard Widget Toolkit for Mac OS X (Cocoa)
-,AARCH64 Source
+,  AARCH64 Source
 org.eclipse.swt.cocoa.macosx.x86_64,Standard Widget Toolkit for Mac OS X (Cocoa)
 org.eclipse.swt.cocoa.macosx.x86_64.source,Standard Widget Toolkit for Mac OS X (Cocoa)
-,Source
+,  Source
 org.eclipse.swt.examples,SWT Standalone Examples Plugin
 org.eclipse.swt.examples.browser.demos,SWT Browser Demos Plugin
 org.eclipse.swt.examples.browser.demos.source,SWT Browser Demos Plugin Source
@@ -1270,117 +1267,117 @@ org.hamcrest.core.source,Hamcrest Core Library of Matchers Source
 org.junit,JUnit
 org.junit.source,JUnit Source
 org.mockito.mockito-core,Mockito Mock Library for Java. Core bundle
-,requires Byte Buddy and Objenesis.
+,  requires Byte Buddy and Objenesis.
 org.objectweb.asm,org.objectweb.asm
 org.objectweb.asm.tree,org.objectweb.asm.tree
 org.objenesis,Objenesis
-,A library for instantiating Java objects
+,  A library for instantiating Java objects
 org.opentest4j,opentest4j
 org.opentest4j.source,Source Bundle for org.opentest4j:1.2.0
 org.osgi.annotation.bundle,org.osgi:org.osgi.annotation.bundle
-,OSGi Companion Code for org.osgi.annotation.bundle
-,Version 2.0.0
+,  OSGi Companion Code for
+,  org.osgi.annotation.bundle Version 2.0.0
 org.osgi.annotation.versioning,org.osgi:org.osgi.annotation.versioning
-,OSGi Companion Code for
-,org.osgi.annotation.versioning Version 1.1.2
+,  OSGi Companion Code for
+,  org.osgi.annotation.versioning Version 1.1.2
 org.osgi.service.cm,org.osgi:org.osgi.service.cm
-,OSGi Companion Code for org.osgi.service.cm
-,Version 1.6.1
+,  OSGi Companion Code for org.osgi.service.cm
+,  Version 1.6.1
 org.osgi.service.cm.source,Source Bundle for
-,org.osgi.service.cm:1.6.1.202109301733
+,  org.osgi.service.cm:1.6.1.202109301733
 org.osgi.service.component,org.osgi:org.osgi.service.component
-,OSGi Companion Code for org.osgi.service.component
-,Version 1.5.0
+,  OSGi Companion Code for
+,  org.osgi.service.component Version 1.5.0
 org.osgi.service.component.annotations,org.osgi:org.osgi.service.component.annotations
-,OSGi Companion Code for
-,org.osgi.service.component.annotations Version
-,1.5.0
+,  OSGi Companion Code for
+,  org.osgi.service.component.annotations Version
+,  1.5.0
 org.osgi.service.component.source,Source Bundle for
-,org.osgi.service.component:1.5.0.202109301733
+,  org.osgi.service.component:1.5.0.202109301733
 org.osgi.service.coordinator,org.osgi:org.osgi.service.coordinator
-,OSGi Companion Code for
-,org.osgi.service.coordinator Version 1.0.2.
+,  OSGi Companion Code for
+,  org.osgi.service.coordinator Version 1.0.2.
 org.osgi.service.coordinator.source,Source Bundle for
-,org.osgi.service.coordinator:1.0.2.201505202024
+,  org.osgi.service.coordinator:1.0.2.201505202024
 org.osgi.service.device,org.osgi:org.osgi.service.device
-,OSGi Companion Code for org.osgi.service.device
-,Version 1.1.1
+,  OSGi Companion Code for
+,  org.osgi.service.device Version 1.1.1
 org.osgi.service.device.source,Source Bundle for
-,org.osgi.service.device:1.1.1.202109301733
+,  org.osgi.service.device:1.1.1.202109301733
 org.osgi.service.event,org.osgi:org.osgi.service.event
-,OSGi Companion Code for org.osgi.service.event
-,Version 1.4.1
+,  OSGi Companion Code for org.osgi.service.event
+,  Version 1.4.1
 org.osgi.service.event.source,Source Bundle for
-,org.osgi.service.event:1.4.1.202109301733
+,  org.osgi.service.event:1.4.1.202109301733
 org.osgi.service.log.stream,org.osgi:org.osgi.service.log.stream
-,OSGi Companion Code for
-,org.osgi.service.log.stream Version 1.0.0
+,  OSGi Companion Code for
+,  org.osgi.service.log.stream Version 1.0.0
 org.osgi.service.log.stream.source,Source Bundle for
-,org.osgi.service.log.stream:1.0.0.202109301733
+,  org.osgi.service.log.stream:1.0.0.202109301733
 org.osgi.service.metatype,org.osgi:org.osgi.service.metatype
-,OSGi Companion Code for org.osgi.service.metatype
-,Version 1.4.1
+,  OSGi Companion Code for
+,  org.osgi.service.metatype Version 1.4.1
 org.osgi.service.metatype.annotations,org.osgi:org.osgi.service.metatype.annotations
-,OSGi Companion Code for
-,org.osgi.service.metatype.annotations Version
-,1.4.1
+,  OSGi Companion Code for
+,  org.osgi.service.metatype.annotations Version
+,  1.4.1
 org.osgi.service.metatype.source,Source Bundle for
-,org.osgi.service.metatype:1.4.1.202109301733
+,  org.osgi.service.metatype:1.4.1.202109301733
 org.osgi.service.prefs,org.osgi:org.osgi.service.prefs
-,OSGi Companion Code for org.osgi.service.prefs
-,Version 1.1.2
+,  OSGi Companion Code for org.osgi.service.prefs
+,  Version 1.1.2
 org.osgi.service.prefs.source,Source Bundle for
-,org.osgi.service.prefs:1.1.2.202109301733
+,  org.osgi.service.prefs:1.1.2.202109301733
 org.osgi.service.provisioning,org.osgi:org.osgi.service.provisioning
-,OSGi Companion Code for
-,org.osgi.service.provisioning Version 1.2.0.
+,  OSGi Companion Code for
+,  org.osgi.service.provisioning Version 1.2.0.
 org.osgi.service.provisioning.source,Source Bundle for
-,org.osgi.service.provisioning:1.2.0.201505202024
+,  org.osgi.service.provisioning:1.2.0.201505202024
 org.osgi.service.upnp,org.osgi:org.osgi.service.upnp
-,OSGi Companion Code for org.osgi.service.upnp
-,Version 1.2.1
+,  OSGi Companion Code for org.osgi.service.upnp
+,  Version 1.2.1
 org.osgi.service.upnp.source,Source Bundle for
-,org.osgi.service.upnp:1.2.1.202109301733
+,  org.osgi.service.upnp:1.2.1.202109301733
 org.osgi.service.useradmin,org.osgi:org.osgi.service.useradmin
-,OSGi Companion Code for org.osgi.service.useradmin
-,Version 1.1.1
+,  OSGi Companion Code for
+,  org.osgi.service.useradmin Version 1.1.1
 org.osgi.service.useradmin.source,Source Bundle for
-,org.osgi.service.useradmin:1.1.1.202109301733
+,  org.osgi.service.useradmin:1.1.1.202109301733
 org.osgi.service.wireadmin,org.osgi:org.osgi.service.wireadmin
-,OSGi Companion Code for org.osgi.service.wireadmin
-,Version 1.0.2
+,  OSGi Companion Code for
+,  org.osgi.service.wireadmin Version 1.0.2
 org.osgi.service.wireadmin.source,Source Bundle for
-,org.osgi.service.wireadmin:1.0.2.202109301733
+,  org.osgi.service.wireadmin:1.0.2.202109301733
 org.osgi.util.function,org.osgi:org.osgi.util.function
-,OSGi Companion Code for org.osgi.util.function
-,Version 1.2.0
+,  OSGi Companion Code for org.osgi.util.function
+,  Version 1.2.0
 org.osgi.util.function.source,Source Bundle for
-,org.osgi.util.function:1.2.0.202109301733
+,  org.osgi.util.function:1.2.0.202109301733
 org.osgi.util.measurement,org.osgi:org.osgi.util.measurement
-,OSGi Companion Code for org.osgi.util.measurement
-,Version 1.0.2
+,  OSGi Companion Code for
+,  org.osgi.util.measurement Version 1.0.2
 org.osgi.util.measurement.source,Source Bundle for
-,org.osgi.util.measurement:1.0.2.201802012109
+,  org.osgi.util.measurement:1.0.2.201802012109
 org.osgi.util.position,org.osgi:org.osgi.util.position
-,OSGi Companion Code for org.osgi.util.position
-,Version 1.0.1.
+,  OSGi Companion Code for org.osgi.util.position
+,  Version 1.0.1.
 org.osgi.util.position.source,Source Bundle for
-,org.osgi.util.position:1.0.1.201505202026
+,  org.osgi.util.position:1.0.1.201505202026
 org.osgi.util.promise,org.osgi:org.osgi.util.promise
-,OSGi Companion Code for org.osgi.util.promise
-,Version 1.2.0
+,  OSGi Companion Code for org.osgi.util.promise
+,  Version 1.2.0
 org.osgi.util.promise.source,Source Bundle for
-,org.osgi.util.promise:1.2.0.202109301733
+,  org.osgi.util.promise:1.2.0.202109301733
 org.osgi.util.pushstream,org.osgi:org.osgi.util.pushstream
-,OSGi Companion Code for org.osgi.util.pushstream
-,Version 1.0.2
+,  OSGi Companion Code for
+,  org.osgi.util.pushstream Version 1.0.2
 org.osgi.util.pushstream.source,Source Bundle for
-,org.osgi.util.pushstream:1.0.2.202109301733
+,  org.osgi.util.pushstream:1.0.2.202109301733
 org.osgi.util.xml,org.osgi:org.osgi.util.xml
-,OSGi Companion Code for org.osgi.util.xml Version
-,1.0.2
+,  OSGi Companion Code for org.osgi.util.xml
+,  Version 1.0.2
 org.osgi.util.xml.source,Source Bundle for
-,org.osgi.util.xml:1.0.2.202109301733
+,  org.osgi.util.xml:1.0.2.202109301733
 org.sat4j.core,%bundleName
 org.sat4j.core.source,Source Bundle for org.sat4j.core:2.3.6.v20201214
 org.sat4j.pb,%bundleName
@@ -1396,9 +1393,9 @@ org.w3c.dom.smil.source,W3C SMIL DOM Source Bundle
 org.w3c.dom.svg,W3C SVG DOM
 org.w3c.dom.svg.source,W3C SVG DOM Source Bundle
 slf4j.api,slf4j-api
-,The slf4j API
+,  The slf4j API
 slf4j.nop,slf4j-nop
-,SLF4J NOP Binding
+,  SLF4J NOP Binding
 tooling.org.eclipse.update.feature.default,(no org.eclipse.equinox.p2.name)
 tooling.osgi.bundle.default,(no org.eclipse.equinox.p2.name)
 tooling.source.default,(no org.eclipse.equinox.p2.name)
