@@ -23,7 +23,15 @@ import org.junit.jupiter.api.extension.ExtendWith;
 public class EquoListTest extends GradleHarness {
 	@Test
 	public void defaultP2(Expect expect) throws IOException {
-		setFile("build.gradle").toContent("plugins { id 'dev.equo.ide' }");
+		setFile("build.gradle")
+				.toLines(
+						"plugins { id 'dev.equo.ide' }",
+						"equoIde {",
+						"  release('4.26')",
+						"  filter {",
+						"    setPlatform(null)",
+						"  }",
+						"}");
 		run("equoList", "--stacktrace").snapshotBetween("Task :equoList", "BUILD SUCCESSFUL", expect);
 	}
 
