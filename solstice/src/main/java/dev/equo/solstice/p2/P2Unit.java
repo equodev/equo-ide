@@ -13,16 +13,24 @@
  *******************************************************************************/
 package dev.equo.solstice.p2;
 
+import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import org.eclipse.osgi.internal.framework.FilterImpl;
 import org.osgi.framework.Version;
 import org.w3c.dom.Node;
 
 /** Usually represents a jar file in a p2 repository, but could also be a "feature" or "group". */
 public class P2Unit implements Comparable<P2Unit> {
+	final Node rootNode;
 	final String id;
 	final Version version;
 	// TODO: version should be an OSGi version for proper sorting
@@ -31,6 +39,7 @@ public class P2Unit implements Comparable<P2Unit> {
 	final TreeSet<P2Session.Requirement> requires = new TreeSet<>();
 
 	P2Unit(P2Session session, P2Client.Folder index, Node rootNode) {
+		this.rootNode = rootNode;
 		id = rootNode.getAttributes().getNamedItem("id").getNodeValue();
 		version = Version.parseVersion(rootNode.getAttributes().getNamedItem("version").getNodeValue());
 		var nodeList = rootNode.getChildNodes();
@@ -170,5 +179,29 @@ public class P2Unit implements Comparable<P2Unit> {
 
 	public Version getVersion() {
 		return version;
+	}
+
+	public String rawXml() throws TransformerException {
+		TransformerFactory tf = TransformerFactory.newInstance();
+		Transformer transformer = tf.newTransformer();
+		transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+		transformer.setOutputProperty(OutputKeys.METHOD, "xml");
+		transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+		transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+		transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
+
+		var writer = new StringWriter();
+		transformer.transform(new DOMSource(rootNode), new StreamResult(writer));
+		var raw = writer.toString();
+		var unixEndings = raw.replace("\r", "");
+		var lines = unixEndings.split("\n");
+		var result = new StringBuilder(unixEndings.length());
+		for (var line : lines) {
+			if (!line.trim().isEmpty()) {
+				result.append(line);
+				result.append('\n');
+			}
+		}
+		return result.toString();
 	}
 }

@@ -19,6 +19,7 @@ import dev.equo.solstice.p2.P2Unit;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
+import javax.xml.transform.TransformerException;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Internal;
@@ -65,15 +66,26 @@ public abstract class EquoListTask extends DefaultTask {
 
 	private String detail;
 
-	@Option(option = "detail", description = "lists full detail for the given unit")
+	@Option(
+			option = "detail",
+			description = "lists full detail for all available versions of the given unit id")
 	void setDetail(String detail) {
 		this.detail = detail;
+	}
+
+	private String raw;
+
+	@Option(
+			option = "raw",
+			description = "lists raw xml for all available versions of the given unit id")
+	void setRaw(String raw) {
+		this.raw = raw;
 	}
 
 	@TaskAction
 	public void list() throws Exception {
 		if (all != null && detail != null) {
-			throw new IllegalArgumentException("Only one of --all and --detail may be set");
+			throw new IllegalArgumentException("Only one of --all, --detail, or --raw may be set");
 		}
 		var extension = getExtension().get();
 		var query = extension.performQuery();
@@ -81,6 +93,8 @@ public abstract class EquoListTask extends DefaultTask {
 			all(query, all, format);
 		} else if (detail != null) {
 			detail(query, detail, format);
+		} else if (raw != null) {
+			raw(query, raw);
 		} else {
 			mavenStatus(query, format);
 		}
@@ -122,6 +136,13 @@ public abstract class EquoListTask extends DefaultTask {
 			}
 		}
 		System.out.println(ConsoleTable.detail(allAvailable, format));
+	}
+
+	private static void raw(P2Query query, String raw) throws TransformerException {
+		var allAvailable = query.findAllAvailableUnitsById(raw);
+		for (var unit : allAvailable) {
+			System.out.println(unit.rawXml());
+		}
 	}
 
 	private static void mavenStatus(P2Query query, ConsoleTable.Format format) {

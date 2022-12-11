@@ -2071,6 +2071,101 @@ dev.equo.ide.gradle.EquoListTest.detail=[
 ]
 
 
+dev.equo.ide.gradle.EquoListTest.raw=[
+<unit generation="2" id="org.eclipse.jdt.annotation" singleton="false" version="2.2.700.v20220826-1026">
+  <update id="org.eclipse.jdt.annotation" range="[0.0.0,2.2.700.v20220826-1026)" severity="0"/>
+  <properties size="9">
+    <property name="df_LT.bundleName" value="JDT Annotations for Enhanced Null Analysis"/>
+    <property name="df_LT.providerName" value="Eclipse.org"/>
+    <property name="org.eclipse.equinox.p2.name" value="%bundleName"/>
+    <property name="org.eclipse.equinox.p2.provider" value="%providerName"/>
+    <property name="org.eclipse.equinox.p2.bundle.localization" value="bundle"/>
+    <property name="maven-groupId" value="org.eclipse.jdt"/>
+    <property name="maven-artifactId" value="org.eclipse.jdt.annotation"/>
+    <property name="maven-version" value="2.2.700-SNAPSHOT"/>
+    <property name="maven-type" value="eclipse-plugin"/>
+  </properties>
+  <provides size="6">
+    <provided name="org.eclipse.jdt.annotation" namespace="org.eclipse.equinox.p2.iu" version="2.2.700.v20220826-1026"/>
+    <provided name="org.eclipse.jdt.annotation" namespace="osgi.bundle" version="2.2.700.v20220826-1026"/>
+    <provided name="org.eclipse.jdt.annotation" namespace="java.package" version="0.0.0"/>
+    <provided name="org.eclipse.jdt.annotation" namespace="osgi.identity" version="2.2.700.v20220826-1026">
+      <properties size="1">
+        <property name="type" value="osgi.bundle"/>
+      </properties>
+    </provided>
+    <provided name="bundle" namespace="org.eclipse.equinox.p2.eclipse.type" version="1.0.0"/>
+    <provided name="df_LT" namespace="org.eclipse.equinox.p2.localization" version="1.0.0"/>
+  </provides>
+  <requires size="1">
+    <requiredProperties match="(&amp;(osgi.ee=JavaSE)(version=1.8))" namespace="osgi.ee">
+      <description>
+            org.eclipse.jdt.annotation
+          </description>
+    </requiredProperties>
+  </requires>
+  <artifacts size="1">
+    <artifact classifier="osgi.bundle" id="org.eclipse.jdt.annotation" version="2.2.700.v20220826-1026"/>
+  </artifacts>
+  <touchpoint id="org.eclipse.equinox.p2.osgi" version="1.0.0"/>
+  <touchpointData size="1">
+    <instructions size="1">
+      <instruction key="manifest">
+            Bundle-SymbolicName: org.eclipse.jdt.annotation
+Bundle-Version: 2.2.700.v20220826-1026
+          </instruction>
+    </instructions>
+  </touchpointData>
+</unit>
+
+<unit generation="2" id="org.eclipse.jdt.annotation" singleton="false" version="1.2.100.v20220826-1026">
+  <update id="org.eclipse.jdt.annotation" range="[0.0.0,1.2.100.v20220826-1026)" severity="0"/>
+  <properties size="9">
+    <property name="df_LT.bundleName" value="JDT Annotations for Enhanced Null Analysis"/>
+    <property name="df_LT.providerName" value="Eclipse.org"/>
+    <property name="org.eclipse.equinox.p2.name" value="%bundleName"/>
+    <property name="org.eclipse.equinox.p2.provider" value="%providerName"/>
+    <property name="org.eclipse.equinox.p2.bundle.localization" value="bundle"/>
+    <property name="maven-groupId" value="org.eclipse.jdt"/>
+    <property name="maven-artifactId" value="org.eclipse.jdt.annotation"/>
+    <property name="maven-version" value="1.2.100-SNAPSHOT"/>
+    <property name="maven-type" value="eclipse-plugin"/>
+  </properties>
+  <provides size="6">
+    <provided name="org.eclipse.jdt.annotation" namespace="org.eclipse.equinox.p2.iu" version="1.2.100.v20220826-1026"/>
+    <provided name="org.eclipse.jdt.annotation" namespace="osgi.bundle" version="1.2.100.v20220826-1026"/>
+    <provided name="org.eclipse.jdt.annotation" namespace="java.package" version="0.0.0"/>
+    <provided name="org.eclipse.jdt.annotation" namespace="osgi.identity" version="1.2.100.v20220826-1026">
+      <properties size="1">
+        <property name="type" value="osgi.bundle"/>
+      </properties>
+    </provided>
+    <provided name="bundle" namespace="org.eclipse.equinox.p2.eclipse.type" version="1.0.0"/>
+    <provided name="df_LT" namespace="org.eclipse.equinox.p2.localization" version="1.0.0"/>
+  </provides>
+  <requires size="1">
+    <requiredProperties match="(&amp;(osgi.ee=JavaSE)(version=1.8))" namespace="osgi.ee">
+      <description>
+            org.eclipse.jdt.annotation
+          </description>
+    </requiredProperties>
+  </requires>
+  <artifacts size="1">
+    <artifact classifier="osgi.bundle" id="org.eclipse.jdt.annotation" version="1.2.100.v20220826-1026"/>
+  </artifacts>
+  <touchpoint id="org.eclipse.equinox.p2.osgi" version="1.0.0"/>
+  <touchpointData size="1">
+    <instructions size="1">
+      <instruction key="manifest">
+            Bundle-SymbolicName: org.eclipse.jdt.annotation
+Bundle-Version: 1.2.100.v20220826-1026
+          </instruction>
+    </instructions>
+  </touchpointData>
+</unit>
+]
+
+
 dev.equo.ide.gradle.EquoListTest.swtList=[
 No ambiguous requirements.
 +---------------------------------------------+----------------------------------------+

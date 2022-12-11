@@ -127,4 +127,20 @@ public class EquoListTest extends GradleHarness {
 		run("equoList", "--detail=org.eclipse.jdt.annotation")
 				.snapshotBetween("Task :equoList", "BUILD SUCCESSFUL", expect);
 	}
+
+	@Test
+	public void raw(Expect expect) throws IOException {
+		setFile("build.gradle")
+				.toLines(
+						"plugins { id 'dev.equo.ide' }",
+						"equoIde {",
+						"  p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'",
+						"  install 'org.eclipse.jdt.annotation'",
+						"  filter {",
+						"    setPlatform(null)",
+						"  }",
+						"}");
+		run("equoList", "--raw=org.eclipse.jdt.annotation")
+				.snapshotBetween("Task :equoList", "BUILD SUCCESSFUL", expect);
+	}
 }
