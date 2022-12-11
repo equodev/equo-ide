@@ -103,7 +103,12 @@ public class GradleHarness {
 					Pattern.compile(Pattern.quote(before) + "(.*)" + Pattern.quote(after), Pattern.DOTALL);
 			var matcher = pattern.matcher(output);
 			matcher.find();
-			expect.toMatchSnapshot(matcher.group(1).trim());
+			var toMatch = matcher.group(1).trim();
+			expect.toMatchSnapshot(toMatch);
+		}
+
+		public void snapshot(Expect expect) {
+			expect.toMatchSnapshot(output);
 		}
 	}
 
