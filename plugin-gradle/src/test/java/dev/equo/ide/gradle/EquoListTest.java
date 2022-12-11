@@ -117,6 +117,9 @@ public class EquoListTest extends GradleHarness {
 						"  install 'org.eclipse.swt'",
 						"  filter {",
 						"    setPlatform(null)",
+						"    excludeSuffix '.source'  // no source bundles",
+						"    excludePrefix 'tooling'  // ignore internal tooling",
+						"    exclude 'org.apache.sshd.osgi' // we don't want sshd",
 						"  }",
 						"}");
 		run("equoList", "--all=jars", "--format=csv")
