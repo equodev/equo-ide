@@ -38,7 +38,7 @@ import org.w3c.dom.NodeList;
 /** Performs network requests and parsing against a P2 repository, aided by caching. */
 public class P2Client implements AutoCloseable {
 	private final Cache cache;
-	private final OkHttpClient client;
+	private final OkHttpClient metadataClient;
 
 	/** The various caching modes that {@link P2Client} supports. */
 	public enum Caching {
@@ -77,7 +77,7 @@ public class P2Client implements AutoCloseable {
 		File p2metadata = CacheLocations.p2metadata();
 
 		cache = new Cache(new File(p2metadata, "connection"), maxSize);
-		client = new OkHttpClient.Builder().cache(cache).build();
+		metadataClient = new OkHttpClient.Builder().cache(cache).build();
 		offlineCache = new OfflineCache(new File(p2metadata, "offline"));
 	}
 
@@ -133,7 +133,7 @@ public class P2Client implements AutoCloseable {
 		}
 		if (caching.networkAllowed()) {
 			var request = new Request.Builder().url(url).build();
-			try (var response = client.newCall(request).execute()) {
+			try (var response = metadataClient.newCall(request).execute()) {
 				if (response.code() == 404) {
 					if (caching.cacheAllowed()) {
 						offlineCache.put404(url);
@@ -169,7 +169,7 @@ public class P2Client implements AutoCloseable {
 	}
 
 	private static final Pattern p2metadata =
-			Pattern.compile("metadata\\.repository\\.factory\\.order=(.*),");
+			Pattern.compile("metadata\\.repository\\.factory\\.order(?:\\s*)=(.*),");
 
 	private static String getGroup1(String content, Pattern pattern) {
 		var matcher = pattern.matcher(content);
