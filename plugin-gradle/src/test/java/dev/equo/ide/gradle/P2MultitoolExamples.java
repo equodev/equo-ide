@@ -81,4 +81,17 @@ public class P2MultitoolExamples extends GradleHarness {
 		run("-q", "equoList", "--detail=org.eclipse.jdt.core.compiler.batch", "--stacktrace")
 				.snapshot(expect.scenario("batch"));
 	}
+
+	@Test
+	public void _06(Expect expect) throws IOException {
+		setFile("build.gradle")
+				.toLines(
+						"plugins { id 'dev.equo.ide' }",
+						"equoIde {",
+						"  p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'",
+						"  install 'org.eclipse.releng.java.languages.categoryIU'",
+						"}");
+		run("-q", "equoList", "--raw=org.eclipse.jdt.core.compiler.batch", "--stacktrace")
+				.snapshot(expect.scenario("batch"));
+	}
 }

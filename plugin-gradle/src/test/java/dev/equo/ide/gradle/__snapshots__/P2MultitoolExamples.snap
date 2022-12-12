@@ -393,3 +393,62 @@ dev.equo.ide.gradle.P2MultitoolExamples._05[batch]=[
 | prop org.eclipse.equinox.p2.name | Eclipse Compiler for Java(TM)       |
 +----------------------------------+-------------------------------------+
 ]
+
+
+dev.equo.ide.gradle.P2MultitoolExamples._06[batch]=[
+<unit id="org.eclipse.jdt.core.compiler.batch" singleton="false" version="3.32.0.v20221108-1853">
+  <update id="org.eclipse.jdt.core.compiler.batch" range="[0.0.0,3.32.0.v20221108-1853)" severity="0"/>
+  <properties size="7">
+    <property name="org.eclipse.equinox.p2.name" value="Eclipse Compiler for Java(TM)"/>
+    <property name="org.eclipse.equinox.p2.provider" value="Eclipse.org"/>
+    <property name="maven-groupId" value="org.eclipse.jdt"/>
+    <property name="maven-artifactId" value="org.eclipse.jdt.core"/>
+    <property name="maven-version" value="3.32.0-SNAPSHOT"/>
+    <property name="maven-classifier" value="batch-compiler"/>
+    <property name="maven-type" value="eclipse-plugin"/>
+  </properties>
+  <provides size="25">
+    <provided name="org.eclipse.jdt.core.compiler.batch" namespace="org.eclipse.equinox.p2.iu" version="3.32.0.v20221108-1853"/>
+    <provided name="org.eclipse.jdt.core.compiler.batch" namespace="osgi.bundle" version="3.32.0.v20221108-1853"/>
+    <provided name="org.eclipse.jdt.core" namespace="java.package" version="0.0.0"/>
+    <provided name="org.eclipse.jdt.core.compiler" namespace="java.package" version="0.0.0"/>
+    <provided name="org.eclipse.jdt.core.compiler.batch" namespace="java.package" version="0.0.0"/>
+    <provided name="org.eclipse.jdt.internal.antadapter" namespace="java.package" version="0.0.0"/>
+    <provided name="org.eclipse.jdt.internal.compiler" namespace="java.package" version="0.0.0"/>
+    <provided name="org.eclipse.jdt.internal.compiler.apt.dispatch" namespace="java.package" version="0.0.0"/>
+    <provided name="org.eclipse.jdt.internal.compiler.apt.model" namespace="java.package" version="0.0.0"/>
+    <provided name="org.eclipse.jdt.internal.compiler.apt.util" namespace="java.package" version="0.0.0"/>
+    <provided name="org.eclipse.jdt.internal.compiler.ast" namespace="java.package" version="0.0.0"/>
+    <provided name="org.eclipse.jdt.internal.compiler.batch" namespace="java.package" version="0.0.0"/>
+    <provided name="org.eclipse.jdt.internal.compiler.classfmt" namespace="java.package" version="0.0.0"/>
+    <provided name="org.eclipse.jdt.internal.compiler.codegen" namespace="java.package" version="0.0.0"/>
+    <provided name="org.eclipse.jdt.internal.compiler.env" namespace="java.package" version="0.0.0"/>
+    <provided name="org.eclipse.jdt.internal.compiler.flow" namespace="java.package" version="0.0.0"/>
+    <provided name="org.eclipse.jdt.internal.compiler.impl" namespace="java.package" version="0.0.0"/>
+    <provided name="org.eclipse.jdt.internal.compiler.lookup" namespace="java.package" version="0.0.0"/>
+    <provided name="org.eclipse.jdt.internal.compiler.parser" namespace="java.package" version="0.0.0"/>
+    <provided name="org.eclipse.jdt.internal.compiler.parser.diagnose" namespace="java.package" version="0.0.0"/>
+    <provided name="org.eclipse.jdt.internal.compiler.problem" namespace="java.package" version="0.0.0"/>
+    <provided name="org.eclipse.jdt.internal.compiler.util" namespace="java.package" version="0.0.0"/>
+    <provided name="org.eclipse.jdt.internal.compiler.tool" namespace="java.package" version="0.0.0"/>
+    <provided name="org.eclipse.jdt.core.compiler.batch" namespace="osgi.identity" version="3.32.0.v20221108-1853">
+      <properties size="1">
+        <property name="type" value="osgi.bundle"/>
+      </properties>
+    </provided>
+    <provided name="bundle" namespace="org.eclipse.equinox.p2.eclipse.type" version="1.0.0"/>
+  </provides>
+  <artifacts size="1">
+    <artifact classifier="osgi.bundle" id="org.eclipse.jdt.core.compiler.batch" version="3.32.0.v20221108-1853"/>
+  </artifacts>
+  <touchpoint id="org.eclipse.equinox.p2.osgi" version="1.0.0"/>
+  <touchpointData size="1">
+    <instructions size="1">
+      <instruction key="manifest">
+            Bundle-SymbolicName: org.eclipse.jdt.core.compiler.batch
+Bundle-Version: 3.32.0.v20221108-1853
+          </instruction>
+    </instructions>
+  </touchpointData>
+</unit>
+]
