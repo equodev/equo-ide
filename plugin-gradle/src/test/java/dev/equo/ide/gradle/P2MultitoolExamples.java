@@ -16,12 +16,10 @@ package dev.equo.ide.gradle;
 import au.com.origin.snapshots.Expect;
 import au.com.origin.snapshots.junit5.SnapshotExtension;
 import java.io.IOException;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 @ExtendWith({SnapshotExtension.class})
-@Disabled
 public class P2MultitoolExamples extends GradleHarness {
 	@Test
 	public void _01(Expect expect) throws IOException {
@@ -30,6 +28,9 @@ public class P2MultitoolExamples extends GradleHarness {
 						"plugins { id 'dev.equo.ide' }",
 						"equoIde {",
 						"  p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'",
+						"  addFilter 'platform-neutral', {",
+						"    setPlatform(null)",
+						"  }",
 						"}");
 		run("-q", "equoList", "--all=categories").snapshot(expect);
 	}
@@ -41,6 +42,9 @@ public class P2MultitoolExamples extends GradleHarness {
 						"plugins { id 'dev.equo.ide' }",
 						"equoIde {",
 						"  p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'",
+						"  addFilter 'platform-neutral', {",
+						"    setPlatform(null)",
+						"  }",
 						"}");
 		run("-q", "equoList", "--installed").snapshot(expect);
 	}
@@ -52,6 +56,9 @@ public class P2MultitoolExamples extends GradleHarness {
 						"plugins { id 'dev.equo.ide' }",
 						"equoIde {",
 						"  p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'",
+						"  addFilter 'platform-neutral', {",
+						"    setPlatform(null)",
+						"  }",
 						"  install 'org.eclipse.releng.java.languages.categoryIU'",
 						"}");
 		run("-q", "equoList", "--installed").snapshot(expect);
@@ -64,6 +71,9 @@ public class P2MultitoolExamples extends GradleHarness {
 						"plugins { id 'dev.equo.ide' }",
 						"equoIde {",
 						"  p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'",
+						"  addFilter 'platform-neutral', {",
+						"    setPlatform(null)",
+						"  }",
 						"  install 'org.eclipse.releng.java.languages.categoryIU'",
 						"}");
 		run("-q", "equoList", "--problems").snapshot(expect);
@@ -76,6 +86,9 @@ public class P2MultitoolExamples extends GradleHarness {
 						"plugins { id 'dev.equo.ide' }",
 						"equoIde {",
 						"  p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'",
+						"  addFilter 'platform-neutral', {",
+						"    setPlatform(null)",
+						"  }",
 						"  install 'org.eclipse.releng.java.languages.categoryIU'",
 						"}");
 		run("-q", "equoList", "--detail=org.eclipse.jdt.compiler.apt", "--stacktrace")
@@ -91,6 +104,9 @@ public class P2MultitoolExamples extends GradleHarness {
 						"plugins { id 'dev.equo.ide' }",
 						"equoIde {",
 						"  p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'",
+						"  addFilter 'platform-neutral', {",
+						"    setPlatform(null)",
+						"  }",
 						"  install 'org.eclipse.releng.java.languages.categoryIU'",
 						"}");
 		run("-q", "equoList", "--raw=org.eclipse.jdt.core.compiler.batch", "--stacktrace")

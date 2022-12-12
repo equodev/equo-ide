@@ -207,6 +207,11 @@ WARNING!!! gradlew equoList --problems
 | org.eclipse.platform:org.eclipse.osgi:3.18.200                                  | mavenCentral? |
 | org.eclipse.platform:org.eclipse.search:3.14.300                                | mavenCentral? |
 | org.eclipse.platform:org.eclipse.swt.cocoa.macosx.aarch64:3.122.0               | mavenCentral? |
+| org.eclipse.platform:org.eclipse.swt.cocoa.macosx.x86_64:3.122.0                | mavenCentral? |
+| org.eclipse.platform:org.eclipse.swt.gtk.linux.aarch64:3.122.0                  | mavenCentral? |
+| org.eclipse.platform:org.eclipse.swt.gtk.linux.ppc64le:3.122.0                  | mavenCentral? |
+| org.eclipse.platform:org.eclipse.swt.gtk.linux.x86_64:3.122.0                   | mavenCentral? |
+| org.eclipse.platform:org.eclipse.swt.win32.win32.x86_64:3.122.0                 | mavenCentral? |
 | org.eclipse.platform:org.eclipse.swt:3.122.0                                    | mavenCentral? |
 | org.eclipse.platform:org.eclipse.team.core:3.9.600                              | mavenCentral? |
 | org.eclipse.platform:org.eclipse.team.ui:3.9.500                                | mavenCentral? |
