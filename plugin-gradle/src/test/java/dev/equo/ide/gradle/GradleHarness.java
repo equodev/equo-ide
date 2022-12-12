@@ -108,7 +108,7 @@ public class GradleHarness {
 		}
 
 		public void snapshot(Expect expect) {
-			expect.toMatchSnapshot(output);
+			expect.toMatchSnapshot(output.trim());
 		}
 	}
 
