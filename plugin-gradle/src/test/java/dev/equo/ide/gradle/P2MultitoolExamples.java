@@ -16,10 +16,12 @@ package dev.equo.ide.gradle;
 import au.com.origin.snapshots.Expect;
 import au.com.origin.snapshots.junit5.SnapshotExtension;
 import java.io.IOException;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 @ExtendWith({SnapshotExtension.class})
+@Disabled
 public class P2MultitoolExamples extends GradleHarness {
 	@Test
 	public void _01(Expect expect) throws IOException {
