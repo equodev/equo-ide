@@ -5,7 +5,7 @@ dev.equo.solstice.p2.ConsoleTableTest.detail=[
 | id                                      | org.eclipse.ecf.filetransfer.httpclient5.feature.feature.jar                        |
 | version                                 | 1.1.600.v20220215-0126                                                              |
 | maven coordinate                        | org.eclipse.ecf.filetransfer.httpclient5.feature.feature.jar:1.1.600.v20220215-0126 |
-| maven repo                              | p2                                                                                  |
+| maven repo                              | p2 R-4.25-202208311800                                                              |
 | filter                                  | (org.eclipse.update.install.features=true)                                          |
 | prop maven-artifactId                   | org.eclipse.ecf.filetransfer.httpclient5.feature                                    |
 | prop maven-groupId                      | org.eclipse.ecf                                                                     |

@@ -13,66 +13,91 @@
  *******************************************************************************/
 package dev.equo.solstice.p2;
 
-/** Determines whether and where a P2Unit is available in a Maven repo. */
-public class MavenStatus implements Comparable<MavenStatus> {
+/**
+ * Determines where a P2Unit is available. The {@link #repo()} method returns one of the following
+ * values:
+ *
+ * <ul>
+ *   <li>{@code maven central} means the jar is on maven central. ({@link #MAVEN_CENTRAL})
+ *   <li>{@code maven central?} means the jar on maven central according to <a
+ *       href="https://github.com/equodev/equo-ide/blob/main/solstice/src/main/java/dev/equo/solstice/p2/MavenCentralMapping.java">this
+ *       heuristic</a>. ({@link #MAVEN_CENTRAL_INFERRED})
+ *   <li>{@code p2 4.25} to indicate that the jar is on p2. The part after the p2 is the last
+ *       segment in the p2 repository URL to help disambiguate between multiple p2 repositories.
+ *       ({@link #P2_})
+ * </ul>
+ */
+public class RepoStatus implements Comparable<RepoStatus> {
+	/** This unit is available on some maven server, determined after this token. */
+	public static String MAVEN_ = "maven ";
+
 	/**
 	 * This unit is available on Maven Central because of a property {@code maven-repository =
 	 * eclipse.maven.central.mirror}
 	 */
-	public static String MAVEN_CENTRAL = "mavenCentral";
+	public static String MAVEN_CENTRAL = MAVEN_ + "central";
+
 	/**
 	 * This unit is probably available on Maven Central because of the logic in <a
 	 * href="https://github.com/equodev/equo-ide/blob/main/solstice/src/main/java/dev/equo/solstice/p2/MavenCentralMapping.java">MavenCentralMapping.java</a>
 	 */
-	public static String MAVEN_CENTRAL_INFERRED = "mavenCentral?";
+	public static String MAVEN_CENTRAL_INFERRED = MAVEN_ + "central?";
+
 	/** This unit is only available in p2. */
-	public static String P2 = "p2";
+	public static String P2_ = "p2 ";
 
 	private final String coordinate;
 	private final String repo;
 
-	private MavenStatus(String coordinate, String repo) {
+	private RepoStatus(String coordinate, String repo) {
 		this.coordinate = coordinate;
 		this.repo = repo;
 	}
 
+	// TODO: some users might have internal maven repositories. We should have a way to hook into
+	// those
+	//	public boolean isOnMaven() {
+	//		return repo.startsWith(MAVEN_);
+	//	}
+
 	/**
-	 * {@link #repo()} is equal to either {@link #MAVEN_CENTRAL} or {@link #MAVEN_CENTRAL_INFERRED}
+	 * {@link #repo()} is equal to either {@link #MAVEN_CENTRAL} or {@link #MAVEN_CENTRAL_INFERRED}.
 	 */
 	public boolean isOnMavenCentral() {
 		return repo.equals(MAVEN_CENTRAL) || repo.equals(MAVEN_CENTRAL_INFERRED);
 	}
 
-	/** group:artifact:version for maven or id:version for p2 */
+	/** group:artifact:version if {@link #isOnMavenCentral()} else id:version. */
 	public String coordinate() {
 		return coordinate;
 	}
 
+	/** UI string for showing where jars come from in a table, see class description. */
 	public String repo() {
 		return repo;
 	}
 
-	public static MavenStatus forUnit(P2Unit unit) {
+	public static RepoStatus forUnit(P2Unit unit) {
 		var group = unit.properties.get(P2Unit.MAVEN_GROUP_ID);
 		var artifact = unit.properties.get(P2Unit.MAVEN_ARTIFACT_ID);
 		var version = unit.properties.get(P2Unit.MAVEN_VERSION);
 		if (group != null && artifact != null && version != null) {
 			var repo = unit.properties.get(P2Unit.MAVEN_REPOSITORY);
 			if (MavenCentralMapping.MIRROR.equals(repo)) {
-				return new MavenStatus(group + ":" + artifact + ":" + version, MAVEN_CENTRAL);
+				return new RepoStatus(group + ":" + artifact + ":" + version, MAVEN_CENTRAL);
 			} else {
 				var coord = MavenCentralMapping.getMavenCentralCoord(unit);
 				if (coord != null) {
-					return new MavenStatus(coord, MAVEN_CENTRAL_INFERRED);
+					return new RepoStatus(coord, MAVEN_CENTRAL_INFERRED);
 				}
 			}
 		}
-		return new MavenStatus(unit.id + ":" + unit.version, P2);
+		return new RepoStatus(unit.id + ":" + unit.version, P2_ + unit.getRepoUrlLastSegment());
 	}
 
 	/** Sorts on repo first, then based on coordinate. */
 	@Override
-	public int compareTo(MavenStatus o) {
+	public int compareTo(RepoStatus o) {
 		var repoCompare = repo.compareTo(o.repo);
 		if (repoCompare == 0) {
 			return coordinate.compareTo(o.coordinate);

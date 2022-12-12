@@ -26,18 +26,18 @@ public class ConsoleTable {
 		CSV
 	}
 
-	/** Returns a table with the {@link MavenStatus} of all its units. */
+	/** Returns a table with the {@link RepoStatus} of all its units. */
 	public static String mavenStatus(Iterable<P2Unit> units, Format format) {
-		var mavenStates = new ArrayList<MavenStatus>();
+		var mavenStates = new ArrayList<RepoStatus>();
 		for (var unit : units) {
-			mavenStates.add(MavenStatus.forUnit(unit));
+			mavenStates.add(RepoStatus.forUnit(unit));
 		}
 		mavenStates.sort(Comparator.naturalOrder());
 		if (mavenStates.isEmpty()) {
 			return "No jars were specified.";
 		}
-		var coordinate = new TableColumn("maven coordinate / p2 id").with(MavenStatus::coordinate);
-		var repo = new TableColumn("repo").with(MavenStatus::repo);
+		var coordinate = new TableColumn("maven coordinate / p2 id").with(RepoStatus::coordinate);
+		var repo = new TableColumn("repo").with(RepoStatus::repo);
 		return Table.getTable(format, mavenStates, coordinate, repo);
 	}
 
@@ -126,7 +126,7 @@ public class ConsoleTable {
 			}
 			table.add("id", unit.id);
 			table.add("version", unit.version.toString());
-			var mavenStatus = MavenStatus.forUnit(unit);
+			var mavenStatus = RepoStatus.forUnit(unit);
 			if (mavenStatus != null) {
 				table.add("maven coordinate", mavenStatus.coordinate());
 				table.add("maven repo", mavenStatus.repo());

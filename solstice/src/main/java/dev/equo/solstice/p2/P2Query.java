@@ -202,9 +202,9 @@ public class P2Query {
 	public List<String> getJarsOnMavenCentral() {
 		var mavenCoords = new ArrayList<String>();
 		for (var unit : getJars()) {
-			var mavenState = MavenStatus.forUnit(unit);
-			if (mavenState.isOnMavenCentral()) {
-				mavenCoords.add(mavenState.coordinate());
+			var repoStatus = RepoStatus.forUnit(unit);
+			if (repoStatus.isOnMavenCentral()) {
+				mavenCoords.add(repoStatus.coordinate());
 			}
 		}
 		return mavenCoords;
@@ -214,8 +214,8 @@ public class P2Query {
 	public List<P2Unit> getJarsNotOnMavenCentral() {
 		var notOnMaven = new ArrayList<P2Unit>();
 		for (var unit : getJars()) {
-			var mavenState = MavenStatus.forUnit(unit);
-			if (!mavenState.isOnMavenCentral()) {
+			var repoStatus = RepoStatus.forUnit(unit);
+			if (!repoStatus.isOnMavenCentral()) {
 				notOnMaven.add(unit);
 			}
 		}
