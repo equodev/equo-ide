@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+### Added
+- P2Client now falls back to offline cache if/when the network fails. Never attempts to connect at all when gradle is in offline mode. (closes [#24](https://github.com/equodev/equo-ide/issues/24))
 
 ## [0.5.0] - 2022-12-12
 ### Added
