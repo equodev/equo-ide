@@ -35,7 +35,7 @@ public class ConsoleTableTest {
 		var query = query();
 		expect.toMatchSnapshot(
 				ConsoleTable.detail(
-						query.findAllAvailableUnitsById(
+						query.getAllAvailableUnitsById(
 								"org.eclipse.ecf.filetransfer.httpclient5.feature.feature.jar"),
 						ConsoleTable.Format.ASCII));
 	}

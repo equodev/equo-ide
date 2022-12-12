@@ -23,11 +23,10 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
-import javax.annotation.Nullable;
 
 /**
  * Follows the dependency information of a set of {@link dev.equo.solstice.p2.P2Unit} so that they
- * can be resolved from maven or directly from p2 if necessary.
+ * can be installed from maven or directly from p2 if necessary.
  */
 public class P2Query {
 	private P2Session session;
@@ -40,7 +39,7 @@ public class P2Query {
 	private List<String> excludePrefix = new ArrayList<>();
 	private List<String> excludeSuffix = new ArrayList<>();
 
-	private Map<String, String> filterProps = new HashMap<String, String>();
+	private Map<String, String> filterProps = new HashMap<>();
 
 	private TreeMap<String, P2Unit> installed = new TreeMap<>();
 	private TreeMap<P2Session.Requirement, Set<P2Unit>> unmetRequirements = new TreeMap<>();
@@ -49,44 +48,62 @@ public class P2Query {
 	private void assertNotUsed() {
 		if (!installed.isEmpty()) {
 			throw new IllegalStateException(
-					"You must not change any filter properties after you have already called `resolve` or `addAllUnits`.");
+					"You must not change any filter properties after you have already called `install` or `addAllUnits`.");
 		}
 	}
 
+	/** Excludes the unit with the given id. */
 	public void exclude(String toExclude) {
 		assertNotUsed();
 		exclude.add(toExclude);
 	}
 
+	/** Excludes all units whose id start with the given prefix. */
 	public void excludePrefix(String prefix) {
 		assertNotUsed();
 		excludePrefix.add(prefix);
 	}
 
+	/** Excludes all units whose id end with the given suffix. */
 	public void excludeSuffix(String prefix) {
 		assertNotUsed();
 		excludeSuffix.add(prefix);
 	}
 
-	/** Sets the platform filter. Null means that all platform-specific filters will test to true. */
-	public void setPlatform(@Nullable SwtPlatform platform) {
+	/** Sets the platform filter to match true against only the given platform. */
+	public void platform(SwtPlatform platform) {
 		assertNotUsed();
 		if (platform == null) {
-			filterProps.clear();
-		} else {
-			filterProps.put("osgi.os", platform.getOs());
-			filterProps.put("osgi.ws", platform.getWs());
-			filterProps.put("osgi.arch", platform.getArch());
+			throw new IllegalArgumentException("Use `platformAll()` or `platformNone()`");
 		}
+		filterProps.put("osgi.os", platform.getOs());
+		filterProps.put("osgi.ws", platform.getWs());
+		filterProps.put("osgi.arch", platform.getArch());
+	}
+
+	/** Sets the platform filter to match true against all platforms. */
+	public void platformAll() {
+		assertNotUsed();
+		filterProps.remove("osgi.os");
+		filterProps.remove("osgi.ws");
+		filterProps.remove("osgi.arch");
+	}
+
+	/** Sets the platform filter to match true against no platforms. */
+	public void platformNone() {
+		assertNotUsed();
+		filterProps.put("osgi.os", "zzz");
+		filterProps.put("osgi.ws", "zzz");
+		filterProps.put("osgi.arch", "zzz");
 	}
 
 	/** Resolves the given P2Unit by eagerly traversing all its dependencies. */
-	public void resolve(String idToResolve) {
-		resolve(session.getUnitById(idToResolve));
+	public void install(String idToResolve) {
+		install(session.getUnitById(idToResolve));
 	}
 
-	/** Returns the unit, if any, which has been resolved at the given id. */
-	public P2Unit findResolvedUnitById(String id) {
+	/** Returns the unit, if any, which has been installed at the given id. */
+	public P2Unit getInstalledUnitById(String id) {
 		return installed.get(id);
 	}
 
@@ -94,7 +111,7 @@ public class P2Query {
 	 * Returns every unit available in the parent session with the given id, possibly multiple
 	 * versions of the same id.
 	 */
-	public List<P2Unit> findAllAvailableUnitsById(String id) {
+	public List<P2Unit> getAllAvailableUnitsById(String id) {
 		return session.units.stream().filter(u -> u.id.equals(id)).collect(Collectors.toList());
 	}
 
@@ -118,13 +135,13 @@ public class P2Query {
 		return installed.putIfAbsent(unit.id, unit) == null;
 	}
 
-	private void resolve(P2Unit toResolve) {
+	private void install(P2Unit toResolve) {
 		if (!addUnlessExcludedOrAlreadyPresent(toResolve)) {
 			return;
 		}
 		for (var requirement : toResolve.requires) {
 			if (requirement.hasOnlyOneProvider()) {
-				resolve(requirement.getOnlyProvider());
+				install(requirement.getOnlyProvider());
 			} else {
 				var units = requirement.getProviders();
 				if (units.isEmpty()) {
@@ -134,7 +151,7 @@ public class P2Query {
 					if (units.stream().anyMatch(u -> u.id.equals("a.jre.javase"))) {
 						continue;
 					}
-					resolve(units.get(0));
+					install(units.get(0));
 					ambiguousRequirements.add(requirement);
 				}
 			}

@@ -98,9 +98,9 @@ public class LaunchMojo extends AbstractMojo {
 			}
 
 			var query = session.query();
-			query.setPlatform(SwtPlatform.getRunning());
+			query.platform(SwtPlatform.getRunning());
 			if (equoTestOnlyTrue) {
-				query.resolve("org.eclipse.swt");
+				query.install("org.eclipse.swt");
 			} else {
 				JdtSetup.mavenCoordinate(query, session);
 			}

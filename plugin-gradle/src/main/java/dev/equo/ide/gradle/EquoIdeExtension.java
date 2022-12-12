@@ -146,12 +146,12 @@ public class EquoIdeExtension {
 			}
 		}
 		var query = session.query();
-		query.setPlatform(SwtPlatform.getRunning());
+		query.platform(SwtPlatform.getRunning());
 		for (var filter : filters.values()) {
 			filter.execute(query);
 		}
 		for (var target : targets) {
-			query.resolve(target);
+			query.install(target);
 		}
 		return query;
 	}

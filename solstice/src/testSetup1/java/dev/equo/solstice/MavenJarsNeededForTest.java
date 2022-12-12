@@ -39,13 +39,13 @@ public class MavenJarsNeededForTest {
 		var query = session.query();
 		// this could be SwtPlatfrom.getRunning(), but for CI it's important for the list to be
 		// cross-platform
-		query.setPlatform(SwtPlatform.parseWsOsArch("x.x.x"));
+		query.platform(SwtPlatform.parseWsOsArch("x.x.x"));
 		query.excludePrefix("org.apache.felix.gogo");
 		query.excludePrefix("org.eclipse.equinox.console");
 		query.excludePrefix("org.eclipse.equinox.p2");
-		query.resolve("org.eclipse.releng.java.languages.categoryIU");
-		query.resolve("org.eclipse.platform.ide.categoryIU");
-		query.resolve("org.eclipse.equinox.event");
+		query.install("org.eclipse.releng.java.languages.categoryIU");
+		query.install("org.eclipse.platform.ide.categoryIU");
+		query.install("org.eclipse.equinox.event");
 
 		var content = new StringBuilder();
 		for (var coordinate : query.getJarsOnMavenCentral()) {

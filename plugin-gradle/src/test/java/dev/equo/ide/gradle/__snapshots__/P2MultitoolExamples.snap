@@ -126,8 +126,6 @@ WARNING!!! gradlew equoList --problems
 | org.eclipse.jdt:org.eclipse.jdt.junit4.runtime:1.3.0                            | mavenCentral? |
 | org.eclipse.jdt:org.eclipse.jdt.junit5.runtime:1.1.100                          | mavenCentral? |
 | org.eclipse.jdt:org.eclipse.jdt.junit:3.15.100                                  | mavenCentral? |
-| org.eclipse.jdt:org.eclipse.jdt.launching.macosx:3.5.100                        | mavenCentral? |
-| org.eclipse.jdt:org.eclipse.jdt.launching.ui.macosx:1.3.100                     | mavenCentral? |
 | org.eclipse.jdt:org.eclipse.jdt.launching:3.19.800                              | mavenCentral? |
 | org.eclipse.jdt:org.eclipse.jdt.ui:3.27.100                                     | mavenCentral? |
 | org.eclipse.jdt:org.eclipse.jdt:3.18.1400                                       | mavenCentral? |
@@ -206,12 +204,6 @@ WARNING!!! gradlew equoList --problems
 | org.eclipse.platform:org.eclipse.osgi.services:3.11.100                         | mavenCentral? |
 | org.eclipse.platform:org.eclipse.osgi:3.18.200                                  | mavenCentral? |
 | org.eclipse.platform:org.eclipse.search:3.14.300                                | mavenCentral? |
-| org.eclipse.platform:org.eclipse.swt.cocoa.macosx.aarch64:3.122.0               | mavenCentral? |
-| org.eclipse.platform:org.eclipse.swt.cocoa.macosx.x86_64:3.122.0                | mavenCentral? |
-| org.eclipse.platform:org.eclipse.swt.gtk.linux.aarch64:3.122.0                  | mavenCentral? |
-| org.eclipse.platform:org.eclipse.swt.gtk.linux.ppc64le:3.122.0                  | mavenCentral? |
-| org.eclipse.platform:org.eclipse.swt.gtk.linux.x86_64:3.122.0                   | mavenCentral? |
-| org.eclipse.platform:org.eclipse.swt.win32.win32.x86_64:3.122.0                 | mavenCentral? |
 | org.eclipse.platform:org.eclipse.swt:3.122.0                                    | mavenCentral? |
 | org.eclipse.platform:org.eclipse.team.core:3.9.600                              | mavenCentral? |
 | org.eclipse.platform:org.eclipse.team.ui:3.9.500                                | mavenCentral? |

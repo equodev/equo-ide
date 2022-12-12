@@ -29,7 +29,7 @@ public class P2MultitoolExamples extends GradleHarness {
 						"equoIde {",
 						"  p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'",
 						"  addFilter 'platform-neutral', {",
-						"    setPlatform(null)",
+						"    platformNone()",
 						"  }",
 						"}");
 		run("-q", "equoList", "--all=categories").snapshot(expect);
@@ -43,7 +43,7 @@ public class P2MultitoolExamples extends GradleHarness {
 						"equoIde {",
 						"  p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'",
 						"  addFilter 'platform-neutral', {",
-						"    setPlatform(null)",
+						"    platformNone()",
 						"  }",
 						"}");
 		run("-q", "equoList", "--installed").snapshot(expect);
@@ -57,7 +57,7 @@ public class P2MultitoolExamples extends GradleHarness {
 						"equoIde {",
 						"  p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'",
 						"  addFilter 'platform-neutral', {",
-						"    setPlatform(null)",
+						"    platformNone()",
 						"  }",
 						"  install 'org.eclipse.releng.java.languages.categoryIU'",
 						"}");
@@ -72,7 +72,7 @@ public class P2MultitoolExamples extends GradleHarness {
 						"equoIde {",
 						"  p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'",
 						"  addFilter 'platform-neutral', {",
-						"    setPlatform(null)",
+						"    platformNone()",
 						"  }",
 						"  install 'org.eclipse.releng.java.languages.categoryIU'",
 						"}");
@@ -87,7 +87,7 @@ public class P2MultitoolExamples extends GradleHarness {
 						"equoIde {",
 						"  p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'",
 						"  addFilter 'platform-neutral', {",
-						"    setPlatform(null)",
+						"    platformNone()",
 						"  }",
 						"  install 'org.eclipse.releng.java.languages.categoryIU'",
 						"}");
@@ -105,7 +105,7 @@ public class P2MultitoolExamples extends GradleHarness {
 						"equoIde {",
 						"  p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'",
 						"  addFilter 'platform-neutral', {",
-						"    setPlatform(null)",
+						"    platformNone()",
 						"  }",
 						"  install 'org.eclipse.releng.java.languages.categoryIU'",
 						"}");
