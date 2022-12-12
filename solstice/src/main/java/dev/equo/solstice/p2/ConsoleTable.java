@@ -135,12 +135,12 @@ public class ConsoleTable {
 			}
 			for (var req : unit.requires) {
 				if (req.hasOnlyOneProvider()) {
-					table.add("req " + req.name, req.getOnlyProvider().id);
+					table.add("req " + req.name, req.getOnlyProvider().toString());
 				} else {
 					var available = req.getProviders();
 					table.add("req " + req.name, available.size() + " available");
 					for (var a : available) {
-						table.add("", a.getId() + ":" + a.getVersion());
+						table.add("", a.toString());
 					}
 				}
 			}
@@ -168,6 +168,9 @@ public class ConsoleTable {
 				int lineStart = 0;
 				int i = 0;
 				while (i + maxLen < value.length() && (i = value.lastIndexOf(' ', i + maxLen)) != -1) {
+					if (i < lineStart) {
+						break;
+					}
 					lines.add(value.substring(lineStart, i));
 					lineStart = ++i;
 				}
