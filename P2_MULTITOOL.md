@@ -1,6 +1,14 @@
 # P2 Multitool
 
-The EquoIDE gradle plugin can help you browse and debug p2 repositories. The maven plugin will get these features someday ([#25](https://github.com/equodev/equo-ide/issues/25)), but in the meantime this quickstart assumes that you have zero knowledge of gradle and p2. If you'd like to follow along and modify the examples to suit your problem, just download (TODO link to `p2multitool.tar.gz`) and extract it to a directory of your choice - you don't need to install anything else (besides a JDK on your system path).
+[//]: <> (UPDATE CHECKLIST)
+[//]: <> (update version in plugin-gradle/example-gradle/build.gradle)
+[//]: <> ($ rm *.tar)
+[//]: <> ($ ./gradlew p2multitool)
+[//]: <> ($ cp p2multi<tab> p2multitool-latest.tar)
+[//]: <> (update link in paragraph immediately below)
+[//]: <> (update version in paragraph quickstart)
+
+The EquoIDE gradle plugin can help you browse and debug p2 repositories. The maven plugin will get these features someday ([#25](https://github.com/equodev/equo-ide/issues/25)), but in the meantime this quickstart assumes that you have zero knowledge of gradle and p2. If you'd like to follow along and modify the examples to suit your problem, just download [`p2multitool-0.5.0.tar`](https://github.com/equodev/equo-ide/raw/main/p2multitool-0.5.0.tar) and extract it to a directory of your choice - you don't need to install anything else (besides a JDK on your system path).
 
 ## Command reference
 
