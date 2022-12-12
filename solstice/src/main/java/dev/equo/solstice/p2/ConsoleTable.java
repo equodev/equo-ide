@@ -59,7 +59,7 @@ public class ConsoleTable {
 		if (query.getAmbiguousRequirements().isEmpty()) {
 			return "No ambiguous requirements.";
 		}
-		var table = new NColumnTable("ambiguous requirement", "candidate", "resolved");
+		var table = new NColumnTable("ambiguous requirement", "candidate", "installed");
 		for (var requirement : query.getAmbiguousRequirements()) {
 			var candidates = requirement.getProviders();
 			for (int i = 0; i < candidates.size(); ++i) {

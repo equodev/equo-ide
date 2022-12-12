@@ -330,24 +330,24 @@ dev.equo.ide.gradle.P2MultitoolExamples._04=[
 | java.package:weblogic                           | org.apache.ant:1.10.12.v20211102-1452           |
 +-------------------------------------------------+-------------------------------------------------+
 
-+-------------------------------------------------------------+-----------------------------------------------------------+----------+
-| ambiguous requirement                                       | candidate                                                 | resolved |
-+-------------------------------------------------------------+-----------------------------------------------------------+----------+
-| java.package:org.eclipse.jdt.internal.compiler.apt.dispatch | org.eclipse.jdt.compiler.apt:1.4.300.v20221108-0856       | [x]      |
-|                                                             | org.eclipse.jdt.core.compiler.batch:3.32.0.v20221108-1853 | [ ]      |
-| java.package:org.eclipse.jdt.internal.compiler.apt.model    | org.eclipse.jdt.compiler.apt:1.4.300.v20221108-0856       | [x]      |
-|                                                             | org.eclipse.jdt.core.compiler.batch:3.32.0.v20221108-1853 | [ ]      |
-| java.package:org.eclipse.jdt.internal.compiler.apt.util     | org.eclipse.jdt.compiler.apt:1.4.300.v20221108-0856       | [x]      |
-|                                                             | org.eclipse.jdt.core.compiler.batch:3.32.0.v20221108-1853 | [ ]      |
-| java.package:org.eclipse.jdt.internal.compiler.tool         | org.eclipse.jdt.compiler.tool:1.3.200.v20220802-0458      | [x]      |
-|                                                             | org.eclipse.jdt.core.compiler.batch:3.32.0.v20221108-1853 | [ ]      |
-| java.package:org.osgi.service.component.annotations         | org.eclipse.osgi.services:3.11.100.v20221006-1531         | [x]      |
-|                                                             | org.osgi.service.component.annotations:1.5.0.202109301733 | [ ]      |
-| org.eclipse.equinox.p2.iu:org.eclipse.jdt.annotation        | org.eclipse.jdt.annotation:2.2.700.v20220826-1026         | [x]      |
-|                                                             | org.eclipse.jdt.annotation:1.2.100.v20220826-1026         | [ ]      |
-| org.eclipse.equinox.p2.iu:org.eclipse.jdt.annotation.source | org.eclipse.jdt.annotation.source:2.2.700.v20220826-1026  | [x]      |
-|                                                             | org.eclipse.jdt.annotation.source:1.2.100.v20220826-1026  | [ ]      |
-| osgi.bundle:org.eclipse.jdt.annotation                      | org.eclipse.jdt.annotation:2.2.700.v20220826-1026         | [x]      |
-|                                                             | org.eclipse.jdt.annotation:1.2.100.v20220826-1026         | [ ]      |
-+-------------------------------------------------------------+-----------------------------------------------------------+----------+
++-------------------------------------------------------------+-----------------------------------------------------------+-----------+
+| ambiguous requirement                                       | candidate                                                 | installed |
++-------------------------------------------------------------+-----------------------------------------------------------+-----------+
+| java.package:org.eclipse.jdt.internal.compiler.apt.dispatch | org.eclipse.jdt.compiler.apt:1.4.300.v20221108-0856       | [x]       |
+|                                                             | org.eclipse.jdt.core.compiler.batch:3.32.0.v20221108-1853 | [ ]       |
+| java.package:org.eclipse.jdt.internal.compiler.apt.model    | org.eclipse.jdt.compiler.apt:1.4.300.v20221108-0856       | [x]       |
+|                                                             | org.eclipse.jdt.core.compiler.batch:3.32.0.v20221108-1853 | [ ]       |
+| java.package:org.eclipse.jdt.internal.compiler.apt.util     | org.eclipse.jdt.compiler.apt:1.4.300.v20221108-0856       | [x]       |
+|                                                             | org.eclipse.jdt.core.compiler.batch:3.32.0.v20221108-1853 | [ ]       |
+| java.package:org.eclipse.jdt.internal.compiler.tool         | org.eclipse.jdt.compiler.tool:1.3.200.v20220802-0458      | [x]       |
+|                                                             | org.eclipse.jdt.core.compiler.batch:3.32.0.v20221108-1853 | [ ]       |
+| java.package:org.osgi.service.component.annotations         | org.eclipse.osgi.services:3.11.100.v20221006-1531         | [x]       |
+|                                                             | org.osgi.service.component.annotations:1.5.0.202109301733 | [ ]       |
+| org.eclipse.equinox.p2.iu:org.eclipse.jdt.annotation        | org.eclipse.jdt.annotation:2.2.700.v20220826-1026         | [x]       |
+|                                                             | org.eclipse.jdt.annotation:1.2.100.v20220826-1026         | [ ]       |
+| org.eclipse.equinox.p2.iu:org.eclipse.jdt.annotation.source | org.eclipse.jdt.annotation.source:2.2.700.v20220826-1026  | [x]       |
+|                                                             | org.eclipse.jdt.annotation.source:1.2.100.v20220826-1026  | [ ]       |
+| osgi.bundle:org.eclipse.jdt.annotation                      | org.eclipse.jdt.annotation:2.2.700.v20220826-1026         | [x]       |
+|                                                             | org.eclipse.jdt.annotation:1.2.100.v20220826-1026         | [ ]       |
++-------------------------------------------------------------+-----------------------------------------------------------+-----------+
 ]
