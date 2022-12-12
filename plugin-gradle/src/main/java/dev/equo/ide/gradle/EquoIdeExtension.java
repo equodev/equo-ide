@@ -58,6 +58,7 @@ public class EquoIdeExtension {
 					query.excludePrefix("org.apache.felix.gogo");
 					query.excludePrefix("org.eclipse.equinox.console");
 					query.excludePrefix("org.eclipse.equinox.p2");
+					query.excludeSuffix(".source");
 				});
 	}
 
