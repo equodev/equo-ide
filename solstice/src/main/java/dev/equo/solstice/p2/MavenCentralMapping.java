@@ -45,7 +45,7 @@ class MavenCentralMapping {
 	private static String groupIdArtifactId(String bundleId) {
 		if (bundleId.endsWith(".feature")) {
 			return null;
-		} else if (bundleId.startsWith("feature.jar")) {
+		} else if (bundleId.endsWith("feature.jar")) {
 			return null;
 		} else if (bundleId.endsWith(".source")) {
 			return null;
