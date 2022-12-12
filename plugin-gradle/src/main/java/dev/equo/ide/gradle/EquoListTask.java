@@ -152,8 +152,8 @@ public abstract class EquoListTask extends DefaultTask {
 	}
 
 	private static void detail(P2Query query, String detail, ConsoleTable.Format format) {
-		var resolved = query.findResolvedUnitById(detail);
-		var allAvailable = query.findAllAvailableUnitsById(detail);
+		var resolved = query.getInstalledUnitById(detail);
+		var allAvailable = query.getAllAvailableUnitsById(detail);
 		if (allAvailable.size() == 1) {
 			System.out.println("1 unit available with id " + detail);
 		} else {
@@ -171,9 +171,9 @@ public abstract class EquoListTask extends DefaultTask {
 	}
 
 	private static void raw(P2Query query, String raw) throws TransformerException {
-		var allAvailable = query.findAllAvailableUnitsById(raw);
+		var allAvailable = query.getAllAvailableUnitsById(raw);
 		for (var unit : allAvailable) {
-			System.out.println(unit.rawXml());
+			System.out.println(unit.getRawXml());
 		}
 	}
 

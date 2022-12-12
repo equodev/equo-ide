@@ -46,7 +46,7 @@ public class EquoIdeExtension {
 		release(JdtSetup.DEFAULT_VERSION);
 	}
 
-	/** Sets which eclipse release to use, such as "4.25", "4.26", or a future release. */
+	/** Sets which eclipse JDT release to use, such as "4.25", "4.26", or a future release. */
 	public void release(String version) {
 		if (version.indexOf('/') != -1) {
 			throw new IllegalArgumentException("Version should not have any slashes");
@@ -64,6 +64,7 @@ public class EquoIdeExtension {
 				});
 	}
 
+	/** Adds the given p2 repo to the list of repositories to populate the session with. */
 	public void p2repo(String p2) {
 		if (!p2.endsWith("/")) {
 			throw new GradleException(
@@ -88,6 +89,7 @@ public class EquoIdeExtension {
 		repos.add(p2);
 	}
 
+	/** Marks the given unit id for installation. */
 	public void install(String target) {
 		targets.add(target);
 	}
@@ -144,12 +146,12 @@ public class EquoIdeExtension {
 			}
 		}
 		var query = session.query();
-		query.setPlatform(SwtPlatform.getRunning());
+		query.platform(SwtPlatform.getRunning());
 		for (var filter : filters.values()) {
 			filter.execute(query);
 		}
 		for (var target : targets) {
-			query.resolve(target);
+			query.install(target);
 		}
 		return query;
 	}

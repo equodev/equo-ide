@@ -27,6 +27,7 @@ import org.osgi.framework.InvalidSyntaxException;
 public class P2Session {
 	List<P2Unit> units = new ArrayList<>();
 
+	/** Adds every {@link P2Unit} from the given url into this session. */
 	public void populateFrom(P2Client client, String url) throws Exception {
 		client.addUnits(this, url);
 		sort();
@@ -54,6 +55,7 @@ public class P2Session {
 		throw new IllegalArgumentException("No such unit id " + id);
 	}
 
+	/** Creates a new {@link P2Query} against this session. */
 	public P2Query query() {
 		return new P2Query(this);
 	}
@@ -69,6 +71,16 @@ public class P2Session {
 			this.name = name;
 		}
 
+		/** The namespace of the capability. */
+		public String getNamespace() {
+			return namespace;
+		}
+
+		/** The name of the capability. */
+		public String getName() {
+			return name;
+		}
+
 		private void add(P2Unit unit) {
 			providers = add(providers, unit);
 		}
@@ -77,6 +89,7 @@ public class P2Session {
 			return providers instanceof P2Unit;
 		}
 
+		/** Pairs with {@link #hasOnlyOneProvider()}. */
 		public P2Unit getOnlyProvider() {
 			return (P2Unit) providers;
 		}
@@ -116,6 +129,7 @@ public class P2Session {
 			}
 		}
 
+		/** Sorts based on namespace then on name. */
 		@Override
 		public int compareTo(@NotNull Requirement o) {
 			int byNamespace = namespace.compareTo(o.namespace);

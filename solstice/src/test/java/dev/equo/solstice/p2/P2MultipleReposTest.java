@@ -44,7 +44,7 @@ public class P2MultipleReposTest {
 	public void query(Expect expect) throws Exception {
 		var session = populateSession();
 		var query = session.query();
-		query.resolve("202211300214.main");
+		query.install("202211300214.main");
 		var buffer = new StringBuilder();
 		buffer.append(ConsoleTable.ambiguousRequirements(query, format));
 		buffer.append('\n');

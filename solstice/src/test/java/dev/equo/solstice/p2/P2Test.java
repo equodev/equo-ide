@@ -42,7 +42,7 @@ public class P2Test {
 		query.exclude("org.eclipse.platform_root");
 		query.exclude("org.eclipse.rcp_root");
 		query.excludePrefix("tooling");
-		query.resolve("org.eclipse.platform.ide.categoryIU");
+		query.install("org.eclipse.platform.ide.categoryIU");
 		expect.toMatchSnapshot(ConsoleTable.mavenStatus(query.getJars(), ConsoleTable.Format.ASCII));
 	}
 
@@ -50,14 +50,14 @@ public class P2Test {
 	public void queryPlatformSpecific(Expect expect) throws Exception {
 		var session = populateSession(P2Client.Caching.ALLOW_OFFLINE);
 		var query = session.query();
-		query.resolve("org.eclipse.swt");
+		query.install("org.eclipse.swt");
 		expect
 				.scenario("all-platforms")
 				.toMatchSnapshot(ConsoleTable.mavenStatus(query.getJars(), ConsoleTable.Format.ASCII));
 
 		var macQuery = session.query();
-		macQuery.setPlatform(SwtPlatform.parseWsOsArch("cocoa.macosx.aarch64"));
-		macQuery.resolve("org.eclipse.swt");
+		macQuery.platform(SwtPlatform.parseWsOsArch("cocoa.macosx.aarch64"));
+		macQuery.install("org.eclipse.swt");
 		expect
 				.scenario("mac-only")
 				.toMatchSnapshot(ConsoleTable.mavenStatus(macQuery.getJars(), ConsoleTable.Format.ASCII));

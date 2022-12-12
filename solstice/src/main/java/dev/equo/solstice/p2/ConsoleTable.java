@@ -20,6 +20,7 @@ import java.util.List;
 
 /** Formats P2Unit for display at the console. */
 public class ConsoleTable {
+	/** Determines which format to print the table in. */
 	public enum Format {
 		ASCII,
 		CSV
@@ -40,7 +41,7 @@ public class ConsoleTable {
 		return Table.getTable(format, mavenStates, coordinate, repo);
 	}
 
-	/** Returns a table with the id and name of all its units. */
+	/** Returns a table with the id, name, and description of all its units. */
 	public static String nameAndDescription(Collection<P2Unit> units, Format format) {
 		var table = new WordWrapTable();
 		for (var unit : units) {
@@ -55,6 +56,7 @@ public class ConsoleTable {
 		return table.toString("id", "name \\n description", format);
 	}
 
+	/** Returns a table describing all ambiguous requirements and how they ended up. */
 	public static String ambiguousRequirements(P2Query query, Format format) {
 		if (query.getAmbiguousRequirements().isEmpty()) {
 			return "No ambiguous requirements.";
@@ -65,12 +67,13 @@ public class ConsoleTable {
 			for (int i = 0; i < candidates.size(); ++i) {
 				var candidate = candidates.get(i);
 				var firstCell = i == 0 ? requirement.toString() : "";
-				table.addRow(firstCell, candidate.toString(), query.isResolved(candidate) ? "[x]" : "[ ]");
+				table.addRow(firstCell, candidate.toString(), query.isInstalled(candidate) ? "[x]" : "[ ]");
 			}
 		}
 		return table.toString(format);
 	}
 
+	/** Returns a table describing all unmet requirements and who they affect. */
 	public static String unmetRequirements(P2Query query, Format format) {
 		if (query.getUnmetRequirements().isEmpty()) {
 			return "No unmet requirements.";
@@ -110,6 +113,7 @@ public class ConsoleTable {
 		}
 	}
 
+	/** Returns a table with the parsed details of the given units. */
 	public static String detail(Collection<P2Unit> units, Format format) {
 		if (units.isEmpty()) {
 			return "(none)";

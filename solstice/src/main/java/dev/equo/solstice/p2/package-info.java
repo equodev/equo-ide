@@ -9,7 +9,7 @@
  *   session.populateFrom(client, "https://download.eclipse.org/eclipse/updates/4.26")
  * }
  * var query = new P2Query(); // stores the results of a query against the p2 metadata, including requires/provides
- * query.setPlatform(SwtPlatform.getRunning()); // filters artifacts based on the platform
+ * query.platform(SwtPlatform.getRunning()); // filters artifacts based on the platform
  * query.resolve(session.getUnitById("org.eclipse.platform.ide.categoryIU")); // resolves dependencies of the given IU
  *
  * for (String mavenCoord : query.jarsOnMavenCentral()) {
