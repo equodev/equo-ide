@@ -178,8 +178,12 @@ public abstract class EquoListTask extends DefaultTask {
 		int numAmbiguous = query.getAmbiguousRequirements().size();
 		if (numUnmet > 0 || numAmbiguous > 0) {
 			System.out.println(
-					numUnmet + " unmet requirement(s), " + numAmbiguous + " ambigous requirement(s)");
-			System.out.println("for more info: gradlew equoList --problems");
+					"WARNING!!! "
+							+ numUnmet
+							+ " unmet requirement(s), "
+							+ numAmbiguous
+							+ " ambigous requirement(s). For more info:");
+			System.out.println("WARNING!!! gradlew equoList --problems");
 		}
 		System.out.println(ConsoleTable.mavenStatus(query.getJars(), format));
 	}

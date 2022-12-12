@@ -979,8 +979,8 @@ slf4j.nop,slf4j-nop
 
 
 dev.equo.ide.gradle.EquoListTest.defaultP2[installed]=[
-47 unmet requirement(s), 14 ambigous requirement(s)
-for more info: gradlew equoList --problems
+WARNING!!! 47 unmet requirement(s), 14 ambigous requirement(s). For more info:
+WARNING!!! gradlew equoList --problems
 +--------------------------------------------------------------------------------------------+---------------+
 | maven coordinate / p2 id                                                                   | repo          |
 +--------------------------------------------------------------------------------------------+---------------+
@@ -1575,8 +1575,8 @@ No ambiguous requirements.
 
 
 dev.equo.ide.gradle.EquoListTest.installedSwtCsv[installed]=[
-1 unmet requirement(s), 0 ambigous requirement(s)
-for more info: gradlew equoList --problems
+WARNING!!! 1 unmet requirement(s), 0 ambigous requirement(s). For more info:
+WARNING!!! gradlew equoList --problems
 maven coordinate / p2 id,repo
 org.eclipse.platform:org.eclipse.swt.cocoa.macosx.aarch64:3.122.0,mavenCentral?
 org.eclipse.platform:org.eclipse.swt.cocoa.macosx.x86_64:3.122.0,mavenCentral?
@@ -1597,8 +1597,8 @@ No ambiguous requirements.
 
 
 dev.equo.ide.gradle.EquoListTest.installedSwt[installed]=[
-1 unmet requirement(s), 0 ambigous requirement(s)
-for more info: gradlew equoList --problems
+WARNING!!! 1 unmet requirement(s), 0 ambigous requirement(s). For more info:
+WARNING!!! gradlew equoList --problems
 +-------------------------------------------------------------------+---------------+
 | maven coordinate / p2 id                                          | repo          |
 +-------------------------------------------------------------------+---------------+
