@@ -18,6 +18,7 @@ import dev.equo.solstice.p2.JdtSetup;
 import dev.equo.solstice.p2.P2Client;
 import dev.equo.solstice.p2.P2Query;
 import dev.equo.solstice.p2.P2Session;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import org.gradle.api.Action;
@@ -25,20 +26,20 @@ import org.gradle.api.GradleException;
 
 /** The DSL inside the equoIde block. */
 public class EquoIdeExtension {
-	private Set<String> repos = new LinkedHashSet<>();
-	private Set<String> targets = new LinkedHashSet<>();
-	private Action<P2Query> queryHandler = null;
+	private final Set<String> repos = new LinkedHashSet<>();
+	private final Set<String> targets = new LinkedHashSet<>();
+	private final LinkedHashMap<String, Action<P2Query>> filters = new LinkedHashMap<>();
 
 	private EquoIdeExtension copy() {
 		var copy = new EquoIdeExtension();
 		copy.repos.addAll(repos);
 		copy.targets.addAll(targets);
-		copy.queryHandler = queryHandler;
+		copy.filters.putAll(filters);
 		return copy;
 	}
 
 	private boolean isEmpty() {
-		return repos.isEmpty() && targets.isEmpty() && queryHandler == null;
+		return repos.isEmpty() && targets.isEmpty() && filters.isEmpty();
 	}
 
 	private void setToDefault() {
@@ -53,7 +54,8 @@ public class EquoIdeExtension {
 		p2repo("https://download.eclipse.org/eclipse/updates/" + version + "/");
 		install("org.eclipse.releng.java.languages.categoryIU");
 		install("org.eclipse.platform.ide.categoryIU");
-		filter(
+		addFilter(
+				"JDT " + version,
 				query -> {
 					query.excludePrefix("org.apache.felix.gogo");
 					query.excludePrefix("org.eclipse.equinox.console");
@@ -90,8 +92,39 @@ public class EquoIdeExtension {
 		targets.add(target);
 	}
 
-	public void filter(Action<P2Query> query) {
-		this.queryHandler = query;
+	/** Adds a filter with the given name. Duplicate names are not allowed. */
+	public void addFilter(String name, Action<P2Query> query) {
+		var lastFilter = filters.put(name, query);
+		if (lastFilter != null) {
+			throw new GradleException(
+					"There was already a filter with named '"
+							+ name
+							+ "'\n"
+							+ "You can fix this by:\n"
+							+ "  - picking a new name for the filter\n"
+							+ "  - calling `replaceFilter` instead of `addFilter`\n"
+							+ "  - calling `clearAllFilters()` and then `addFilter`");
+		}
+	}
+
+	/** Replaces the filter with the given name. Throws an error if no such filter exists. */
+	public void replaceFilter(String name, Action<P2Query> query) {
+		var lastFilter = filters.put(name, query);
+		if (lastFilter == null) {
+			throw new GradleException(
+					"You called `replaceFilter('"
+							+ name
+							+ "', ...)` "
+							+ "but there wasn't a filter with that name.\n"
+							+ "Call `addFilter('"
+							+ name
+							+ "', ...) instead.");
+		}
+	}
+
+	/** Removes all filters. */
+	public void clearFilters() {
+		filters.clear();
 	}
 
 	P2Query performQuery() throws Exception {
@@ -112,8 +145,8 @@ public class EquoIdeExtension {
 		}
 		var query = session.query();
 		query.setPlatform(SwtPlatform.getRunning());
-		if (queryHandler != null) {
-			queryHandler.execute(query);
+		for (var filter : filters.values()) {
+			filter.execute(query);
 		}
 		for (var target : targets) {
 			query.resolve(target);

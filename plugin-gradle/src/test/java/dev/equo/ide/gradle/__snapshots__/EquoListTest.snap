@@ -979,7 +979,7 @@ slf4j.nop,slf4j-nop
 
 
 dev.equo.ide.gradle.EquoListTest.defaultP2[installed]=[
-WARNING!!! 47 unmet requirement(s), 14 ambigous requirement(s). For more info:
+WARNING!!! 46 unmet requirement(s), 14 ambigous requirement(s). For more info:
 WARNING!!! gradlew equoList --problems
 +--------------------------------------------------------------------------------------------+---------------+
 | maven coordinate / p2 id                                                                   | repo          |
@@ -991,14 +991,8 @@ WARNING!!! gradlew equoList --problems
 | javax.servlet.jsp:javax.servlet.jsp-api:2.3.3                                              | mavenCentral  |
 | net.java.dev.jna:jna-platform:5.12.1                                                       | mavenCentral  |
 | net.java.dev.jna:jna:5.12.1                                                                | mavenCentral  |
-| org.apache.felix:org.apache.felix.gogo.command:1.1.2                                       | mavenCentral  |
-| org.apache.felix:org.apache.felix.gogo.runtime:1.1.6                                       | mavenCentral  |
-| org.apache.felix:org.apache.felix.gogo.shell:1.1.4                                         | mavenCentral  |
 | org.apache.felix:org.apache.felix.scr:2.2.4                                                | mavenCentral  |
 | org.apiguardian:apiguardian-api:1.1.2                                                      | mavenCentral  |
-| org.apiguardian:apiguardian-api:1.1.2                                                      | mavenCentral  |
-| org.bouncycastle:bcpg-jdk18on:1.72                                                         | mavenCentral  |
-| org.bouncycastle:bcprov-jdk18on:1.72                                                       | mavenCentral  |
 | org.eclipse.jetty:jetty-http:10.0.12                                                       | mavenCentral  |
 | org.eclipse.jetty:jetty-io:10.0.12                                                         | mavenCentral  |
 | org.eclipse.jetty:jetty-security:10.0.12                                                   | mavenCentral  |
@@ -1007,30 +1001,17 @@ WARNING!!! gradlew equoList --problems
 | org.eclipse.jetty:jetty-util-ajax:10.0.12                                                  | mavenCentral  |
 | org.eclipse.jetty:jetty-util:10.0.12                                                       | mavenCentral  |
 | org.junit.jupiter:junit-jupiter-api:5.9.1                                                  | mavenCentral  |
-| org.junit.jupiter:junit-jupiter-api:5.9.1                                                  | mavenCentral  |
-| org.junit.jupiter:junit-jupiter-engine:5.9.1                                               | mavenCentral  |
 | org.junit.jupiter:junit-jupiter-engine:5.9.1                                               | mavenCentral  |
 | org.junit.jupiter:junit-jupiter-migrationsupport:5.9.1                                     | mavenCentral  |
-| org.junit.jupiter:junit-jupiter-migrationsupport:5.9.1                                     | mavenCentral  |
-| org.junit.jupiter:junit-jupiter-params:5.9.1                                               | mavenCentral  |
 | org.junit.jupiter:junit-jupiter-params:5.9.1                                               | mavenCentral  |
 | org.junit.platform:junit-platform-commons:1.9.1                                            | mavenCentral  |
-| org.junit.platform:junit-platform-commons:1.9.1                                            | mavenCentral  |
-| org.junit.platform:junit-platform-engine:1.9.1                                             | mavenCentral  |
 | org.junit.platform:junit-platform-engine:1.9.1                                             | mavenCentral  |
 | org.junit.platform:junit-platform-launcher:1.9.1                                           | mavenCentral  |
-| org.junit.platform:junit-platform-launcher:1.9.1                                           | mavenCentral  |
-| org.junit.platform:junit-platform-runner:1.9.1                                             | mavenCentral  |
 | org.junit.platform:junit-platform-runner:1.9.1                                             | mavenCentral  |
 | org.junit.platform:junit-platform-suite-api:1.9.1                                          | mavenCentral  |
-| org.junit.platform:junit-platform-suite-api:1.9.1                                          | mavenCentral  |
-| org.junit.platform:junit-platform-suite-commons:1.9.1                                      | mavenCentral  |
 | org.junit.platform:junit-platform-suite-commons:1.9.1                                      | mavenCentral  |
 | org.junit.platform:junit-platform-suite-engine:1.9.1                                       | mavenCentral  |
-| org.junit.platform:junit-platform-suite-engine:1.9.1                                       | mavenCentral  |
 | org.junit.vintage:junit-vintage-engine:5.9.1                                               | mavenCentral  |
-| org.junit.vintage:junit-vintage-engine:5.9.1                                               | mavenCentral  |
-| org.opentest4j:opentest4j:1.2.0                                                            | mavenCentral  |
 | org.opentest4j:opentest4j:1.2.0                                                            | mavenCentral  |
 | org.osgi:org.osgi.service.cm:1.6.1                                                         | mavenCentral  |
 | org.osgi:org.osgi.service.component:1.5.0                                                  | mavenCentral  |
@@ -1047,19 +1028,9 @@ WARNING!!! gradlew equoList --problems
 | org.osgi:org.osgi.util.position:1.0.1                                                      | mavenCentral  |
 | org.osgi:org.osgi.util.promise:1.2.0                                                       | mavenCentral  |
 | org.osgi:org.osgi.util.xml:1.0.2                                                           | mavenCentral  |
-| org.ow2.sat4j:org.ow2.sat4j.core:2.3.6                                                     | mavenCentral  |
-| org.ow2.sat4j:org.ow2.sat4j.pb:2.3.6                                                       | mavenCentral  |
 | org.slf4j:slf4j-api:1.7.36                                                                 | mavenCentral  |
 | org.slf4j:slf4j-nop:1.7.36                                                                 | mavenCentral  |
 | org.tukaani:xz:1.9                                                                         | mavenCentral  |
-| org.eclipse.ecf:org.eclipse.ecf.filetransfer:5.1.102                                       | mavenCentral? |
-| org.eclipse.ecf:org.eclipse.ecf.identity:3.9.402                                           | mavenCentral? |
-| org.eclipse.ecf:org.eclipse.ecf.provider.filetransfer.httpclient5.win32:1.0.501            | mavenCentral? |
-| org.eclipse.ecf:org.eclipse.ecf.provider.filetransfer.httpclient5:1.0.401                  | mavenCentral? |
-| org.eclipse.ecf:org.eclipse.ecf.provider.filetransfer.ssl:1.0.201                          | mavenCentral? |
-| org.eclipse.ecf:org.eclipse.ecf.provider.filetransfer:3.2.800                              | mavenCentral? |
-| org.eclipse.ecf:org.eclipse.ecf.ssl:1.2.401                                                | mavenCentral? |
-| org.eclipse.ecf:org.eclipse.ecf:3.10.0                                                     | mavenCentral? |
 | org.eclipse.emf:org.eclipse.emf.common:2.27.0                                              | mavenCentral? |
 | org.eclipse.emf:org.eclipse.emf.ecore.change:2.14.0                                        | mavenCentral? |
 | org.eclipse.emf:org.eclipse.emf.ecore.xmi:2.17.0                                           | mavenCentral? |
@@ -1136,7 +1107,6 @@ WARNING!!! gradlew equoList --problems
 | org.eclipse.platform:org.eclipse.e4.ui.dialogs:1.3.400                                     | mavenCentral? |
 | org.eclipse.platform:org.eclipse.e4.ui.ide:3.16.200                                        | mavenCentral? |
 | org.eclipse.platform:org.eclipse.e4.ui.model.workbench:2.2.300                             | mavenCentral? |
-| org.eclipse.platform:org.eclipse.e4.ui.progress:0.3.600                                    | mavenCentral? |
 | org.eclipse.platform:org.eclipse.e4.ui.services:1.5.100                                    | mavenCentral? |
 | org.eclipse.platform:org.eclipse.e4.ui.swt.gtk:1.1.200                                     | mavenCentral? |
 | org.eclipse.platform:org.eclipse.e4.ui.swt.win32:1.1.100                                   | mavenCentral? |
@@ -1150,8 +1120,6 @@ WARNING!!! gradlew equoList --problems
 | org.eclipse.platform:org.eclipse.equinox.app:1.6.200                                       | mavenCentral? |
 | org.eclipse.platform:org.eclipse.equinox.bidi:1.4.200                                      | mavenCentral? |
 | org.eclipse.platform:org.eclipse.equinox.common:3.17.0                                     | mavenCentral? |
-| org.eclipse.platform:org.eclipse.equinox.concurrent:1.2.100                                | mavenCentral? |
-| org.eclipse.platform:org.eclipse.equinox.console:1.4.500                                   | mavenCentral? |
 | org.eclipse.platform:org.eclipse.equinox.event:1.6.100                                     | mavenCentral? |
 | org.eclipse.platform:org.eclipse.equinox.frameworkadmin.equinox:1.2.200                    | mavenCentral? |
 | org.eclipse.platform:org.eclipse.equinox.frameworkadmin:2.2.100                            | mavenCentral? |
@@ -1168,33 +1136,6 @@ WARNING!!! gradlew equoList --problems
 | org.eclipse.platform:org.eclipse.equinox.launcher.gtk.linux.x86_64:1.2.700                 | mavenCentral? |
 | org.eclipse.platform:org.eclipse.equinox.launcher.win32.win32.x86_64:1.2.700               | mavenCentral? |
 | org.eclipse.platform:org.eclipse.equinox.launcher:1.6.400                                  | mavenCentral? |
-| org.eclipse.platform:org.eclipse.equinox.p2.artifact.repository:1.4.600                    | mavenCentral? |
-| org.eclipse.platform:org.eclipse.equinox.p2.console:1.2.100                                | mavenCentral? |
-| org.eclipse.platform:org.eclipse.equinox.p2.core:2.9.200                                   | mavenCentral? |
-| org.eclipse.platform:org.eclipse.equinox.p2.director.app:1.2.300                           | mavenCentral? |
-| org.eclipse.platform:org.eclipse.equinox.p2.director:2.5.400                               | mavenCentral? |
-| org.eclipse.platform:org.eclipse.equinox.p2.directorywatcher:1.3.100                       | mavenCentral? |
-| org.eclipse.platform:org.eclipse.equinox.p2.engine:2.7.500                                 | mavenCentral? |
-| org.eclipse.platform:org.eclipse.equinox.p2.extensionlocation:1.4.100                      | mavenCentral? |
-| org.eclipse.platform:org.eclipse.equinox.p2.garbagecollector:1.2.100                       | mavenCentral? |
-| org.eclipse.platform:org.eclipse.equinox.p2.jarprocessor:1.2.300                           | mavenCentral? |
-| org.eclipse.platform:org.eclipse.equinox.p2.metadata.repository:1.4.100                    | mavenCentral? |
-| org.eclipse.platform:org.eclipse.equinox.p2.metadata:2.6.300                               | mavenCentral? |
-| org.eclipse.platform:org.eclipse.equinox.p2.operations:2.6.100                             | mavenCentral? |
-| org.eclipse.platform:org.eclipse.equinox.p2.publisher.eclipse:1.4.200                      | mavenCentral? |
-| org.eclipse.platform:org.eclipse.equinox.p2.publisher:1.7.200                              | mavenCentral? |
-| org.eclipse.platform:org.eclipse.equinox.p2.reconciler.dropins:1.4.200                     | mavenCentral? |
-| org.eclipse.platform:org.eclipse.equinox.p2.repository.tools:2.3.200                       | mavenCentral? |
-| org.eclipse.platform:org.eclipse.equinox.p2.repository:2.6.300                             | mavenCentral? |
-| org.eclipse.platform:org.eclipse.equinox.p2.touchpoint.eclipse:2.3.300                     | mavenCentral? |
-| org.eclipse.platform:org.eclipse.equinox.p2.touchpoint.natives:1.4.400                     | mavenCentral? |
-| org.eclipse.platform:org.eclipse.equinox.p2.transport.ecf:1.3.300                          | mavenCentral? |
-| org.eclipse.platform:org.eclipse.equinox.p2.ui.importexport:1.3.300                        | mavenCentral? |
-| org.eclipse.platform:org.eclipse.equinox.p2.ui.sdk.scheduler:1.5.400                       | mavenCentral? |
-| org.eclipse.platform:org.eclipse.equinox.p2.ui.sdk:1.2.100                                 | mavenCentral? |
-| org.eclipse.platform:org.eclipse.equinox.p2.ui:2.7.700                                     | mavenCentral? |
-| org.eclipse.platform:org.eclipse.equinox.p2.updatechecker:1.3.100                          | mavenCentral? |
-| org.eclipse.platform:org.eclipse.equinox.p2.updatesite:1.2.300                             | mavenCentral? |
 | org.eclipse.platform:org.eclipse.equinox.preferences:3.10.100                              | mavenCentral? |
 | org.eclipse.platform:org.eclipse.equinox.registry:3.11.200                                 | mavenCentral? |
 | org.eclipse.platform:org.eclipse.equinox.security.linux:1.0.300                            | mavenCentral? |
@@ -1274,40 +1215,13 @@ WARNING!!! gradlew equoList --problems
 | org.apache.batik.css:1.16.0.v20221027-0840                                                 | p2            |
 | org.apache.batik.i18n:1.16.0.v20221027-0840                                                | p2            |
 | org.apache.batik.util:1.16.0.v20221027-0840                                                | p2            |
-| org.apache.commons.codec:1.14.0.v20221112-0806                                             | p2            |
 | org.apache.commons.jxpath:1.3.0.v200911051830                                              | p2            |
 | org.apache.commons.logging:1.2.0.v20180409-1502                                            | p2            |
-| org.apache.httpcomponents.client5.httpclient5-win:5.1.3.v20221013-1742                     | p2            |
-| org.apache.httpcomponents.client5.httpclient5:5.1.3.v20221013-1742                         | p2            |
-| org.apache.httpcomponents.core5.httpcore5-h2:5.1.4.v20221013-1742                          | p2            |
-| org.apache.httpcomponents.core5.httpcore5:5.1.4.v20221013-1742                             | p2            |
 | org.apache.jasper.glassfish:2.2.2.v201501141630                                            | p2            |
 | org.apache.lucene.analyzers-common:8.4.1.v20221112-0806                                    | p2            |
 | org.apache.lucene.analyzers-smartcn:8.4.1.v20221112-0806                                   | p2            |
 | org.apache.lucene.core:8.4.1.v20221112-0806                                                | p2            |
 | org.apache.xmlgraphics:2.7.0.v20221018-0736                                                | p2            |
-| org.eclipse.ant.launching.source:1.3.400.v20220718-1722                                    | p2            |
-| org.eclipse.ant.ui.source:3.8.300.v20220718-1722                                           | p2            |
-| org.eclipse.jdt.annotation.source:2.2.700.v20220826-1026                                   | p2            |
-| org.eclipse.jdt.apt.core.source:3.7.50.v20210914-1429                                      | p2            |
-| org.eclipse.jdt.apt.pluggable.core.source:1.3.0.v20210618-1653                             | p2            |
-| org.eclipse.jdt.apt.ui.source:3.7.0.v20210620-1751                                         | p2            |
-| org.eclipse.jdt.compiler.apt.source:1.4.300.v20221108-0856                                 | p2            |
-| org.eclipse.jdt.compiler.tool.source:1.3.200.v20220802-0458                                | p2            |
-| org.eclipse.jdt.core.formatterapp.source:1.1.0.v20210618-1653                              | p2            |
-| org.eclipse.jdt.core.manipulation.source:1.17.0.v20221026-1918                             | p2            |
-| org.eclipse.jdt.core.source:3.32.0.v20221108-1853                                          | p2            |
-| org.eclipse.jdt.debug.source:3.20.0.v20220922-0905                                         | p2            |
-| org.eclipse.jdt.debug.ui.source:3.12.900.v20221001-0715                                    | p2            |
-| org.eclipse.jdt.junit.core.source:3.11.500.v20221031-1935                                  | p2            |
-| org.eclipse.jdt.junit.runtime.source:3.7.0.v20220609-1843                                  | p2            |
-| org.eclipse.jdt.junit.source:3.15.100.v20220909-2154                                       | p2            |
-| org.eclipse.jdt.junit4.runtime.source:1.3.0.v20220609-1843                                 | p2            |
-| org.eclipse.jdt.junit5.runtime.source:1.1.100.v20220907-0450                               | p2            |
-| org.eclipse.jdt.launching.macosx.source:3.5.100.v20220927-0854                             | p2            |
-| org.eclipse.jdt.launching.source:3.19.800.v20221107-1851                                   | p2            |
-| org.eclipse.jdt.launching.ui.macosx.source:1.3.100.v20220927-0854                          | p2            |
-| org.eclipse.jdt.ui.source:3.27.100.v20221122-0749                                          | p2            |
 | org.eclipse.platform.ide.executable.cocoa.macosx.aarch64.eclipse:4.26.0.I20221123-1800     | p2            |
 | org.eclipse.platform.ide.executable.cocoa.macosx.aarch64:4.26.0.I20221123-1800             | p2            |
 | org.eclipse.platform.ide.executable.cocoa.macosx.x86_64.eclipse:4.26.0.I20221123-1800      | p2            |
@@ -1322,9 +1236,7 @@ WARNING!!! gradlew equoList --problems
 | org.eclipse.platform.ide.executable.win32.win32.x86_64:4.26.0.I20221123-1800               | p2            |
 | org.eclipse.platform_root:4.26.0.v20221123-2302                                            | p2            |
 | org.eclipse.rcp_root:4.26.0.v20221123-2302                                                 | p2            |
-| org.hamcrest.core.source:1.3.0.v20180420-1519                                              | p2            |
 | org.hamcrest.core:1.3.0.v20180420-1519                                                     | p2            |
-| org.junit.source:4.13.2.v20211018-1956                                                     | p2            |
 | org.junit:4.13.2.v20211018-1956                                                            | p2            |
 | org.w3c.css.sac:1.3.1.v200903091627                                                        | p2            |
 | org.w3c.dom.events:3.0.0.draft20060413_v201105210656                                       | p2            |
@@ -1403,63 +1315,61 @@ WARNING!!! gradlew equoList --problems
 
 
 dev.equo.ide.gradle.EquoListTest.defaultP2[problems]=[
-+-------------------------------------------------+--------------------------------------------------------------------+
-| unmet requirement                               | needed by                                                          |
-+-------------------------------------------------+--------------------------------------------------------------------+
-| java.package:COM.ibm.netrexx.process            | org.apache.ant:1.10.12.v20211102-1452                              |
-| java.package:com.jcraft.jzlib                   | com.jcraft.jsch:0.1.55.v20221112-0806                              |
-| java.package:com.sun.media.jai.codec            | org.apache.ant:1.10.12.v20211102-1452                              |
-| java.package:com.sun.net.ssl.internal.ssl       | org.apache.ant:1.10.12.v20211102-1452                              |
-| java.package:com.sun.tools.javah                | org.apache.ant:1.10.12.v20211102-1452                              |
-| java.package:com.sun.tools.javah.oldjavah       | org.apache.ant:1.10.12.v20211102-1452                              |
-| java.package:gnu.classpath                      | org.apache.ant:1.10.12.v20211102-1452                              |
-| java.package:gnu.gcj                            | org.apache.ant:1.10.12.v20211102-1452                              |
-| java.package:javax.activation                   | org.apache.ant:1.10.12.v20211102-1452                              |
-| java.package:javax.mail                         | org.apache.ant:1.10.12.v20211102-1452                              |
-| java.package:javax.mail.internet                | org.apache.ant:1.10.12.v20211102-1452                              |
-| java.package:javax.media.jai                    | org.apache.ant:1.10.12.v20211102-1452                              |
-| java.package:jdepend.framework                  | org.apache.ant:1.10.12.v20211102-1452                              |
-| java.package:jdepend.textui                     | org.apache.ant:1.10.12.v20211102-1452                              |
-| java.package:jdepend.xmlui                      | org.apache.ant:1.10.12.v20211102-1452                              |
-| java.package:kaffe.util                         | org.apache.ant:1.10.12.v20211102-1452                              |
-| java.package:kotlin                             | junit-jupiter-api:5.9.1                                            |
-|                                                 | junit-jupiter-params:5.9.1                                         |
-| java.package:kotlin.collections                 | junit-jupiter-api:5.9.1                                            |
-| java.package:kotlin.jvm.functions               | junit-jupiter-api:5.9.1                                            |
-| java.package:kotlin.jvm.internal                | junit-jupiter-api:5.9.1                                            |
-|                                                 | junit-jupiter-params:5.9.1                                         |
-| java.package:netrexx.lang                       | org.apache.ant:1.10.12.v20211102-1452                              |
-| java.package:org.apache.avalon.framework.logger | org.apache.commons.logging:1.2.0.v20180409-1502                    |
-| java.package:org.apache.bcel.classfile          | org.apache.ant:1.10.12.v20211102-1452                              |
-| java.package:org.apache.bsf                     | org.apache.ant:1.10.12.v20211102-1452                              |
-| java.package:org.apache.commons.net.bsd         | org.apache.ant:1.10.12.v20211102-1452                              |
-| java.package:org.apache.commons.net.ftp         | org.apache.ant:1.10.12.v20211102-1452                              |
-| java.package:org.apache.commons.net.telnet      | org.apache.ant:1.10.12.v20211102-1452                              |
-| java.package:org.apache.env                     | org.apache.ant:1.10.12.v20211102-1452                              |
-| java.package:org.apache.harmony.luni.util       | org.apache.ant:1.10.12.v20211102-1452                              |
-| java.package:org.apache.log                     | org.apache.commons.logging:1.2.0.v20180409-1502                    |
-| java.package:org.apache.log4j                   | org.apache.ant:1.10.12.v20211102-1452                              |
-|                                                 | org.apache.commons.logging:1.2.0.v20180409-1502                    |
-| java.package:org.apache.oro.text.regex          | org.apache.ant:1.10.12.v20211102-1452                              |
-| java.package:org.apache.regexp                  | org.apache.ant:1.10.12.v20211102-1452                              |
-| java.package:org.apache.xalan.trace             | org.apache.ant:1.10.12.v20211102-1452                              |
-| java.package:org.apache.xalan.transformer       | org.apache.ant:1.10.12.v20211102-1452                              |
-| java.package:org.apache.xml.resolver            | org.apache.ant:1.10.12.v20211102-1452                              |
-| java.package:org.apache.xml.resolver.helpers    | org.apache.ant:1.10.12.v20211102-1452                              |
-| java.package:org.apache.xml.resolver.tools      | org.apache.ant:1.10.12.v20211102-1452                              |
-| java.package:org.conscrypt                      | org.apache.httpcomponents.client5.httpclient5:5.1.3.v20221013-1742 |
-|                                                 | org.apache.httpcomponents.core5.httpcore5-h2:5.1.4.v20221013-1742  |
-| java.package:org.eclipse.jetty.jmx              | org.eclipse.jetty.io:10.0.12                                       |
-|                                                 | org.eclipse.jetty.server:10.0.12                                   |
-|                                                 | org.eclipse.jetty.servlet:10.0.12                                  |
-| java.package:org.eclipse.swt.accessibility2     | org.eclipse.swt:3.122.0.v20221123-2302                             |
-| java.package:org.junit.Suite                    | org.apache.ant:1.10.12.v20211102-1452                              |
-| java.package:sun.nio.ch                         | org.apache.commons.commons-io:2.11.0                               |
-| java.package:sun.rmi.rmic                       | org.apache.ant:1.10.12.v20211102-1452                              |
-| java.package:sun.tools.javac                    | org.apache.ant:1.10.12.v20211102-1452                              |
-| java.package:sun.tools.native2ascii             | org.apache.ant:1.10.12.v20211102-1452                              |
-| java.package:weblogic                           | org.apache.ant:1.10.12.v20211102-1452                              |
-+-------------------------------------------------+--------------------------------------------------------------------+
++-------------------------------------------------+-------------------------------------------------+
+| unmet requirement                               | needed by                                       |
++-------------------------------------------------+-------------------------------------------------+
+| java.package:COM.ibm.netrexx.process            | org.apache.ant:1.10.12.v20211102-1452           |
+| java.package:com.jcraft.jzlib                   | com.jcraft.jsch:0.1.55.v20221112-0806           |
+| java.package:com.sun.media.jai.codec            | org.apache.ant:1.10.12.v20211102-1452           |
+| java.package:com.sun.net.ssl.internal.ssl       | org.apache.ant:1.10.12.v20211102-1452           |
+| java.package:com.sun.tools.javah                | org.apache.ant:1.10.12.v20211102-1452           |
+| java.package:com.sun.tools.javah.oldjavah       | org.apache.ant:1.10.12.v20211102-1452           |
+| java.package:gnu.classpath                      | org.apache.ant:1.10.12.v20211102-1452           |
+| java.package:gnu.gcj                            | org.apache.ant:1.10.12.v20211102-1452           |
+| java.package:javax.activation                   | org.apache.ant:1.10.12.v20211102-1452           |
+| java.package:javax.mail                         | org.apache.ant:1.10.12.v20211102-1452           |
+| java.package:javax.mail.internet                | org.apache.ant:1.10.12.v20211102-1452           |
+| java.package:javax.media.jai                    | org.apache.ant:1.10.12.v20211102-1452           |
+| java.package:jdepend.framework                  | org.apache.ant:1.10.12.v20211102-1452           |
+| java.package:jdepend.textui                     | org.apache.ant:1.10.12.v20211102-1452           |
+| java.package:jdepend.xmlui                      | org.apache.ant:1.10.12.v20211102-1452           |
+| java.package:kaffe.util                         | org.apache.ant:1.10.12.v20211102-1452           |
+| java.package:kotlin                             | junit-jupiter-api:5.9.1                         |
+|                                                 | junit-jupiter-params:5.9.1                      |
+| java.package:kotlin.collections                 | junit-jupiter-api:5.9.1                         |
+| java.package:kotlin.jvm.functions               | junit-jupiter-api:5.9.1                         |
+| java.package:kotlin.jvm.internal                | junit-jupiter-api:5.9.1                         |
+|                                                 | junit-jupiter-params:5.9.1                      |
+| java.package:netrexx.lang                       | org.apache.ant:1.10.12.v20211102-1452           |
+| java.package:org.apache.avalon.framework.logger | org.apache.commons.logging:1.2.0.v20180409-1502 |
+| java.package:org.apache.bcel.classfile          | org.apache.ant:1.10.12.v20211102-1452           |
+| java.package:org.apache.bsf                     | org.apache.ant:1.10.12.v20211102-1452           |
+| java.package:org.apache.commons.net.bsd         | org.apache.ant:1.10.12.v20211102-1452           |
+| java.package:org.apache.commons.net.ftp         | org.apache.ant:1.10.12.v20211102-1452           |
+| java.package:org.apache.commons.net.telnet      | org.apache.ant:1.10.12.v20211102-1452           |
+| java.package:org.apache.env                     | org.apache.ant:1.10.12.v20211102-1452           |
+| java.package:org.apache.harmony.luni.util       | org.apache.ant:1.10.12.v20211102-1452           |
+| java.package:org.apache.log                     | org.apache.commons.logging:1.2.0.v20180409-1502 |
+| java.package:org.apache.log4j                   | org.apache.ant:1.10.12.v20211102-1452           |
+|                                                 | org.apache.commons.logging:1.2.0.v20180409-1502 |
+| java.package:org.apache.oro.text.regex          | org.apache.ant:1.10.12.v20211102-1452           |
+| java.package:org.apache.regexp                  | org.apache.ant:1.10.12.v20211102-1452           |
+| java.package:org.apache.xalan.trace             | org.apache.ant:1.10.12.v20211102-1452           |
+| java.package:org.apache.xalan.transformer       | org.apache.ant:1.10.12.v20211102-1452           |
+| java.package:org.apache.xml.resolver            | org.apache.ant:1.10.12.v20211102-1452           |
+| java.package:org.apache.xml.resolver.helpers    | org.apache.ant:1.10.12.v20211102-1452           |
+| java.package:org.apache.xml.resolver.tools      | org.apache.ant:1.10.12.v20211102-1452           |
+| java.package:org.eclipse.jetty.jmx              | org.eclipse.jetty.io:10.0.12                    |
+|                                                 | org.eclipse.jetty.server:10.0.12                |
+|                                                 | org.eclipse.jetty.servlet:10.0.12               |
+| java.package:org.eclipse.swt.accessibility2     | org.eclipse.swt:3.122.0.v20221123-2302          |
+| java.package:org.junit.Suite                    | org.apache.ant:1.10.12.v20211102-1452           |
+| java.package:sun.nio.ch                         | org.apache.commons.commons-io:2.11.0            |
+| java.package:sun.rmi.rmic                       | org.apache.ant:1.10.12.v20211102-1452           |
+| java.package:sun.tools.javac                    | org.apache.ant:1.10.12.v20211102-1452           |
+| java.package:sun.tools.native2ascii             | org.apache.ant:1.10.12.v20211102-1452           |
+| java.package:weblogic                           | org.apache.ant:1.10.12.v20211102-1452           |
++-------------------------------------------------+-------------------------------------------------+
 
 +-------------------------------------------------------------+-----------------------------------------------------------+-----------+
 | ambiguous requirement                                       | candidate                                                 | installed |
@@ -1488,7 +1398,7 @@ dev.equo.ide.gradle.EquoListTest.defaultP2[problems]=[
 |                                                             | org.osgi.service.component.annotations:1.5.0.202109301733 | [ ]       |
 | org.eclipse.equinox.p2.iu:org.eclipse.jdt.annotation        | org.eclipse.jdt.annotation:2.2.700.v20220826-1026         | [x]       |
 |                                                             | org.eclipse.jdt.annotation:1.2.100.v20220826-1026         | [ ]       |
-| org.eclipse.equinox.p2.iu:org.eclipse.jdt.annotation.source | org.eclipse.jdt.annotation.source:2.2.700.v20220826-1026  | [x]       |
+| org.eclipse.equinox.p2.iu:org.eclipse.jdt.annotation.source | org.eclipse.jdt.annotation.source:2.2.700.v20220826-1026  | [ ]       |
 |                                                             | org.eclipse.jdt.annotation.source:1.2.100.v20220826-1026  | [ ]       |
 | osgi.bundle:org.eclipse.jdt.annotation                      | org.eclipse.jdt.annotation:2.2.700.v20220826-1026         | [x]       |
 |                                                             | org.eclipse.jdt.annotation:1.2.100.v20220826-1026         | [ ]       |
