@@ -3,48 +3,49 @@ dev.equo.solstice.p2.P2MultipleReposTest.categories=[
 | id                                           | name \n description                               |
 +----------------------------------------------+---------------------------------------------------+
 | 202211300214.Default                         | Uncategorized                                     |
-|                                              | Default category for otherwise uncategorized      |
-|                                              | features                                          |
+|                                              |   Default category for otherwise uncategorized    |
+|                                              |   features                                        |
 | 202211300214.extra                           | CDT Optional Features                             |
 | 202211300214.extra-jsoncdb                   | JSON CDB Extras                                   |
-|                                              | Additional compilers support for the JSON CDB     |
-|                                              | parser.                                           |
+|                                              |   Additional compilers support for the JSON CDB   |
+|                                              |   parser.                                         |
 | 202211300214.launchbar                       | LaunchBar                                         |
 | 202211300214.main                            | CDT Main Features                                 |
 | 202211300214.remote                          | Remote Services                                   |
 | 202211300214.remote_sdk                      | Remote Services SDK                               |
 | 202211300214.terminal_main                   | Terminal Features                                 |
-|                                              | TM Terminal Features                              |
+|                                              |   TM Terminal Features                            |
 | 202211300214.terminal_sdk                    | Terminal SDK Features                             |
-|                                              | TM Terminal SDK Features                          |
+|                                              |   TM Terminal SDK Features                        |
 | I20221123-1800.Default                       | Uncategorized                                     |
-|                                              | Default category for otherwise uncategorized      |
-|                                              | features                                          |
+|                                              |   Default category for otherwise uncategorized    |
+|                                              |   features                                        |
 | org.eclipse.equinox.target.categoryIU        | Equinox Target Components                         |
-|                                              | Features especially useful to install as PDE      |
-|                                              | runtime targets.                                  |
+|                                              |   Features especially useful to install as PDE    |
+|                                              |   runtime targets.                                |
 | org.eclipse.platform.ide.categoryIU          | Eclipse Platform                                  |
-|                                              | Minimum version of Eclipse: no source or API      |
-|                                              | documentation, no PDE or JDT.                     |
+|                                              |   Minimum version of Eclipse: no source or API    |
+|                                              |   documentation, no PDE or JDT.                   |
 | org.eclipse.platform.sdk.categoryIU          | Eclipse Platform SDK                              |
-|                                              | Minimum version of Eclipse with source and        |
-|                                              | documentation, no PDE or JDT.                     |
+|                                              |   Minimum version of Eclipse with source and      |
+|                                              |   documentation, no PDE or JDT.                   |
 | org.eclipse.rcp.categoryIU                   | Eclipse RCP Target Components                     |
-|                                              | Features to use as PDE runtime target, while      |
-|                                              | developing RCP applications.                      |
+|                                              |   Features to use as PDE runtime target, while    |
+|                                              |   developing RCP applications.                    |
 | org.eclipse.releng.java.languages.categoryIU | Eclipse Java Development Tools                    |
-|                                              | Tools to allow development with Java.             |
+|                                              |   Tools to allow development with Java.           |
 | org.eclipse.releng.pde.categoryIU            | Eclipse Plugin Development Tools                  |
-|                                              | Tools to develop bundles, plugins and features.   |
+|                                              |   Tools to develop bundles, plugins and features. |
 | org.eclipse.releng.testsIU                   | Eclipse Tests, Tools, Examples, and Extras        |
-|                                              | Collection of Misc. Features, such as unit tests, |
-|                                              | SWT and e4 tools, examples, and compatibility     |
-|                                              | features not shipped as part of main SDK, but     |
-|                                              | which some people may desire in creating products |
-|                                              | based on previous versions of Eclipse.            |
+|                                              |   Collection of Misc. Features, such as unit      |
+|                                              |   tests, SWT and e4 tools, examples, and          |
+|                                              |   compatibility features not shipped as part of   |
+|                                              |   main SDK, but which some people may desire in   |
+|                                              |   creating products based on previous versions of |
+|                                              |   Eclipse.                                        |
 | org.eclipse.sdk.ide.categoryIU               | Eclipse SDK                                       |
-|                                              | The full version of Eclipse, with source and      |
-|                                              | documentation: Platform, JDT and PDE.             |
+|                                              |   The full version of Eclipse, with source and    |
+|                                              |   documentation: Platform, JDT and PDE.           |
 +----------------------------------------------+---------------------------------------------------+
 
 ]

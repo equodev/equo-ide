@@ -33,7 +33,9 @@ public abstract class EquoListTask extends DefaultTask {
 
 	private ConsoleTable.Format format = ConsoleTable.Format.ASCII;
 
-	@Option(option = "format", description = "Output format")
+	@Option(
+			option = "format",
+			description = "Determines output format (can be combined with all other commands)")
 	void setFormat(ConsoleTable.Format format) {
 		this.format = format;
 	}
@@ -41,6 +43,20 @@ public abstract class EquoListTask extends DefaultTask {
 	@OptionValues("format")
 	Collection<ConsoleTable.Format> getSupportedFormats() {
 		return EnumSet.allOf(ConsoleTable.Format.class);
+	}
+
+	private boolean installed = false;
+
+	@Option(option = "installed", description = "Lists the jars which were installed")
+	void setInstalled(boolean installed) {
+		this.installed = installed;
+	}
+
+	private boolean problems = false;
+
+	@Option(option = "problems", description = "Lists any problems with the installed jars")
+	void setProblems(boolean problems) {
+		this.problems = problems;
 	}
 
 	private All all;
@@ -54,7 +70,7 @@ public abstract class EquoListTask extends DefaultTask {
 	@Option(
 			option = "all",
 			description =
-					"lists the id and name of all [categories|features|jars] which meet the filter criteria")
+					"Lists the id and name of all [categories|features|jars] which meet the filter criteria")
 	void setAll(All all) {
 		this.all = all;
 	}
@@ -68,7 +84,8 @@ public abstract class EquoListTask extends DefaultTask {
 
 	@Option(
 			option = "detail",
-			description = "lists full detail for all available versions of the given unit id")
+			description =
+					"Lists properties and requirements for all available versions of the given unit id")
 	void setDetail(String detail) {
 		this.detail = detail;
 	}
@@ -77,15 +94,22 @@ public abstract class EquoListTask extends DefaultTask {
 
 	@Option(
 			option = "raw",
-			description = "lists raw xml for all available versions of the given unit id")
+			description = "Lists the raw xml for all available versions of the given unit id")
 	void setRaw(String raw) {
 		this.raw = raw;
 	}
 
 	@TaskAction
 	public void list() throws Exception {
-		if (all != null && detail != null) {
-			throw new IllegalArgumentException("Only one of --all, --detail, or --raw may be set");
+		int numArgs = 0;
+		if (installed) ++numArgs;
+		if (problems) ++numArgs;
+		if (all != null) ++numArgs;
+		if (detail != null) ++numArgs;
+		if (raw != null) ++numArgs;
+		if (numArgs != 1) {
+			throw new IllegalArgumentException(
+					"Exactly one of --installed, --problems, --all, --detail, or --raw must be set");
 		}
 		var extension = getExtension().get();
 		var query = extension.performQuery();
@@ -95,8 +119,12 @@ public abstract class EquoListTask extends DefaultTask {
 			detail(query, detail, format);
 		} else if (raw != null) {
 			raw(query, raw);
+		} else if (installed) {
+			installed(query, format);
+		} else if (problems) {
+			problems(query, format);
 		} else {
-			mavenStatus(query, format);
+			throw new UnsupportedOperationException("Programming error");
 		}
 	}
 
@@ -145,9 +173,23 @@ public abstract class EquoListTask extends DefaultTask {
 		}
 	}
 
-	private static void mavenStatus(P2Query query, ConsoleTable.Format format) {
-		System.out.println(ConsoleTable.ambiguousRequirements(query, format));
-		System.out.println(ConsoleTable.unmetRequirements(query, format));
+	private static void installed(P2Query query, ConsoleTable.Format format) {
+		int numUnmet = query.getUnmetRequirements().size();
+		int numAmbiguous = query.getAmbiguousRequirements().size();
+		if (numUnmet > 0 || numAmbiguous > 0) {
+			System.out.println(
+					"WARNING!!! "
+							+ numUnmet
+							+ " unmet requirement(s), "
+							+ numAmbiguous
+							+ " ambigous requirement(s). For more info:");
+			System.out.println("WARNING!!! gradlew equoList --problems");
+		}
 		System.out.println(ConsoleTable.mavenStatus(query.getJars(), format));
+	}
+
+	private static void problems(P2Query query, ConsoleTable.Format format) {
+		System.out.println(ConsoleTable.unmetRequirements(query, format));
+		System.out.println(ConsoleTable.ambiguousRequirements(query, format));
 	}
 }

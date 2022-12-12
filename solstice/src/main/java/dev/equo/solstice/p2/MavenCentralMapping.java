@@ -24,7 +24,7 @@ class MavenCentralMapping {
 		var artifactId = unit.properties.get(P2Unit.MAVEN_ARTIFACT_ID);
 		var version = unit.properties.get(P2Unit.MAVEN_VERSION);
 		if (groupId != null && artifactId != null && version != null) {
-			var groupArtifact = groupIdArtifactId(unit.properties.get(P2Unit.MAVEN_ARTIFACT_ID));
+			var groupArtifact = groupIdArtifactId(unit.id);
 			if (groupArtifact != null) {
 				if (version.endsWith(DASH_SNAPSHOT)) {
 					version = version.substring(0, version.length() - DASH_SNAPSHOT.length());
@@ -43,7 +43,13 @@ class MavenCentralMapping {
 	private static final String OSGI = "org.osgi";
 
 	private static String groupIdArtifactId(String bundleId) {
-		if ("org.eclipse.jdt.core.compiler.batch".equals(bundleId)) {
+		if (bundleId.endsWith(".feature")) {
+			return null;
+		} else if (bundleId.endsWith("feature.jar")) {
+			return null;
+		} else if (bundleId.endsWith(".source")) {
+			return null;
+		} else if ("org.eclipse.jdt.core.compiler.batch".equals(bundleId)) {
 			return JDT + ":ecj";
 		} else if (bundleId.startsWith(JDT)) {
 			return JDT + ":" + bundleId;

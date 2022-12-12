@@ -95,7 +95,7 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 						EquoIdeTask.class,
 						task -> {
 							task.setGroup(TASK_GROUP);
-							task.setDescription("Launches EquoIDE");
+							task.setDescription("Launches an Eclipse application");
 
 							task.getIsTestOnly().set(equoTestOnly);
 							task.getExtension().set(extension);
@@ -109,7 +109,7 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 						EquoListTask.class,
 						task -> {
 							task.setGroup(TASK_GROUP);
-							task.setDescription("Lists the p2 dependencies of EquoIDE");
+							task.setDescription("Lists the p2 dependencies of an Eclipse application");
 
 							task.getExtension().set(extension);
 						});

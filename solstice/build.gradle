@@ -68,6 +68,9 @@ tasks.register('nestedJarsNeededForTest', JavaExec) {
 tasks.named('test') {
 	dependsOn 'nestedJarsNeededForTest'
 	useJUnitPlatform {}
+	if (System.env['CI'] == null) {
+		systemProperty "updateSnapshot", ""
+	}
 	if (com.diffplug.common.swt.os.OS.getNative().isMac()) {
 		jvmArgs = ['-XstartOnFirstThread']
 	}

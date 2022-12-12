@@ -32,7 +32,9 @@ public class ConsoleTable {
 			mavenStates.add(MavenStatus.forUnit(unit));
 		}
 		mavenStates.sort(Comparator.naturalOrder());
-
+		if (mavenStates.isEmpty()) {
+			return "No jars were specified.";
+		}
 		var coordinate = new TableColumn("maven coordinate / p2 id").with(MavenStatus::coordinate);
 		var repo = new TableColumn("repo").with(MavenStatus::repo);
 		return Table.getTable(format, mavenStates, coordinate, repo);
@@ -47,7 +49,7 @@ public class ConsoleTable {
 			table.add(unit.id, name);
 			var desc = unit.properties.get(P2Unit.P2_DESC);
 			if (desc != null) {
-				table.add("", desc);
+				table.add("", "  " + desc);
 			}
 		}
 		return table.toString("id", "name \\n description", format);
@@ -57,7 +59,7 @@ public class ConsoleTable {
 		if (query.getAmbiguousRequirements().isEmpty()) {
 			return "No ambiguous requirements.";
 		}
-		var table = new NColumnTable("ambiguous requirement", "candidate", "resolved");
+		var table = new NColumnTable("ambiguous requirement", "candidate", "installed");
 		for (var requirement : query.getAmbiguousRequirements()) {
 			var candidates = requirement.getProviders();
 			for (int i = 0; i < candidates.size(); ++i) {
@@ -133,12 +135,12 @@ public class ConsoleTable {
 			}
 			for (var req : unit.requires) {
 				if (req.hasOnlyOneProvider()) {
-					table.add("req " + req.name, req.getOnlyProvider().id);
+					table.add("req " + req.name, req.getOnlyProvider().toString());
 				} else {
 					var available = req.getProviders();
 					table.add("req " + req.name, available.size() + " available");
 					for (var a : available) {
-						table.add("", a.getId() + ":" + a.getVersion());
+						table.add("", a.toString());
 					}
 				}
 			}
@@ -150,27 +152,32 @@ public class ConsoleTable {
 		private static final int MAX_VALUE_LEN = 50;
 
 		final List<Pair> pairs = new ArrayList<Pair>();
+		final String wrapIndent = "  ";
 
 		public void add(String key, String value) {
 			add(key, value, MAX_VALUE_LEN);
 		}
 
-		private void add(String key, String value, int maxLen) {
+		private void add(String key, String value, int maxLenFirstLine) {
 			value = value.replace("\n", " ").replace("\r", "");
-			if (value.length() <= maxLen) {
+			if (value.length() <= maxLenFirstLine) {
 				pairs.add(new Pair(key, value));
 			} else {
+				int maxLen = maxLenFirstLine - wrapIndent.length();
 				var lines = new ArrayList<String>();
 				int lineStart = 0;
 				int i = 0;
 				while (i + maxLen < value.length() && (i = value.lastIndexOf(' ', i + maxLen)) != -1) {
+					if (i < lineStart) {
+						break;
+					}
 					lines.add(value.substring(lineStart, i));
-					lineStart = i + 1;
+					lineStart = ++i;
 				}
 				lines.add(value.substring(lineStart));
 				pairs.add(new Pair(key, lines.get(0)));
 				for (i = 1; i < lines.size(); ++i) {
-					pairs.add(new Pair("", lines.get(i)));
+					pairs.add(new Pair("", wrapIndent + lines.get(i)));
 				}
 			}
 		}

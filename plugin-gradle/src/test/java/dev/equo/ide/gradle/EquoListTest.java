@@ -22,6 +22,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 @ExtendWith({SnapshotExtension.class})
 public class EquoListTest extends GradleHarness {
 	@Test
+	public void help(Expect expect) throws IOException {
+		setFile("build.gradle").toContent("plugins { id 'dev.equo.ide' }");
+		run("-q", "help", "--task", "equoList").snapshot(expect);
+	}
+
+	@Test
 	public void defaultP2(Expect expect) throws IOException {
 		setFile("build.gradle")
 				.toLines(
@@ -32,11 +38,28 @@ public class EquoListTest extends GradleHarness {
 						"    setPlatform(null)",
 						"  }",
 						"}");
-		run("equoList", "--stacktrace").snapshotBetween("Task :equoList", "BUILD SUCCESSFUL", expect);
+		run("equoList", "--installed")
+				.snapshotBetween("Task :equoList", "BUILD SUCCESSFUL", expect.scenario("installed"));
+		run("equoList", "--problems")
+				.snapshotBetween("Task :equoList", "BUILD SUCCESSFUL", expect.scenario("problems"));
 	}
 
 	@Test
-	public void swtList(Expect expect) throws IOException {
+	public void installedEmpty(Expect expect) throws IOException {
+		setFile("build.gradle")
+				.toLines(
+						"plugins { id 'dev.equo.ide' }",
+						"equoIde {",
+						"  p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'",
+						"}");
+		run("equoList", "--installed")
+				.snapshotBetween("Task :equoList", "BUILD SUCCESSFUL", expect.scenario("installed"));
+		run("equoList", "--problems")
+				.snapshotBetween("Task :equoList", "BUILD SUCCESSFUL", expect.scenario("problems"));
+	}
+
+	@Test
+	public void installedSwt(Expect expect) throws IOException {
 		setFile("build.gradle")
 				.toLines(
 						"plugins { id 'dev.equo.ide' }",
@@ -47,11 +70,14 @@ public class EquoListTest extends GradleHarness {
 						"    setPlatform(null)",
 						"  }",
 						"}");
-		run("equoList", "--stacktrace").snapshotBetween("Task :equoList", "BUILD SUCCESSFUL", expect);
+		run("equoList", "--installed")
+				.snapshotBetween("Task :equoList", "BUILD SUCCESSFUL", expect.scenario("installed"));
+		run("equoList", "--problems")
+				.snapshotBetween("Task :equoList", "BUILD SUCCESSFUL", expect.scenario("problems"));
 	}
 
 	@Test
-	public void swtListCsv(Expect expect) throws IOException {
+	public void installedSwtCsv(Expect expect) throws IOException {
 		setFile("build.gradle")
 				.toLines(
 						"plugins { id 'dev.equo.ide' }",
@@ -62,7 +88,10 @@ public class EquoListTest extends GradleHarness {
 						"    setPlatform(null)",
 						"  }",
 						"}");
-		run("equoList", "--format=csv").snapshotBetween("Task :equoList", "BUILD SUCCESSFUL", expect);
+		run("equoList", "--installed", "--format=csv")
+				.snapshotBetween("Task :equoList", "BUILD SUCCESSFUL", expect.scenario("installed"));
+		run("equoList", "--problems", "--format=csv")
+				.snapshotBetween("Task :equoList", "BUILD SUCCESSFUL", expect.scenario("problems"));
 	}
 
 	@Test
@@ -106,6 +135,9 @@ public class EquoListTest extends GradleHarness {
 						"  install 'org.eclipse.swt'",
 						"  filter {",
 						"    setPlatform(null)",
+						"    excludeSuffix '.source'  // no source bundles",
+						"    excludePrefix 'tooling'  // ignore internal tooling",
+						"    exclude 'org.apache.sshd.osgi' // we don't want sshd",
 						"  }",
 						"}");
 		run("equoList", "--all=jars", "--format=csv")

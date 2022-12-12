@@ -38,6 +38,7 @@ public class P2Query {
 
 	private TreeSet<String> exclude = new TreeSet<>();
 	private List<String> excludePrefix = new ArrayList<>();
+	private List<String> excludeSuffix = new ArrayList<>();
 
 	private Map<String, String> filterProps = new HashMap<String, String>();
 
@@ -60,6 +61,11 @@ public class P2Query {
 	public void excludePrefix(String prefix) {
 		assertNotUsed();
 		excludePrefix.add(prefix);
+	}
+
+	public void excludeSuffix(String prefix) {
+		assertNotUsed();
+		excludeSuffix.add(prefix);
 	}
 
 	public void setPlatform(@Nullable SwtPlatform platform) {
@@ -94,6 +100,11 @@ public class P2Query {
 	private boolean addUnlessExcludedOrAlreadyPresent(P2Unit unit) {
 		for (var prefix : excludePrefix) {
 			if (unit.id.startsWith(prefix)) {
+				return false;
+			}
+		}
+		for (var suffix : excludeSuffix) {
+			if (unit.id.endsWith(suffix)) {
 				return false;
 			}
 		}
