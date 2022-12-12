@@ -34,7 +34,7 @@ public class EquoListTest extends GradleHarness {
 						"plugins { id 'dev.equo.ide' }",
 						"equoIde {",
 						"  release('4.26')",
-						"  filter {",
+						"  addFilter 'platform-neutral', {",
 						"    setPlatform(null)",
 						"  }",
 						"}");
@@ -66,7 +66,7 @@ public class EquoListTest extends GradleHarness {
 						"equoIde {",
 						"  p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'",
 						"  install 'org.eclipse.swt'",
-						"  filter {",
+						"  addFilter 'platform-neutral', {",
 						"    setPlatform(null)",
 						"  }",
 						"}");
@@ -84,7 +84,7 @@ public class EquoListTest extends GradleHarness {
 						"equoIde {",
 						"  p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'",
 						"  install 'org.eclipse.swt'",
-						"  filter {",
+						"  addFilter 'platform-neutral', {",
 						"    setPlatform(null)",
 						"  }",
 						"}");
@@ -102,7 +102,7 @@ public class EquoListTest extends GradleHarness {
 						"equoIde {",
 						"  p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'",
 						"  install 'org.eclipse.swt'",
-						"  filter {",
+						"  addFilter 'platform-neutral', {",
 						"    setPlatform(null)",
 						"  }",
 						"}");
@@ -117,7 +117,7 @@ public class EquoListTest extends GradleHarness {
 						"equoIde {",
 						"  p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'",
 						"  install 'org.eclipse.swt'",
-						"  filter {",
+						"  addFilter 'platform-neutral', {",
 						"    setPlatform(null)",
 						"  }",
 						"}");
@@ -133,7 +133,7 @@ public class EquoListTest extends GradleHarness {
 						"equoIde {",
 						"  p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'",
 						"  install 'org.eclipse.swt'",
-						"  filter {",
+						"  addFilter 'platform-neutral-no-source', {",
 						"    setPlatform(null)",
 						"    excludeSuffix '.source'  // no source bundles",
 						"    excludePrefix 'tooling'  // ignore internal tooling",
@@ -152,7 +152,7 @@ public class EquoListTest extends GradleHarness {
 						"equoIde {",
 						"  p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'",
 						"  install 'org.eclipse.jdt.annotation'",
-						"  filter {",
+						"  addFilter 'platform-neutral', {",
 						"    setPlatform(null)",
 						"  }",
 						"}");
@@ -168,7 +168,7 @@ public class EquoListTest extends GradleHarness {
 						"equoIde {",
 						"  p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'",
 						"  install 'org.eclipse.jdt.annotation'",
-						"  filter {",
+						"  addFilter 'platform-neutral', {",
 						"    setPlatform(null)",
 						"  }",
 						"}");
