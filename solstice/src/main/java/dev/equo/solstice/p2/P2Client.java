@@ -40,6 +40,7 @@ public class P2Client implements AutoCloseable {
 	private final Cache cache;
 	private final OkHttpClient client;
 
+	/** The various caching modes that {@link P2Client} supports. */
 	public enum Caching {
 		OFFLINE,
 		PREFER_OFFLINE,
