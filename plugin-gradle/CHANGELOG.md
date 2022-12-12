@@ -3,6 +3,9 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+### Added
+- Separated `equoList --installed` into `--installed` and `--problems`
+- Renamed `filter` to `addFilter` to allow handling multiple filters.
 
 ## [0.4.0] - 2022-12-11
 ### Added
