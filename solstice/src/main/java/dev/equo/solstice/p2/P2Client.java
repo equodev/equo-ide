@@ -14,7 +14,9 @@
 package dev.equo.solstice.p2;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
+import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -55,9 +57,14 @@ public class P2Client implements AutoCloseable {
 		boolean cacheAllowed() {
 			return this != NO_METADATA_CACHE;
 		}
+
+		public static Caching defaultIfOfflineIs(boolean isOffline) {
+			return isOffline ? Caching.OFFLINE : Caching.ALLOW_OFFLINE;
+		}
 	}
 
 	private final Caching caching;
+	private final OfflineCache offlineCache;
 
 	public P2Client() {
 		this(Caching.ALLOW_OFFLINE);
@@ -66,8 +73,11 @@ public class P2Client implements AutoCloseable {
 	public P2Client(Caching caching) {
 		this.caching = caching;
 		long maxSize = 50L * 1024L * 1024L; // 50 MiB
-		cache = new Cache(CacheLocations.p2metadata(), maxSize);
+		File p2metadata = CacheLocations.p2metadata();
+
+		cache = new Cache(new File(p2metadata, "connection"), maxSize);
 		client = new OkHttpClient.Builder().cache(cache).build();
+		offlineCache = new OfflineCache(new File(p2metadata, "offline"));
 	}
 
 	@Override
@@ -111,13 +121,44 @@ public class P2Client implements AutoCloseable {
 	}
 
 	private byte[] getBytes(String url) throws IOException, NotFoundException {
-		var request = new Request.Builder().url(url).build();
-		try (var response = client.newCall(request).execute()) {
-			if (response.code() == 404) {
-				throw new NotFoundException(url);
+		if (caching.tryOfflineFirst()) {
+			var cached = offlineCache.get(url);
+			if (cached != null) {
+				if (OfflineCache.is404(cached)) {
+					throw new NotFoundException(url);
+				}
+				return cached;
 			}
-			return response.body().bytes();
 		}
+		if (caching.networkAllowed()) {
+			var request = new Request.Builder().url(url).build();
+			try (var response = client.newCall(request).execute()) {
+				if (response.code() == 404) {
+					if (caching.cacheAllowed()) {
+						offlineCache.put404(url);
+					}
+					throw new NotFoundException(url);
+				} else {
+					var bytes = response.body().bytes();
+					if (caching.cacheAllowed()) {
+						offlineCache.put(url, bytes);
+					}
+					return bytes;
+				}
+			} catch (UnknownHostException e) {
+				if (caching.cacheAllowed()) {
+					var cached = offlineCache.get(url);
+					if (cached != null) {
+						if (caching.cacheAllowed()) {
+							offlineCache.put404(url);
+						}
+						return cached;
+					}
+				}
+				throw e;
+			}
+		}
+		throw new IllegalStateException("P2Client is in offline mode but has no cache for " + url);
 	}
 
 	static class NotFoundException extends Exception {

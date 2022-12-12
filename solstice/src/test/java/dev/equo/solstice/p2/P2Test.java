@@ -21,17 +21,22 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 @ExtendWith({SnapshotExtension.class})
 public class P2Test {
-	private P2Session populateSession() throws Exception {
+	private P2Session populateSession(P2Client.Caching caching) throws Exception {
 		var session = new P2Session();
-		try (var client = new P2Client()) {
+		try (var client = new P2Client(caching)) {
 			session.populateFrom(client, "https://download.eclipse.org/eclipse/updates/4.25/");
 		}
 		return session;
 	}
 
 	@Test
-	public void query(Expect expect) throws Exception {
-		var session = populateSession();
+	public void queryOffline(Expect expect) throws Exception {
+		queryImpl(expect, P2Client.Caching.ALLOW_OFFLINE);
+		queryImpl(expect, P2Client.Caching.OFFLINE);
+	}
+
+	private void queryImpl(Expect expect, P2Client.Caching caching) throws Exception {
+		var session = populateSession(caching);
 		var query = session.query();
 		query.exclude("a.jre.javase");
 		query.exclude("org.eclipse.platform_root");
@@ -43,7 +48,7 @@ public class P2Test {
 
 	@Test
 	public void queryPlatformSpecific(Expect expect) throws Exception {
-		var session = populateSession();
+		var session = populateSession(P2Client.Caching.ALLOW_OFFLINE);
 		var query = session.query();
 		query.resolve("org.eclipse.swt");
 		expect
