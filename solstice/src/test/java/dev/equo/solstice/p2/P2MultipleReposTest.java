@@ -15,6 +15,7 @@ package dev.equo.solstice.p2;
 
 import au.com.origin.snapshots.Expect;
 import au.com.origin.snapshots.junit5.SnapshotExtension;
+import java.util.Comparator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -33,6 +34,19 @@ public class P2MultipleReposTest {
 		return session;
 	}
 
+	private P2Query queryInstall() throws Exception {
+		var session = populateSession();
+		var query = session.query();
+		query.excludePrefix("tooling");
+		query.excludeSuffix(".source");
+		query.platformNone();
+		query.install("org.eclipse.platform.ide.categoryIU");
+		query.install("org.eclipse.releng.java.languages.categoryIU");
+		query.install("org.eclipse.buildship.feature.group");
+		query.install("202211300214.main");
+		return query;
+	}
+
 	final ConsoleTable.Format format = ConsoleTable.Format.ASCII;
 
 	@Test
@@ -45,22 +59,23 @@ public class P2MultipleReposTest {
 
 	@Test
 	public void query(Expect expect) throws Exception {
-		var session = populateSession();
-		var query = session.query();
-		query.excludePrefix("tooling");
-		query.excludeSuffix(".source");
-		query.platformNone();
-		query.install("org.eclipse.platform.ide.categoryIU");
-		query.install("org.eclipse.releng.java.languages.categoryIU");
-		query.install("org.eclipse.buildship.feature.group");
-		query.install("202211300214.main");
+		var query = queryInstall();
 		var buffer = new StringBuilder();
 		buffer.append(ConsoleTable.ambiguousRequirements(query, format));
 		buffer.append('\n');
 		buffer.append(ConsoleTable.unmetRequirements(query, format));
 		buffer.append('\n');
 		buffer.append(ConsoleTable.mavenStatus(query.getJars(), format));
-		buffer.append('\n');
-		expect.toMatchSnapshot(buffer);
+		expect.toMatchSnapshot(buffer.toString().trim());
+	}
+
+	@Test
+	public void download() throws Exception {
+		var query = queryInstall();
+		var jars = query.getJarsNotOnMavenCentral();
+		jars.sort(Comparator.comparing(unit -> unit.getJarUrl()));
+		for (var jar : jars) {
+			System.out.println(jar.getJarUrl());
+		}
 	}
 }
