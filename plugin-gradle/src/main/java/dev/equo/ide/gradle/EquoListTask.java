@@ -14,6 +14,7 @@
 package dev.equo.ide.gradle;
 
 import dev.equo.solstice.p2.ConsoleTable;
+import dev.equo.solstice.p2.P2Client;
 import dev.equo.solstice.p2.P2Query;
 import dev.equo.solstice.p2.P2Unit;
 import java.util.Collection;
@@ -28,6 +29,9 @@ import org.gradle.api.tasks.options.Option;
 import org.gradle.api.tasks.options.OptionValues;
 
 public abstract class EquoListTask extends DefaultTask {
+	@Internal
+	public abstract Property<P2Client.Caching> getCaching();
+
 	@Internal
 	public abstract Property<EquoIdeExtension> getExtension();
 
@@ -112,7 +116,7 @@ public abstract class EquoListTask extends DefaultTask {
 					"Exactly one of --installed, --problems, --all, --detail, or --raw must be set");
 		}
 		var extension = getExtension().get();
-		var query = extension.performQuery();
+		var query = extension.performQuery(getCaching().get());
 		if (all != null) {
 			all(query, all, format);
 		} else if (detail != null) {

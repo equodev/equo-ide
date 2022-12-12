@@ -14,13 +14,6 @@
 package dev.equo.solstice.p2;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.FileVisitResult;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.SimpleFileVisitor;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -81,10 +74,10 @@ public class WorkspaceRegistry {
 
 	WorkspaceRegistry(File root) {
 		this.root = Objects.requireNonNull(root);
-		mkdirs(root);
+		FileMisc.mkdirs(root);
 		for (File workspace : root.listFiles()) {
 			if (workspace.isDirectory()) {
-				Optional<String> ownerPath = readToken(root, workspace.getName() + OWNER_PATH);
+				Optional<String> ownerPath = FileMisc.readToken(root, workspace.getName() + OWNER_PATH);
 				if (!ownerPath.isPresent()) {
 					// if there's no token, delete it
 					deleteWorkspace(workspace, "missing token " + OWNER_PATH + ".");
@@ -102,8 +95,8 @@ public class WorkspaceRegistry {
 				owner -> {
 					File workspace =
 							new File(root, ideDir.getName() + "-" + owner.getAbsolutePath().hashCode());
-					mkdirs(workspace);
-					writeToken(root, workspace.getName() + OWNER_PATH, ideDir.getAbsolutePath());
+					FileMisc.mkdirs(workspace);
+					FileMisc.writeToken(root, workspace.getName() + OWNER_PATH, ideDir.getAbsolutePath());
 					return workspace;
 				});
 	}
@@ -128,109 +121,13 @@ public class WorkspaceRegistry {
 	 */
 	private void deleteWorkspace(File workspace, String reason) {
 		try {
-			delete(workspace);
+			FileMisc.delete(workspace);
 			File token = new File(root, workspace.getName() + OWNER_PATH);
-			delete(token);
+			FileMisc.delete(token);
 		} catch (Exception e) {
 			System.err.println(
 					"Tried to delete workspace " + workspace.getAbsolutePath() + " because " + reason);
 			e.printStackTrace();
 		}
-	}
-
-	private static void delete(File fileOrDir) {
-		retry(
-				fileOrDir,
-				f -> {
-					if (f.isDirectory()) {
-						Files.walkFileTree(
-								f.toPath(),
-								new SimpleFileVisitor<Path>() {
-									@Override
-									public FileVisitResult visitFile(Path file, BasicFileAttributes attrs)
-											throws IOException {
-										Files.delete(file);
-										return FileVisitResult.CONTINUE;
-									}
-
-									@Override
-									public FileVisitResult postVisitDirectory(Path dir, IOException exc)
-											throws IOException {
-										if (exc != null) {
-											throw exc;
-										}
-										Files.delete(dir);
-										return FileVisitResult.CONTINUE;
-									}
-								});
-					} else {
-						Files.deleteIfExists(f.toPath());
-					}
-				});
-	}
-
-	private static Optional<String> readToken(File dir, String name) {
-		try {
-			File token = new File(dir, name);
-			if (!token.isFile()) {
-				return Optional.empty();
-			} else {
-				return Optional.of(new String(Files.readAllBytes(token.toPath()), StandardCharsets.UTF_8));
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-			return Optional.empty();
-		}
-	}
-
-	private static void writeToken(File dir, String name, String value) {
-		if (!dir.isDirectory()) {
-			throw new IllegalArgumentException(
-					"Need to create directory first! " + dir.getAbsolutePath());
-		}
-		File token = new File(dir, name);
-		retry(
-				token,
-				f -> {
-					Files.write(f.toPath(), value.getBytes(StandardCharsets.UTF_8));
-				});
-	}
-
-	private static void mkdirs(File file) {
-		retry(
-				file,
-				dir -> {
-					java.nio.file.Files.createDirectories(dir.toPath());
-				});
-	}
-
-	/**
-	 * Retries an action every ms, for 500ms, until it finally works or fails.
-	 *
-	 * <p>Makes FS operations more reliable.
-	 */
-	private static void retry(File input, ThrowingConsumer<File> function) {
-		long start = System.currentTimeMillis();
-		Throwable lastException;
-		do {
-			try {
-				function.accept(input);
-				return;
-			} catch (Throwable e) {
-				lastException = e;
-				try {
-					Thread.sleep(1);
-				} catch (InterruptedException ex) {
-					// ignore
-				}
-			}
-		} while (System.currentTimeMillis() - start < MS_RETRY);
-		throw new RuntimeException(lastException);
-	}
-
-	private static final int MS_RETRY = 500;
-
-	private interface ThrowingConsumer<T> {
-		void accept(T input) throws Exception;
 	}
 }

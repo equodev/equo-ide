@@ -127,18 +127,18 @@ public class EquoIdeExtension {
 		filters.clear();
 	}
 
-	P2Query performQuery() throws Exception {
+	P2Query performQuery(P2Client.Caching caching) throws Exception {
 		var extension = this;
 		if (isEmpty()) {
 			extension = copy();
 			extension.setToDefault();
 		}
-		return extension.performQueryInternal();
+		return extension.performQueryInternal(caching);
 	}
 
-	private P2Query performQueryInternal() throws Exception {
+	private P2Query performQueryInternal(P2Client.Caching caching) throws Exception {
 		var session = new P2Session();
-		try (var client = new P2Client()) {
+		try (var client = new P2Client(caching)) {
 			for (var repo : repos) {
 				session.populateFrom(client, repo);
 			}

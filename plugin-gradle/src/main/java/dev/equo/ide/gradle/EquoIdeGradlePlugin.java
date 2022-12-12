@@ -15,6 +15,7 @@ package dev.equo.ide.gradle;
 
 import com.diffplug.common.swt.os.SwtPlatform;
 import dev.equo.solstice.p2.CacheLocations;
+import dev.equo.solstice.p2.P2Client;
 import dev.equo.solstice.p2.WorkspaceRegistry;
 import java.io.File;
 import java.io.IOException;
@@ -73,10 +74,12 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 
 		boolean equoTestOnly = "true".equals(project.findProperty("equoTestOnly"));
 
+		P2Client.Caching caching =
+				P2Client.Caching.defaultIfOfflineIs(project.getGradle().getStartParameter().isOffline());
 		project.afterEvaluate(
 				unused -> {
 					try {
-						var query = extension.performQuery();
+						var query = extension.performQuery(caching);
 						query
 								.getJarsOnMavenCentral()
 								.forEach(
@@ -111,6 +114,7 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 							task.setGroup(TASK_GROUP);
 							task.setDescription("Lists the p2 dependencies of an Eclipse application");
 
+							task.getCaching().set(caching);
 							task.getExtension().set(extension);
 						});
 	}

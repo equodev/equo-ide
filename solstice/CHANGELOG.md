@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+### Added
+- P2Client now supports various offline modes. (closes [#24](https://github.com/equodev/equo-ide/issues/24))
 
 ## [0.5.0] - 2022-12-12
 ### Added
