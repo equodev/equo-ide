@@ -38,7 +38,33 @@ public class P2Client implements AutoCloseable {
 	private final Cache cache;
 	private final OkHttpClient client;
 
+	public enum Caching {
+		OFFLINE,
+		PREFER_OFFLINE,
+		ALLOW_OFFLINE,
+		NO_METADATA_CACHE;
+
+		boolean tryOfflineFirst() {
+			return this == OFFLINE || this == PREFER_OFFLINE;
+		}
+
+		boolean networkAllowed() {
+			return this != OFFLINE;
+		}
+
+		boolean cacheAllowed() {
+			return this != NO_METADATA_CACHE;
+		}
+	}
+
+	private final Caching caching;
+
 	public P2Client() {
+		this(Caching.ALLOW_OFFLINE);
+	}
+
+	public P2Client(Caching caching) {
+		this.caching = caching;
 		long maxSize = 50L * 1024L * 1024L; // 50 MiB
 		cache = new Cache(CacheLocations.p2metadata(), maxSize);
 		client = new OkHttpClient.Builder().cache(cache).build();
@@ -81,13 +107,7 @@ public class P2Client implements AutoCloseable {
 	}
 
 	private String getString(String url) throws IOException, NotFoundException {
-		var request = new Request.Builder().url(url).build();
-		try (var response = client.newCall(request).execute()) {
-			if (response.code() == 404) {
-				throw new NotFoundException(url);
-			}
-			return response.body().string();
-		}
+		return new String(getBytes(url), StandardCharsets.UTF_8);
 	}
 
 	private byte[] getBytes(String url) throws IOException, NotFoundException {
