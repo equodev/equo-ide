@@ -71,7 +71,7 @@ If you run `./gradlew --all=jars` you'll get a *lot* of results. To make things 
 // build.gradle
 equoIde {
   p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'
-  filter {
+  addFilter 'exclude-noise', { // 'exclude-noise' is just a label for the end user
     excludeSuffix '.source'  // no source bundles
     excludePrefix 'tooling'  // ignore internal tooling
     exclude 'org.apache.sshd.osgi' // we don't want sshd
