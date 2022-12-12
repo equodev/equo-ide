@@ -71,7 +71,7 @@ user@machine p2-multitool % ./gradlew equoList --all=categories
 
 In addition to `--all=categories`, you can also pass `--all=features` or `--all=jars`.
 
-- A category is the largest p2 concept, representing an entire "product"
+- A category is the highest-level p2 concept, representing an entire "product"
 - A feature is a collection of jars and other features, representing a single "feature"
   - could be a high level feature like `org.eclipse.jdt` (Eclipse Java Development Tools)
   - or a fine-grained feature like `org.eclipse.jdt.ui.unittest.junit` (JUnit Test runner client for UnitTest View)
@@ -82,6 +82,7 @@ If you run `./gradlew --all=jars` you'll get a *lot* of results. To make things 
 ### filter
 
 ```gradle
+// build.gradle
 equoIde {
   p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'
   filter {
@@ -103,6 +104,7 @@ Ultimately, the point of `equoList` is to make sure we've got all of the jars we
 - the units we install
 
 ```gradle
+// build.gradle
 equoIde {
   p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'
 }
@@ -127,6 +129,7 @@ user@machine p2-multitool % ./gradlew equoList --all=categories
 So let's try that one.
 
 ```gradle
+// build.gradle
 equoIde {
   p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'
   install 'org.eclipse.releng.java.languages.categoryIU'
@@ -136,8 +139,8 @@ equoIde {
 [//]: <> (P2MultitoolExamples._03)
 ```console
 user@machine p2-multitool % ./gradlew equoList --installed
-46 unmet requirement(s), 8 ambigous requirement(s)
-for more info: gradlew equoList --problems
+WARNING!!! 46 unmet requirement(s), 8 ambigous requirement(s). For more info:
+WARNING!!! gradlew equoList --problems
 +---------------------------------------------------------------------------------+---------------+
 | maven coordinate / p2 id                                                        | repo          |
 +---------------------------------------------------------------------------------+---------------+
@@ -160,8 +163,8 @@ The first thing to note is that some dependencies come from `mavenCentral`, whic
 The second thing to note is the warning at the top:
 
 ```
-46 unmet requirement(s), 8 ambigous requirement(s)
-for more info: gradlew equoList --problems
+WARNING!!! 46 unmet requirement(s), 8 ambigous requirement(s). For more info:
+WARNING!!! gradlew equoList --problems
 ```
 
 So let's try that!
@@ -224,24 +227,24 @@ user@machine p2-multitool % ./gradlew equoList --problems
 | java.package:weblogic                           | org.apache.ant:1.10.12.v20211102-1452           |
 +-------------------------------------------------+-------------------------------------------------+
 
-+-------------------------------------------------------------+-----------------------------------------------------------+----------+
-| ambiguous requirement                                       | candidate                                                 | resolved |
-+-------------------------------------------------------------+-----------------------------------------------------------+----------+
-| java.package:org.eclipse.jdt.internal.compiler.apt.dispatch | org.eclipse.jdt.compiler.apt:1.4.300.v20221108-0856       | [x]      |
-|                                                             | org.eclipse.jdt.core.compiler.batch:3.32.0.v20221108-1853 | [ ]      |
-| java.package:org.eclipse.jdt.internal.compiler.apt.model    | org.eclipse.jdt.compiler.apt:1.4.300.v20221108-0856       | [x]      |
-|                                                             | org.eclipse.jdt.core.compiler.batch:3.32.0.v20221108-1853 | [ ]      |
-| java.package:org.eclipse.jdt.internal.compiler.apt.util     | org.eclipse.jdt.compiler.apt:1.4.300.v20221108-0856       | [x]      |
-|                                                             | org.eclipse.jdt.core.compiler.batch:3.32.0.v20221108-1853 | [ ]      |
-| java.package:org.eclipse.jdt.internal.compiler.tool         | org.eclipse.jdt.compiler.tool:1.3.200.v20220802-0458      | [x]      |
-|                                                             | org.eclipse.jdt.core.compiler.batch:3.32.0.v20221108-1853 | [ ]      |
-| java.package:org.osgi.service.component.annotations         | org.eclipse.osgi.services:3.11.100.v20221006-1531         | [x]      |
-|                                                             | org.osgi.service.component.annotations:1.5.0.202109301733 | [ ]      |
-| org.eclipse.equinox.p2.iu:org.eclipse.jdt.annotation        | org.eclipse.jdt.annotation:2.2.700.v20220826-1026         | [x]      |
-|                                                             | org.eclipse.jdt.annotation:1.2.100.v20220826-1026         | [ ]      |
-| org.eclipse.equinox.p2.iu:org.eclipse.jdt.annotation.source | org.eclipse.jdt.annotation.source:2.2.700.v20220826-1026  | [x]      |
-|                                                             | org.eclipse.jdt.annotation.source:1.2.100.v20220826-1026  | [ ]      |
-| osgi.bundle:org.eclipse.jdt.annotation                      | org.eclipse.jdt.annotation:2.2.700.v20220826-1026         | [x]      |
-|                                                             | org.eclipse.jdt.annotation:1.2.100.v20220826-1026         | [ ]      |
-+-------------------------------------------------------------+-----------------------------------------------------------+----------+
++-------------------------------------------------------------+-----------------------------------------------------------+-----------+
+| ambiguous requirement                                       | candidate                                                 | installed |
++-------------------------------------------------------------+-----------------------------------------------------------+-----------+
+| java.package:org.eclipse.jdt.internal.compiler.apt.dispatch | org.eclipse.jdt.compiler.apt:1.4.300.v20221108-0856       | [x]       |
+|                                                             | org.eclipse.jdt.core.compiler.batch:3.32.0.v20221108-1853 | [ ]       |
+| java.package:org.eclipse.jdt.internal.compiler.apt.model    | org.eclipse.jdt.compiler.apt:1.4.300.v20221108-0856       | [x]       |
+|                                                             | org.eclipse.jdt.core.compiler.batch:3.32.0.v20221108-1853 | [ ]       |
+| java.package:org.eclipse.jdt.internal.compiler.apt.util     | org.eclipse.jdt.compiler.apt:1.4.300.v20221108-0856       | [x]       |
+|                                                             | org.eclipse.jdt.core.compiler.batch:3.32.0.v20221108-1853 | [ ]       |
+| java.package:org.eclipse.jdt.internal.compiler.tool         | org.eclipse.jdt.compiler.tool:1.3.200.v20220802-0458      | [x]       |
+|                                                             | org.eclipse.jdt.core.compiler.batch:3.32.0.v20221108-1853 | [ ]       |
+| java.package:org.osgi.service.component.annotations         | org.eclipse.osgi.services:3.11.100.v20221006-1531         | [x]       |
+|                                                             | org.osgi.service.component.annotations:1.5.0.202109301733 | [ ]       |
+| org.eclipse.equinox.p2.iu:org.eclipse.jdt.annotation        | org.eclipse.jdt.annotation:2.2.700.v20220826-1026         | [x]       |
+|                                                             | org.eclipse.jdt.annotation:1.2.100.v20220826-1026         | [ ]       |
+| org.eclipse.equinox.p2.iu:org.eclipse.jdt.annotation.source | org.eclipse.jdt.annotation.source:2.2.700.v20220826-1026  | [x]       |
+|                                                             | org.eclipse.jdt.annotation.source:1.2.100.v20220826-1026  | [ ]       |
+| osgi.bundle:org.eclipse.jdt.annotation                      | org.eclipse.jdt.annotation:2.2.700.v20220826-1026         | [x]       |
+|                                                             | org.eclipse.jdt.annotation:1.2.100.v20220826-1026         | [ ]       |
++-------------------------------------------------------------+-----------------------------------------------------------+-----------+
 ```
