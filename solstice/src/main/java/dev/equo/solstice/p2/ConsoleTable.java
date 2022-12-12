@@ -67,7 +67,7 @@ public class ConsoleTable {
 			for (int i = 0; i < candidates.size(); ++i) {
 				var candidate = candidates.get(i);
 				var firstCell = i == 0 ? requirement.toString() : "";
-				table.addRow(firstCell, candidate.toString(), query.isResolved(candidate) ? "[x]" : "[ ]");
+				table.addRow(firstCell, candidate.toString(), query.isInstalled(candidate) ? "[x]" : "[ ]");
 			}
 		}
 		return table.toString(format);

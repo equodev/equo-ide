@@ -42,12 +42,12 @@ public class P2Query {
 
 	private Map<String, String> filterProps = new HashMap<String, String>();
 
-	private TreeMap<String, P2Unit> resolved = new TreeMap<>();
+	private TreeMap<String, P2Unit> installed = new TreeMap<>();
 	private TreeMap<P2Session.Requirement, Set<P2Unit>> unmetRequirements = new TreeMap<>();
 	private TreeSet<P2Session.Requirement> ambiguousRequirements = new TreeSet<>();
 
 	private void assertNotUsed() {
-		if (!resolved.isEmpty()) {
+		if (!installed.isEmpty()) {
 			throw new IllegalStateException(
 					"You must not change any filter properties after you have already called `resolve` or `addAllUnits`.");
 		}
@@ -68,6 +68,7 @@ public class P2Query {
 		excludeSuffix.add(prefix);
 	}
 
+	/** Sets the platform filter. Null means that all platform-specific filters will test to true. */
 	public void setPlatform(@Nullable SwtPlatform platform) {
 		assertNotUsed();
 		if (platform == null) {
@@ -86,7 +87,7 @@ public class P2Query {
 
 	/** Returns the unit, if any, which has been resolved at the given id. */
 	public P2Unit findResolvedUnitById(String id) {
-		return resolved.get(id);
+		return installed.get(id);
 	}
 
 	/**
@@ -114,7 +115,7 @@ public class P2Query {
 		if (!filterProps.isEmpty() && unit.filter != null && !unit.filter.matches(filterProps)) {
 			return false;
 		}
-		return resolved.putIfAbsent(unit.id, unit) == null;
+		return installed.putIfAbsent(unit.id, unit) == null;
 	}
 
 	private void resolve(P2Unit toResolve) {
@@ -145,9 +146,10 @@ public class P2Query {
 		whoNeedsIt.add(needsIt);
 	}
 
+	/** Returns all jars. */
 	public List<P2Unit> getJars() {
 		var jars = new ArrayList<P2Unit>();
-		for (var unit : resolved.values()) {
+		for (var unit : installed.values()) {
 			if (unit.id.endsWith("feature.jar")
 					|| "true".equals(unit.properties.get(P2Unit.P2_TYPE_FEATURE))
 					|| "true".equals(unit.properties.get(P2Unit.P2_TYPE_CATEGORY))) {
@@ -158,17 +160,20 @@ public class P2Query {
 		return jars;
 	}
 
+	/** Returns all features. */
 	public List<P2Unit> getFeatures() {
 		return getUnitsWithProperty(P2Unit.P2_TYPE_FEATURE, "true");
 	}
 
+	/** Returns all categories. */
 	public List<P2Unit> getCategories() {
 		return getUnitsWithProperty(P2Unit.P2_TYPE_CATEGORY, "true");
 	}
 
+	/** Returns all units which have the given property set to the given value. */
 	public List<P2Unit> getUnitsWithProperty(String key, String value) {
 		List<P2Unit> matches = new ArrayList<>();
-		for (var unit : resolved.values()) {
+		for (var unit : installed.values()) {
 			if (Objects.equals(value, unit.properties.get(key))) {
 				matches.add(unit);
 			}
@@ -176,6 +181,7 @@ public class P2Query {
 		return matches;
 	}
 
+	/** Returns all jars which are on maven central. */
 	public List<String> getJarsOnMavenCentral() {
 		var mavenCoords = new ArrayList<String>();
 		for (var unit : getJars()) {
@@ -187,7 +193,8 @@ public class P2Query {
 		return mavenCoords;
 	}
 
-	public List<P2Unit> getjarsNotOnMavenCentral() {
+	/** Returns all jars which are not on maven central. */
+	public List<P2Unit> getJarsNotOnMavenCentral() {
 		var notOnMaven = new ArrayList<P2Unit>();
 		for (var unit : getJars()) {
 			var mavenState = MavenStatus.forUnit(unit);
@@ -210,7 +217,7 @@ public class P2Query {
 		var iter = ambiguousRequirements.iterator();
 		while (iter.hasNext()) {
 			var req = iter.next();
-			if (req.getProviders().stream().allMatch(this::isResolved)) {
+			if (req.getProviders().stream().allMatch(this::isInstalled)) {
 				iter.remove();
 			}
 		}
@@ -222,16 +229,8 @@ public class P2Query {
 		return unmetRequirements;
 	}
 
-	public boolean isResolved(P2Unit unit) {
-		return resolved.get(unit.getId()) == unit;
-	}
-
-	public void resolutionMessages() {
-		StringBuilder builder = new StringBuilder();
-		if (ambiguousRequirements.isEmpty()) {
-			builder.append("No ambiguous versions.");
-		} else {
-			builder.append("The following dependencies had ambiguous versions available:");
-		}
+	/** Returns true of the given unit was installed. */
+	public boolean isInstalled(P2Unit unit) {
+		return installed.get(unit.getId()) == unit;
 	}
 }

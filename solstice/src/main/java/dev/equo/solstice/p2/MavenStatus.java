@@ -70,6 +70,7 @@ public class MavenStatus implements Comparable<MavenStatus> {
 		return new MavenStatus(unit.id + ":" + unit.version, P2);
 	}
 
+	/** Sorts on repo first, then based on coordinate. */
 	@Override
 	public int compareTo(MavenStatus o) {
 		var repoCompare = repo.compareTo(o.repo);

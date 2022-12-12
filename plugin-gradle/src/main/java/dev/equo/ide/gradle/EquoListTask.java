@@ -173,7 +173,7 @@ public abstract class EquoListTask extends DefaultTask {
 	private static void raw(P2Query query, String raw) throws TransformerException {
 		var allAvailable = query.findAllAvailableUnitsById(raw);
 		for (var unit : allAvailable) {
-			System.out.println(unit.rawXml());
+			System.out.println(unit.getRawXml());
 		}
 	}
 

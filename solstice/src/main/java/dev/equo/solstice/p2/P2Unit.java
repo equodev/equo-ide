@@ -164,6 +164,7 @@ public class P2Unit implements Comparable<P2Unit> {
 	private static List<String> EXCLUDED_REQUIRE_PROVIDE_NAMESPACES =
 			Arrays.asList("org.eclipse.equinox.p2.eclipse.type", "osgi.ee");
 
+	/** Sorted alphabetically based on id, and then based on version with greater versions first. */
 	@Override
 	public int compareTo(P2Unit o) {
 		if (id.equals(o.id)) {
@@ -181,7 +182,7 @@ public class P2Unit implements Comparable<P2Unit> {
 		return version;
 	}
 
-	public String rawXml() throws TransformerException {
+	public String getRawXml() throws TransformerException {
 		TransformerFactory tf = TransformerFactory.newInstance();
 		Transformer transformer = tf.newTransformer();
 		transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
