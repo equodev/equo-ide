@@ -43,9 +43,7 @@ or like this in Maven with `mvn equo-ide:launch` ([more info](plugin-maven))
 
 ## How it works
 
-Much of the complexity of downloading, running, and modifying the Eclipse IDE is caused OSGi and p2. Equo IDE cuts out this complexity by replacing p2 with plain-old maven, and replacing OSGi with a simple shim called [solstice](https://github.com/equodev/equo-ide/tree/main/solstice).
-
-Currently only the Eclipse Java Development Tools are supported, check out [this issue](https://github.com/equodev/equo-ide/issues/1) to vote on which plugins we should add support for next.
+Much of the complexity of downloading, running, and modifying the Eclipse IDE is caused OSGi and p2. Equo IDE cuts out this complexity by replacing p2 with plain-old maven, and replacing OSGi with a simple shim called [Solstice](https://github.com/equodev/equo-ide/tree/main/solstice).
 
 ### p2 multitool for Eclipse plugin developers
 
