@@ -16,8 +16,6 @@ The EquoIDE gradle plugin can help you browse and debug p2 repositories. The mav
 
 ### `equoList --all=categories` (or `features` or `jars`)
 
-[//]: <> (P2MultitoolExamples._01)
-
 ```gradle
 // build.gradle
 plugins { id 'dev.equo.ide' version '0.4.0' }
@@ -30,6 +28,7 @@ To start, `cd` into the multitool directory where you'll see the `build.gradle` 
 
 - (On windows, replace `ls` with `dir` and replace `./gradlew` with `gradlew`)
 
+[//]: <> (P2MultitoolExamples._01)
 ```console
 user@machine p2-multitool % ls
 build           build.gradle    gradle          gradlew         gradlew.bat     P2_MULTITOOL.md
@@ -37,17 +36,9 @@ user@machine p2-multitool % ./gradlew equoList --all=categories
 +----------------------------------------------+---------------------------------------------------+
 | id                                           | name \n description                               |
 +----------------------------------------------+---------------------------------------------------+
-| I20221123-1800.Default                       | Uncategorized                                     |
-|                                              |   Default category for otherwise uncategorized    |
-|                                              |   features                                        |
-| org.eclipse.equinox.target.categoryIU        | Equinox Target Components                         |
-|                                              |   Features especially useful to install as PDE    |
-|                                              |   runtime targets.                                |
+...
 | org.eclipse.platform.ide.categoryIU          | Eclipse Platform                                  |
 |                                              |   Minimum version of Eclipse: no source or API    |
-|                                              |   documentation, no PDE or JDT.                   |
-| org.eclipse.platform.sdk.categoryIU          | Eclipse Platform SDK                              |
-|                                              |   Minimum version of Eclipse with source and      |
 |                                              |   documentation, no PDE or JDT.                   |
 | org.eclipse.rcp.categoryIU                   | Eclipse RCP Target Components                     |
 |                                              |   Features to use as PDE runtime target, while    |
@@ -56,13 +47,6 @@ user@machine p2-multitool % ./gradlew equoList --all=categories
 |                                              |   Tools to allow development with Java.           |
 | org.eclipse.releng.pde.categoryIU            | Eclipse Plugin Development Tools                  |
 |                                              |   Tools to develop bundles, plugins and features. |
-| org.eclipse.releng.testsIU                   | Eclipse Tests, Tools, Examples, and Extras        |
-|                                              |   Collection of Misc. Features, such as unit      |
-|                                              |   tests, SWT and e4 tools, examples, and          |
-|                                              |   compatibility features not shipped as part of   |
-|                                              |   main SDK, but which some people may desire in   |
-|                                              |   creating products based on previous versions of |
-|                                              |   Eclipse.                                        |
 | org.eclipse.sdk.ide.categoryIU               | Eclipse SDK                                       |
 |                                              |   The full version of Eclipse, with source and    |
 |                                              |   documentation: Platform, JDT and PDE.           |
@@ -126,7 +110,7 @@ user@machine p2-multitool % ./gradlew equoList --all=categories
 ...
 ```
 
-So let's try that one.
+So let's try installing that one.
 
 ```gradle
 // build.gradle
@@ -168,63 +152,22 @@ WARNING!!! gradlew equoList --problems
 ```
 
 So let's try that!
+
 [//]: <> (P2MultitoolExamples._04)
 ```console
 user@machine p2-multitool % ./gradlew equoList --problems
 +-------------------------------------------------+-------------------------------------------------+
 | unmet requirement                               | needed by                                       |
 +-------------------------------------------------+-------------------------------------------------+
+...
 | java.package:COM.ibm.netrexx.process            | org.apache.ant:1.10.12.v20211102-1452           |
 | java.package:com.jcraft.jzlib                   | com.jcraft.jsch:0.1.55.v20221112-0806           |
 | java.package:com.sun.media.jai.codec            | org.apache.ant:1.10.12.v20211102-1452           |
 | java.package:com.sun.net.ssl.internal.ssl       | org.apache.ant:1.10.12.v20211102-1452           |
 | java.package:com.sun.tools.javah                | org.apache.ant:1.10.12.v20211102-1452           |
-| java.package:com.sun.tools.javah.oldjavah       | org.apache.ant:1.10.12.v20211102-1452           |
-| java.package:gnu.classpath                      | org.apache.ant:1.10.12.v20211102-1452           |
-| java.package:gnu.gcj                            | org.apache.ant:1.10.12.v20211102-1452           |
-| java.package:javax.activation                   | org.apache.ant:1.10.12.v20211102-1452           |
-| java.package:javax.mail                         | org.apache.ant:1.10.12.v20211102-1452           |
-| java.package:javax.mail.internet                | org.apache.ant:1.10.12.v20211102-1452           |
-| java.package:javax.media.jai                    | org.apache.ant:1.10.12.v20211102-1452           |
-| java.package:jdepend.framework                  | org.apache.ant:1.10.12.v20211102-1452           |
-| java.package:jdepend.textui                     | org.apache.ant:1.10.12.v20211102-1452           |
-| java.package:jdepend.xmlui                      | org.apache.ant:1.10.12.v20211102-1452           |
-| java.package:kaffe.util                         | org.apache.ant:1.10.12.v20211102-1452           |
-| java.package:kotlin                             | junit-jupiter-api:5.9.1                         |
-|                                                 | junit-jupiter-params:5.9.1                      |
-| java.package:kotlin.collections                 | junit-jupiter-api:5.9.1                         |
-| java.package:kotlin.jvm.functions               | junit-jupiter-api:5.9.1                         |
-| java.package:kotlin.jvm.internal                | junit-jupiter-api:5.9.1                         |
-|                                                 | junit-jupiter-params:5.9.1                      |
-| java.package:netrexx.lang                       | org.apache.ant:1.10.12.v20211102-1452           |
-| java.package:org.apache.avalon.framework.logger | org.apache.commons.logging:1.2.0.v20180409-1502 |
-| java.package:org.apache.bcel.classfile          | org.apache.ant:1.10.12.v20211102-1452           |
-| java.package:org.apache.bsf                     | org.apache.ant:1.10.12.v20211102-1452           |
-| java.package:org.apache.commons.net.bsd         | org.apache.ant:1.10.12.v20211102-1452           |
-| java.package:org.apache.commons.net.ftp         | org.apache.ant:1.10.12.v20211102-1452           |
-| java.package:org.apache.commons.net.telnet      | org.apache.ant:1.10.12.v20211102-1452           |
-| java.package:org.apache.env                     | org.apache.ant:1.10.12.v20211102-1452           |
-| java.package:org.apache.harmony.luni.util       | org.apache.ant:1.10.12.v20211102-1452           |
-| java.package:org.apache.log                     | org.apache.commons.logging:1.2.0.v20180409-1502 |
-| java.package:org.apache.log4j                   | org.apache.ant:1.10.12.v20211102-1452           |
-|                                                 | org.apache.commons.logging:1.2.0.v20180409-1502 |
-| java.package:org.apache.oro.text.regex          | org.apache.ant:1.10.12.v20211102-1452           |
-| java.package:org.apache.regexp                  | org.apache.ant:1.10.12.v20211102-1452           |
-| java.package:org.apache.xalan.trace             | org.apache.ant:1.10.12.v20211102-1452           |
-| java.package:org.apache.xalan.transformer       | org.apache.ant:1.10.12.v20211102-1452           |
-| java.package:org.apache.xml.resolver            | org.apache.ant:1.10.12.v20211102-1452           |
-| java.package:org.apache.xml.resolver.helpers    | org.apache.ant:1.10.12.v20211102-1452           |
-| java.package:org.apache.xml.resolver.tools      | org.apache.ant:1.10.12.v20211102-1452           |
 | java.package:org.eclipse.jetty.jmx              | org.eclipse.jetty.io:10.0.12                    |
 |                                                 | org.eclipse.jetty.server:10.0.12                |
 |                                                 | org.eclipse.jetty.servlet:10.0.12               |
-| java.package:org.eclipse.swt.accessibility2     | org.eclipse.swt:3.122.0.v20221123-2302          |
-| java.package:org.junit.Suite                    | org.apache.ant:1.10.12.v20211102-1452           |
-| java.package:sun.nio.ch                         | org.apache.commons.commons-io:2.11.0            |
-| java.package:sun.rmi.rmic                       | org.apache.ant:1.10.12.v20211102-1452           |
-| java.package:sun.tools.javac                    | org.apache.ant:1.10.12.v20211102-1452           |
-| java.package:sun.tools.native2ascii             | org.apache.ant:1.10.12.v20211102-1452           |
-| java.package:weblogic                           | org.apache.ant:1.10.12.v20211102-1452           |
 +-------------------------------------------------+-------------------------------------------------+
 
 +-------------------------------------------------------------+-----------------------------------------------------------+-----------+
