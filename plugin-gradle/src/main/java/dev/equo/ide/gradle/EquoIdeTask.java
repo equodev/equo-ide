@@ -14,6 +14,7 @@
 package dev.equo.ide.gradle;
 
 import dev.equo.solstice.NestedBundles;
+import dev.equo.solstice.p2.P2Query;
 import java.io.File;
 import java.io.IOException;
 import java.util.stream.Collectors;
@@ -27,7 +28,7 @@ import org.gradle.api.tasks.TaskAction;
 
 public abstract class EquoIdeTask extends DefaultTask {
 	@Internal
-	public abstract Property<EquoIdeExtension> getExtension();
+	public abstract Property<P2Query> getQuery();
 
 	@Internal
 	public abstract Property<FileCollection> getClassPath();
@@ -52,6 +53,8 @@ public abstract class EquoIdeTask extends DefaultTask {
 						.map(e -> e.getValue())
 						.collect(Collectors.toList());
 		var nestedFileCollection = getObjectFactory().fileCollection().from(allNested);
+
+		var query = getQuery().get();
 
 		var result =
 				NestedBundles.javaExec(

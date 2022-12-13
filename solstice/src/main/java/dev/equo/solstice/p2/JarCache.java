@@ -14,7 +14,6 @@
 package dev.equo.solstice.p2;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
@@ -22,32 +21,14 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okio.Okio;
 
-class JarCache implements AutoCloseable {
+class JarCache {
 	final File bundlePool = CacheLocations.p2bundlePool();
+	final OkHttpClient client = new OkHttpClient.Builder().build();
 	final P2Client.Caching cachingPolicy;
-	final OkHttpClient client;
-	final FileOutputStream lock;
-	final File lockFile;
 
 	JarCache(P2Client.Caching cachingPolicy) throws IOException {
 		this.cachingPolicy = cachingPolicy;
-		this.client = new OkHttpClient.Builder().build();
 		FileMisc.mkdirs(bundlePool);
-
-		lockFile = new File(bundlePool, ".lock");
-		FileMisc.retry(
-				lockFile,
-				f -> {
-					if (f.exists()) {
-						throw new IllegalStateException(
-								"P2 operation already in progress, close other clients or delete stale lockfile at "
-										+ lockFile.getAbsolutePath());
-					}
-				});
-
-		lock = new FileOutputStream(lockFile);
-		lock.write(Long.toString(ProcessHandle.current().pid()).getBytes());
-		lock.flush();
 	}
 
 	public File download(P2Unit unit) throws IOException {
@@ -75,11 +56,5 @@ class JarCache implements AutoCloseable {
 							+ unit.getJarUrl()
 							+ " available, you must turn off offline mode.");
 		}
-	}
-
-	@Override
-	public void close() throws IOException {
-		lock.close();
-		FileMisc.delete(lockFile);
 	}
 }

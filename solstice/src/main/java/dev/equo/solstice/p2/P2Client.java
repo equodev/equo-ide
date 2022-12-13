@@ -67,6 +67,7 @@ public class P2Client implements AutoCloseable {
 	private final Caching cachingPolicy;
 	private final OfflineCache offlineMetadataCache;
 	private final JarCache jarCache;
+	private final LockFile lock;
 
 	public P2Client() throws IOException {
 		this(Caching.ALLOW_OFFLINE);
@@ -85,6 +86,7 @@ public class P2Client implements AutoCloseable {
 			metadataClient = new OkHttpClient.Builder().build();
 		}
 		offlineMetadataCache = new OfflineCache(new File(p2metadata, "offline"));
+		lock = new LockFile(p2metadata);
 	}
 
 	public File download(P2Unit unit) throws IOException {
@@ -96,7 +98,7 @@ public class P2Client implements AutoCloseable {
 		if (metadataResponseCache != null) {
 			metadataResponseCache.close();
 		}
-		jarCache.close();
+		lock.close();
 	}
 
 	private static final String CONTENT_XML = "content.xml";
