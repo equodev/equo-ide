@@ -46,7 +46,11 @@ class JarCache {
 			var tempFile = File.createTempFile(unit.id, ".jar");
 			try (var response = client.newCall(request).execute();
 					var sink = Okio.buffer(Okio.sink(tempFile))) {
-				sink.writeAll(response.body().source());
+				if (response.code() == 200) {
+					sink.writeAll(response.body().source());
+				} else {
+					throw new IllegalArgumentException(response.code() + " at " + unit.getJarUrl());
+				}
 			}
 			Files.move(tempFile.toPath(), jar.toPath(), StandardCopyOption.ATOMIC_MOVE);
 			return jar;
