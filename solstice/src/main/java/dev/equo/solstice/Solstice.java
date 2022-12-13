@@ -548,7 +548,7 @@ public class Solstice extends ServiceRegistry {
 				}
 				String bundle = s.substring(0, attrDelim);
 				if (bundle.indexOf('"') == -1) {
-					required.add(bundle);
+					required.add(bundle.trim());
 				}
 			}
 			return required;
