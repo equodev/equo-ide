@@ -48,11 +48,12 @@ dependencies {
 	testImplementation "io.github.origin-energy:java-snapshot-testing-junit5:$VER_SNAPSHOT_TESTING"
 }
 
+String cacheRoot = System.getProperty("user.home") + "/.equo/p2-bundle-pool/"
 file('mavenJarsNeededForTest').readLines().forEach {
 	if (it.startsWith("maven ")) {
 		dependencies.testSetup2Implementation it.substring("maven ".length())
 	} else if (it.startsWith("file ")) {
-		dependencies.testSetup2Implementation files(it.substring("file ".length()))
+		dependencies.testSetup2Implementation files(cacheRoot + it.substring("file ".length()))
 	}
 }
 file('nestedJarsNeededForTest').readLines().forEach {

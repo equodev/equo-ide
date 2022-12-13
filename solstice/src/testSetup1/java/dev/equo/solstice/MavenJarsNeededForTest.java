@@ -14,6 +14,7 @@
 package dev.equo.solstice;
 
 import com.diffplug.common.swt.os.SwtPlatform;
+import dev.equo.solstice.p2.CacheLocations;
 import dev.equo.solstice.p2.JdtSetup;
 import dev.equo.solstice.p2.P2Client;
 import dev.equo.solstice.p2.P2Session;
@@ -48,10 +49,15 @@ public class MavenJarsNeededForTest {
 		query.install("org.eclipse.equinox.event");
 
 		var content = new StringBuilder();
+		var cacheRoot = CacheLocations.p2bundlePool().getAbsolutePath() + "/";
 		try (var client = new P2Client()) {
 			for (var p2 : query.getJarsNotOnMavenCentral()) {
+				var path = client.download(p2).getAbsolutePath();
+				if (!path.startsWith(cacheRoot)) {
+					throw new IllegalArgumentException(path + " does not start with " + cacheRoot);
+				}
 				content.append("file ");
-				content.append(client.download(p2).getAbsolutePath());
+				content.append(path.substring(cacheRoot.length()));
 				content.append('\n');
 			}
 		}
