@@ -488,8 +488,6 @@ dev.equo.solstice.p2.P2MultipleReposTest.query=[
 | org.apache.lucene.analyzers-smartcn:8.4.1.v20221112-0806                        | p2 R-4.26-202211231800  |
 | org.apache.lucene.core:8.4.1.v20221112-0806                                     | p2 R-4.26-202211231800  |
 | org.apache.xmlgraphics:2.7.0.v20221018-0736                                     | p2 R-4.26-202211231800  |
-| org.eclipse.platform_root:4.26.0.v20221123-2302                                 | p2 R-4.26-202211231800  |
-| org.eclipse.rcp_root:4.26.0.v20221123-2302                                      | p2 R-4.26-202211231800  |
 | org.hamcrest.core:1.3.0.v20180420-1519                                          | p2 R-4.26-202211231800  |
 | org.junit:4.13.2.v20211018-1956                                                 | p2 R-4.26-202211231800  |
 | org.w3c.css.sac:1.3.1.v200903091627                                             | p2 R-4.26-202211231800  |
@@ -533,7 +531,6 @@ dev.equo.solstice.p2.P2MultipleReposTest.query=[
 | org.eclipse.cdt.sdk:11.0.0.202211062329                                         | p2 cdt-11.0.0           |
 | org.eclipse.cdt.ui:8.0.0.202211292120                                           | p2 cdt-11.0.0           |
 | org.eclipse.cdt:11.0.0.202211062329                                             | p2 cdt-11.0.0           |
-| org.eclipse.cdt_root:11.0.0.202211300214                                        | p2 cdt-11.0.0           |
 | org.eclipse.launchbar.core:2.5.0.202211062329                                   | p2 cdt-11.0.0           |
 | org.eclipse.launchbar.ui:2.5.0.202211062329                                     | p2 cdt-11.0.0           |
 | org.eclipse.tm.terminal.control:5.4.0.202211062329                              | p2 cdt-11.0.0           |

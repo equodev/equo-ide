@@ -165,21 +165,16 @@ public class P2Query {
 
 	/** Returns all jars. */
 	public List<P2Unit> getJars() {
-		var jars = new ArrayList<P2Unit>();
-		for (var unit : installed.values()) {
-			if (unit.id.endsWith("feature.jar")
-					|| "true".equals(unit.properties.get(P2Unit.P2_TYPE_FEATURE))
-					|| "true".equals(unit.properties.get(P2Unit.P2_TYPE_CATEGORY))) {
-				continue;
-			}
-			jars.add(unit);
-		}
-		return jars;
+		return getUnitsWithProperty(P2Unit.ARTIFACT_CLASSIFIER, P2Unit.ARTIFACT_CLASSIFIER_BUNDLE);
 	}
 
 	/** Returns all features. */
 	public List<P2Unit> getFeatures() {
-		return getUnitsWithProperty(P2Unit.P2_TYPE_FEATURE, "true");
+		return getUnitsWithProperty1or2(
+				P2Unit.P2_TYPE_FEATURE,
+				"true",
+				P2Unit.ARTIFACT_CLASSIFIER,
+				P2Unit.ARTIFACT_CLASSIFIER_FEATURE);
 	}
 
 	/** Returns all categories. */
@@ -192,6 +187,19 @@ public class P2Query {
 		List<P2Unit> matches = new ArrayList<>();
 		for (var unit : installed.values()) {
 			if (Objects.equals(value, unit.properties.get(key))) {
+				matches.add(unit);
+			}
+		}
+		return matches;
+	}
+
+	/** Returns all units which have the given property set to the given value. */
+	public List<P2Unit> getUnitsWithProperty1or2(
+			String key1, String value1, String key2, String value2) {
+		List<P2Unit> matches = new ArrayList<>();
+		for (var unit : installed.values()) {
+			if (Objects.equals(unit.properties.get(key1), value1)
+					|| Objects.equals(unit.properties.get(key2), value2)) {
 				matches.add(unit);
 			}
 		}
