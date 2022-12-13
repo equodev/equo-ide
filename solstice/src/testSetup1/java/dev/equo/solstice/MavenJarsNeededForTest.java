@@ -32,7 +32,7 @@ public class MavenJarsNeededForTest {
 	public static void main(String[] args) throws IOException {
 		var session = new P2Session();
 		try (var client = new P2Client()) {
-			session.populateFrom(client, JdtSetup.URL_BASE + JdtSetup.DEFAULT_VERSION + "/");
+			session.populateFrom(client, JdtSetup.URL_BASE + "4.25/");
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -44,6 +44,7 @@ public class MavenJarsNeededForTest {
 		query.excludePrefix("org.apache.felix.gogo");
 		query.excludePrefix("org.eclipse.equinox.console");
 		query.excludePrefix("org.eclipse.equinox.p2");
+		query.excludeSuffix(".source");
 		query.install("org.eclipse.releng.java.languages.categoryIU");
 		query.install("org.eclipse.platform.ide.categoryIU");
 		query.install("org.eclipse.equinox.event");

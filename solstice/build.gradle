@@ -24,6 +24,7 @@ sourceSets {
 	}
 }
 configurations {
+	testSetup2Implementation.transitive = false
 	testImplementation.extendsFrom(testSetup2Implementation)
 }
 
