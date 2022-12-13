@@ -100,8 +100,11 @@ public abstract class NestedBundles {
 		Manifest manifest = new Manifest(stream);
 		var cp = manifest.getMainAttributes().getValue(CLASSPATH);
 		if (cp != null && !".".equals(cp)) {
-			var nestedJar = Unchecked.get(() -> new URL(jarUrl + "/" + cp));
-			nestedJars.add(nestedJar);
+			var lines = cp.split(",");
+			for (var line : lines) {
+				var nestedJar = Unchecked.get(() -> new URL(jarUrl + "/" + line));
+				nestedJars.add(nestedJar);
+			}
 		}
 	}
 
