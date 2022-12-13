@@ -87,8 +87,9 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 									task.setGroup(TASK_GROUP);
 									task.setDescription("Launches an Eclipse application");
 
+									task.getCaching().set(caching);
 									task.getIsTestOnly().set(equoTestOnly);
-									task.getClassPath().set(configuration);
+									task.getMavenDeps().set(configuration);
 									task.getWorkspaceDir().set(workspaceDir);
 								});
 		project.afterEvaluate(
