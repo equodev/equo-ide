@@ -360,6 +360,7 @@ dev.equo.ide.gradle.P2MultitoolExamples._05[apt]=[
 | version                                    | 1.4.300.v20221108-0856                                      |
 | maven coordinate                           | org.eclipse.jdt:org.eclipse.jdt.compiler.apt:1.4.300        |
 | maven repo                                 | maven central?                                              |
+| prop artifact-classifier                   | osgi.bundle                                                 |
 | prop maven-artifactId                      | org.eclipse.jdt.compiler.apt                                |
 | prop maven-groupId                         | org.eclipse.jdt                                             |
 | prop maven-type                            | eclipse-plugin                                              |
@@ -383,6 +384,7 @@ dev.equo.ide.gradle.P2MultitoolExamples._05[batch]=[
 | version                          | 3.32.0.v20221108-1853               |
 | maven coordinate                 | org.eclipse.jdt:ecj:3.32.0          |
 | maven repo                       | maven central?                      |
+| prop artifact-classifier         | osgi.bundle                         |
 | prop maven-artifactId            | org.eclipse.jdt.core                |
 | prop maven-groupId               | org.eclipse.jdt                     |
 | prop maven-type                  | eclipse-plugin                      |
