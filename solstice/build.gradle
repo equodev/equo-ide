@@ -49,7 +49,11 @@ dependencies {
 }
 
 file('mavenJarsNeededForTest').readLines().forEach {
-	dependencies.testSetup2Implementation it
+	if (it.startsWith("maven ")) {
+		dependencies.testSetup2Implementation it.substring("maven ".length())
+	} else if (it.startsWith("file ")) {
+		dependencies.testSetup2Implementation files(it.substring("file ".length()))
+	}
 }
 file('nestedJarsNeededForTest').readLines().forEach {
 	dependencies.testImplementation files(it)

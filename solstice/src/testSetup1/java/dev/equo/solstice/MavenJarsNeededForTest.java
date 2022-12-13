@@ -48,7 +48,15 @@ public class MavenJarsNeededForTest {
 		query.install("org.eclipse.equinox.event");
 
 		var content = new StringBuilder();
+		try (var client = new P2Client()) {
+			for (var p2 : query.getJarsNotOnMavenCentral()) {
+				content.append("file ");
+				content.append(client.download(p2).getAbsolutePath());
+				content.append('\n');
+			}
+		}
 		for (var coordinate : query.getJarsOnMavenCentral()) {
+			content.append("maven ");
 			content.append(coordinate);
 			content.append('\n');
 		}
