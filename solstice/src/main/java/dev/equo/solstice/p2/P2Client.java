@@ -37,7 +37,7 @@ import org.w3c.dom.NodeList;
 
 /** Performs network requests and parsing against a P2 repository, aided by caching. */
 public class P2Client implements AutoCloseable {
-	private final Cache cache;
+	private final Cache metadataResponseCache;
 	private final OkHttpClient metadataClient;
 
 	/** The various caching modes that {@link P2Client} supports. */
@@ -64,26 +64,39 @@ public class P2Client implements AutoCloseable {
 		}
 	}
 
-	private final Caching caching;
-	private final OfflineCache offlineCache;
+	private final Caching cachingPolicy;
+	private final OfflineCache offlineMetadataCache;
+	private final JarCache jarCache;
 
-	public P2Client() {
+	public P2Client() throws IOException {
 		this(Caching.ALLOW_OFFLINE);
 	}
 
-	public P2Client(Caching caching) {
-		this.caching = caching;
+	public P2Client(Caching cachingPolicy) throws IOException {
+		this.cachingPolicy = cachingPolicy;
+		this.jarCache = new JarCache(cachingPolicy);
 		long maxSize = 50L * 1024L * 1024L; // 50 MiB
 		File p2metadata = CacheLocations.p2metadata();
+		if (cachingPolicy.cacheAllowed()) {
+			metadataResponseCache = new Cache(new File(p2metadata, "connection"), maxSize);
+			metadataClient = new OkHttpClient.Builder().cache(metadataResponseCache).build();
+		} else {
+			metadataResponseCache = null;
+			metadataClient = new OkHttpClient.Builder().build();
+		}
+		offlineMetadataCache = new OfflineCache(new File(p2metadata, "offline"));
+	}
 
-		cache = new Cache(new File(p2metadata, "connection"), maxSize);
-		metadataClient = new OkHttpClient.Builder().cache(cache).build();
-		offlineCache = new OfflineCache(new File(p2metadata, "offline"));
+	public File download(P2Unit unit) throws IOException {
+		return jarCache.download(unit);
 	}
 
 	@Override
 	public void close() throws IOException {
-		cache.close();
+		if (metadataResponseCache != null) {
+			metadataResponseCache.close();
+		}
+		jarCache.close();
 	}
 
 	private static final String CONTENT_XML = "content.xml";
@@ -122,8 +135,8 @@ public class P2Client implements AutoCloseable {
 	}
 
 	private byte[] getBytes(String url) throws IOException, NotFoundException {
-		if (caching.tryOfflineFirst()) {
-			var cached = offlineCache.get(url);
+		if (cachingPolicy.tryOfflineFirst()) {
+			var cached = offlineMetadataCache.get(url);
 			if (cached != null) {
 				if (OfflineCache.is404(cached)) {
 					throw new NotFoundException(url);
@@ -131,27 +144,27 @@ public class P2Client implements AutoCloseable {
 				return cached;
 			}
 		}
-		if (caching.networkAllowed()) {
+		if (cachingPolicy.networkAllowed()) {
 			var request = new Request.Builder().url(url).build();
 			try (var response = metadataClient.newCall(request).execute()) {
 				if (response.code() == 404) {
-					if (caching.cacheAllowed()) {
-						offlineCache.put404(url);
+					if (cachingPolicy.cacheAllowed()) {
+						offlineMetadataCache.put404(url);
 					}
 					throw new NotFoundException(url);
 				} else {
 					var bytes = response.body().bytes();
-					if (caching.cacheAllowed()) {
-						offlineCache.put(url, bytes);
+					if (cachingPolicy.cacheAllowed()) {
+						offlineMetadataCache.put(url, bytes);
 					}
 					return bytes;
 				}
 			} catch (UnknownHostException e) {
-				if (caching.cacheAllowed()) {
-					var cached = offlineCache.get(url);
+				if (cachingPolicy.cacheAllowed()) {
+					var cached = offlineMetadataCache.get(url);
 					if (cached != null) {
-						if (caching.cacheAllowed()) {
-							offlineCache.put404(url);
+						if (cachingPolicy.cacheAllowed()) {
+							offlineMetadataCache.put404(url);
 						}
 						return cached;
 					}
@@ -169,7 +182,7 @@ public class P2Client implements AutoCloseable {
 	}
 
 	private static final Pattern p2metadata =
-			Pattern.compile("metadata\\.repository\\.factory\\.order(?:\\s*)=(.*),");
+			Pattern.compile("metadata\\.repository\\.factory\\.order\\s*=(.*),");
 
 	private static String getGroup1(String content, Pattern pattern) {
 		var matcher = pattern.matcher(content);
