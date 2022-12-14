@@ -18,7 +18,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import org.osgi.framework.namespace.HostNamespace;
 import org.osgi.framework.wiring.BundleWire;
+import org.osgi.framework.wiring.BundleWiring;
 
 class ShimBundleWiring extends Unimplemented.BundleWiring {
 	private final Solstice.ShimBundle bundle;
@@ -29,6 +31,17 @@ class ShimBundleWiring extends Unimplemented.BundleWiring {
 
 	@Override
 	public List<BundleWire> getRequiredWires(String namespace) {
+		if (namespace.equals(HostNamespace.HOST_NAMESPACE)) {
+			var host = bundle.fragmentHostBundle();
+			if (host != null) {
+				return Collections.singletonList(new Unimplemented.BundleWire() {
+					@Override
+					public BundleWiring getProviderWiring() {
+						return host.adapt(BundleWiring.class);
+					}
+				});
+			}
+		}
 		return Collections.emptyList();
 	}
 

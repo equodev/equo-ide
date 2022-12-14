@@ -518,6 +518,11 @@ public class Solstice extends ServiceRegistry {
 			return idx == -1 ? host : host.substring(0, idx);
 		}
 
+		ShimBundle fragmentHostBundle() {
+			var host = fragmentHost();
+			return host == null ? null : bundleByName(host);
+		}
+
 		private List<String> parsePackages(Object attribute) {
 			if (attribute == null) {
 				return Collections.emptyList();
