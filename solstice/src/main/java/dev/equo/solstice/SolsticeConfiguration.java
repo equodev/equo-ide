@@ -91,12 +91,16 @@ public class SolsticeConfiguration {
 				"javax.inject",
 				"org.apache.ant",
 				"org.apache.batik.css",
+				"org.apache.batik.constants",
 				"org.apache.lucene.analyzers-common",
 				"org.apache.lucene.analyzers-smartcn",
 				"org.apache.lucene.core",
 				"org.eclipse.ant.core",
 				"org.eclipse.jdt.annotation",
-				"org.junit");
+				"org.junit",
+				"org.slf4j.simple",
+				"slf4j.api",
+				"system.bundle");
 	}
 
 	public boolean okayIfMissingPackage(String pkg) {

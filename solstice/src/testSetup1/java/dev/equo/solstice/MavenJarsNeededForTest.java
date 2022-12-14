@@ -46,6 +46,11 @@ public class MavenJarsNeededForTest {
 		query.excludePrefix("org.eclipse.equinox.p2");
 		query.excludeSuffix(".source");
 		query.exclude("org.slf4j.api");
+
+		// don't know why, but glassfish includes a copy of jdt core which causes package signing errors
+		query.exclude("org.eclipse.equinox.jsp.jasper");
+		query.exclude("org.apache.jasper.glassfish");
+
 		query.install("org.eclipse.releng.java.languages.categoryIU");
 		query.install("org.eclipse.platform.ide.categoryIU");
 		query.install("org.eclipse.equinox.event");
