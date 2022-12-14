@@ -557,6 +557,10 @@ public class Solstice extends ServiceRegistry {
 			return required;
 		}
 
+		public ShimBundle bundleByName(String name) {
+			return Solstice.this.bundleByName(name);
+		}
+
 		@Override
 		public String toString() {
 			if (symbolicName != null) {

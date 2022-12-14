@@ -54,13 +54,26 @@ class ShimBundleWiring extends Unimplemented.BundleWiring {
 	@Override
 	public Collection<String> listResources(String path, String filePattern, int options) {
 		boolean recurse = (options & LISTRESOURCES_RECURSE) == LISTRESOURCES_RECURSE;
-		var urls = bundle.findEntries(path, filePattern, recurse);
 		List<String> asStrings = new ArrayList<>();
+		listResourcesHelper(asStrings, bundle, path, filePattern, recurse);
+		return asStrings;
+	}
+
+	private static void listResourcesHelper(
+			List<String> asStrings,
+			Solstice.ShimBundle bundle,
+			String path,
+			String filePattern,
+			boolean recurse) {
+		var urls = bundle.findEntries(path, filePattern, recurse);
 		while (urls.hasMoreElements()) {
 			var url = urls.nextElement();
 			asStrings.add(url.toExternalForm());
 		}
-		return asStrings;
+		for (var required : bundle.requiredBundles) {
+			// TODO: this should respect whether a required bundle is re-exported or not
+			listResourcesHelper(asStrings, bundle.bundleByName(required), path, filePattern, recurse);
+		}
 	}
 
 	@Override
