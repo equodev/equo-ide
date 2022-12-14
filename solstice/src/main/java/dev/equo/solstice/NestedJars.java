@@ -36,19 +36,14 @@ import org.osgi.framework.Constants;
  * Unwraps nested bundles to be friendly to a normal classloader, see <a
  * href="https://github.com/equodev/equo-ide/pull/7">equodev/equo-ide#7</a>
  *
- * <p>Known limitations:
- *
- * <ul>
- *   <li>doesn't handle the case that <code>Bundle-ClassPath</code> contains multiple bundles
- *   <li>if the nested bundle has no <code>META-INF/MANIFEST.MF</code>, then <code>
- *       confirmAllNestedJarsArePresentOnClasspath</code> will fail erroneously
- * </ul>
+ * <p>Known limitation: if the nested bundle has no {@code META-INF/MANIFEST.MF}, then {@link
+ * #confirmAllNestedJarsArePresentOnClasspath(File)} will fail erroneously.
  */
-public abstract class NestedBundles {
+public abstract class NestedJars {
 	/** Reads the version of the Solstice jar from the classpath. */
 	public static String solsticeVersion() throws IOException {
 		var solsticeJar =
-				NestedBundles.class.getResource(NestedBundles.class.getSimpleName() + ".class").toString();
+				NestedJars.class.getResource(NestedJars.class.getSimpleName() + ".class").toString();
 		if (!solsticeJar.startsWith("jar")) {
 			throw new IllegalArgumentException("");
 		}
@@ -100,20 +95,23 @@ public abstract class NestedBundles {
 		Manifest manifest = new Manifest(stream);
 		var cp = manifest.getMainAttributes().getValue(CLASSPATH);
 		if (cp != null && !".".equals(cp)) {
-			var nestedJar = Unchecked.get(() -> new URL(jarUrl + "/" + cp));
-			nestedJars.add(nestedJar);
+			var lines = cp.split(",");
+			for (var line : lines) {
+				var nestedJar = Unchecked.get(() -> new URL(jarUrl + "/" + line));
+				nestedJars.add(nestedJar);
+			}
 		}
 	}
 
-	public static NestedBundles onClassPath() {
-		return new NestedBundles() {
+	public static NestedJars onClassPath() {
+		return new NestedJars() {
 			@Override
 			protected List<URL> listNestedJars() {
 				List<URL> nestedJars = new ArrayList<>();
 				Enumeration<URL> manifests =
 						Unchecked.get(
 								() ->
-										NestedBundles.class
+										NestedJars.class
 												.getClassLoader()
 												.getResources(Solstice.MANIFEST_PATH.substring(1)));
 				while (manifests.hasMoreElements()) {
@@ -131,8 +129,8 @@ public abstract class NestedBundles {
 		};
 	}
 
-	public static NestedBundles inFiles(Iterable<File> files) {
-		return new NestedBundles() {
+	public static NestedJars inFiles(Iterable<File> files) {
+		return new NestedJars() {
 			@Override
 			protected List<URL> listNestedJars() {
 				List<URL> nestedJars = new ArrayList<>();
@@ -159,7 +157,11 @@ public abstract class NestedBundles {
 	public List<Map.Entry<URL, File>> extractAllNestedJars(File nestedJarFolder) {
 		var files = new ArrayList<Map.Entry<URL, File>>();
 		for (var url : listNestedJars()) {
-			files.add(extractNestedJar(url, nestedJarFolder));
+			int lastExclamation = url.getPath().indexOf('!');
+			int slashBeforeThat = url.getPath().lastIndexOf('/', lastExclamation);
+			files.add(
+					extractNestedJar(
+							url.getPath().substring(slashBeforeThat + 1, lastExclamation), url, nestedJarFolder));
 		}
 		files.sort(Comparator.comparing(e -> e.getKey().getPath()));
 		return files;
@@ -172,7 +174,7 @@ public abstract class NestedBundles {
 		Enumeration<URL> manifests =
 				Unchecked.get(
 						() ->
-								NestedBundles.class
+								NestedJars.class
 										.getClassLoader()
 										.getResources(Solstice.MANIFEST_PATH.substring(1)));
 		while (manifests.hasMoreElements()) {
@@ -204,7 +206,8 @@ public abstract class NestedBundles {
 		}
 	}
 
-	private static Map.Entry<URL, File> extractNestedJar(URL entry, File nestedJarFolder) {
+	private static Map.Entry<URL, File> extractNestedJar(
+			String parentJar, URL entry, File nestedJarFolder) {
 		try (var toRead = entry.openStream()) {
 			var content = toRead.readAllBytes();
 
@@ -215,7 +218,7 @@ public abstract class NestedBundles {
 			var lastSep = Math.max(jarPath.lastIndexOf('!'), jarPath.lastIndexOf('/'));
 			var jarSimpleName = jarPath.substring(lastSep + 1);
 
-			var filename = bytesToHex(md5.digest()) + "_" + jarSimpleName;
+			var filename = parentJar + "__" + jarSimpleName + "__" + bytesToHex(md5.digest()) + ".jar";
 			var jarToAdd = new File(nestedJarFolder, filename);
 			if (!jarToAdd.exists() || jarToAdd.length() != content.length) {
 				nestedJarFolder.mkdirs();

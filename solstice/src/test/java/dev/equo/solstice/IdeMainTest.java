@@ -14,9 +14,12 @@
 package dev.equo.solstice;
 
 import org.osgi.framework.InvalidSyntaxException;
+import org.slf4j.simple.SimpleLogger;
 
 public class IdeMainTest {
 	public static void main(String[] args) throws InvalidSyntaxException {
+		System.setProperty(SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "INFO");
+		System.setProperty(SimpleLogger.LOG_FILE_KEY, "System.out");
 		IdeMain.main(args);
 	}
 }

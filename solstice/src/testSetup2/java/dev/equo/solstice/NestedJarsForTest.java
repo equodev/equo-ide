@@ -18,15 +18,14 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-public class NestedJarsNeededForTest {
+public class NestedJarsForTest {
 	/**
-	 * This creates the File `nestedJarsNeededForTest` which is a list of extracted jars which are
-	 * needed for the test task to run. This needs to be run if the jars in testSetupImplementation
-	 * change.
+	 * This creates the File `nestedJarsForTest` which is a list of extracted jars which are needed
+	 * for the test task to run. This needs to be run if the jars in testSetupImplementation change.
 	 */
 	public static void main(String[] args) throws IOException {
 		var nestedJarFolder = new SolsticeConfiguration().nestedJarFolder();
-		var nestedJars = NestedBundles.onClassPath().extractAllNestedJars(nestedJarFolder);
+		var nestedJars = NestedJars.onClassPath().extractAllNestedJars(nestedJarFolder);
 		var content = new StringBuilder();
 		var base = nestedJarFolder.getParentFile().getParentFile().getParentFile().getAbsolutePath();
 		for (var nestedJar : nestedJars) {
@@ -35,6 +34,6 @@ public class NestedJarsNeededForTest {
 			content.append('\n');
 		}
 		Files.write(
-				Paths.get("nestedJarsNeededForTest"), content.toString().getBytes(StandardCharsets.UTF_8));
+				Paths.get("nestedJarsForTest"), content.toString().getBytes(StandardCharsets.UTF_8));
 	}
 }

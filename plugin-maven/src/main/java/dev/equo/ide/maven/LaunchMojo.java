@@ -14,7 +14,7 @@
 package dev.equo.ide.maven;
 
 import com.diffplug.common.swt.os.SwtPlatform;
-import dev.equo.solstice.NestedBundles;
+import dev.equo.solstice.NestedJars;
 import dev.equo.solstice.p2.JdtSetup;
 import dev.equo.solstice.p2.P2Client;
 import dev.equo.solstice.p2.P2Session;
@@ -69,8 +69,7 @@ public class LaunchMojo extends AbstractMojo {
 			List<Dependency> deps = new ArrayList<>();
 			deps.add(
 					new Dependency(
-							new DefaultArtifact("dev.equo.ide:solstice:" + NestedBundles.solsticeVersion()),
-							null));
+							new DefaultArtifact("dev.equo.ide:solstice:" + NestedJars.solsticeVersion()), null));
 
 			// not sure why, but we get errors from an old SWT with bad metadata, and this exclusion fixes
 			// it
@@ -117,13 +116,13 @@ public class LaunchMojo extends AbstractMojo {
 				files.add(artifact.getArtifact().getFile());
 			}
 
-			var nestedJarFolder = new File(workspaceDir, NestedBundles.DIR);
-			for (var nested : NestedBundles.inFiles(files).extractAllNestedJars(nestedJarFolder)) {
+			var nestedJarFolder = new File(workspaceDir, NestedJars.DIR);
+			for (var nested : NestedJars.inFiles(files).extractAllNestedJars(nestedJarFolder)) {
 				files.add(nested.getValue());
 			}
 
 			String result =
-					NestedBundles.javaExec(
+					NestedJars.javaExec(
 							"dev.equo.solstice.IdeMain",
 							files,
 							"-installDir",

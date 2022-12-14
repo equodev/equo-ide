@@ -31,15 +31,16 @@ import org.w3c.dom.Node;
 /** Usually represents a jar file in a p2 repository, but could also be a "feature" or "group". */
 public class P2Unit implements Comparable<P2Unit> {
 	final Node rootNode;
+	final P2Client.Folder index;
 	final String id;
 	final Version version;
-	// TODO: version should be an OSGi version for proper sorting
 	FilterImpl filter;
 	final TreeMap<String, String> properties = new TreeMap<>();
 	final TreeSet<P2Session.Requirement> requires = new TreeSet<>();
 
 	P2Unit(P2Session session, P2Client.Folder index, Node rootNode) {
 		this.rootNode = rootNode;
+		this.index = index;
 		id = rootNode.getAttributes().getNamedItem("id").getNodeValue();
 		version = Version.parseVersion(rootNode.getAttributes().getNamedItem("version").getNodeValue());
 		var nodeList = rootNode.getChildNodes();
@@ -53,7 +54,34 @@ public class P2Unit implements Comparable<P2Unit> {
 				parseProvides(session, node);
 			} else if ("requires".equals(node.getNodeName())) {
 				parseRequires(session, node);
+			} else if ("artifacts".equals(node.getNodeName())) {
+				parseArtifact(node);
 			}
+		}
+	}
+
+	private void parseArtifact(Node node) {
+		String artifactClassifier = null;
+		var artifactNodes = node.getChildNodes();
+		for (int i = 0; i < artifactNodes.getLength(); ++i) {
+			var propNode = artifactNodes.item(i);
+			if ("artifact".equals(propNode.getNodeName())) {
+				var classifier = propNode.getAttributes().getNamedItem("classifier").getNodeValue();
+				if (artifactClassifier != null && !artifactClassifier.equals(classifier)) {
+					throw new IllegalArgumentException(
+							id
+									+ ":"
+									+ version
+									+ " has multiple artifacts, first was "
+									+ artifactClassifier
+									+ " second was "
+									+ classifier);
+				}
+				artifactClassifier = classifier;
+			}
+		}
+		if (artifactClassifier != null) {
+			properties.put(ARTIFACT_CLASSIFIER, artifactClassifier);
 		}
 	}
 
@@ -149,6 +177,14 @@ public class P2Unit implements Comparable<P2Unit> {
 	public static final String P2_DESC = "org.eclipse.equinox.p2.description";
 	public static final String P2_TYPE_CATEGORY = "org.eclipse.equinox.p2.type.category";
 	public static final String P2_TYPE_FEATURE = "org.eclipse.equinox.p2.type.group";
+
+	/** This is a synthetic property that we create ourselves. */
+	public static final String ARTIFACT_CLASSIFIER = "artifact-classifier";
+
+	public static final String ARTIFACT_CLASSIFIER_BUNDLE = "osgi.bundle";
+	public static final String ARTIFACT_CLASSIFIER_FEATURE = "org.eclipse.update.feature";
+	public static final String ARTIFACT_CLASSIFIER_BINARY = "binary";
+
 	private static final List<String> PROP_FILTER =
 			Arrays.asList(
 					MAVEN_GROUP_ID,
@@ -204,5 +240,22 @@ public class P2Unit implements Comparable<P2Unit> {
 			}
 		}
 		return result.toString();
+	}
+
+	public String getRepoUrl() {
+		return index.url;
+	}
+
+	public String getRepoUrlLastSegment() {
+		char lastChar = index.url.charAt(index.url.length() - 1);
+		if (lastChar != '/') {
+			throw new IllegalArgumentException("p2 repo must end with /");
+		}
+		int lastSlash = index.url.lastIndexOf('/', index.url.length() - 2);
+		return index.url.substring(lastSlash + 1, index.url.length() - 1);
+	}
+
+	public String getJarUrl() {
+		return index.url + "plugins/" + id + "_" + version + ".jar";
 	}
 }

@@ -11,7 +11,7 @@ apply from: 干.file('sonatype.gradle')
 
 jar.manifest.attributes.put('Implementation-Version', spotlessChangelog.versionNext)
 
-String VER_SLF4J = '2.0.5'
+String VER_SLF4J = '2.0.6'
 
 sourceSets {
 	testSetup1 {
@@ -24,6 +24,7 @@ sourceSets {
 	}
 }
 configurations {
+	testSetup2Implementation.transitive = false
 	testImplementation.extendsFrom(testSetup2Implementation)
 }
 
@@ -46,27 +47,38 @@ dependencies {
 	testImplementation "org.junit.jupiter:junit-jupiter:$VER_JUNIT"
 	testImplementation "org.assertj:assertj-core:$VER_ASSERTJ"
 	testImplementation "io.github.origin-energy:java-snapshot-testing-junit5:$VER_SNAPSHOT_TESTING"
+
+	constraints {
+		testSetup2Implementation("org.slf4j:slf4j-api:$VER_SLF4J") {
+			because "we're getting 2.0.0-alpha6 for some reason"
+		}
+	}
 }
 
-file('mavenJarsNeededForTest').readLines().forEach {
-	dependencies.testSetup2Implementation it
+String cacheRoot = System.getProperty("user.home") + "/.equo/p2-bundle-pool/"
+file('p2queryForTest').readLines().forEach {
+	if (it.startsWith("maven ")) {
+		dependencies.testSetup2Implementation it.substring("maven ".length())
+	} else if (it.startsWith("file ")) {
+		dependencies.testSetup2Implementation files(cacheRoot + it.substring("file ".length()))
+	}
 }
-file('nestedJarsNeededForTest').readLines().forEach {
+file('nestedJarsForTest').readLines().forEach {
 	dependencies.testImplementation files(it)
 }
 
-tasks.register('mavenJarsNeededForTest', JavaExec) {
+tasks.register('p2queryForTest', JavaExec) {
 	classpath = sourceSets.testSetup1.runtimeClasspath
-	mainClass = 'dev.equo.solstice.MavenJarsNeededForTest'
+	mainClass = 'dev.equo.solstice.P2QueryForTest'
 }
 
-tasks.register('nestedJarsNeededForTest', JavaExec) {
-	dependsOn 'mavenJarsNeededForTest'
+tasks.register('nestedJarsForTest', JavaExec) {
+	dependsOn 'p2queryForTest'
 	classpath = sourceSets.testSetup2.runtimeClasspath
-	mainClass = 'dev.equo.solstice.NestedJarsNeededForTest'
+	mainClass = 'dev.equo.solstice.NestedJarsForTest'
 }
 tasks.named('test') {
-	dependsOn 'nestedJarsNeededForTest'
+	dependsOn 'nestedJarsForTest'
 	useJUnitPlatform {}
 	if (System.env['CI'] == null) {
 		systemProperty "updateSnapshot", ""

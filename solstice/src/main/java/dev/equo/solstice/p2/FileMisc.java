@@ -97,7 +97,7 @@ class FileMisc {
 	 *
 	 * <p>Makes FS operations more reliable.
 	 */
-	private static void retry(File input, ThrowingConsumer<File> function) {
+	static void retry(File input, ThrowingConsumer<File> function) {
 		long start = System.currentTimeMillis();
 		Throwable lastException;
 		do {
@@ -113,10 +113,14 @@ class FileMisc {
 				}
 			}
 		} while (System.currentTimeMillis() - start < MS_RETRY);
-		throw new RuntimeException(lastException);
+		if (lastException instanceof RuntimeException) {
+			throw (RuntimeException) lastException;
+		} else {
+			throw new RuntimeException(lastException);
+		}
 	}
 
-	private interface ThrowingConsumer<T> {
+	interface ThrowingConsumer<T> {
 		void accept(T input) throws Exception;
 	}
 }

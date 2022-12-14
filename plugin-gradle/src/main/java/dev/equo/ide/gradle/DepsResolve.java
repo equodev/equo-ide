@@ -13,7 +13,7 @@
  *******************************************************************************/
 package dev.equo.ide.gradle;
 
-import dev.equo.solstice.NestedBundles;
+import dev.equo.solstice.NestedJars;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -28,7 +28,7 @@ class DepsResolve {
 			"build/pluginUnderTestMetadata/plugin-under-test-metadata.properties";
 
 	static List<Object> resolveSolsticeAndTransitives() throws IOException {
-		var implVersion = NestedBundles.solsticeVersion();
+		var implVersion = NestedJars.solsticeVersion();
 		if (!implVersion.endsWith("-SNAPSHOT")) {
 			return Collections.singletonList("dev.equo.ide:solstice:" + implVersion);
 		} else {

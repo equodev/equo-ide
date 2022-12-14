@@ -300,7 +300,6 @@ dev.equo.ide.gradle.EquoListTest.allFeatures=[
 
 dev.equo.ide.gradle.EquoListTest.allJars=[
 id,name \n description
-a.jre.javase,(no org.eclipse.equinox.p2.name)
 assertj-core,AssertJ fluent assertions
 ,  Rich and fluent assertions for testing for Java
 bcpg,bcpg
@@ -688,13 +687,10 @@ org.eclipse.pde.unittest.junit,Plug-in Development Unit Test support
 org.eclipse.platform,Eclipse Platform
 org.eclipse.platform.doc.isv,Eclipse Platform Plug-in Developer Guide
 org.eclipse.platform.doc.user,Eclipse Platform User Guide
-org.eclipse.platform_root,(no org.eclipse.equinox.p2.name)
 org.eclipse.rcp,Eclipse RCP
-org.eclipse.rcp_root,(no org.eclipse.equinox.p2.name)
 org.eclipse.releng.tests,Eclipse Releng Tests
 org.eclipse.sdk,Eclipse Project SDK
 org.eclipse.sdk.examples,Eclipse SDK Examples
-org.eclipse.sdk.examples_root,(no org.eclipse.equinox.p2.name)
 org.eclipse.sdk.tests,Tests
 org.eclipse.search,Search Support
 org.eclipse.search.tests,Search Support Tests Plug-in
@@ -870,229 +866,221 @@ slf4j.nop,slf4j-nop
 dev.equo.ide.gradle.EquoListTest.defaultP2[installed]=[
 WARNING!!! 46 unmet requirement(s), 14 ambigous requirement(s). For more info:
 WARNING!!! gradlew equoList --problems
-+---------------------------------------------------------------------------------+---------------+
-| maven coordinate / p2 id                                                        | repo          |
-+---------------------------------------------------------------------------------+---------------+
-| com.ibm.icu:icu4j:72.1                                                          | mavenCentral  |
-| commons-fileupload:commons-fileupload:1.4                                       | mavenCentral  |
-| commons-io:commons-io:2.11.0                                                    | mavenCentral  |
-| jakarta.servlet:jakarta.servlet-api:4.0.4                                       | mavenCentral  |
-| javax.servlet.jsp:javax.servlet.jsp-api:2.3.3                                   | mavenCentral  |
-| net.java.dev.jna:jna-platform:5.12.1                                            | mavenCentral  |
-| net.java.dev.jna:jna:5.12.1                                                     | mavenCentral  |
-| org.apache.felix:org.apache.felix.scr:2.2.4                                     | mavenCentral  |
-| org.apiguardian:apiguardian-api:1.1.2                                           | mavenCentral  |
-| org.eclipse.jetty:jetty-http:10.0.12                                            | mavenCentral  |
-| org.eclipse.jetty:jetty-io:10.0.12                                              | mavenCentral  |
-| org.eclipse.jetty:jetty-security:10.0.12                                        | mavenCentral  |
-| org.eclipse.jetty:jetty-server:10.0.12                                          | mavenCentral  |
-| org.eclipse.jetty:jetty-servlet:10.0.12                                         | mavenCentral  |
-| org.eclipse.jetty:jetty-util-ajax:10.0.12                                       | mavenCentral  |
-| org.eclipse.jetty:jetty-util:10.0.12                                            | mavenCentral  |
-| org.junit.jupiter:junit-jupiter-api:5.9.1                                       | mavenCentral  |
-| org.junit.jupiter:junit-jupiter-engine:5.9.1                                    | mavenCentral  |
-| org.junit.jupiter:junit-jupiter-migrationsupport:5.9.1                          | mavenCentral  |
-| org.junit.jupiter:junit-jupiter-params:5.9.1                                    | mavenCentral  |
-| org.junit.platform:junit-platform-commons:1.9.1                                 | mavenCentral  |
-| org.junit.platform:junit-platform-engine:1.9.1                                  | mavenCentral  |
-| org.junit.platform:junit-platform-launcher:1.9.1                                | mavenCentral  |
-| org.junit.platform:junit-platform-runner:1.9.1                                  | mavenCentral  |
-| org.junit.platform:junit-platform-suite-api:1.9.1                               | mavenCentral  |
-| org.junit.platform:junit-platform-suite-commons:1.9.1                           | mavenCentral  |
-| org.junit.platform:junit-platform-suite-engine:1.9.1                            | mavenCentral  |
-| org.junit.vintage:junit-vintage-engine:5.9.1                                    | mavenCentral  |
-| org.opentest4j:opentest4j:1.2.0                                                 | mavenCentral  |
-| org.osgi:org.osgi.service.cm:1.6.1                                              | mavenCentral  |
-| org.osgi:org.osgi.service.component:1.5.0                                       | mavenCentral  |
-| org.osgi:org.osgi.service.device:1.1.1                                          | mavenCentral  |
-| org.osgi:org.osgi.service.event:1.4.1                                           | mavenCentral  |
-| org.osgi:org.osgi.service.metatype:1.4.1                                        | mavenCentral  |
-| org.osgi:org.osgi.service.prefs:1.1.2                                           | mavenCentral  |
-| org.osgi:org.osgi.service.provisioning:1.2.0                                    | mavenCentral  |
-| org.osgi:org.osgi.service.upnp:1.2.1                                            | mavenCentral  |
-| org.osgi:org.osgi.service.useradmin:1.1.1                                       | mavenCentral  |
-| org.osgi:org.osgi.service.wireadmin:1.0.2                                       | mavenCentral  |
-| org.osgi:org.osgi.util.function:1.2.0                                           | mavenCentral  |
-| org.osgi:org.osgi.util.measurement:1.0.2                                        | mavenCentral  |
-| org.osgi:org.osgi.util.position:1.0.1                                           | mavenCentral  |
-| org.osgi:org.osgi.util.promise:1.2.0                                            | mavenCentral  |
-| org.osgi:org.osgi.util.xml:1.0.2                                                | mavenCentral  |
-| org.slf4j:slf4j-api:1.7.36                                                      | mavenCentral  |
-| org.slf4j:slf4j-nop:1.7.36                                                      | mavenCentral  |
-| org.tukaani:xz:1.9                                                              | mavenCentral  |
-| org.eclipse.emf:org.eclipse.emf.common:2.27.0                                   | mavenCentral? |
-| org.eclipse.emf:org.eclipse.emf.ecore.change:2.14.0                             | mavenCentral? |
-| org.eclipse.emf:org.eclipse.emf.ecore.xmi:2.17.0                                | mavenCentral? |
-| org.eclipse.emf:org.eclipse.emf.ecore:2.29.0                                    | mavenCentral? |
-| org.eclipse.jdt:org.eclipse.jdt.annotation:2.2.700                              | mavenCentral? |
-| org.eclipse.jdt:org.eclipse.jdt.apt.core:3.7.50                                 | mavenCentral? |
-| org.eclipse.jdt:org.eclipse.jdt.apt.pluggable.core:1.3.0                        | mavenCentral? |
-| org.eclipse.jdt:org.eclipse.jdt.apt.ui:3.7.0                                    | mavenCentral? |
-| org.eclipse.jdt:org.eclipse.jdt.compiler.apt:1.4.300                            | mavenCentral? |
-| org.eclipse.jdt:org.eclipse.jdt.compiler.tool:1.3.200                           | mavenCentral? |
-| org.eclipse.jdt:org.eclipse.jdt.core.formatterapp:1.1.0                         | mavenCentral? |
-| org.eclipse.jdt:org.eclipse.jdt.core.manipulation:1.17.0                        | mavenCentral? |
-| org.eclipse.jdt:org.eclipse.jdt.core:3.32.0                                     | mavenCentral? |
-| org.eclipse.jdt:org.eclipse.jdt.debug.ui:3.12.900                               | mavenCentral? |
-| org.eclipse.jdt:org.eclipse.jdt.debug:3.20.0                                    | mavenCentral? |
-| org.eclipse.jdt:org.eclipse.jdt.doc.isv:3.14.1800                               | mavenCentral? |
-| org.eclipse.jdt:org.eclipse.jdt.doc.user:3.15.1600                              | mavenCentral? |
-| org.eclipse.jdt:org.eclipse.jdt.junit.core:3.11.500                             | mavenCentral? |
-| org.eclipse.jdt:org.eclipse.jdt.junit.runtime:3.7.0                             | mavenCentral? |
-| org.eclipse.jdt:org.eclipse.jdt.junit4.runtime:1.3.0                            | mavenCentral? |
-| org.eclipse.jdt:org.eclipse.jdt.junit5.runtime:1.1.100                          | mavenCentral? |
-| org.eclipse.jdt:org.eclipse.jdt.junit:3.15.100                                  | mavenCentral? |
-| org.eclipse.jdt:org.eclipse.jdt.launching:3.19.800                              | mavenCentral? |
-| org.eclipse.jdt:org.eclipse.jdt.ui:3.27.100                                     | mavenCentral? |
-| org.eclipse.jdt:org.eclipse.jdt:3.18.1400                                       | mavenCentral? |
-| org.eclipse.platform:org.eclipse.ant.core:3.6.500                               | mavenCentral? |
-| org.eclipse.platform:org.eclipse.ant.launching:1.3.400                          | mavenCentral? |
-| org.eclipse.platform:org.eclipse.ant.ui:3.8.300                                 | mavenCentral? |
-| org.eclipse.platform:org.eclipse.compare.core:3.7.100                           | mavenCentral? |
-| org.eclipse.platform:org.eclipse.compare:3.8.500                                | mavenCentral? |
-| org.eclipse.platform:org.eclipse.core.commands:3.10.300                         | mavenCentral? |
-| org.eclipse.platform:org.eclipse.core.contenttype:3.8.200                       | mavenCentral? |
-| org.eclipse.platform:org.eclipse.core.databinding.beans:1.9.0                   | mavenCentral? |
-| org.eclipse.platform:org.eclipse.core.databinding.observable:1.12.100           | mavenCentral? |
-| org.eclipse.platform:org.eclipse.core.databinding.property:1.9.100              | mavenCentral? |
-| org.eclipse.platform:org.eclipse.core.databinding:1.11.200                      | mavenCentral? |
-| org.eclipse.platform:org.eclipse.core.expressions:3.8.200                       | mavenCentral? |
-| org.eclipse.platform:org.eclipse.core.externaltools:1.2.300                     | mavenCentral? |
-| org.eclipse.platform:org.eclipse.core.filebuffers:3.7.200                       | mavenCentral? |
-| org.eclipse.platform:org.eclipse.core.filesystem:1.9.500                        | mavenCentral? |
-| org.eclipse.platform:org.eclipse.core.jobs:3.13.200                             | mavenCentral? |
-| org.eclipse.platform:org.eclipse.core.net:1.4.0                                 | mavenCentral? |
-| org.eclipse.platform:org.eclipse.core.resources:3.18.100                        | mavenCentral? |
-| org.eclipse.platform:org.eclipse.core.runtime:3.26.100                          | mavenCentral? |
-| org.eclipse.platform:org.eclipse.core.variables:3.5.100                         | mavenCentral? |
-| org.eclipse.platform:org.eclipse.debug.core:3.20.0                              | mavenCentral? |
-| org.eclipse.platform:org.eclipse.debug.ui.launchview:1.0.300                    | mavenCentral? |
-| org.eclipse.platform:org.eclipse.debug.ui:3.17.100                              | mavenCentral? |
-| org.eclipse.platform:org.eclipse.e4.core.commands:1.0.300                       | mavenCentral? |
-| org.eclipse.platform:org.eclipse.e4.core.contexts:1.11.0                        | mavenCentral? |
-| org.eclipse.platform:org.eclipse.e4.core.di.annotations:1.7.200                 | mavenCentral? |
-| org.eclipse.platform:org.eclipse.e4.core.di.extensions.supplier:0.16.400        | mavenCentral? |
-| org.eclipse.platform:org.eclipse.e4.core.di.extensions:0.17.200                 | mavenCentral? |
-| org.eclipse.platform:org.eclipse.e4.core.di:1.8.300                             | mavenCentral? |
-| org.eclipse.platform:org.eclipse.e4.core.services:2.3.400                       | mavenCentral? |
-| org.eclipse.platform:org.eclipse.e4.emf.xpath:0.3.100                           | mavenCentral? |
-| org.eclipse.platform:org.eclipse.e4.ui.bindings:0.13.200                        | mavenCentral? |
-| org.eclipse.platform:org.eclipse.e4.ui.css.core:0.13.400                        | mavenCentral? |
-| org.eclipse.platform:org.eclipse.e4.ui.css.swt.theme:0.13.200                   | mavenCentral? |
-| org.eclipse.platform:org.eclipse.e4.ui.css.swt:0.14.700                         | mavenCentral? |
-| org.eclipse.platform:org.eclipse.e4.ui.di:1.4.100                               | mavenCentral? |
-| org.eclipse.platform:org.eclipse.e4.ui.dialogs:1.3.400                          | mavenCentral? |
-| org.eclipse.platform:org.eclipse.e4.ui.ide:3.16.200                             | mavenCentral? |
-| org.eclipse.platform:org.eclipse.e4.ui.model.workbench:2.2.300                  | mavenCentral? |
-| org.eclipse.platform:org.eclipse.e4.ui.services:1.5.100                         | mavenCentral? |
-| org.eclipse.platform:org.eclipse.e4.ui.widgets:1.3.100                          | mavenCentral? |
-| org.eclipse.platform:org.eclipse.e4.ui.workbench.addons.swt:1.4.500             | mavenCentral? |
-| org.eclipse.platform:org.eclipse.e4.ui.workbench.renderers.swt:0.15.700         | mavenCentral? |
-| org.eclipse.platform:org.eclipse.e4.ui.workbench.swt:0.16.700                   | mavenCentral? |
-| org.eclipse.platform:org.eclipse.e4.ui.workbench3:0.16.100                      | mavenCentral? |
-| org.eclipse.platform:org.eclipse.e4.ui.workbench:1.14.0                         | mavenCentral? |
-| org.eclipse.platform:org.eclipse.equinox.app:1.6.200                            | mavenCentral? |
-| org.eclipse.platform:org.eclipse.equinox.bidi:1.4.200                           | mavenCentral? |
-| org.eclipse.platform:org.eclipse.equinox.common:3.17.0                          | mavenCentral? |
-| org.eclipse.platform:org.eclipse.equinox.event:1.6.100                          | mavenCentral? |
-| org.eclipse.platform:org.eclipse.equinox.frameworkadmin.equinox:1.2.200         | mavenCentral? |
-| org.eclipse.platform:org.eclipse.equinox.frameworkadmin:2.2.100                 | mavenCentral? |
-| org.eclipse.platform:org.eclipse.equinox.http.jetty:3.8.200                     | mavenCentral? |
-| org.eclipse.platform:org.eclipse.equinox.http.registry:1.3.200                  | mavenCentral? |
-| org.eclipse.platform:org.eclipse.equinox.http.servlet:1.7.400                   | mavenCentral? |
-| org.eclipse.platform:org.eclipse.equinox.jsp.jasper.registry:1.2.100            | mavenCentral? |
-| org.eclipse.platform:org.eclipse.equinox.jsp.jasper:1.1.700                     | mavenCentral? |
-| org.eclipse.platform:org.eclipse.equinox.launcher:1.6.400                       | mavenCentral? |
-| org.eclipse.platform:org.eclipse.equinox.preferences:3.10.100                   | mavenCentral? |
-| org.eclipse.platform:org.eclipse.equinox.registry:3.11.200                      | mavenCentral? |
-| org.eclipse.platform:org.eclipse.equinox.security.ui:1.3.400                    | mavenCentral? |
-| org.eclipse.platform:org.eclipse.equinox.security:1.3.1000                      | mavenCentral? |
-| org.eclipse.platform:org.eclipse.equinox.simpleconfigurator.manipulator:2.2.100 | mavenCentral? |
-| org.eclipse.platform:org.eclipse.equinox.simpleconfigurator:1.4.200             | mavenCentral? |
-| org.eclipse.platform:org.eclipse.equinox.supplement:1.10.600                    | mavenCentral? |
-| org.eclipse.platform:org.eclipse.help.base:4.3.900                              | mavenCentral? |
-| org.eclipse.platform:org.eclipse.help.ui:4.4.100                                | mavenCentral? |
-| org.eclipse.platform:org.eclipse.help.webapp:3.10.900                           | mavenCentral? |
-| org.eclipse.platform:org.eclipse.help:3.9.100                                   | mavenCentral? |
-| org.eclipse.platform:org.eclipse.jface.databinding:1.14.0                       | mavenCentral? |
-| org.eclipse.platform:org.eclipse.jface.notifications:0.5.100                    | mavenCentral? |
-| org.eclipse.platform:org.eclipse.jface.text:3.22.0                              | mavenCentral? |
-| org.eclipse.platform:org.eclipse.jface:3.28.0                                   | mavenCentral? |
-| org.eclipse.platform:org.eclipse.jsch.core:1.4.0                                | mavenCentral? |
-| org.eclipse.platform:org.eclipse.jsch.ui:1.4.200                                | mavenCentral? |
-| org.eclipse.platform:org.eclipse.ltk.core.refactoring:3.13.0                    | mavenCentral? |
-| org.eclipse.platform:org.eclipse.ltk.ui.refactoring:3.12.200                    | mavenCentral? |
-| org.eclipse.platform:org.eclipse.osgi.compatibility.state:1.2.800               | mavenCentral? |
-| org.eclipse.platform:org.eclipse.osgi.services:3.11.100                         | mavenCentral? |
-| org.eclipse.platform:org.eclipse.osgi.util:3.7.100                              | mavenCentral? |
-| org.eclipse.platform:org.eclipse.osgi:3.18.200                                  | mavenCentral? |
-| org.eclipse.platform:org.eclipse.platform.doc.user:4.26.0                       | mavenCentral? |
-| org.eclipse.platform:org.eclipse.platform:4.26.0                                | mavenCentral? |
-| org.eclipse.platform:org.eclipse.rcp:4.26.0                                     | mavenCentral? |
-| org.eclipse.platform:org.eclipse.search:3.14.300                                | mavenCentral? |
-| org.eclipse.platform:org.eclipse.swt:3.122.0                                    | mavenCentral? |
-| org.eclipse.platform:org.eclipse.team.core:3.9.600                              | mavenCentral? |
-| org.eclipse.platform:org.eclipse.team.genericeditor.diff.extension:1.1.100      | mavenCentral? |
-| org.eclipse.platform:org.eclipse.team.ui:3.9.500                                | mavenCentral? |
-| org.eclipse.platform:org.eclipse.text.quicksearch:1.1.400                       | mavenCentral? |
-| org.eclipse.platform:org.eclipse.text:3.12.300                                  | mavenCentral? |
-| org.eclipse.platform:org.eclipse.ui.browser:3.7.300                             | mavenCentral? |
-| org.eclipse.platform:org.eclipse.ui.cheatsheets:3.7.500                         | mavenCentral? |
-| org.eclipse.platform:org.eclipse.ui.console:3.11.400                            | mavenCentral? |
-| org.eclipse.platform:org.eclipse.ui.editors:3.14.400                            | mavenCentral? |
-| org.eclipse.platform:org.eclipse.ui.externaltools:3.5.200                       | mavenCentral? |
-| org.eclipse.platform:org.eclipse.ui.forms:3.11.500                              | mavenCentral? |
-| org.eclipse.platform:org.eclipse.ui.genericeditor:1.2.300                       | mavenCentral? |
-| org.eclipse.platform:org.eclipse.ui.ide.application:1.4.600                     | mavenCentral? |
-| org.eclipse.platform:org.eclipse.ui.ide:3.20.0                                  | mavenCentral? |
-| org.eclipse.platform:org.eclipse.ui.intro.quicklinks:1.1.200                    | mavenCentral? |
-| org.eclipse.platform:org.eclipse.ui.intro.universal:3.4.300                     | mavenCentral? |
-| org.eclipse.platform:org.eclipse.ui.intro:3.6.600                               | mavenCentral? |
-| org.eclipse.platform:org.eclipse.ui.monitoring:1.2.300                          | mavenCentral? |
-| org.eclipse.platform:org.eclipse.ui.navigator.resources:3.8.500                 | mavenCentral? |
-| org.eclipse.platform:org.eclipse.ui.navigator:3.10.400                          | mavenCentral? |
-| org.eclipse.platform:org.eclipse.ui.net:1.4.100                                 | mavenCentral? |
-| org.eclipse.platform:org.eclipse.ui.themes:1.2.2100                             | mavenCentral? |
-| org.eclipse.platform:org.eclipse.ui.views.log:1.3.400                           | mavenCentral? |
-| org.eclipse.platform:org.eclipse.ui.views.properties.tabbed:3.9.300             | mavenCentral? |
-| org.eclipse.platform:org.eclipse.ui.views:3.11.300                              | mavenCentral? |
-| org.eclipse.platform:org.eclipse.ui.workbench.texteditor:3.16.600               | mavenCentral? |
-| org.eclipse.platform:org.eclipse.ui.workbench:3.127.0                           | mavenCentral? |
-| org.eclipse.platform:org.eclipse.ui:3.201.200                                   | mavenCentral? |
-| org.eclipse.platform:org.eclipse.update.configurator:3.4.1000                   | mavenCentral? |
-| org.eclipse.platform:org.eclipse.urischeme:1.2.200                              | mavenCentral? |
-| com.jcraft.jsch:0.1.55.v20221112-0806                                           | p2            |
-| com.sun.el:2.2.0.v201303151357                                                  | p2            |
-| javax.annotation:1.3.5.v20221112-0806                                           | p2            |
-| javax.el:2.2.0.v201303151357                                                    | p2            |
-| javax.inject:1.0.0.v20220405-0441                                               | p2            |
-| org.apache.ant:1.10.12.v20211102-1452                                           | p2            |
-| org.apache.batik.constants:1.16.0.v20221027-0840                                | p2            |
-| org.apache.batik.css:1.16.0.v20221027-0840                                      | p2            |
-| org.apache.batik.i18n:1.16.0.v20221027-0840                                     | p2            |
-| org.apache.batik.util:1.16.0.v20221027-0840                                     | p2            |
-| org.apache.commons.jxpath:1.3.0.v200911051830                                   | p2            |
-| org.apache.commons.logging:1.2.0.v20180409-1502                                 | p2            |
-| org.apache.jasper.glassfish:2.2.2.v201501141630                                 | p2            |
-| org.apache.lucene.analyzers-common:8.4.1.v20221112-0806                         | p2            |
-| org.apache.lucene.analyzers-smartcn:8.4.1.v20221112-0806                        | p2            |
-| org.apache.lucene.core:8.4.1.v20221112-0806                                     | p2            |
-| org.apache.xmlgraphics:2.7.0.v20221018-0736                                     | p2            |
-| org.eclipse.platform_root:4.26.0.v20221123-2302                                 | p2            |
-| org.eclipse.rcp_root:4.26.0.v20221123-2302                                      | p2            |
-| org.hamcrest.core:1.3.0.v20180420-1519                                          | p2            |
-| org.junit:4.13.2.v20211018-1956                                                 | p2            |
-| org.w3c.css.sac:1.3.1.v200903091627                                             | p2            |
-| org.w3c.dom.events:3.0.0.draft20060413_v201105210656                            | p2            |
-| org.w3c.dom.smil:1.0.1.v200903091627                                            | p2            |
-| org.w3c.dom.svg:1.1.0.v201011041433                                             | p2            |
-| tooling.osgi.bundle.default:1.0.0                                               | p2            |
-| tooling.source.default:1.0.0                                                    | p2            |
-| toolingorg.eclipse.equinox.launcher:1.6.400.v20210924-0641                      | p2            |
-| toolingorg.eclipse.platform.configuration:1.0.0                                 | p2            |
-| toolingorg.eclipse.platform.ide.application:4.26.0.I20221123-1800               | p2            |
-| toolingorg.eclipse.platform.ide.configuration:4.26.0.I20221123-1800             | p2            |
-+---------------------------------------------------------------------------------+---------------+
++---------------------------------------------------------------------------------+------------------------+
+| maven coordinate / p2 id                                                        | repo                   |
++---------------------------------------------------------------------------------+------------------------+
+| com.ibm.icu:icu4j:72.1                                                          | maven central          |
+| commons-fileupload:commons-fileupload:1.4                                       | maven central          |
+| commons-io:commons-io:2.11.0                                                    | maven central          |
+| jakarta.servlet:jakarta.servlet-api:4.0.4                                       | maven central          |
+| javax.servlet.jsp:javax.servlet.jsp-api:2.3.3                                   | maven central          |
+| net.java.dev.jna:jna-platform:5.12.1                                            | maven central          |
+| net.java.dev.jna:jna:5.12.1                                                     | maven central          |
+| org.apache.felix:org.apache.felix.scr:2.2.4                                     | maven central          |
+| org.apiguardian:apiguardian-api:1.1.2                                           | maven central          |
+| org.eclipse.jetty:jetty-http:10.0.12                                            | maven central          |
+| org.eclipse.jetty:jetty-io:10.0.12                                              | maven central          |
+| org.eclipse.jetty:jetty-security:10.0.12                                        | maven central          |
+| org.eclipse.jetty:jetty-server:10.0.12                                          | maven central          |
+| org.eclipse.jetty:jetty-servlet:10.0.12                                         | maven central          |
+| org.eclipse.jetty:jetty-util-ajax:10.0.12                                       | maven central          |
+| org.eclipse.jetty:jetty-util:10.0.12                                            | maven central          |
+| org.junit.jupiter:junit-jupiter-api:5.9.1                                       | maven central          |
+| org.junit.jupiter:junit-jupiter-engine:5.9.1                                    | maven central          |
+| org.junit.jupiter:junit-jupiter-migrationsupport:5.9.1                          | maven central          |
+| org.junit.jupiter:junit-jupiter-params:5.9.1                                    | maven central          |
+| org.junit.platform:junit-platform-commons:1.9.1                                 | maven central          |
+| org.junit.platform:junit-platform-engine:1.9.1                                  | maven central          |
+| org.junit.platform:junit-platform-launcher:1.9.1                                | maven central          |
+| org.junit.platform:junit-platform-runner:1.9.1                                  | maven central          |
+| org.junit.platform:junit-platform-suite-api:1.9.1                               | maven central          |
+| org.junit.platform:junit-platform-suite-commons:1.9.1                           | maven central          |
+| org.junit.platform:junit-platform-suite-engine:1.9.1                            | maven central          |
+| org.junit.vintage:junit-vintage-engine:5.9.1                                    | maven central          |
+| org.opentest4j:opentest4j:1.2.0                                                 | maven central          |
+| org.osgi:org.osgi.service.cm:1.6.1                                              | maven central          |
+| org.osgi:org.osgi.service.component:1.5.0                                       | maven central          |
+| org.osgi:org.osgi.service.device:1.1.1                                          | maven central          |
+| org.osgi:org.osgi.service.event:1.4.1                                           | maven central          |
+| org.osgi:org.osgi.service.metatype:1.4.1                                        | maven central          |
+| org.osgi:org.osgi.service.prefs:1.1.2                                           | maven central          |
+| org.osgi:org.osgi.service.provisioning:1.2.0                                    | maven central          |
+| org.osgi:org.osgi.service.upnp:1.2.1                                            | maven central          |
+| org.osgi:org.osgi.service.useradmin:1.1.1                                       | maven central          |
+| org.osgi:org.osgi.service.wireadmin:1.0.2                                       | maven central          |
+| org.osgi:org.osgi.util.function:1.2.0                                           | maven central          |
+| org.osgi:org.osgi.util.measurement:1.0.2                                        | maven central          |
+| org.osgi:org.osgi.util.position:1.0.1                                           | maven central          |
+| org.osgi:org.osgi.util.promise:1.2.0                                            | maven central          |
+| org.osgi:org.osgi.util.xml:1.0.2                                                | maven central          |
+| org.slf4j:slf4j-api:1.7.36                                                      | maven central          |
+| org.slf4j:slf4j-nop:1.7.36                                                      | maven central          |
+| org.tukaani:xz:1.9                                                              | maven central          |
+| org.eclipse.emf:org.eclipse.emf.common:2.27.0                                   | maven central?         |
+| org.eclipse.emf:org.eclipse.emf.ecore.change:2.14.0                             | maven central?         |
+| org.eclipse.emf:org.eclipse.emf.ecore.xmi:2.17.0                                | maven central?         |
+| org.eclipse.emf:org.eclipse.emf.ecore:2.29.0                                    | maven central?         |
+| org.eclipse.jdt:org.eclipse.jdt.annotation:2.2.700                              | maven central?         |
+| org.eclipse.jdt:org.eclipse.jdt.apt.core:3.7.50                                 | maven central?         |
+| org.eclipse.jdt:org.eclipse.jdt.apt.pluggable.core:1.3.0                        | maven central?         |
+| org.eclipse.jdt:org.eclipse.jdt.apt.ui:3.7.0                                    | maven central?         |
+| org.eclipse.jdt:org.eclipse.jdt.compiler.apt:1.4.300                            | maven central?         |
+| org.eclipse.jdt:org.eclipse.jdt.compiler.tool:1.3.200                           | maven central?         |
+| org.eclipse.jdt:org.eclipse.jdt.core.formatterapp:1.1.0                         | maven central?         |
+| org.eclipse.jdt:org.eclipse.jdt.core.manipulation:1.17.0                        | maven central?         |
+| org.eclipse.jdt:org.eclipse.jdt.core:3.32.0                                     | maven central?         |
+| org.eclipse.jdt:org.eclipse.jdt.debug.ui:3.12.900                               | maven central?         |
+| org.eclipse.jdt:org.eclipse.jdt.debug:3.20.0                                    | maven central?         |
+| org.eclipse.jdt:org.eclipse.jdt.doc.isv:3.14.1800                               | maven central?         |
+| org.eclipse.jdt:org.eclipse.jdt.doc.user:3.15.1600                              | maven central?         |
+| org.eclipse.jdt:org.eclipse.jdt.junit.core:3.11.500                             | maven central?         |
+| org.eclipse.jdt:org.eclipse.jdt.junit.runtime:3.7.0                             | maven central?         |
+| org.eclipse.jdt:org.eclipse.jdt.junit4.runtime:1.3.0                            | maven central?         |
+| org.eclipse.jdt:org.eclipse.jdt.junit5.runtime:1.1.100                          | maven central?         |
+| org.eclipse.jdt:org.eclipse.jdt.junit:3.15.100                                  | maven central?         |
+| org.eclipse.jdt:org.eclipse.jdt.launching:3.19.800                              | maven central?         |
+| org.eclipse.jdt:org.eclipse.jdt.ui:3.27.100                                     | maven central?         |
+| org.eclipse.jdt:org.eclipse.jdt:3.18.1400                                       | maven central?         |
+| org.eclipse.platform:org.eclipse.ant.core:3.6.500                               | maven central?         |
+| org.eclipse.platform:org.eclipse.ant.launching:1.3.400                          | maven central?         |
+| org.eclipse.platform:org.eclipse.ant.ui:3.8.300                                 | maven central?         |
+| org.eclipse.platform:org.eclipse.compare.core:3.7.100                           | maven central?         |
+| org.eclipse.platform:org.eclipse.compare:3.8.500                                | maven central?         |
+| org.eclipse.platform:org.eclipse.core.commands:3.10.300                         | maven central?         |
+| org.eclipse.platform:org.eclipse.core.contenttype:3.8.200                       | maven central?         |
+| org.eclipse.platform:org.eclipse.core.databinding.beans:1.9.0                   | maven central?         |
+| org.eclipse.platform:org.eclipse.core.databinding.observable:1.12.100           | maven central?         |
+| org.eclipse.platform:org.eclipse.core.databinding.property:1.9.100              | maven central?         |
+| org.eclipse.platform:org.eclipse.core.databinding:1.11.200                      | maven central?         |
+| org.eclipse.platform:org.eclipse.core.expressions:3.8.200                       | maven central?         |
+| org.eclipse.platform:org.eclipse.core.externaltools:1.2.300                     | maven central?         |
+| org.eclipse.platform:org.eclipse.core.filebuffers:3.7.200                       | maven central?         |
+| org.eclipse.platform:org.eclipse.core.filesystem:1.9.500                        | maven central?         |
+| org.eclipse.platform:org.eclipse.core.jobs:3.13.200                             | maven central?         |
+| org.eclipse.platform:org.eclipse.core.net:1.4.0                                 | maven central?         |
+| org.eclipse.platform:org.eclipse.core.resources:3.18.100                        | maven central?         |
+| org.eclipse.platform:org.eclipse.core.runtime:3.26.100                          | maven central?         |
+| org.eclipse.platform:org.eclipse.core.variables:3.5.100                         | maven central?         |
+| org.eclipse.platform:org.eclipse.debug.core:3.20.0                              | maven central?         |
+| org.eclipse.platform:org.eclipse.debug.ui.launchview:1.0.300                    | maven central?         |
+| org.eclipse.platform:org.eclipse.debug.ui:3.17.100                              | maven central?         |
+| org.eclipse.platform:org.eclipse.e4.core.commands:1.0.300                       | maven central?         |
+| org.eclipse.platform:org.eclipse.e4.core.contexts:1.11.0                        | maven central?         |
+| org.eclipse.platform:org.eclipse.e4.core.di.annotations:1.7.200                 | maven central?         |
+| org.eclipse.platform:org.eclipse.e4.core.di.extensions.supplier:0.16.400        | maven central?         |
+| org.eclipse.platform:org.eclipse.e4.core.di.extensions:0.17.200                 | maven central?         |
+| org.eclipse.platform:org.eclipse.e4.core.di:1.8.300                             | maven central?         |
+| org.eclipse.platform:org.eclipse.e4.core.services:2.3.400                       | maven central?         |
+| org.eclipse.platform:org.eclipse.e4.emf.xpath:0.3.100                           | maven central?         |
+| org.eclipse.platform:org.eclipse.e4.ui.bindings:0.13.200                        | maven central?         |
+| org.eclipse.platform:org.eclipse.e4.ui.css.core:0.13.400                        | maven central?         |
+| org.eclipse.platform:org.eclipse.e4.ui.css.swt.theme:0.13.200                   | maven central?         |
+| org.eclipse.platform:org.eclipse.e4.ui.css.swt:0.14.700                         | maven central?         |
+| org.eclipse.platform:org.eclipse.e4.ui.di:1.4.100                               | maven central?         |
+| org.eclipse.platform:org.eclipse.e4.ui.dialogs:1.3.400                          | maven central?         |
+| org.eclipse.platform:org.eclipse.e4.ui.ide:3.16.200                             | maven central?         |
+| org.eclipse.platform:org.eclipse.e4.ui.model.workbench:2.2.300                  | maven central?         |
+| org.eclipse.platform:org.eclipse.e4.ui.services:1.5.100                         | maven central?         |
+| org.eclipse.platform:org.eclipse.e4.ui.widgets:1.3.100                          | maven central?         |
+| org.eclipse.platform:org.eclipse.e4.ui.workbench.addons.swt:1.4.500             | maven central?         |
+| org.eclipse.platform:org.eclipse.e4.ui.workbench.renderers.swt:0.15.700         | maven central?         |
+| org.eclipse.platform:org.eclipse.e4.ui.workbench.swt:0.16.700                   | maven central?         |
+| org.eclipse.platform:org.eclipse.e4.ui.workbench3:0.16.100                      | maven central?         |
+| org.eclipse.platform:org.eclipse.e4.ui.workbench:1.14.0                         | maven central?         |
+| org.eclipse.platform:org.eclipse.equinox.app:1.6.200                            | maven central?         |
+| org.eclipse.platform:org.eclipse.equinox.bidi:1.4.200                           | maven central?         |
+| org.eclipse.platform:org.eclipse.equinox.common:3.17.0                          | maven central?         |
+| org.eclipse.platform:org.eclipse.equinox.event:1.6.100                          | maven central?         |
+| org.eclipse.platform:org.eclipse.equinox.frameworkadmin.equinox:1.2.200         | maven central?         |
+| org.eclipse.platform:org.eclipse.equinox.frameworkadmin:2.2.100                 | maven central?         |
+| org.eclipse.platform:org.eclipse.equinox.http.jetty:3.8.200                     | maven central?         |
+| org.eclipse.platform:org.eclipse.equinox.http.registry:1.3.200                  | maven central?         |
+| org.eclipse.platform:org.eclipse.equinox.http.servlet:1.7.400                   | maven central?         |
+| org.eclipse.platform:org.eclipse.equinox.jsp.jasper.registry:1.2.100            | maven central?         |
+| org.eclipse.platform:org.eclipse.equinox.jsp.jasper:1.1.700                     | maven central?         |
+| org.eclipse.platform:org.eclipse.equinox.launcher:1.6.400                       | maven central?         |
+| org.eclipse.platform:org.eclipse.equinox.preferences:3.10.100                   | maven central?         |
+| org.eclipse.platform:org.eclipse.equinox.registry:3.11.200                      | maven central?         |
+| org.eclipse.platform:org.eclipse.equinox.security.ui:1.3.400                    | maven central?         |
+| org.eclipse.platform:org.eclipse.equinox.security:1.3.1000                      | maven central?         |
+| org.eclipse.platform:org.eclipse.equinox.simpleconfigurator.manipulator:2.2.100 | maven central?         |
+| org.eclipse.platform:org.eclipse.equinox.simpleconfigurator:1.4.200             | maven central?         |
+| org.eclipse.platform:org.eclipse.equinox.supplement:1.10.600                    | maven central?         |
+| org.eclipse.platform:org.eclipse.help.base:4.3.900                              | maven central?         |
+| org.eclipse.platform:org.eclipse.help.ui:4.4.100                                | maven central?         |
+| org.eclipse.platform:org.eclipse.help.webapp:3.10.900                           | maven central?         |
+| org.eclipse.platform:org.eclipse.help:3.9.100                                   | maven central?         |
+| org.eclipse.platform:org.eclipse.jface.databinding:1.14.0                       | maven central?         |
+| org.eclipse.platform:org.eclipse.jface.notifications:0.5.100                    | maven central?         |
+| org.eclipse.platform:org.eclipse.jface.text:3.22.0                              | maven central?         |
+| org.eclipse.platform:org.eclipse.jface:3.28.0                                   | maven central?         |
+| org.eclipse.platform:org.eclipse.jsch.core:1.4.0                                | maven central?         |
+| org.eclipse.platform:org.eclipse.jsch.ui:1.4.200                                | maven central?         |
+| org.eclipse.platform:org.eclipse.ltk.core.refactoring:3.13.0                    | maven central?         |
+| org.eclipse.platform:org.eclipse.ltk.ui.refactoring:3.12.200                    | maven central?         |
+| org.eclipse.platform:org.eclipse.osgi.compatibility.state:1.2.800               | maven central?         |
+| org.eclipse.platform:org.eclipse.osgi.services:3.11.100                         | maven central?         |
+| org.eclipse.platform:org.eclipse.osgi.util:3.7.100                              | maven central?         |
+| org.eclipse.platform:org.eclipse.osgi:3.18.200                                  | maven central?         |
+| org.eclipse.platform:org.eclipse.platform.doc.user:4.26.0                       | maven central?         |
+| org.eclipse.platform:org.eclipse.platform:4.26.0                                | maven central?         |
+| org.eclipse.platform:org.eclipse.rcp:4.26.0                                     | maven central?         |
+| org.eclipse.platform:org.eclipse.search:3.14.300                                | maven central?         |
+| org.eclipse.platform:org.eclipse.swt:3.122.0                                    | maven central?         |
+| org.eclipse.platform:org.eclipse.team.core:3.9.600                              | maven central?         |
+| org.eclipse.platform:org.eclipse.team.genericeditor.diff.extension:1.1.100      | maven central?         |
+| org.eclipse.platform:org.eclipse.team.ui:3.9.500                                | maven central?         |
+| org.eclipse.platform:org.eclipse.text.quicksearch:1.1.400                       | maven central?         |
+| org.eclipse.platform:org.eclipse.text:3.12.300                                  | maven central?         |
+| org.eclipse.platform:org.eclipse.ui.browser:3.7.300                             | maven central?         |
+| org.eclipse.platform:org.eclipse.ui.cheatsheets:3.7.500                         | maven central?         |
+| org.eclipse.platform:org.eclipse.ui.console:3.11.400                            | maven central?         |
+| org.eclipse.platform:org.eclipse.ui.editors:3.14.400                            | maven central?         |
+| org.eclipse.platform:org.eclipse.ui.externaltools:3.5.200                       | maven central?         |
+| org.eclipse.platform:org.eclipse.ui.forms:3.11.500                              | maven central?         |
+| org.eclipse.platform:org.eclipse.ui.genericeditor:1.2.300                       | maven central?         |
+| org.eclipse.platform:org.eclipse.ui.ide.application:1.4.600                     | maven central?         |
+| org.eclipse.platform:org.eclipse.ui.ide:3.20.0                                  | maven central?         |
+| org.eclipse.platform:org.eclipse.ui.intro.quicklinks:1.1.200                    | maven central?         |
+| org.eclipse.platform:org.eclipse.ui.intro.universal:3.4.300                     | maven central?         |
+| org.eclipse.platform:org.eclipse.ui.intro:3.6.600                               | maven central?         |
+| org.eclipse.platform:org.eclipse.ui.monitoring:1.2.300                          | maven central?         |
+| org.eclipse.platform:org.eclipse.ui.navigator.resources:3.8.500                 | maven central?         |
+| org.eclipse.platform:org.eclipse.ui.navigator:3.10.400                          | maven central?         |
+| org.eclipse.platform:org.eclipse.ui.net:1.4.100                                 | maven central?         |
+| org.eclipse.platform:org.eclipse.ui.themes:1.2.2100                             | maven central?         |
+| org.eclipse.platform:org.eclipse.ui.views.log:1.3.400                           | maven central?         |
+| org.eclipse.platform:org.eclipse.ui.views.properties.tabbed:3.9.300             | maven central?         |
+| org.eclipse.platform:org.eclipse.ui.views:3.11.300                              | maven central?         |
+| org.eclipse.platform:org.eclipse.ui.workbench.texteditor:3.16.600               | maven central?         |
+| org.eclipse.platform:org.eclipse.ui.workbench:3.127.0                           | maven central?         |
+| org.eclipse.platform:org.eclipse.ui:3.201.200                                   | maven central?         |
+| org.eclipse.platform:org.eclipse.update.configurator:3.4.1000                   | maven central?         |
+| org.eclipse.platform:org.eclipse.urischeme:1.2.200                              | maven central?         |
+| com.jcraft.jsch:0.1.55.v20221112-0806                                           | p2 R-4.26-202211231800 |
+| com.sun.el:2.2.0.v201303151357                                                  | p2 R-4.26-202211231800 |
+| javax.annotation:1.3.5.v20221112-0806                                           | p2 R-4.26-202211231800 |
+| javax.el:2.2.0.v201303151357                                                    | p2 R-4.26-202211231800 |
+| javax.inject:1.0.0.v20220405-0441                                               | p2 R-4.26-202211231800 |
+| org.apache.ant:1.10.12.v20211102-1452                                           | p2 R-4.26-202211231800 |
+| org.apache.batik.constants:1.16.0.v20221027-0840                                | p2 R-4.26-202211231800 |
+| org.apache.batik.css:1.16.0.v20221027-0840                                      | p2 R-4.26-202211231800 |
+| org.apache.batik.i18n:1.16.0.v20221027-0840                                     | p2 R-4.26-202211231800 |
+| org.apache.batik.util:1.16.0.v20221027-0840                                     | p2 R-4.26-202211231800 |
+| org.apache.commons.jxpath:1.3.0.v200911051830                                   | p2 R-4.26-202211231800 |
+| org.apache.commons.logging:1.2.0.v20180409-1502                                 | p2 R-4.26-202211231800 |
+| org.apache.jasper.glassfish:2.2.2.v201501141630                                 | p2 R-4.26-202211231800 |
+| org.apache.lucene.analyzers-common:8.4.1.v20221112-0806                         | p2 R-4.26-202211231800 |
+| org.apache.lucene.analyzers-smartcn:8.4.1.v20221112-0806                        | p2 R-4.26-202211231800 |
+| org.apache.lucene.core:8.4.1.v20221112-0806                                     | p2 R-4.26-202211231800 |
+| org.apache.xmlgraphics:2.7.0.v20221018-0736                                     | p2 R-4.26-202211231800 |
+| org.hamcrest.core:1.3.0.v20180420-1519                                          | p2 R-4.26-202211231800 |
+| org.junit:4.13.2.v20211018-1956                                                 | p2 R-4.26-202211231800 |
+| org.w3c.css.sac:1.3.1.v200903091627                                             | p2 R-4.26-202211231800 |
+| org.w3c.dom.events:3.0.0.draft20060413_v201105210656                            | p2 R-4.26-202211231800 |
+| org.w3c.dom.smil:1.0.1.v200903091627                                            | p2 R-4.26-202211231800 |
+| org.w3c.dom.svg:1.1.0.v201011041433                                             | p2 R-4.26-202211231800 |
++---------------------------------------------------------------------------------+------------------------+
 ]
 
 
@@ -1198,7 +1186,8 @@ dev.equo.ide.gradle.EquoListTest.detail=[
 | id                               | org.eclipse.jdt.annotation                         |
 | version                          | 2.2.700.v20220826-1026                             |
 | maven coordinate                 | org.eclipse.jdt:org.eclipse.jdt.annotation:2.2.700 |
-| maven repo                       | mavenCentral?                                      |
+| maven repo                       | maven central?                                     |
+| prop artifact-classifier         | osgi.bundle                                        |
 | prop maven-artifactId            | org.eclipse.jdt.annotation                         |
 | prop maven-groupId               | org.eclipse.jdt                                    |
 | prop maven-type                  | eclipse-plugin                                     |
@@ -1208,7 +1197,8 @@ dev.equo.ide.gradle.EquoListTest.detail=[
 | id                               | org.eclipse.jdt.annotation                         |
 | version                          | 1.2.100.v20220826-1026                             |
 | maven coordinate                 | org.eclipse.jdt:org.eclipse.jdt.annotation:1.2.100 |
-| maven repo                       | mavenCentral?                                      |
+| maven repo                       | maven central?                                     |
+| prop artifact-classifier         | osgi.bundle                                        |
 | prop maven-artifactId            | org.eclipse.jdt.annotation                         |
 | prop maven-groupId               | org.eclipse.jdt                                    |
 | prop maven-type                  | eclipse-plugin                                     |
@@ -1270,7 +1260,7 @@ dev.equo.ide.gradle.EquoListTest.installedSwtCsv[installed]=[
 WARNING!!! 1 unmet requirement(s), 0 ambigous requirement(s). For more info:
 WARNING!!! gradlew equoList --problems
 maven coordinate / p2 id,repo
-org.eclipse.platform:org.eclipse.swt:3.122.0,mavenCentral?
+org.eclipse.platform:org.eclipse.swt:3.122.0,maven central?
 ]
 
 
@@ -1285,11 +1275,11 @@ No ambiguous requirements.
 dev.equo.ide.gradle.EquoListTest.installedSwt[installed]=[
 WARNING!!! 1 unmet requirement(s), 0 ambigous requirement(s). For more info:
 WARNING!!! gradlew equoList --problems
-+----------------------------------------------+---------------+
-| maven coordinate / p2 id                     | repo          |
-+----------------------------------------------+---------------+
-| org.eclipse.platform:org.eclipse.swt:3.122.0 | mavenCentral? |
-+----------------------------------------------+---------------+
++----------------------------------------------+----------------+
+| maven coordinate / p2 id                     | repo           |
++----------------------------------------------+----------------+
+| org.eclipse.platform:org.eclipse.swt:3.122.0 | maven central? |
++----------------------------------------------+----------------+
 ]
 
 

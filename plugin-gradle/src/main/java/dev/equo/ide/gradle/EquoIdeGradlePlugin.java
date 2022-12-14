@@ -76,6 +76,22 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 
 		P2Client.Caching caching =
 				P2Client.Caching.defaultIfOfflineIs(project.getGradle().getStartParameter().isOffline());
+		var workspaceDir = WorkspaceRegistry.instance().workspaceDir(project.getProjectDir());
+		var equoIdeTask =
+				project
+						.getTasks()
+						.register(
+								EQUO_IDE,
+								EquoIdeTask.class,
+								task -> {
+									task.setGroup(TASK_GROUP);
+									task.setDescription("Launches an Eclipse application");
+
+									task.getCaching().set(caching);
+									task.getIsTestOnly().set(equoTestOnly);
+									task.getMavenDeps().set(configuration);
+									task.getWorkspaceDir().set(workspaceDir);
+								});
 		project.afterEvaluate(
 				unused -> {
 					try {
@@ -86,25 +102,14 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 										coordinate -> {
 											project.getDependencies().add(EQUO_IDE, coordinate);
 										});
+						equoIdeTask.configure(
+								task -> {
+									task.getQuery().set(query);
+								});
 					} catch (Exception e) {
 						throw new RuntimeException(e);
 					}
 				});
-		var workspaceDir = WorkspaceRegistry.instance().workspaceDir(project.getProjectDir());
-		project
-				.getTasks()
-				.register(
-						EQUO_IDE,
-						EquoIdeTask.class,
-						task -> {
-							task.setGroup(TASK_GROUP);
-							task.setDescription("Launches an Eclipse application");
-
-							task.getIsTestOnly().set(equoTestOnly);
-							task.getExtension().set(extension);
-							task.getClassPath().set(configuration);
-							task.getWorkspaceDir().set(workspaceDir);
-						});
 		project
 				.getTasks()
 				.register(

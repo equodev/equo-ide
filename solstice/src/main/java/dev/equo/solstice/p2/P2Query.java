@@ -165,21 +165,16 @@ public class P2Query {
 
 	/** Returns all jars. */
 	public List<P2Unit> getJars() {
-		var jars = new ArrayList<P2Unit>();
-		for (var unit : installed.values()) {
-			if (unit.id.endsWith("feature.jar")
-					|| "true".equals(unit.properties.get(P2Unit.P2_TYPE_FEATURE))
-					|| "true".equals(unit.properties.get(P2Unit.P2_TYPE_CATEGORY))) {
-				continue;
-			}
-			jars.add(unit);
-		}
-		return jars;
+		return getUnitsWithProperty(P2Unit.ARTIFACT_CLASSIFIER, P2Unit.ARTIFACT_CLASSIFIER_BUNDLE);
 	}
 
 	/** Returns all features. */
 	public List<P2Unit> getFeatures() {
-		return getUnitsWithProperty(P2Unit.P2_TYPE_FEATURE, "true");
+		return getUnitsWithProperty1or2(
+				P2Unit.P2_TYPE_FEATURE,
+				"true",
+				P2Unit.ARTIFACT_CLASSIFIER,
+				P2Unit.ARTIFACT_CLASSIFIER_FEATURE);
 	}
 
 	/** Returns all categories. */
@@ -198,13 +193,26 @@ public class P2Query {
 		return matches;
 	}
 
+	/** Returns all units which have the given property set to the given value. */
+	public List<P2Unit> getUnitsWithProperty1or2(
+			String key1, String value1, String key2, String value2) {
+		List<P2Unit> matches = new ArrayList<>();
+		for (var unit : installed.values()) {
+			if (Objects.equals(unit.properties.get(key1), value1)
+					|| Objects.equals(unit.properties.get(key2), value2)) {
+				matches.add(unit);
+			}
+		}
+		return matches;
+	}
+
 	/** Returns all jars which are on maven central. */
 	public List<String> getJarsOnMavenCentral() {
 		var mavenCoords = new ArrayList<String>();
 		for (var unit : getJars()) {
-			var mavenState = MavenStatus.forUnit(unit);
-			if (mavenState.isOnMavenCentral()) {
-				mavenCoords.add(mavenState.coordinate());
+			var repoStatus = RepoStatus.forUnit(unit);
+			if (repoStatus.isOnMavenCentral()) {
+				mavenCoords.add(repoStatus.coordinate());
 			}
 		}
 		return mavenCoords;
@@ -214,8 +222,8 @@ public class P2Query {
 	public List<P2Unit> getJarsNotOnMavenCentral() {
 		var notOnMaven = new ArrayList<P2Unit>();
 		for (var unit : getJars()) {
-			var mavenState = MavenStatus.forUnit(unit);
-			if (!mavenState.isOnMavenCentral()) {
+			var repoStatus = RepoStatus.forUnit(unit);
+			if (!repoStatus.isOnMavenCentral()) {
 				notOnMaven.add(unit);
 			}
 		}

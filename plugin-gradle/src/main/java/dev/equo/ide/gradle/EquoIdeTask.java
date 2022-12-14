@@ -13,9 +13,12 @@
  *******************************************************************************/
 package dev.equo.ide.gradle;
 
-import dev.equo.solstice.NestedBundles;
+import dev.equo.solstice.NestedJars;
+import dev.equo.solstice.p2.P2Client;
+import dev.equo.solstice.p2.P2Query;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
 import org.gradle.api.DefaultTask;
@@ -27,10 +30,13 @@ import org.gradle.api.tasks.TaskAction;
 
 public abstract class EquoIdeTask extends DefaultTask {
 	@Internal
-	public abstract Property<EquoIdeExtension> getExtension();
+	public abstract Property<P2Client.Caching> getCaching();
 
 	@Internal
-	public abstract Property<FileCollection> getClassPath();
+	public abstract Property<P2Query> getQuery();
+
+	@Internal
+	public abstract Property<FileCollection> getMavenDeps();
 
 	@Internal
 	public abstract Property<File> getWorkspaceDir();
@@ -43,20 +49,31 @@ public abstract class EquoIdeTask extends DefaultTask {
 
 	@TaskAction
 	public void launch() throws IOException, InterruptedException {
-		var cp = getClassPath().get();
+		var mavenDeps = getMavenDeps().get();
+
+		var p2files = new ArrayList<File>();
+		var query = getQuery().get();
+		try (var client = new P2Client(getCaching().get())) {
+			for (var unit : query.getJarsNotOnMavenCentral()) {
+				p2files.add(client.download(unit));
+			}
+		}
+
+		var p2deps = getObjectFactory().fileCollection().from(p2files);
+		var p2AndMavenDeps = p2deps.plus(mavenDeps);
 
 		var workspaceDir = getWorkspaceDir().get();
-		var nestedJarFolder = new File(workspaceDir, NestedBundles.DIR);
-		var allNested =
-				NestedBundles.inFiles(cp).extractAllNestedJars(nestedJarFolder).stream()
+		var nestedJarFolder = new File(workspaceDir, NestedJars.DIR);
+		var nestedJars =
+				NestedJars.inFiles(p2AndMavenDeps).extractAllNestedJars(nestedJarFolder).stream()
 						.map(e -> e.getValue())
 						.collect(Collectors.toList());
-		var nestedFileCollection = getObjectFactory().fileCollection().from(allNested);
+		var nestedDefs = getObjectFactory().fileCollection().from(nestedJars);
 
 		var result =
-				NestedBundles.javaExec(
+				NestedJars.javaExec(
 						"dev.equo.solstice.IdeMain",
-						cp.plus(nestedFileCollection),
+						p2AndMavenDeps.plus(nestedDefs),
 						"-installDir",
 						workspaceDir.getAbsolutePath(),
 						"-equoTestOnly",
