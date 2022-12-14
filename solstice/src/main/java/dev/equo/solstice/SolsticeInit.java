@@ -37,14 +37,14 @@ import org.osgi.service.log.LogLevel;
 import org.osgi.service.packageadmin.PackageAdmin;
 
 /** Controls the initialization of the {@link Solstice} runtime. */
-public class SolsticeConfiguration {
+public class SolsticeInit {
 	private File installDir;
 
-	public SolsticeConfiguration(File installDir) {
+	public SolsticeInit(File installDir) {
 		this.installDir = installDir;
 	}
 
-	public SolsticeConfiguration() {
+	public SolsticeInit() {
 		this(defaultDir());
 	}
 
