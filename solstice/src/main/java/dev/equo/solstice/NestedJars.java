@@ -36,19 +36,14 @@ import org.osgi.framework.Constants;
  * Unwraps nested bundles to be friendly to a normal classloader, see <a
  * href="https://github.com/equodev/equo-ide/pull/7">equodev/equo-ide#7</a>
  *
- * <p>Known limitations:
- *
- * <ul>
- *   <li>doesn't handle the case that <code>Bundle-ClassPath</code> contains multiple bundles
- *   <li>if the nested bundle has no <code>META-INF/MANIFEST.MF</code>, then <code>
- *       confirmAllNestedJarsArePresentOnClasspath</code> will fail erroneously
- * </ul>
+ * <p>Known limitation: if the nested bundle has no {@code META-INF/MANIFEST.MF}, then {@link
+ * #confirmAllNestedJarsArePresentOnClasspath(File)} will fail erroneously.
  */
-public abstract class NestedBundles {
+public abstract class NestedJars {
 	/** Reads the version of the Solstice jar from the classpath. */
 	public static String solsticeVersion() throws IOException {
 		var solsticeJar =
-				NestedBundles.class.getResource(NestedBundles.class.getSimpleName() + ".class").toString();
+				NestedJars.class.getResource(NestedJars.class.getSimpleName() + ".class").toString();
 		if (!solsticeJar.startsWith("jar")) {
 			throw new IllegalArgumentException("");
 		}
@@ -108,15 +103,15 @@ public abstract class NestedBundles {
 		}
 	}
 
-	public static NestedBundles onClassPath() {
-		return new NestedBundles() {
+	public static NestedJars onClassPath() {
+		return new NestedJars() {
 			@Override
 			protected List<URL> listNestedJars() {
 				List<URL> nestedJars = new ArrayList<>();
 				Enumeration<URL> manifests =
 						Unchecked.get(
 								() ->
-										NestedBundles.class
+										NestedJars.class
 												.getClassLoader()
 												.getResources(Solstice.MANIFEST_PATH.substring(1)));
 				while (manifests.hasMoreElements()) {
@@ -134,8 +129,8 @@ public abstract class NestedBundles {
 		};
 	}
 
-	public static NestedBundles inFiles(Iterable<File> files) {
-		return new NestedBundles() {
+	public static NestedJars inFiles(Iterable<File> files) {
+		return new NestedJars() {
 			@Override
 			protected List<URL> listNestedJars() {
 				List<URL> nestedJars = new ArrayList<>();
@@ -175,7 +170,7 @@ public abstract class NestedBundles {
 		Enumeration<URL> manifests =
 				Unchecked.get(
 						() ->
-								NestedBundles.class
+								NestedJars.class
 										.getClassLoader()
 										.getResources(Solstice.MANIFEST_PATH.substring(1)));
 		while (manifests.hasMoreElements()) {

@@ -56,29 +56,29 @@ dependencies {
 }
 
 String cacheRoot = System.getProperty("user.home") + "/.equo/p2-bundle-pool/"
-file('mavenJarsNeededForTest').readLines().forEach {
+file('p2queryForTest').readLines().forEach {
 	if (it.startsWith("maven ")) {
 		dependencies.testSetup2Implementation it.substring("maven ".length())
 	} else if (it.startsWith("file ")) {
 		dependencies.testSetup2Implementation files(cacheRoot + it.substring("file ".length()))
 	}
 }
-file('nestedJarsNeededForTest').readLines().forEach {
+file('nestedJarsForTest').readLines().forEach {
 	dependencies.testImplementation files(it)
 }
 
-tasks.register('mavenJarsNeededForTest', JavaExec) {
+tasks.register('p2queryForTest', JavaExec) {
 	classpath = sourceSets.testSetup1.runtimeClasspath
-	mainClass = 'dev.equo.solstice.MavenJarsNeededForTest'
+	mainClass = 'dev.equo.solstice.P2QueryForTest'
 }
 
-tasks.register('nestedJarsNeededForTest', JavaExec) {
-	dependsOn 'mavenJarsNeededForTest'
+tasks.register('nestedJarsForTest', JavaExec) {
+	dependsOn 'p2queryForTest'
 	classpath = sourceSets.testSetup2.runtimeClasspath
-	mainClass = 'dev.equo.solstice.NestedJarsNeededForTest'
+	mainClass = 'dev.equo.solstice.NestedJarsForTest'
 }
 tasks.named('test') {
-	dependsOn 'nestedJarsNeededForTest'
+	dependsOn 'nestedJarsForTest'
 	useJUnitPlatform {}
 	if (System.env['CI'] == null) {
 		systemProperty "updateSnapshot", ""

@@ -73,7 +73,7 @@ public class SolsticeConfiguration {
 	}
 
 	public File nestedJarFolder() {
-		return new File(installDir, NestedBundles.DIR);
+		return new File(installDir, NestedJars.DIR);
 	}
 
 	public List<String> okayIfActivatorFails() {

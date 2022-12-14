@@ -13,7 +13,7 @@
  *******************************************************************************/
 package dev.equo.ide.maven;
 
-import dev.equo.solstice.NestedBundles;
+import dev.equo.solstice.NestedJars;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -32,7 +32,7 @@ public class MavenPluginTest {
 	public void integrationTest() throws IOException, InterruptedException {
 		setFile("pom.xml").toResource("/dev/equo/ide/maven/pom.xml");
 		var output =
-				NestedBundles.consoleExec(
+				NestedJars.consoleExec(
 						rootFolder(),
 						"mvn",
 						"dev.equo.ide:equo-ide-maven-plugin:" + pluginVersion() + ":launch",
@@ -46,7 +46,7 @@ public class MavenPluginTest {
 	public void integrationTestReal() throws IOException, InterruptedException {
 		setFile("pom.xml").toResource("/dev/equo/ide/maven/pom.xml");
 		var output =
-				NestedBundles.consoleExec(
+				NestedJars.consoleExec(
 						rootFolder(),
 						"mvn",
 						"dev.equo.ide:equo-ide-maven-plugin:" + pluginVersion() + ":launch");

@@ -92,7 +92,7 @@ public class Solstice extends ServiceRegistry {
 
 		discoverAndSortBundles();
 		logger.info("Confirming that nested jars have been extracted");
-		NestedBundles.onClassPath().confirmAllNestedJarsArePresentOnClasspath(cfg.nestedJarFolder());
+		NestedJars.onClassPath().confirmAllNestedJarsArePresentOnClasspath(cfg.nestedJarFolder());
 		logger.info("All bundles found and sorted.");
 		for (var b : bundles) {
 			logger.info("  {}", b);

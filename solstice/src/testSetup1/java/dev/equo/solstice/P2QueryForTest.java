@@ -23,7 +23,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-public class MavenJarsNeededForTest {
+public class P2QueryForTest {
 	/**
 	 * This creates the File `nestedJarsNeededForTest` which is a list of extracted jars which are
 	 * needed for the test task to run. This needs to be run if the jars in testSetupImplementation
@@ -73,7 +73,6 @@ public class MavenJarsNeededForTest {
 			content.append(coordinate);
 			content.append('\n');
 		}
-		Files.write(
-				Paths.get("mavenJarsNeededForTest"), content.toString().getBytes(StandardCharsets.UTF_8));
+		Files.write(Paths.get("p2queryForTest"), content.toString().getBytes(StandardCharsets.UTF_8));
 	}
 }

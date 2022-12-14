@@ -13,7 +13,7 @@
  *******************************************************************************/
 package dev.equo.ide.gradle;
 
-import dev.equo.solstice.NestedBundles;
+import dev.equo.solstice.NestedJars;
 import dev.equo.solstice.p2.P2Client;
 import dev.equo.solstice.p2.P2Query;
 import java.io.File;
@@ -63,15 +63,15 @@ public abstract class EquoIdeTask extends DefaultTask {
 		var p2AndMavenDeps = p2deps.plus(mavenDeps);
 
 		var workspaceDir = getWorkspaceDir().get();
-		var nestedJarFolder = new File(workspaceDir, NestedBundles.DIR);
+		var nestedJarFolder = new File(workspaceDir, NestedJars.DIR);
 		var nestedJars =
-				NestedBundles.inFiles(p2AndMavenDeps).extractAllNestedJars(nestedJarFolder).stream()
+				NestedJars.inFiles(p2AndMavenDeps).extractAllNestedJars(nestedJarFolder).stream()
 						.map(e -> e.getValue())
 						.collect(Collectors.toList());
 		var nestedDefs = getObjectFactory().fileCollection().from(nestedJars);
 
 		var result =
-				NestedBundles.javaExec(
+				NestedJars.javaExec(
 						"dev.equo.solstice.IdeMain",
 						p2AndMavenDeps.plus(nestedDefs),
 						"-installDir",
