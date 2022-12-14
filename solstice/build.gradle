@@ -11,7 +11,7 @@ apply from: 干.file('sonatype.gradle')
 
 jar.manifest.attributes.put('Implementation-Version', spotlessChangelog.versionNext)
 
-String VER_SLF4J = '2.0.5'
+String VER_SLF4J = '2.0.6'
 
 sourceSets {
 	testSetup1 {
@@ -41,12 +41,18 @@ dependencies {
 
 	compileOnly 'com.google.code.findbugs:jsr305:3.0.2'
 	compileOnly 'com.google.code.findbugs:annotations:3.0.1'
-	api "org.slf4j:slf4j-api:$VER_SLF4J"
+	implementation "org.slf4j:slf4j-api:$VER_SLF4J"
 
 	testImplementation "org.slf4j:slf4j-simple:$VER_SLF4J"
 	testImplementation "org.junit.jupiter:junit-jupiter:$VER_JUNIT"
 	testImplementation "org.assertj:assertj-core:$VER_ASSERTJ"
 	testImplementation "io.github.origin-energy:java-snapshot-testing-junit5:$VER_SNAPSHOT_TESTING"
+
+	constraints {
+		testSetup2Implementation("org.slf4j:slf4j-api:$VER_SLF4J") {
+			because "we're getting 2.0.0-alpha6 for some reason"
+		}
+	}
 }
 
 String cacheRoot = System.getProperty("user.home") + "/.equo/p2-bundle-pool/"

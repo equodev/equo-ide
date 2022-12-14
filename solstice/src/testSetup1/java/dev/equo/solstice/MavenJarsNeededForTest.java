@@ -45,6 +45,7 @@ public class MavenJarsNeededForTest {
 		query.excludePrefix("org.eclipse.equinox.console");
 		query.excludePrefix("org.eclipse.equinox.p2");
 		query.excludeSuffix(".source");
+		query.exclude("org.slf4j.api");
 		query.install("org.eclipse.releng.java.languages.categoryIU");
 		query.install("org.eclipse.platform.ide.categoryIU");
 		query.install("org.eclipse.equinox.event");
