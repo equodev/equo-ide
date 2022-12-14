@@ -107,6 +107,8 @@ public class Solstice extends ServiceRegistry {
 				}
 			}
 		}
+		init.bundlePolicy().initFinished();
+		init.packagePolicy().initFinished();
 	}
 
 	public void activateWorkbenchBundles() {
@@ -638,17 +640,8 @@ public class Solstice extends ServiceRegistry {
 				var bundle = bundleForPkg(pkg);
 				logger.info("{} import {} package {}", this, bundle, pkg);
 				if (bundle == null) {
-					if (init.okayIfMissingPackage(pkg)) {
-						pkgs.add(pkg);
-						logger.info("  missing but okayIfMissingPackage so no problem");
-					} else {
-						throw new IllegalArgumentException(
-								"MISSING PACKAGE "
-										+ pkg
-										+ " imported by "
-										+ this
-										+ " (add it to okayIfMissingPackage)");
-					}
+					init.packagePolicy().isMissing(pkg, this);
+					pkgs.add(pkg);
 				} else {
 					if (!bundle.tryActivate()) {
 						addToWorkbenchQueue(this);
@@ -668,16 +661,7 @@ public class Solstice extends ServiceRegistry {
 						return false;
 					}
 				} else {
-					if (!init.okayIfMissingBundle().contains(required)) {
-						throw new IllegalArgumentException(
-								"MISSING BUNDLE "
-										+ required
-										+ " needed by "
-										+ this
-										+ " (add it to okayIfMissingBundle)");
-					} else {
-						logger.info("  missing but okayIfMissingBundle so no problem");
-					}
+					init.bundlePolicy().isMissing(required, this);
 				}
 			}
 			logger.info("/START ACTIVATE {}", this);
