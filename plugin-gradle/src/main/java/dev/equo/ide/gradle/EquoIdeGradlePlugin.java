@@ -76,7 +76,10 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 
 		P2Client.Caching caching =
 				P2Client.Caching.defaultIfOfflineIs(project.getGradle().getStartParameter().isOffline());
-		var workspaceDir = WorkspaceRegistry.instance().workspaceDir(project.getProjectDir());
+
+		var workspaceRegistry = WorkspaceRegistry.instance();
+		var workspaceDir = workspaceRegistry.workspaceDir(project.getProjectDir());
+		workspaceRegistry.clean();
 		var equoIdeTask =
 				project
 						.getTasks()

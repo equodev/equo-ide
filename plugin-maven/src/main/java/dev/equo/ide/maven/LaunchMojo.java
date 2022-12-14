@@ -85,7 +85,8 @@ public class LaunchMojo extends AbstractMojo {
 							new Exclusion("org.eclipse.platform", "org.eclipse.swt.gtk.linux.aarch64", "*", "*"),
 							new Exclusion("org.eclipse.platform", "org.eclipse.swt.gtk.linux.arm", "*", "*"));
 
-			var workspaceDir = WorkspaceRegistry.instance().workspaceDir(baseDir);
+			var workspaceRegistry = WorkspaceRegistry.instance();
+			var workspaceDir = workspaceRegistry.workspaceDir(baseDir);
 			var session = new P2Session();
 			try (var client = new P2Client()) {
 				if (release == null) {
@@ -130,6 +131,7 @@ public class LaunchMojo extends AbstractMojo {
 							"-equoTestOnly",
 							Boolean.toString(equoTestOnlyTrue));
 			System.out.println(result);
+			workspaceRegistry.clean();
 		} catch (DependencyResolutionException | IOException | InterruptedException e) {
 			throw new RuntimeException(e);
 		}
