@@ -20,9 +20,8 @@ import java.nio.file.Paths;
 
 public class NestedJarsForTest {
 	/**
-	 * This creates the File `nestedJarsNeededForTest` which is a list of extracted jars which are
-	 * needed for the test task to run. This needs to be run if the jars in testSetupImplementation
-	 * change.
+	 * This creates the File `nestedJarsForTest` which is a list of extracted jars which are needed
+	 * for the test task to run. This needs to be run if the jars in testSetupImplementation change.
 	 */
 	public static void main(String[] args) throws IOException {
 		var nestedJarFolder = new SolsticeConfiguration().nestedJarFolder();
@@ -35,6 +34,6 @@ public class NestedJarsForTest {
 			content.append('\n');
 		}
 		Files.write(
-				Paths.get("nestedJarsNeededForTest"), content.toString().getBytes(StandardCharsets.UTF_8));
+				Paths.get("nestedJarsForTest"), content.toString().getBytes(StandardCharsets.UTF_8));
 	}
 }

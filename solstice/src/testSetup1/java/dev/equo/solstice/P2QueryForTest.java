@@ -25,9 +25,8 @@ import java.nio.file.Paths;
 
 public class P2QueryForTest {
 	/**
-	 * This creates the File `nestedJarsNeededForTest` which is a list of extracted jars which are
-	 * needed for the test task to run. This needs to be run if the jars in testSetupImplementation
-	 * change.
+	 * This creates the File `nestedJarForTest` which is a list of extracted jars which are needed for
+	 * the test task to run. This needs to be run if the jars in testSetupImplementation change.
 	 */
 	public static void main(String[] args) throws IOException {
 		var session = new P2Session();
