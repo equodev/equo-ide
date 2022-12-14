@@ -157,7 +157,11 @@ public abstract class NestedJars {
 	public List<Map.Entry<URL, File>> extractAllNestedJars(File nestedJarFolder) {
 		var files = new ArrayList<Map.Entry<URL, File>>();
 		for (var url : listNestedJars()) {
-			files.add(extractNestedJar(url, nestedJarFolder));
+			int lastExclamation = url.getPath().indexOf('!');
+			int slashBeforeThat = url.getPath().lastIndexOf('/', lastExclamation);
+			files.add(
+					extractNestedJar(
+							url.getPath().substring(slashBeforeThat + 1, lastExclamation), url, nestedJarFolder));
 		}
 		files.sort(Comparator.comparing(e -> e.getKey().getPath()));
 		return files;
@@ -202,7 +206,8 @@ public abstract class NestedJars {
 		}
 	}
 
-	private static Map.Entry<URL, File> extractNestedJar(URL entry, File nestedJarFolder) {
+	private static Map.Entry<URL, File> extractNestedJar(
+			String parentJar, URL entry, File nestedJarFolder) {
 		try (var toRead = entry.openStream()) {
 			var content = toRead.readAllBytes();
 
@@ -213,7 +218,7 @@ public abstract class NestedJars {
 			var lastSep = Math.max(jarPath.lastIndexOf('!'), jarPath.lastIndexOf('/'));
 			var jarSimpleName = jarPath.substring(lastSep + 1);
 
-			var filename = bytesToHex(md5.digest()) + "_" + jarSimpleName;
+			var filename = parentJar + "__" + jarSimpleName + "__" + bytesToHex(md5.digest()) + ".jar";
 			var jarToAdd = new File(nestedJarFolder, filename);
 			if (!jarToAdd.exists() || jarToAdd.length() != content.length) {
 				nestedJarFolder.mkdirs();
