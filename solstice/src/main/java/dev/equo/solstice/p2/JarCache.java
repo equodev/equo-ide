@@ -44,10 +44,11 @@ class JarCache {
 			}
 			var request = new Request.Builder().url(unit.getJarUrl()).build();
 			var tempFile = File.createTempFile(unit.id, ".jar");
-			try (var response = client.newCall(request).execute();
-					var sink = Okio.buffer(Okio.sink(tempFile))) {
+			try (var response = client.newCall(request).execute()) {
 				if (response.code() == 200) {
-					sink.writeAll(response.body().source());
+					try (var sink = Okio.buffer(Okio.sink(tempFile))) {
+						sink.writeAll(response.body().source());
+					}
 				} else {
 					throw new IllegalArgumentException(response.code() + " at " + unit.getJarUrl());
 				}
