@@ -22,6 +22,7 @@ class LockFile implements AutoCloseable {
 	final File lockFile;
 
 	LockFile(File dir) throws IOException {
+		FileMisc.mkdirs(dir);
 		lockFile = new File(dir, ".lock");
 		FileMisc.retry(
 				lockFile,
