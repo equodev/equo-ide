@@ -80,6 +80,7 @@ maven org.eclipse.platform:org.eclipse.e4.ui.di:1.4.0
 maven org.eclipse.platform:org.eclipse.e4.ui.dialogs:1.3.300
 maven org.eclipse.platform:org.eclipse.e4.ui.ide:3.16.100
 maven org.eclipse.platform:org.eclipse.e4.ui.model.workbench:2.2.200
+maven org.eclipse.platform:org.eclipse.e4.ui.progress:0.3.500
 maven org.eclipse.platform:org.eclipse.e4.ui.services:1.5.0
 maven org.eclipse.platform:org.eclipse.e4.ui.widgets:1.3.0
 maven org.eclipse.platform:org.eclipse.e4.ui.workbench:1.13.200

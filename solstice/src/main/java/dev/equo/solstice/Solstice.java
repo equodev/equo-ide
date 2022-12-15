@@ -52,7 +52,6 @@ import org.osgi.framework.FrameworkListener;
 import org.osgi.framework.Version;
 import org.osgi.framework.namespace.IdentityNamespace;
 import org.osgi.framework.startlevel.BundleStartLevel;
-import org.osgi.framework.startlevel.FrameworkStartLevel;
 import org.osgi.framework.wiring.BundleCapability;
 import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.framework.wiring.BundleWiring;
@@ -70,29 +69,29 @@ import org.slf4j.LoggerFactory;
 public class Solstice extends ServiceRegistry {
 	private static Solstice instance;
 
-	public static Solstice initialize(SolsticeConfiguration config) {
+	public static Solstice initialize(SolsticeInit init) {
 		if (instance != null) {
-			throw new IllegalStateException("Equinot has already been initialized");
+			throw new IllegalStateException("Solstice has already been initialized");
 		}
-		instance = new Solstice(config);
+		instance = new Solstice(init);
 		return instance;
 	}
 
 	private final Logger logger = LoggerFactory.getLogger(Solstice.class);
-	private final SolsticeConfiguration cfg;
+	private final SolsticeInit init;
 
-	private Solstice(SolsticeConfiguration cfg) {
+	private Solstice(SolsticeInit init) {
 		Handler.install(this);
 
-		this.cfg = cfg;
+		this.init = init;
 
 		SolsticeFrameworkUtilHelper.initialize(this);
-		cfg.bootstrapServices(systemBundle, this);
+		init.bootstrapServices(systemBundle, this);
 		logger.info("Bootstrap services installed");
 
 		discoverAndSortBundles();
 		logger.info("Confirming that nested jars have been extracted");
-		NestedJars.onClassPath().confirmAllNestedJarsArePresentOnClasspath(cfg.nestedJarFolder());
+		NestedJars.onClassPath().confirmAllNestedJarsArePresentOnClasspath(init.nestedJarFolder());
 		logger.info("All bundles found and sorted.");
 		for (var b : bundles) {
 			logger.info("  {}", b);
@@ -101,13 +100,15 @@ public class Solstice extends ServiceRegistry {
 			try {
 				bundle.tryActivate();
 			} catch (ActivatorException e) {
-				if (cfg.okayIfActivatorFails().contains(bundle.getSymbolicName())) {
+				if (init.okayIfActivatorFails().contains(bundle.getSymbolicName())) {
 					logger.warn(e.bundle + " activator exception but okayIfActivatorFails", e);
 				} else {
 					throw Unchecked.wrap(e);
 				}
 			}
 		}
+		init.bundlePolicy().initFinished();
+		init.packagePolicy().initFinished();
 	}
 
 	public void activateWorkbenchBundles() {
@@ -123,7 +124,7 @@ public class Solstice extends ServiceRegistry {
 			try {
 				bundle.tryActivate();
 			} catch (ActivatorException e) {
-				if (cfg.okayIfActivatorFails().contains(bundle.getSymbolicName())) {
+				if (init.okayIfActivatorFails().contains(bundle.getSymbolicName())) {
 					logger.warn(e.bundle + " activator exception but okayIfActivatorFails", e);
 				} else {
 					throw Unchecked.wrap(e);
@@ -157,7 +158,7 @@ public class Solstice extends ServiceRegistry {
 		while (manifests.hasMoreElements()) {
 			bundles.add(new ShimBundle(manifests.nextElement()));
 		}
-		List<String> startOrder = cfg.startOrder();
+		List<String> startOrder = init.startOrder();
 		bundles.sort(
 				(o1, o2) -> {
 					int start1 = startOrder.indexOf(o1.symbolicName);
@@ -278,9 +279,6 @@ public class Solstice extends ServiceRegistry {
 						return (A) packageAdmin;
 					} else if (type.equals(FrameworkWiring.class)) {
 						return (A) frameworkWiring;
-					} else if (type.equals(FrameworkStartLevel.class)) {
-						// TODO: figure out who needs this and why
-						return (A) new Unimplemented.FrameworkStartLevel() {};
 					} else {
 						throw new UnsupportedOperationException(type.getName());
 					}
@@ -484,7 +482,7 @@ public class Solstice extends ServiceRegistry {
 			}
 			requiredBundles = requiredBundles(manifest);
 			if (symbolicName != null) {
-				var additional = cfg.additionalDeps().get(symbolicName);
+				var additional = init.additionalDeps().get(symbolicName);
 				if (additional != null) {
 					requiredBundles.addAll(additional);
 				}
@@ -522,6 +520,11 @@ public class Solstice extends ServiceRegistry {
 			return idx == -1 ? host : host.substring(0, idx);
 		}
 
+		ShimBundle fragmentHostBundle() {
+			var host = fragmentHost();
+			return host == null ? null : bundleByName(host);
+		}
+
 		private List<String> parsePackages(Object attribute) {
 			if (attribute == null) {
 				return Collections.emptyList();
@@ -552,6 +555,10 @@ public class Solstice extends ServiceRegistry {
 				}
 			}
 			return required;
+		}
+
+		public ShimBundle bundleByName(String name) {
+			return Solstice.this.bundleByName(name);
 		}
 
 		@Override
@@ -616,7 +623,7 @@ public class Solstice extends ServiceRegistry {
 				return true;
 			}
 			if (!workbenchIsActive) {
-				if (cfg.requiresWorkbench().contains(symbolicName)) {
+				if (init.requiresWorkbench().contains(symbolicName)) {
 					logger.info("Activating {} will wait for workbench", this);
 					addToWorkbenchQueue(this);
 					return false;
@@ -637,17 +644,8 @@ public class Solstice extends ServiceRegistry {
 				var bundle = bundleForPkg(pkg);
 				logger.info("{} import {} package {}", this, bundle, pkg);
 				if (bundle == null) {
-					if (cfg.okayIfMissingPackage(pkg)) {
-						pkgs.add(pkg);
-						logger.info("  missing but okayIfMissingPackage so no problem");
-					} else {
-						throw new IllegalArgumentException(
-								"MISSING PACKAGE "
-										+ pkg
-										+ " imported by "
-										+ this
-										+ " (add it to okayIfMissingPackage)");
-					}
+					init.packagePolicy().isMissing(pkg, this);
+					pkgs.add(pkg);
 				} else {
 					if (!bundle.tryActivate()) {
 						addToWorkbenchQueue(this);
@@ -667,16 +665,7 @@ public class Solstice extends ServiceRegistry {
 						return false;
 					}
 				} else {
-					if (!cfg.okayIfMissingBundle().contains(required)) {
-						throw new IllegalArgumentException(
-								"MISSING BUNDLE "
-										+ required
-										+ " needed by "
-										+ this
-										+ " (add it to okayIfMissingBundle)");
-					} else {
-						logger.info("  missing but okayIfMissingBundle so no problem");
-					}
+					init.bundlePolicy().isMissing(required, this);
 				}
 			}
 			logger.info("/START ACTIVATE {}", this);
@@ -692,7 +681,7 @@ public class Solstice extends ServiceRegistry {
 					var bundleActivator = c.newInstance();
 					bundleActivator.start(this);
 				} catch (Exception e) {
-					if (cfg.okayIfActivatorFails().contains(getSymbolicName())) {
+					if (init.okayIfActivatorFails().contains(getSymbolicName())) {
 						logger.warn(this + " Bundle-Activator failed but okayIfActivatorFails", e);
 					} else {
 						throw new ActivatorException(this, e);

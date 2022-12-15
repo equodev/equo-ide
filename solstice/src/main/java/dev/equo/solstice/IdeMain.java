@@ -31,22 +31,22 @@ public class IdeMain {
 	public static void main(String[] args) throws InvalidSyntaxException {
 		var argList = Arrays.asList(args);
 		int idx = argList.indexOf("-installDir");
-		SolsticeConfiguration cfg;
+		SolsticeInit init;
 		if (idx == -1) {
-			cfg = new SolsticeConfiguration();
+			init = new SolsticeInit();
 		} else {
-			cfg = new SolsticeConfiguration(new File(args[idx + 1]));
+			init = new SolsticeInit(new File(args[idx + 1]));
 		}
-		var osgiShim = Solstice.initialize(cfg);
+		var solstice = Solstice.initialize(init);
 
 		var dontRunIdx = argList.indexOf("-equoTestOnly");
 		if (dontRunIdx != -1 && Boolean.parseBoolean(argList.get(dontRunIdx + 1))) {
-			System.out.println("Loaded " + osgiShim.getBundles().length + " bundles");
+			System.out.println("Loaded " + solstice.getBundles().length + " bundles");
 			System.exit(0);
 			return;
 		}
 
-		int exitCode = IdeMainUi.main(osgiShim);
+		int exitCode = IdeMainUi.main(solstice);
 		if (exitCode == 0) {
 			System.exit(0);
 		} else {

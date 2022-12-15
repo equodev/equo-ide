@@ -37,14 +37,16 @@ import org.osgi.service.log.LogLevel;
 import org.osgi.service.packageadmin.PackageAdmin;
 
 /** Controls the initialization of the {@link Solstice} runtime. */
-public class SolsticeConfiguration {
+public class SolsticeInit {
 	private File installDir;
+	private final MissingPolicy packages = new MissingPolicy.Permissive("packages");
+	private final MissingPolicy bundles = new MissingPolicy.Permissive("bundles");
 
-	public SolsticeConfiguration(File installDir) {
+	public SolsticeInit(File installDir) {
 		this.installDir = installDir;
 	}
 
-	public SolsticeConfiguration() {
+	public SolsticeInit() {
 		this(defaultDir());
 	}
 
@@ -84,27 +86,12 @@ public class SolsticeConfiguration {
 		return Arrays.asList("org.eclipse.debug.ui", "org.eclipse.help.ui");
 	}
 
-	public List<String> okayIfMissingBundle() {
-		return Arrays.asList(
-				"com.jcraft.jsch",
-				"javax.annotation",
-				"javax.inject",
-				"org.apache.ant",
-				"org.apache.batik.css",
-				"org.apache.batik.constants",
-				"org.apache.lucene.analyzers-common",
-				"org.apache.lucene.analyzers-smartcn",
-				"org.apache.lucene.core",
-				"org.eclipse.ant.core",
-				"org.eclipse.jdt.annotation",
-				"org.junit",
-				"org.slf4j.simple",
-				"slf4j.api",
-				"system.bundle");
+	public MissingPolicy bundlePolicy() {
+		return bundles;
 	}
 
-	public boolean okayIfMissingPackage(String pkg) {
-		return true;
+	public MissingPolicy packagePolicy() {
+		return packages;
 	}
 
 	public void bootstrapServices(Bundle systemBundle, BundleContext context) {

@@ -39,6 +39,7 @@ public class P2QueryForTest {
 		var query = session.query();
 		// this could be SwtPlatfrom.getRunning(), but for CI it's important for the list to be
 		// cross-platform
+		// query.platform(SwtPlatform.getRunning());
 		query.platform(SwtPlatform.parseWsOsArch("x.x.x"));
 		query.excludePrefix("org.apache.felix.gogo");
 		query.excludePrefix("org.eclipse.equinox.console");
@@ -50,9 +51,10 @@ public class P2QueryForTest {
 		query.exclude("org.eclipse.equinox.jsp.jasper");
 		query.exclude("org.apache.jasper.glassfish");
 
-		query.install("org.eclipse.releng.java.languages.categoryIU");
-		query.install("org.eclipse.platform.ide.categoryIU");
+		query.install("org.eclipse.e4.ui.progress");
 		query.install("org.eclipse.equinox.event");
+		query.install("org.eclipse.platform.ide.categoryIU");
+		query.install("org.eclipse.releng.java.languages.categoryIU");
 
 		var content = new StringBuilder();
 		var cacheRoot = CacheLocations.p2bundlePool().getAbsolutePath() + "/";

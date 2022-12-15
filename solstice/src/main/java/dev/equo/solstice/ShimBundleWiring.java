@@ -18,7 +18,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import org.osgi.framework.namespace.HostNamespace;
 import org.osgi.framework.wiring.BundleWire;
+import org.osgi.framework.wiring.BundleWiring;
 
 class ShimBundleWiring extends Unimplemented.BundleWiring {
 	private final Solstice.ShimBundle bundle;
@@ -29,6 +31,18 @@ class ShimBundleWiring extends Unimplemented.BundleWiring {
 
 	@Override
 	public List<BundleWire> getRequiredWires(String namespace) {
+		if (namespace.equals(HostNamespace.HOST_NAMESPACE)) {
+			var host = bundle.fragmentHostBundle();
+			if (host != null) {
+				return Collections.singletonList(
+						new Unimplemented.BundleWire() {
+							@Override
+							public BundleWiring getProviderWiring() {
+								return host.adapt(BundleWiring.class);
+							}
+						});
+			}
+		}
 		return Collections.emptyList();
 	}
 
@@ -40,13 +54,26 @@ class ShimBundleWiring extends Unimplemented.BundleWiring {
 	@Override
 	public Collection<String> listResources(String path, String filePattern, int options) {
 		boolean recurse = (options & LISTRESOURCES_RECURSE) == LISTRESOURCES_RECURSE;
-		var urls = bundle.findEntries(path, filePattern, recurse);
 		List<String> asStrings = new ArrayList<>();
+		listResourcesHelper(asStrings, bundle, path, filePattern, recurse);
+		return asStrings;
+	}
+
+	private static void listResourcesHelper(
+			List<String> asStrings,
+			Solstice.ShimBundle bundle,
+			String path,
+			String filePattern,
+			boolean recurse) {
+		var urls = bundle.findEntries(path, filePattern, recurse);
 		while (urls.hasMoreElements()) {
 			var url = urls.nextElement();
 			asStrings.add(url.toExternalForm());
 		}
-		return asStrings;
+		for (var required : bundle.requiredBundles) {
+			// TODO: this should respect whether a required bundle is re-exported or not
+			listResourcesHelper(asStrings, bundle.bundleByName(required), path, filePattern, recurse);
+		}
 	}
 
 	@Override

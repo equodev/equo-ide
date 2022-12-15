@@ -27,7 +27,6 @@ import org.osgi.framework.FrameworkListener;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.Version;
 import org.osgi.framework.wiring.BundleRequirement;
-import org.osgi.framework.wiring.BundleWire;
 import org.osgi.resource.Capability;
 import org.osgi.resource.Requirement;
 import org.osgi.resource.Wire;
@@ -438,7 +437,7 @@ class Unimplemented {
 
 	static class BundleWiring implements org.osgi.framework.wiring.BundleWiring {
 		@Override
-		public List<BundleWire> getRequiredWires(String namespace) {
+		public List<org.osgi.framework.wiring.BundleWire> getRequiredWires(String namespace) {
 			throw onPurpose();
 		}
 
@@ -448,7 +447,7 @@ class Unimplemented {
 		}
 
 		@Override
-		public List<BundleWire> getProvidedWires(String namespace) {
+		public List<org.osgi.framework.wiring.BundleWire> getProvidedWires(String namespace) {
 			throw onPurpose();
 		}
 
@@ -541,6 +540,38 @@ class Unimplemented {
 
 		@Override
 		default org.osgi.framework.Bundle getBundle() {
+			throw onPurpose();
+		}
+	}
+
+	static class BundleWire implements org.osgi.framework.wiring.BundleWire {
+		@Override
+		public org.osgi.framework.wiring.BundleCapability getCapability() {
+			throw onPurpose();
+		}
+
+		@Override
+		public BundleRequirement getRequirement() {
+			throw onPurpose();
+		}
+
+		@Override
+		public org.osgi.framework.wiring.BundleWiring getProviderWiring() {
+			throw onPurpose();
+		}
+
+		@Override
+		public org.osgi.framework.wiring.BundleWiring getRequirerWiring() {
+			throw onPurpose();
+		}
+
+		@Override
+		public org.osgi.framework.wiring.BundleRevision getProvider() {
+			throw onPurpose();
+		}
+
+		@Override
+		public org.osgi.framework.wiring.BundleRevision getRequirer() {
 			throw onPurpose();
 		}
 	}
