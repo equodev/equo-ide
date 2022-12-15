@@ -30,7 +30,10 @@ configurations {
 
 dependencies {
 	api 'com.diffplug.durian:durian-swt.os:4.1.1'
-	implementation 'org.apache.felix:org.apache.felix.scr:2.2.4'
+	implementation 'org.apache.felix:org.apache.felix.scr:2.2.2'
+	implementation 'org.apache.felix:org.apache.felix.configadmin:1.9.26'
+	implementation 'org.apache.felix:org.apache.felix.dependencymanager:4.6.1'
+
 	// needed to shim out parts of the runtime
 	implementation 'org.objenesis:objenesis:3.3'
 	// needed to navigate p2
@@ -97,6 +100,8 @@ eclipseMavenCentral {
 	release '4.25.0', {
 		api 'org.eclipse.osgi'
 		implementation 'org.osgi.service.component'
+		implementation 'org.eclipse.equinox.concurrent'
+
 		compileOnly 'org.eclipse.core.runtime'
 		// only needed for IdeMain
 		compileOnly 'org.eclipse.ui.ide.application'
