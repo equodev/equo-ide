@@ -23,8 +23,8 @@ import org.osgi.framework.InvalidSyntaxException;
  *
  * <ul>
  *   <li>{@code -installDir C:\SomeDir} determines where the IDE will store its data.
- *   <li>{@code -equoTestOnly true} signals that instead of running an IDE, just activate all
- *       bundles then shut down. Useful for integration testing.
+ *   <li>{@code -initOnly true} signals that instead of running an IDE, just activate all bundles
+ *       then shut down. Useful for integration testing.
  * </ul>
  */
 public class IdeMain {
@@ -39,7 +39,7 @@ public class IdeMain {
 		}
 		var solstice = Solstice.initialize(init);
 
-		var dontRunIdx = argList.indexOf("-equoTestOnly");
+		var dontRunIdx = argList.indexOf("-initOnly");
 		if (dontRunIdx != -1 && Boolean.parseBoolean(argList.get(dontRunIdx + 1))) {
 			System.out.println("Loaded " + solstice.getBundles().length + " bundles");
 			System.exit(0);
