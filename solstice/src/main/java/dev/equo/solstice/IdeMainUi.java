@@ -22,11 +22,12 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.application.IWorkbenchConfigurer;
 import org.eclipse.ui.internal.ide.application.DelayedEventsProcessor;
 import org.eclipse.ui.internal.ide.application.IDEWorkbenchAdvisor;
+import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.service.application.ApplicationException;
 
 class IdeMainUi {
-	static int main(Solstice osgiShim) throws InvalidSyntaxException {
+	static int main(BundleContext osgiShim) throws InvalidSyntaxException {
 		var appServices =
 				osgiShim.getServiceReferences(
 						org.osgi.service.application.ApplicationDescriptor.class,
@@ -56,7 +57,9 @@ class IdeMainUi {
 				new IDEWorkbenchAdvisor(processor) {
 					@Override
 					public void initialize(IWorkbenchConfigurer configurer) {
-						osgiShim.activateWorkbenchBundles();
+						if (osgiShim instanceof Solstice) {
+							((Solstice) osgiShim).activateWorkbenchBundles();
+						}
 						super.initialize(configurer);
 					}
 				});
