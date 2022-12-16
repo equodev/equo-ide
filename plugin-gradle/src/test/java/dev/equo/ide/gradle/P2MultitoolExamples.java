@@ -126,6 +126,6 @@ public class P2MultitoolExamples extends GradleHarness {
 						"  install 'org.eclipse.swt'",
 						"}");
 		// var output = gradleRunner().withArguments("equoIde",
-		// "--initOnly").build().getOutput().replace("\r", "");
+		// "--init-only").build().getOutput().replace("\r", "");
 	}
 }

@@ -65,7 +65,7 @@ public class EquoIdeTest extends GradleHarness {
 						"  p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'",
 						"  install 'org.eclipse.swt'",
 						"}");
-		runAndAssert("equoIde", "--initOnly", "--stacktrace")
+		runAndAssert("equoIde", "--init-only", "--stacktrace")
 				.contains("exit code: 0")
 				.matches("(?s)(.*)stdout: Loaded (\\d+) bundles(.*)");
 	}

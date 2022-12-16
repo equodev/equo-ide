@@ -44,7 +44,9 @@ public abstract class EquoIdeTask extends DefaultTask {
 
 	private boolean initOnly = false;
 
-	@Option(option = "initOnly", description = "Lists the jars which were installed")
+	@Option(
+			option = "init-only",
+			description = "Initializes the runtime to check for errors then exits.")
 	void setInitOnly(boolean initOnly) {
 		this.initOnly = initOnly;
 	}

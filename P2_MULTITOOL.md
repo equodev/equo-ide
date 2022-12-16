@@ -20,7 +20,7 @@ The EquoIDE gradle plugin can help you browse and debug p2 repositories. The mav
 - [`equoList --detail=any.unit.id`](#equolist-detail)
 - [`equoList --raw=any.unit.id`](#equolist-raw)
 - (any command) `--format=csv` to output diff-friendly CSV instead of the default `ascii` table
-- [`equoIde --initOnly`](#equoide-initOnly)
+- [`equoIde --init-only`](#equoide-init-only)
 
 ## Quickstart
 
@@ -300,14 +300,14 @@ Bundle-Version: 3.32.0.v20221108-1853
 
 If you think there's something important that we're ignoring in our parsing, [let us know](https://github.com/equodev/equo-ide/discussions)!
 
-<a name="equoide-initOnly"></a>
-### `equoIde --initOnly`
+<a name="equoide-init-only"></a>
+### `equoIde --init-only`
 
 The point of all this p2 stuff, ultimately, is to get the jars we need to launch an application. To activate all our bundles in the [Solstice OSGi](https://github.com/equodev/equo-ide/tree/main/solstice) runtime, we run
 
 [//]: <> (P2MultitoolExamples._07)
 ```console
-user@machine p2-multitool % ./gradlew equoIde --initOnly
+user@machine p2-multitool % ./gradlew equoIde --init-only
 >    stdout: Loaded 229 bundles
 >    stderr: (below)
 > [main] INFO dev.equo.solstice.ServiceRegistry - [org.eclipse.osgi.service.localization.BundleLocalization] implemented by service class dev.equo.solstice.SolsticeInit$$Lambda$16/0x00000008000ca990 with 
