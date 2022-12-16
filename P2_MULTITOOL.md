@@ -20,7 +20,7 @@ The EquoIDE gradle plugin can help you browse and debug p2 repositories. The mav
 - [`equoList --detail=any.unit.id`](#equolist-detail)
 - [`equoList --raw=any.unit.id`](#equolist-raw)
 - (any command) `--format=csv` to output diff-friendly CSV instead of the default `ascii` table
-- `equoIde --init-only`
+- [`equoIde --initOnly`](#equoide-initOnly)
 
 ## Quickstart
 
@@ -298,4 +298,28 @@ Bundle-Version: 3.32.0.v20221108-1853
 </unit>
 ```
 
-If you think there's something important that we're ignoring here, [let us know](https://github.com/equodev/equo-ide/discussions)!
+If you think there's something important that we're ignoring in our parsing, [let us know](https://github.com/equodev/equo-ide/discussions)!
+
+<a name="equoide-initOnly"></a>
+### `equoIde --initOnly`
+
+The point of all this p2 stuff, ultimately, is to get the jars we need to launch an application. To activate all our bundles in the [Solstice OSGi](https://github.com/equodev/equo-ide/tree/main/solstice) runtime, we run
+
+[//]: <> (P2MultitoolExamples._07)
+```console
+user@machine p2-multitool % ./gradlew equoIde --initOnly
+>    stdout: Loaded 229 bundles
+>    stderr: (below)
+> [main] INFO dev.equo.solstice.ServiceRegistry - [org.eclipse.osgi.service.localization.BundleLocalization] implemented by service class dev.equo.solstice.SolsticeInit$$Lambda$16/0x00000008000ca990 with 
+> [main] INFO dev.equo.solstice.ServiceRegistry - [org.eclipse.osgi.service.environment.EnvironmentInfo] implemented by service class dev.equo.solstice.ShimEnvironmentInfo with
+...
+in] INFO dev.equo.solstice.Solstice - Request activate org.eclipse.help.base
+> [main] INFO dev.equo.solstice.Solstice - org.eclipse.help.base requires org.apache.lucene.analyzers-smartcn
+> [main] INFO dev.equo.solstice.Solstice - /START ACTIVATE org.eclipse.help.base
+> [main] INFO dev.equo.solstice.Solstice - org.eclipse.help.base Bundle-Activator org.eclipse.help.internal.base. 
+...
+> [main] WARN dev.equo.solstice.MissingPolicy - Missing bundles org.eclipse.equinox.event needed by [org.eclipse.e4.ui.services]
+> [main] WARN dev.equo.solstice.MissingPolicy - Missing packages org.junit.Suite needed by [org.apache.ant]
+```
+
+This gives us a quick try-test loop to see if we have all the bundles we need.
