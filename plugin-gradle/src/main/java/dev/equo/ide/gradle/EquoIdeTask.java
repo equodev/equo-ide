@@ -27,6 +27,7 @@ import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.TaskAction;
+import org.gradle.api.tasks.options.Option;
 
 public abstract class EquoIdeTask extends DefaultTask {
 	@Internal
@@ -41,8 +42,14 @@ public abstract class EquoIdeTask extends DefaultTask {
 	@Internal
 	public abstract Property<File> getWorkspaceDir();
 
-	@Internal
-	public abstract Property<Boolean> getIsTestOnly();
+	private boolean initOnly = false;
+
+	@Option(
+			option = "init-only",
+			description = "Initializes the runtime to check for errors then exits.")
+	void setInitOnly(boolean initOnly) {
+		this.initOnly = initOnly;
+	}
 
 	@Inject
 	public abstract ObjectFactory getObjectFactory();
@@ -76,8 +83,9 @@ public abstract class EquoIdeTask extends DefaultTask {
 						p2AndMavenDeps.plus(nestedDefs),
 						"-installDir",
 						workspaceDir.getAbsolutePath(),
-						"-equoTestOnly",
-						Boolean.toString(getIsTestOnly().get()));
+						"-initOnly",
+						Boolean.toString(initOnly),
+						"-Dorg.slf4j.simpleLogger.defaultLogLevel=INFO");
 		System.out.println(result);
 	}
 }

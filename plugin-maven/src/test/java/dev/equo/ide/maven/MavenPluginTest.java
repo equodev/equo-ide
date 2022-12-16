@@ -36,7 +36,7 @@ public class MavenPluginTest {
 						rootFolder(),
 						"mvn",
 						"dev.equo.ide:equo-ide-maven-plugin:" + pluginVersion() + ":launch",
-						"-DequoTestOnly=true");
+						"-DinitOnly=true");
 		Assertions.assertThat(output).contains("exit code: 0");
 		Assertions.assertThat(output).matches("(?s)(.*)stdout: Loaded (\\d+) bundles(.*)");
 	}

@@ -57,7 +57,7 @@ public class EquoIdeTest extends GradleHarness {
 	}
 
 	@Test
-	public void equoIdeTestOnly() throws IOException {
+	public void initOnly() throws IOException {
 		setFile("build.gradle")
 				.toLines(
 						"plugins { id 'dev.equo.ide' }",
@@ -65,7 +65,7 @@ public class EquoIdeTest extends GradleHarness {
 						"  p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'",
 						"  install 'org.eclipse.swt'",
 						"}");
-		runAndAssert("equoIde", "-PequoTestOnly=true", "--stacktrace")
+		runAndAssert("equoIde", "--init-only", "--stacktrace")
 				.contains("exit code: 0")
 				.matches("(?s)(.*)stdout: Loaded (\\d+) bundles(.*)");
 	}

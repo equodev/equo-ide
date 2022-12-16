@@ -45,8 +45,8 @@ import org.eclipse.aether.resolution.DependencyResult;
 public class LaunchMojo extends AbstractMojo {
 	@Component private RepositorySystem repositorySystem;
 
-	@Parameter(property = "equoTestOnly")
-	private String equoTestOnly;
+	@Parameter(property = "initOnly")
+	private String initOnly;
 
 	@Parameter(property = "release")
 	private String release;
@@ -64,7 +64,7 @@ public class LaunchMojo extends AbstractMojo {
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		try {
 			System.setProperty("osgi.platform", SwtPlatform.getRunning().toString());
-			boolean equoTestOnlyTrue = "true".equals(equoTestOnly);
+			boolean initOnlyTrue = "true".equals(initOnly);
 
 			List<Dependency> deps = new ArrayList<>();
 			deps.add(
@@ -99,7 +99,7 @@ public class LaunchMojo extends AbstractMojo {
 
 			var query = session.query();
 			query.platform(SwtPlatform.getRunning());
-			if (equoTestOnlyTrue) {
+			if (initOnlyTrue) {
 				query.install("org.eclipse.swt");
 			} else {
 				JdtSetup.mavenCoordinate(query, session);
@@ -128,8 +128,8 @@ public class LaunchMojo extends AbstractMojo {
 							files,
 							"-installDir",
 							workspaceDir.getAbsolutePath(),
-							"-equoTestOnly",
-							Boolean.toString(equoTestOnlyTrue));
+							"-initOnly",
+							Boolean.toString(initOnlyTrue));
 			System.out.println(result);
 			workspaceRegistry.clean();
 		} catch (DependencyResolutionException | IOException | InterruptedException e) {

@@ -71,8 +71,7 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 		} catch (IOException e) {
 			throw new GradleException("Unable to determine solstice version", e);
 		}
-
-		boolean equoTestOnly = "true".equals(project.findProperty("equoTestOnly"));
+		project.getDependencies().add(EQUO_IDE, "org.slf4j:slf4j-simple:2.0.6");
 
 		P2Client.Caching caching =
 				P2Client.Caching.defaultIfOfflineIs(project.getGradle().getStartParameter().isOffline());
@@ -91,7 +90,6 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 									task.setDescription("Launches an Eclipse application");
 
 									task.getCaching().set(caching);
-									task.getIsTestOnly().set(equoTestOnly);
 									task.getMavenDeps().set(configuration);
 									task.getWorkspaceDir().set(workspaceDir);
 								});
