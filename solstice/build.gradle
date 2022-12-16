@@ -34,6 +34,9 @@ dependencies {
 	implementation 'org.apache.felix:org.apache.felix.configadmin:1.9.26'
 	implementation 'org.apache.felix:org.apache.felix.dependencymanager:4.6.1'
 
+	implementation 'org.apache.felix:org.apache.felix.atomos:1.0.0'
+	implementation 'org.apache.felix.atomos:osgi.core:8.0.0:AtomosEquinox'
+
 	// needed to shim out parts of the runtime
 	implementation 'org.objenesis:objenesis:3.3'
 	// needed to navigate p2
