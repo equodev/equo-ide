@@ -82,7 +82,8 @@ public abstract class EquoIdeTask extends DefaultTask {
 						"-installDir",
 						workspaceDir.getAbsolutePath(),
 						"-initOnly",
-						Boolean.toString(initOnly));
+						Boolean.toString(initOnly),
+						"-Dorg.slf4j.simpleLogger.defaultLogLevel=INFO");
 		System.out.println(result);
 	}
 }
