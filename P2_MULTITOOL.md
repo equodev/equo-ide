@@ -20,6 +20,7 @@ The EquoIDE gradle plugin can help you browse and debug p2 repositories. The mav
 - [`equoList --detail=any.unit.id`](#equolist-detail)
 - [`equoList --raw=any.unit.id`](#equolist-raw)
 - (any command) `--format=csv` to output diff-friendly CSV instead of the default `ascii` table
+- `equoIde --init-only`
 
 ## Quickstart
 
@@ -136,21 +137,21 @@ equoIde {
 user@machine p2-multitool % ./gradlew equoList --installed
 WARNING!!! 46 unmet requirement(s), 8 ambigous requirement(s). For more info:
 WARNING!!! gradlew equoList --problems
-+---------------------------------------------------------------------------------+---------------+
-| maven coordinate / p2 id                                                        | repo          |
-+---------------------------------------------------------------------------------+---------------+
-| com.ibm.icu:icu4j:72.1                                                          | mavenCentral  |
-| commons-fileupload:commons-fileupload:1.4                                       | mavenCentral  |
-| commons-io:commons-io:2.11.0                                                    | mavenCentral  |
++----------------------------------------------------------+------------------------+
+| maven coordinate / p2 id                                 | repo                   |
++----------------------------------------------------------+------------------------+
+| com.ibm.icu:icu4j:72.1                                   | maven central          |
+| commons-fileupload:commons-fileupload:1.4                | maven central          |
+| commons-io:commons-io:2.11.0                             | maven central          |
 ...
-| org.eclipse.emf:org.eclipse.emf.common:2.27.0                                   | mavenCentral? |
-| org.eclipse.emf:org.eclipse.emf.ecore.change:2.14.0                             | mavenCentral? |
-| org.eclipse.emf:org.eclipse.emf.ecore.xmi:2.17.0                                | mavenCentral? |
+| org.eclipse.jdt:org.eclipse.jdt.annotation:2.2.700       | maven central?         |
+| org.eclipse.jdt:org.eclipse.jdt.apt.core:3.7.50          | maven central?         |
+| org.eclipse.jdt:org.eclipse.jdt.apt.pluggable.core:1.3.0 | maven central?         |
 ...
-| com.jcraft.jsch:0.1.55.v20221112-0806                                           | p2            |
-| javax.annotation:1.3.5.v20221112-0806                                           | p2            |
-| javax.inject:1.0.0.v20220405-0441                                               | p2            |
-+---------------------------------------------------------------------------------+---------------+
+| org.apache.ant:1.10.12.v20211102-1452                    | p2 R-4.26-202211231800 |
+| org.apache.batik.constants:1.16.0.v20221027-0840         | p2 R-4.26-202211231800 |
+| org.apache.batik.css:1.16.0.v20221027-0840               | p2 R-4.26-202211231800 |
++----------------------------------------------------------+------------------------+
 ```
 
 The first thing to note is that some dependencies come from `mavenCentral`, which means that the p2 metadata declares *exactly* where on `mavenCentral` that jar comes from. Other dependencies come from `mavenCentral?`, which means that [our (possibly flawed) heuristic](https://github.com/equodev/equo-ide/blob/main/solstice/src/main/java/dev/equo/solstice/p2/MavenCentralMapping.java) has identified that the jar is available on `mavenCentral`. And the rest of the jars will come from `p2`.
@@ -170,19 +171,17 @@ So let's try that!
 [//]: <> (P2MultitoolExamples._04)
 ```console
 user@machine p2-multitool % ./gradlew equoList --problems
-+-------------------------------------------------+-------------------------------------------------+
-| unmet requirement                               | needed by                                       |
-+-------------------------------------------------+-------------------------------------------------+
++-------------------------------------------+---------------------------------------+
+| unmet requirement                         | needed by                             |
++-------------------------------------------+---------------------------------------+
 ...
-| java.package:COM.ibm.netrexx.process            | org.apache.ant:1.10.12.v20211102-1452           |
-| java.package:com.jcraft.jzlib                   | com.jcraft.jsch:0.1.55.v20221112-0806           |
-| java.package:com.sun.media.jai.codec            | org.apache.ant:1.10.12.v20211102-1452           |
-| java.package:com.sun.net.ssl.internal.ssl       | org.apache.ant:1.10.12.v20211102-1452           |
-| java.package:com.sun.tools.javah                | org.apache.ant:1.10.12.v20211102-1452           |
-| java.package:org.eclipse.jetty.jmx              | org.eclipse.jetty.io:10.0.12                    |
-|                                                 | org.eclipse.jetty.server:10.0.12                |
-|                                                 | org.eclipse.jetty.servlet:10.0.12               |
-+-------------------------------------------------+-------------------------------------------------+
+| java.package:COM.ibm.netrexx.process      | org.apache.ant:1.10.12.v20211102-1452 |
+| java.package:com.jcraft.jzlib             | com.jcraft.jsch:0.1.55.v20221112-0806 |
+| java.package:com.sun.tools.javah          | org.apache.ant:1.10.12.v20211102-1452 |
+| java.package:org.eclipse.jetty.jmx        | org.eclipse.jetty.io:10.0.12          |
+|                                           | org.eclipse.jetty.server:10.0.12      |
+|                                           | org.eclipse.jetty.servlet:10.0.12     |
++-------------------------------------------+---------------------------------------+
 
 +-------------------------------------------------------------+-----------------------------------------------------------+-----------+
 | ambiguous requirement                                       | candidate                                                 | installed |
@@ -222,7 +221,8 @@ user@machine p2-multitool % ./gradlew equoList --detail=org.eclipse.jdt.compiler
 | id                                         | org.eclipse.jdt.compiler.apt                                |
 | version                                    | 1.4.300.v20221108-0856                                      |
 | maven coordinate                           | org.eclipse.jdt:org.eclipse.jdt.compiler.apt:1.4.300        |
-| maven repo                                 | mavenCentral?                                               |
+| maven repo                                 | maven central?                                              |
+| prop artifact-classifier                   | osgi.bundle                                                 |
 | prop maven-artifactId                      | org.eclipse.jdt.compiler.apt                                |
 | prop maven-groupId                         | org.eclipse.jdt                                             |
 | prop maven-type                            | eclipse-plugin                                              |
@@ -243,7 +243,8 @@ user@machine p2-multitool % ./gradlew equoList --detail=org.eclipse.jdt.core.com
 | id                               | org.eclipse.jdt.core.compiler.batch |
 | version                          | 3.32.0.v20221108-1853               |
 | maven coordinate                 | org.eclipse.jdt:ecj:3.32.0          |
-| maven repo                       | mavenCentral?                       |
+| maven repo                       | maven central?                      |
+| prop artifact-classifier         | osgi.bundle                         |
 | prop maven-artifactId            | org.eclipse.jdt.core                |
 | prop maven-groupId               | org.eclipse.jdt                     |
 | prop maven-type                  | eclipse-plugin                      |
