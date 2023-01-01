@@ -540,23 +540,6 @@ public class Solstice extends ServiceRegistry {
 			return parseManifestHeaderSimple(requireBundle);
 		}
 
-		/** Parse out a manifest header, and ignore the versions */
-		private List<String> parseManifestHeaderSimple(String in) {
-			String[] bundlesAndVersions = in.split(",");
-			List<String> required = new ArrayList<>(bundlesAndVersions.length);
-			for (String s : bundlesAndVersions) {
-				int attrDelim = s.indexOf(';');
-				if (attrDelim == -1) {
-					attrDelim = s.length();
-				}
-				String bundle = s.substring(0, attrDelim);
-				if (bundle.indexOf('"') == -1) {
-					required.add(bundle.trim());
-				}
-			}
-			return required;
-		}
-
 		public ShimBundle bundleByName(String name) {
 			return Solstice.this.bundleByName(name);
 		}
@@ -875,5 +858,22 @@ public class Solstice extends ServiceRegistry {
 			super(cause);
 			this.bundle = bundle;
 		}
+	}
+
+	/** Parse out a manifest header, and ignore the versions */
+	static List<String> parseManifestHeaderSimple(String in) {
+		String[] bundlesAndVersions = in.split(",");
+		List<String> required = new ArrayList<>(bundlesAndVersions.length);
+		for (String s : bundlesAndVersions) {
+			int attrDelim = s.indexOf(';');
+			if (attrDelim == -1) {
+				attrDelim = s.length();
+			}
+			String bundle = s.substring(0, attrDelim);
+			if (bundle.indexOf('"') == -1) {
+				required.add(bundle.trim());
+			}
+		}
+		return required;
 	}
 }
