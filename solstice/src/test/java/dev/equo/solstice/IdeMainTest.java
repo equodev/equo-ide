@@ -14,19 +14,65 @@
 package dev.equo.solstice;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import javax.swing.text.html.Option;
 import org.apache.felix.atomos.Atomos;
 import org.apache.felix.atomos.AtomosContent;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
+import org.osgi.framework.Constants;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.launch.Framework;
 import org.slf4j.simple.SimpleLogger;
 
 public class IdeMainTest {
 	static boolean useSolstice = false;
+
+	private static Optional<Map<String, String>> headerProvider(
+			String location, Map<String, String> existingHeaders) {
+		return new ModifiedHeaders(existingHeaders)
+				.removeReqBundle("org.junit")
+//				.removeImpPkg("org.junit")
+				.headers();
+//		return Optional.empty();
+	}
+
+	static class ModifiedHeaders {
+		final Map<String, String> headers;
+
+		ModifiedHeaders(Map<String, String> existingHeaders) {
+			this.headers = new LinkedHashMap<>(existingHeaders);
+		}
+
+		public ModifiedHeaders removeReqBundle(String... toRemove) {
+			return removeXXX(Constants.REQUIRE_BUNDLE, toRemove);
+		}
+
+		public ModifiedHeaders removeImpPkg(String... toRemove) {
+			return removeXXX(Constants.IMPORT_PACKAGE, toRemove);
+		}
+
+		private ModifiedHeaders removeXXX(String header, String... toRemove) {
+			String headerUnparsed = headers.get(header);
+			if (headerUnparsed == null) {
+				return this;
+			}
+			List<String> headerList = Solstice.parseManifestHeaderSimple(headerUnparsed);
+			headerList.removeAll(Arrays.asList(toRemove));
+			headers.put(header, headerList.stream().collect(Collectors.joining(",")));
+			return this;
+		}
+
+		public Optional<Map<String, String>> headers() {
+			return Optional.of(headers);
+		}
+	}
 
 	public static void main(String[] args) throws InvalidSyntaxException, BundleException {
 		System.setProperty(SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "INFO");
@@ -37,7 +83,7 @@ public class IdeMainTest {
 			SolsticeInit init = new SolsticeInit();
 			context = Solstice.initialize(init);
 		} else {
-			Atomos atomos = Atomos.newAtomos();
+			Atomos atomos = Atomos.newAtomos(IdeMainTest::headerProvider);
 			// Set atomos.content.install to false to prevent automatic bundle installation
 			Framework framework = atomos.newFramework(Map.of("atomos.content.install", "false"));
 			// framework must be initialized before any bundles can be installed
@@ -49,17 +95,26 @@ public class IdeMainTest {
 				bundles.add(content.install());
 			}
 			for (Bundle b : bundles) {
-				System.out.println("b " + b.getSymbolicName());
 				try {
-					b.start();
+					if (b.getHeaders().get("Fragment-Host") == null) {
+						b.start();
+					}
 				} catch (BundleException e) {
+					System.err.println("BUNDLE " + b.getSymbolicName());
+					e.printStackTrace();
 					if (e.getMessage() == null) {
-						System.out.println("  problem: " + e.getClass());
+						System.err.println("  " + e.getClass());
 					} else {
 						String[] lines = e.getMessage().split("\n");
-						System.out.println("  problem: " + lines[0]);
+						System.err.println("  " + lines[0]);
 						for (int i = 1; i < Math.min(5, lines.length); ++i) {
-							System.out.println("    " + lines[i]);
+							System.err.println("  " + lines[i]);
+						}
+						var headers = b.getHeaders();
+						var keys = headers.keys();
+						while (keys.hasMoreElements()) {
+							var key = keys.nextElement();
+							System.err.println("  HEADER " + key + " = " + headers.get(key));
 						}
 					}
 				}
