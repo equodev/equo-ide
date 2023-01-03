@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import javax.swing.text.html.Option;
 import org.apache.felix.atomos.Atomos;
 import org.apache.felix.atomos.AtomosContent;
 import org.osgi.framework.Bundle;
@@ -37,10 +36,10 @@ public class IdeMainTest {
 	private static Optional<Map<String, String>> headerProvider(
 			String location, Map<String, String> existingHeaders) {
 		return new ModifiedHeaders(existingHeaders)
-				.removeReqBundle("org.junit")
-//				.removeImpPkg("org.junit")
+				.removeAll(Constants.REQUIRE_CAPABILITY)
+				.removeFrom(Constants.REQUIRE_BUNDLE, "org.junit")
+				.removeFrom(Constants.IMPORT_PACKAGE, "kotlin")
 				.headers();
-//		return Optional.empty();
 	}
 
 	static class ModifiedHeaders {
@@ -50,23 +49,24 @@ public class IdeMainTest {
 			this.headers = new LinkedHashMap<>(existingHeaders);
 		}
 
-		public ModifiedHeaders removeReqBundle(String... toRemove) {
-			return removeXXX(Constants.REQUIRE_BUNDLE, toRemove);
+		public ModifiedHeaders removeAll(String header) {
+			headers.remove(header);
+			return this;
 		}
 
-		public ModifiedHeaders removeImpPkg(String... toRemove) {
-			return removeXXX(Constants.IMPORT_PACKAGE, toRemove);
-		}
-
-		private ModifiedHeaders removeXXX(String header, String... toRemove) {
+		private ModifiedHeaders removeFrom(String header, String... toRemove) {
 			String headerUnparsed = headers.get(header);
 			if (headerUnparsed == null) {
 				return this;
 			}
 			List<String> headerList = Solstice.parseManifestHeaderSimple(headerUnparsed);
 			headerList.removeAll(Arrays.asList(toRemove));
-			headers.put(header, headerList.stream().collect(Collectors.joining(",")));
-			return this;
+			if (headerList.isEmpty()) {
+				return removeAll(header);
+			} else {
+				headers.put(header, headerList.stream().collect(Collectors.joining(",")));
+				return this;
+			}
 		}
 
 		public Optional<Map<String, String>> headers() {
