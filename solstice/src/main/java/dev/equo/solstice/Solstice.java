@@ -875,15 +875,31 @@ public class Solstice extends ServiceRegistry {
 	/** Parse out a manifest header, and ignore the versions */
 	static List<String> parseManifestHeaderSimple(String in) {
 		String[] bundlesAndVersions = in.split(",");
+		List<String> attrs = new ArrayList<>();
 		List<String> required = new ArrayList<>(bundlesAndVersions.length);
 		for (String s : bundlesAndVersions) {
+			attrs.clear();
 			int attrDelim = s.indexOf(';');
 			if (attrDelim == -1) {
 				attrDelim = s.length();
+			} else {
+				int start = attrDelim;
+				while (start < s.length()) {
+					int next = s.indexOf(';', start + 1);
+					if (next == -1) {
+						next = s.length();
+					}
+					attrs.add(s.substring(start + 1, next).trim());
+					start = next;
+				}
 			}
-			String bundle = s.substring(0, attrDelim);
-			if (bundle.indexOf('"') == -1) {
-				required.add(bundle.trim());
+			if (attrs.contains("resolution:=optional")) {
+				// skip everything optional
+				continue;
+			}
+			String simple = s.substring(0, attrDelim);
+			if (simple.indexOf('"') == -1) {
+				required.add(simple.trim());
 			}
 		}
 		return required;
