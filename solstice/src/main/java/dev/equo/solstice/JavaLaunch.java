@@ -13,6 +13,7 @@
  *******************************************************************************/
 package dev.equo.solstice;
 
+import com.diffplug.common.swt.os.OS;
 import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -21,7 +22,9 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -31,11 +34,48 @@ import java.util.zip.ZipOutputStream;
  *
  * <p>https://discuss.gradle.org/t/javaexec-fails-for-long-classpaths-on-windows/15266
  */
-class JavaExecWinFriendly {
-	public static final String LONG_CLASSPATH_JAR_PREFIX = "long-classpath";
+public class JavaLaunch {
+	public static int launch(boolean sameJVM, String mainClass, Iterable<File> cp, String... args)
+			throws IOException, InterruptedException {
+		String javaHome = System.getProperty("java.home");
+		String javaBin = javaHome + File.separator + "bin" + File.separator + "java";
+		String javaCmd;
+		if (new File(javaBin).exists()) {
+			javaCmd = javaBin;
+		} else {
+			javaCmd = "java";
+		}
+
+		File classpathJar = JavaLaunch.toJarWithClasspath(cp);
+		classpathJar.deleteOnExit();
+
+		List<String> command = new ArrayList<>();
+		command.add(javaCmd);
+		if (OS.getRunning().isMac()) {
+			command.add("-XstartOnFirstThread");
+		}
+		command.add("-classpath");
+		command.add(classpathJar.getAbsolutePath());
+		command.add(mainClass);
+		for (var arg : args) {
+			command.add(arg);
+		}
+
+		if (sameJVM) {
+			var builder = new ProcessBuilder(command);
+			builder.inheritIO();
+			var process = builder.start();
+			int exitCode = process.waitFor();
+			return exitCode;
+		} else {
+			throw new IllegalArgumentException("TODO: implement launching in separate JVM");
+		}
+	}
+
+	private static final String LONG_CLASSPATH_JAR_PREFIX = "long-classpath";
 
 	/** Creates a jar with a Class-Path entry to workaround the windows classpath limitation. */
-	static File toJarWithClasspath(Iterable<File> files) throws IOException {
+	private static File toJarWithClasspath(Iterable<File> files) throws IOException {
 		File jarFile = File.createTempFile(LONG_CLASSPATH_JAR_PREFIX, ".jar");
 		try (ZipOutputStream zip =
 				new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(jarFile)))) {
