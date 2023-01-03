@@ -66,8 +66,20 @@ public class JavaLaunch {
 		if (sameJVM) {
 			return launchAndInheritIO(null, command);
 		} else {
-			throw new IllegalArgumentException("TODO: implement launching in separate JVM");
+			if (OS.getNative().isWindows()) {
+				return launchAndInheritIO(null, Arrays.asList("cmd", "/c", "start", quoteAll(command)));
+			} else {
+				return launchAndInheritIO(null, Arrays.asList("/bin/sh", "-c", quoteAll(command)));
+			}
 		}
+	}
+
+	private static String quoteAll(List<String> args) {
+		return args.stream().map(JavaLaunch::quote).collect(Collectors.joining(" "));
+	}
+
+	private static String quote(String arg) {
+		return arg.contains(" ") ? "\"" + arg + "\"" : arg;
 	}
 
 	public static int launchAndInheritIO(File cwd, List<String> args)
