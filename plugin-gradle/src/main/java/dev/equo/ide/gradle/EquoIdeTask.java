@@ -13,6 +13,7 @@
  *******************************************************************************/
 package dev.equo.ide.gradle;
 
+import dev.equo.solstice.JavaLaunch;
 import dev.equo.solstice.NestedJars;
 import dev.equo.solstice.p2.P2Client;
 import dev.equo.solstice.p2.P2Query;
@@ -77,8 +78,10 @@ public abstract class EquoIdeTask extends DefaultTask {
 						.collect(Collectors.toList());
 		var nestedDefs = getObjectFactory().fileCollection().from(nestedJars);
 
-		var result =
-				NestedJars.javaExec(
+		boolean sameJVM = initOnly;
+		var exitCode =
+				JavaLaunch.launch(
+						sameJVM,
 						"dev.equo.solstice.IdeMain",
 						p2AndMavenDeps.plus(nestedDefs),
 						"-installDir",
@@ -86,6 +89,8 @@ public abstract class EquoIdeTask extends DefaultTask {
 						"-initOnly",
 						Boolean.toString(initOnly),
 						"-Dorg.slf4j.simpleLogger.defaultLogLevel=INFO");
-		System.out.println(result);
+		if (sameJVM) {
+			System.out.println("exit code: " + exitCode);
+		}
 	}
 }

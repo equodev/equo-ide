@@ -14,6 +14,7 @@
 package dev.equo.ide.maven;
 
 import com.diffplug.common.swt.os.SwtPlatform;
+import dev.equo.solstice.JavaLaunch;
 import dev.equo.solstice.NestedJars;
 import dev.equo.solstice.p2.JdtSetup;
 import dev.equo.solstice.p2.P2Client;
@@ -77,6 +78,8 @@ public class LaunchMojo extends AbstractMojo {
 
 			var workspaceRegistry = WorkspaceRegistry.instance();
 			var workspaceDir = workspaceRegistry.workspaceDir(baseDir);
+			workspaceRegistry.clean();
+
 			var session = new P2Session();
 			try (var client = new P2Client()) {
 				if (release == null) {
@@ -119,16 +122,20 @@ public class LaunchMojo extends AbstractMojo {
 				files.add(nested.getValue());
 			}
 
-			String result =
-					NestedJars.javaExec(
+			boolean sameJVM = initOnlyTrue;
+			var exitCode =
+					JavaLaunch.launch(
+							sameJVM,
 							"dev.equo.solstice.IdeMain",
 							files,
 							"-installDir",
 							workspaceDir.getAbsolutePath(),
 							"-initOnly",
-							Boolean.toString(initOnlyTrue));
-			System.out.println(result);
-			workspaceRegistry.clean();
+							Boolean.toString(initOnlyTrue),
+							"-Dorg.slf4j.simpleLogger.defaultLogLevel=INFO");
+			if (sameJVM) {
+				System.out.println("exit code: " + exitCode);
+			}
 		} catch (DependencyResolutionException | IOException | InterruptedException e) {
 			throw new RuntimeException(e);
 		}
