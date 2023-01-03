@@ -67,7 +67,7 @@ public class EquoIdeTest extends GradleHarness {
 						"}");
 		runAndAssert("equoIde", "--init-only", "--stacktrace")
 				.contains("exit code: 0")
-				.matches("(?s)(.*)stdout: Loaded (\\d+) bundles(.*)");
+				.matches("(?s)(.*)Loaded (\\d+) bundles(.*)");
 	}
 
 	@Test

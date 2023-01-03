@@ -19,7 +19,9 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStreamWriter;
+import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -62,13 +64,41 @@ public class JavaLaunch {
 		}
 
 		if (sameJVM) {
-			var builder = new ProcessBuilder(command);
-			builder.inheritIO();
-			var process = builder.start();
+			var process = new ProcessBuilder(command).start();
+			var outPumper = new StreamPumper(process.getInputStream(), System.out);
+			var errPumper = new StreamPumper(process.getErrorStream(), System.err);
 			int exitCode = process.waitFor();
+			process.getOutputStream().flush();
+			outPumper.join();
+			errPumper.join();
 			return exitCode;
 		} else {
 			throw new IllegalArgumentException("TODO: implement launching in separate JVM");
+		}
+	}
+
+	static class StreamPumper extends Thread {
+		private final InputStream in;
+		private final PrintStream out;
+
+		private StreamPumper(InputStream in, PrintStream out) {
+			this.in = in;
+			this.out = out;
+			start();
+		}
+
+		@Override
+		public void run() {
+			byte[] buf = new byte[1024];
+			try {
+				int numRead;
+				while ((numRead = in.read(buf)) != -1) {
+					out.write(buf, 0, numRead);
+					out.flush();
+				}
+			} catch (IOException e) {
+				throw Unchecked.wrap(e);
+			}
 		}
 	}
 
