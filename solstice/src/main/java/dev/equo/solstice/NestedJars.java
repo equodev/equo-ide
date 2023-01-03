@@ -13,7 +13,6 @@
  *******************************************************************************/
 package dev.equo.solstice;
 
-import com.diffplug.common.swt.os.OS;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -51,40 +50,6 @@ public abstract class NestedJars {
 		var jarConnection = (JarURLConnection) url.openConnection();
 		var manifest = jarConnection.getManifest();
 		return manifest.getMainAttributes().getValue("Implementation-Version");
-	}
-
-	public static String javaExec(String mainClass, Iterable<File> cp, String... args)
-			throws IOException, InterruptedException {
-		String javaHome = System.getProperty("java.home");
-		String javaBin = javaHome + File.separator + "bin" + File.separator + "java";
-		String javaCmd;
-		if (new File(javaBin).exists()) {
-			javaCmd = javaBin;
-		} else {
-			javaCmd = "java";
-		}
-
-		File classpathJar = JavaExecWinFriendly.toJarWithClasspath(cp);
-		classpathJar.deleteOnExit();
-
-		List<String> command = new ArrayList<>();
-		command.add(javaCmd);
-		if (OS.getRunning().isMac()) {
-			command.add("-XstartOnFirstThread");
-		}
-		command.add("-classpath");
-		command.add(classpathJar.getAbsolutePath());
-		command.add(mainClass);
-		for (var arg : args) {
-			command.add(arg);
-		}
-
-		return new ProcessRunner().exec(command).toString();
-	}
-
-	public static String consoleExec(File rootDir, String... args)
-			throws IOException, InterruptedException {
-		return new String(new ProcessRunner(rootDir).exec(args).stdOut());
 	}
 
 	public static final String DIR = "nested-jars";
