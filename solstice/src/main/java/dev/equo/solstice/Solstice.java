@@ -37,6 +37,7 @@ import java.util.function.Function;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import javax.annotation.Nullable;
@@ -131,6 +132,17 @@ public class Solstice extends ServiceRegistry {
 				}
 			}
 		}
+		// TODO: this is just to get info to help Atomos startup
+		System.out.print("MISSING_PACKAGES=");
+		System.out.println(
+				init.packages.missing.keySet().stream()
+						.map(str -> "\"" + str + "\"")
+						.collect(Collectors.joining(", ")));
+		System.out.print("MISSING_BUNDLES=");
+		System.out.println(
+				init.bundles.missing.keySet().stream()
+						.map(str -> "\"" + str + "\"")
+						.collect(Collectors.joining(", ")));
 	}
 
 	private void addToWorkbenchQueue(ShimBundle bundle) {
