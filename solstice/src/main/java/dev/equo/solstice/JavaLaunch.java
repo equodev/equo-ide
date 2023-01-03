@@ -26,6 +26,7 @@ import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
@@ -136,7 +137,12 @@ public class JavaLaunch {
 							new BufferedWriter(new OutputStreamWriter(zip, StandardCharsets.UTF_8)))) {
 				pw.println("Manifest-Version: 1.0");
 				StringBuilder bufferClassPath = new StringBuilder("Class-Path: ");
-				for (File file : files) {
+				List<File> sortedCopy = new ArrayList<>();
+				files.forEach(sortedCopy::add);
+				sortedCopy.sort(
+						Comparator.comparing(File::getName)
+								.reversed()); // TODO: reversed() fixes a signing problem
+				for (File file : sortedCopy) {
 					if (bufferClassPath.length() != 0) {
 						bufferClassPath.append(' ');
 					}
