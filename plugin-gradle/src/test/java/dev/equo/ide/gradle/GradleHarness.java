@@ -121,7 +121,6 @@ public class GradleHarness {
 		return GradleRunner.create()
 				.withGradleVersion(oldestGradleForJre())
 				.withProjectDir(rootFolder())
-				.withTestKitDir(rootFolder())
 				.withPluginClasspath();
 	}
 
