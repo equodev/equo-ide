@@ -64,17 +64,26 @@ public class JavaLaunch {
 		}
 
 		if (sameJVM) {
-			var process = new ProcessBuilder(command).start();
-			var outPumper = new StreamPumper(process.getInputStream(), System.out);
-			var errPumper = new StreamPumper(process.getErrorStream(), System.err);
-			int exitCode = process.waitFor();
-			process.getOutputStream().flush();
-			outPumper.join();
-			errPumper.join();
-			return exitCode;
+			return launchAndInheritIO(null, command);
 		} else {
 			throw new IllegalArgumentException("TODO: implement launching in separate JVM");
 		}
+	}
+
+	public static int launchAndInheritIO(File cwd, List<String> args)
+			throws IOException, InterruptedException {
+		var builder = new ProcessBuilder(args);
+		if (cwd != null) {
+			builder.directory(cwd);
+		}
+		var process = builder.start();
+		var outPumper = new StreamPumper(process.getInputStream(), System.out);
+		var errPumper = new StreamPumper(process.getErrorStream(), System.err);
+		int exitCode = process.waitFor();
+		process.getOutputStream().flush();
+		outPumper.join();
+		errPumper.join();
+		return exitCode;
 	}
 
 	static class StreamPumper extends Thread {

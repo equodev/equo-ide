@@ -13,13 +13,15 @@
  *******************************************************************************/
 package dev.equo.ide.maven;
 
-import dev.equo.solstice.NestedJars;
+import dev.equo.solstice.JavaLaunch;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.JarURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.Arrays;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 import org.assertj.core.api.Assertions;
@@ -31,25 +33,26 @@ public class MavenPluginTest {
 	@Test
 	public void integrationTest() throws IOException, InterruptedException {
 		setFile("pom.xml").toResource("/dev/equo/ide/maven/pom.xml");
-		var output =
-				NestedJars.consoleExec(
-						rootFolder(),
-						"mvn",
-						"dev.equo.ide:equo-ide-maven-plugin:" + pluginVersion() + ":launch",
-						"-DinitOnly=true");
-		Assertions.assertThat(output).contains("exit code: 0");
-		Assertions.assertThat(output).matches("(?s)(.*)stdout: Loaded (\\d+) bundles(.*)");
+		var result =
+				new ProcessRunner(rootFolder())
+						.exec(
+								"mvn",
+								"dev.equo.ide:equo-ide-maven-plugin:" + pluginVersion() + ":launch",
+								"-DinitOnly=true");
+		System.out.println(new String(result.stdOut(), StandardCharsets.UTF_8));
+		Assertions.assertThat(result.exitCode()).isEqualTo(0);
+		Assertions.assertThat(result.stdOut())
+				.asString(StandardCharsets.UTF_8)
+				.matches("(?s)(.*)Loaded (\\d+) bundles(.*)");
 	}
 
 	@Disabled
 	@Test
 	public void integrationTestReal() throws IOException, InterruptedException {
 		setFile("pom.xml").toResource("/dev/equo/ide/maven/pom.xml");
-		var output =
-				NestedJars.consoleExec(
-						rootFolder(),
-						"mvn",
-						"dev.equo.ide:equo-ide-maven-plugin:" + pluginVersion() + ":launch");
+		JavaLaunch.launchAndInheritIO(
+				rootFolder(),
+				Arrays.asList("mvn", "dev.equo.ide:equo-ide-maven-plugin:" + pluginVersion() + ":launch"));
 	}
 
 	private static String pluginVersion() throws IOException {
