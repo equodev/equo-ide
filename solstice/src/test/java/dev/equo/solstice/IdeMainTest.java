@@ -208,7 +208,13 @@ public class IdeMainTest {
 		} else {
 			Atomos atomos = Atomos.newAtomos(IdeMainTest::headerProvider);
 			// Set atomos.content.install to false to prevent automatic bundle installation
-			Framework framework = atomos.newFramework(Map.of("atomos.content.install", "false"));
+			Framework framework =
+					atomos.newFramework(
+							Map.of(
+									"atomos.content.install",
+									"false",
+									Constants.FRAMEWORK_STORAGE_CLEAN,
+									Constants.FRAMEWORK_STORAGE_CLEAN_ONFIRSTINIT));
 			// framework must be initialized before any bundles can be installed
 			framework.init();
 			List<Bundle> bundles = new ArrayList<>();
