@@ -18,11 +18,11 @@ import dev.equo.solstice.NestedJars;
 import dev.equo.solstice.p2.JdtSetup;
 import dev.equo.solstice.p2.P2Client;
 import dev.equo.solstice.p2.P2Session;
+import dev.equo.solstice.p2.P2Unit;
 import dev.equo.solstice.p2.WorkspaceRegistry;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.apache.maven.plugin.AbstractMojo;
@@ -61,7 +61,8 @@ public class LaunchMojo extends AbstractMojo {
 	@Parameter(defaultValue = "${project.remotePluginRepositories}", required = true, readonly = true)
 	private List<RemoteRepository> repositories;
 
-	private final static List<Exclusion> EXCLUDE_ALL_TRANSITIVES = Collections.singletonList(new Exclusion("*", "*", "*", "*"));
+	private static final List<Exclusion> EXCLUDE_ALL_TRANSITIVES =
+			Collections.singletonList(new Exclusion("*", "*", "*", "*"));
 
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
@@ -93,8 +94,10 @@ public class LaunchMojo extends AbstractMojo {
 			} else {
 				JdtSetup.mavenCoordinate(query, session);
 			}
+
 			for (var coordinate : query.getJarsOnMavenCentral()) {
-				deps.add(new Dependency(new DefaultArtifact(coordinate), null, null, EXCLUDE_ALL_TRANSITIVES));
+				deps.add(
+						new Dependency(new DefaultArtifact(coordinate), null, null, EXCLUDE_ALL_TRANSITIVES));
 			}
 			CollectRequest collectRequest = new CollectRequest(deps, null, repositories);
 			DependencyRequest dependencyRequest = new DependencyRequest(collectRequest, null);
@@ -104,6 +107,11 @@ public class LaunchMojo extends AbstractMojo {
 			List<File> files = new ArrayList<>();
 			for (var artifact : dependencyResult.getArtifactResults()) {
 				files.add(artifact.getArtifact().getFile());
+			}
+			try (var client = new P2Client()) {
+				for (P2Unit unit : query.getJarsNotOnMavenCentral()) {
+					files.add(client.download(unit));
+				}
 			}
 
 			var nestedJarFolder = new File(workspaceDir, NestedJars.DIR);
