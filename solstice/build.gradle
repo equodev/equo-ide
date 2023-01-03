@@ -115,3 +115,11 @@ eclipseMavenCentral {
 		constrainTransitivesToThisRelease()
 	}
 }
+
+tasks.register('IdeMainTest', JavaExec) {
+	mainClass = 'dev.equo.solstice.IdeMainTest'
+	classpath = sourceSets.test.runtimeClasspath
+	if (com.diffplug.common.swt.os.OS.getNative().isMac()) {
+		jvmArgs = ['-XstartOnFirstThread']
+	}
+}
