@@ -58,10 +58,6 @@ public class SolsticeInit {
 		}
 	}
 
-	public List<String> startOrder() {
-		return Arrays.asList();
-	}
-
 	public Map<String, List<String>> additionalDeps() {
 		var additional = new TreeMap<String, List<String>>();
 		additional.put(

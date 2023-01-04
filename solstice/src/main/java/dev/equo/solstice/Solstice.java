@@ -150,20 +150,8 @@ public class Solstice extends ServiceRegistry {
 		while (manifests.hasMoreElements()) {
 			bundles.add(new ShimBundle(manifests.nextElement()));
 		}
-		List<String> startOrder = init.startOrder();
 		bundles.sort(
 				(o1, o2) -> {
-					int start1 = startOrder.indexOf(o1.symbolicName);
-					int start2 = startOrder.indexOf(o2.symbolicName);
-					if (start1 != -1 || start2 != -1) {
-						if (start1 == -1) {
-							start1 = Integer.MAX_VALUE;
-						}
-						if (start2 == -1) {
-							start2 = Integer.MAX_VALUE;
-						}
-						return start1 - start2;
-					}
 					if ((o1.symbolicName != null) == (o2.symbolicName != null)) {
 						// sort based on name for the same "types"
 						return o1.toString().compareTo(o2.toString());
