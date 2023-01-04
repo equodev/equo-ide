@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.PropertyResourceBundle;
@@ -76,10 +75,6 @@ public class SolsticeInit {
 
 	public File nestedJarFolder() {
 		return new File(installDir, NestedJars.DIR);
-	}
-
-	public List<String> okayIfActivatorFails() {
-		return Collections.emptyList();
 	}
 
 	public List<String> requiresWorkbench() {

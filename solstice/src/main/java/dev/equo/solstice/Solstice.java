@@ -100,11 +100,7 @@ public class Solstice extends ServiceRegistry {
 			try {
 				bundle.tryActivate();
 			} catch (ActivatorException e) {
-				if (init.okayIfActivatorFails().contains(bundle.getSymbolicName())) {
-					logger.warn(e.bundle + " activator exception but okayIfActivatorFails", e);
-				} else {
-					throw Unchecked.wrap(e);
-				}
+				throw Unchecked.wrap(e);
 			}
 		}
 		init.bundlePolicy().initFinished();
@@ -124,11 +120,7 @@ public class Solstice extends ServiceRegistry {
 			try {
 				bundle.tryActivate();
 			} catch (ActivatorException e) {
-				if (init.okayIfActivatorFails().contains(bundle.getSymbolicName())) {
-					logger.warn(e.bundle + " activator exception but okayIfActivatorFails", e);
-				} else {
-					throw Unchecked.wrap(e);
-				}
+				throw Unchecked.wrap(e);
 			}
 		}
 	}
@@ -664,11 +656,7 @@ public class Solstice extends ServiceRegistry {
 					var bundleActivator = c.newInstance();
 					bundleActivator.start(this);
 				} catch (Exception e) {
-					if (init.okayIfActivatorFails().contains(getSymbolicName())) {
-						logger.warn(this + " Bundle-Activator failed but okayIfActivatorFails", e);
-					} else {
-						throw new ActivatorException(this, e);
-					}
+					throw new ActivatorException(this, e);
 				}
 			}
 			state = ACTIVE;
