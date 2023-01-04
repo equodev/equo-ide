@@ -13,8 +13,10 @@
  *******************************************************************************/
 package dev.equo.solstice;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -23,16 +25,18 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import org.apache.felix.atomos.Atomos;
 import org.apache.felix.atomos.AtomosContent;
+import org.eclipse.osgi.service.urlconversion.URLConverter;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
 import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.framework.ServiceReference;
 import org.osgi.framework.launch.Framework;
 import org.slf4j.simple.SimpleLogger;
 
 public class IdeMainTest {
-	static boolean useSolstice = false;
+	static boolean useSolstice = true;
 
 	private static Optional<Map<String, String>> headerProvider(
 			String location, Map<String, String> existingHeaders) {
@@ -195,6 +199,34 @@ public class IdeMainTest {
 			// The installed bundles will not actually activate until the framework is started
 			framework.start();
 			context = framework.getBundleContext();
+
+			// Atomos is backing our bundles with ConnectBundleFile
+			// versus Eclipse which backs them with FileBundleEntry
+			// and that causes problems in org.eclipse.core.internal.runtime.PlatformURLConverter
+			// We'll workaround for now with this surgery
+			{
+				Collection<ServiceReference<URLConverter>> converters =
+						context.getServiceReferences(URLConverter.class, "(protocol=platform)");
+				for (ServiceReference<URLConverter> toRemove : converters) {
+					((org.eclipse.osgi.internal.serviceregistry.ServiceReferenceImpl) toRemove)
+							.getRegistration()
+							.unregister();
+				}
+				context.registerService(
+						URLConverter.class,
+						new URLConverter() {
+							@Override
+							public URL toFileURL(URL url) {
+								return url;
+							}
+
+							@Override
+							public URL resolve(URL url) {
+								return url;
+							}
+						},
+						Dictionaries.of("protocol", "platform"));
+			}
 		}
 		IdeMainUi.main(context);
 	}
