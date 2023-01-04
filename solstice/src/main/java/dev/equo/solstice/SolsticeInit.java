@@ -39,8 +39,8 @@ import org.osgi.service.packageadmin.PackageAdmin;
 /** Controls the initialization of the {@link Solstice} runtime. */
 public class SolsticeInit {
 	private File installDir;
-	final MissingPolicy.Permissive packages = new MissingPolicy.Permissive("packages");
-	final MissingPolicy.Permissive bundles = new MissingPolicy.Permissive("bundles");
+	private final MissingPolicy packages = new MissingPolicy.Permissive("packages");
+	private final MissingPolicy bundles = new MissingPolicy.Permissive("bundles");
 
 	public SolsticeInit(File installDir) {
 		this.installDir = installDir;
