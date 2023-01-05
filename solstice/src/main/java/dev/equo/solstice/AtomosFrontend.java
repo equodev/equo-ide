@@ -18,7 +18,9 @@ import java.net.URL;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 import org.apache.felix.atomos.Atomos;
 import org.eclipse.osgi.service.datalocation.Location;
@@ -64,7 +66,31 @@ public class AtomosFrontend {
 				return Optional.empty();
 			}
 			var manifest = bySymbolicName.get(symbolicName).get(0);
+			if (!manifest.getHeadersOriginal().equals(existingHeaders)) {
+				System.out.println("SURPRISE IN " + location);
+				debug(manifest.getHeadersOriginal(), existingHeaders);
+			}
 			return Optional.of(atomosHeaders(manifest));
+		}
+
+		private void debug(Map<String, String> before, Map<String, String> after) {
+			var sortedBefore = new TreeSet<>(before.keySet());
+			for (var key : sortedBefore) {
+				var valBefore = before.get(key);
+				var valAfter = after.get(key);
+				if (Objects.equals(valBefore, valAfter)) {
+					System.out.println(key + ": SAME");
+				} else {
+					System.out.println(key + " B: " + valBefore);
+					System.out.println(key + " A: " + valAfter);
+				}
+			}
+			var sortedAfter = new TreeSet<>(after.keySet());
+			sortedAfter.removeAll(sortedBefore);
+			for (var key : sortedAfter) {
+				System.out.println(key + " B: " + null);
+				System.out.println(key + " A: " + after.get(key));
+			}
 		}
 
 		public Map<String, String> atomosHeaders(SolsticeManifest manifest) {
