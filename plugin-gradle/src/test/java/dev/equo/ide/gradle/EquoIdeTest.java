@@ -29,6 +29,12 @@ public class EquoIdeTest extends GradleHarness {
 	}
 
 	@Test
+	public void help(Expect expect) throws IOException {
+		setFile("build.gradle").toContent("plugins { id 'dev.equo.ide' }");
+		run("-q", "help", "--task", "equoIde").snapshot(expect);
+	}
+
+	@Test
 	public void p2repoArgCheck(Expect expect) throws IOException {
 		setFile("build.gradle")
 				.toLines(
