@@ -15,14 +15,11 @@ package dev.equo.solstice;
 
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import org.apache.felix.atomos.Atomos;
 import org.apache.felix.atomos.AtomosContent;
 import org.eclipse.osgi.service.urlconversion.URLConverter;
@@ -33,116 +30,12 @@ import org.osgi.framework.Constants;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.launch.Framework;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.slf4j.simple.SimpleLogger;
 
 public class IdeMainTest {
-	static boolean useSolstice = true;
-
-	private static Optional<Map<String, String>> headerProvider(
-			String location, Map<String, String> existingHeaders) {
-		return new ModifiedHeaders(existingHeaders)
-				.removeAll(Constants.REQUIRE_CAPABILITY)
-				.removeFrom(Constants.REQUIRE_BUNDLE, "slf4j.api", "system.bundle")
-				.removeFrom(
-						Constants.IMPORT_PACKAGE,
-						"java.awt",
-						"java.beans",
-						"java.io",
-						"java.lang",
-						"java.lang.annotation",
-						"java.lang.invoke",
-						"java.lang.management",
-						"java.lang.module",
-						"java.lang.ref",
-						"java.lang.reflect",
-						"java.net",
-						"java.nio",
-						"java.nio.channels",
-						"java.nio.charset",
-						"java.nio.file",
-						"java.nio.file.attribute",
-						"java.security",
-						"java.security.cert",
-						"java.sql",
-						"java.text",
-						"java.time",
-						"java.time.format",
-						"java.time.temporal",
-						"java.util",
-						"java.util.concurrent",
-						"java.util.concurrent.atomic",
-						"java.util.concurrent.locks",
-						"java.util.function",
-						"java.util.jar",
-						"java.util.regex",
-						"java.util.stream",
-						"java.util.zip",
-						"javax.crypto",
-						"javax.imageio",
-						"javax.naming",
-						"javax.naming.ldap",
-						"javax.net.ssl",
-						"javax.security.auth.callback",
-						"javax.security.auth.login",
-						"javax.security.auth.spi",
-						"javax.xml.datatype",
-						"javax.xml.namespace",
-						"javax.xml.parsers",
-						"javax.xml.transform",
-						"javax.xml.transform.dom",
-						"javax.xml.transform.stream",
-						"kotlin.comparisons",
-						"kotlin.coroutines",
-						"kotlin.coroutines.intrinsics",
-						"kotlin.coroutines.jvm.internal",
-						"kotlin.io",
-						"kotlin.sequences",
-						"kotlin.text",
-						"org.apache.commons.beanutils",
-						"org.eclipse.equinox.internal.p2.jarprocessor",
-						"org.eclipse.equinox.jsp.jasper",
-						"org.eclipse.jetty.jmx",
-						"org.ietf.jgss",
-						"org.jdom",
-						"org.jdom.input",
-						"org.w3c.dom.css",
-						"org.w3c.dom.views",
-						"org.xml.sax.ext",
-						"org.xml.sax.helpers")
-				.headers();
-	}
-
-	static class ModifiedHeaders {
-		final Map<String, String> headers;
-
-		ModifiedHeaders(Map<String, String> existingHeaders) {
-			this.headers = new LinkedHashMap<>(existingHeaders);
-		}
-
-		public ModifiedHeaders removeAll(String header) {
-			headers.remove(header);
-			return this;
-		}
-
-		private ModifiedHeaders removeFrom(String header, String... toRemove) {
-			String headerUnparsed = headers.get(header);
-			if (headerUnparsed == null) {
-				return this;
-			}
-			List<String> headerList = Solstice.parseManifestHeaderSimple(headerUnparsed);
-			headerList.removeAll(Arrays.asList(toRemove));
-			if (headerList.isEmpty()) {
-				return removeAll(header);
-			} else {
-				headers.put(header, headerList.stream().collect(Collectors.joining(",")));
-				return this;
-			}
-		}
-
-		public Optional<Map<String, String>> headers() {
-			return Optional.of(headers);
-		}
-	}
+	static boolean useSolstice = false;
 
 	public static void main(String[] args) throws InvalidSyntaxException, BundleException {
 		System.setProperty(SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "INFO");
@@ -153,7 +46,36 @@ public class IdeMainTest {
 			SolsticeInit init = new SolsticeInit();
 			context = Solstice.initialize(init);
 		} else {
-			Atomos atomos = Atomos.newAtomos(IdeMainTest::headerProvider);
+			Logger logger = LoggerFactory.getLogger(Solstice.class);
+			var bundleSet = SolsticeManifest.discoverBundles();
+			bundleSet.warnAndModifyManifestsToFix(logger);
+			var bySymbolicName = bundleSet.bySymbolicName();
+			Atomos.HeaderProvider headerProvider =
+					new Atomos.HeaderProvider() {
+						@Override
+						public Optional<Map<String, String>> apply(
+								String location, Map<String, String> existingHeaders) {
+							var symbolicNameHeader = existingHeaders.get(Constants.BUNDLE_SYMBOLICNAME);
+							if (symbolicNameHeader == null) {
+								// represents a jar that didn't have OSGi metadata. no problem!
+								return Optional.empty();
+							}
+							String symbolicName =
+									SolsticeManifest.parseManifestHeaderSimple(
+													existingHeaders.get(Constants.BUNDLE_SYMBOLICNAME))
+											.get(0);
+							var candidates = bySymbolicName.get(symbolicName);
+							if (candidates == null) {
+								if (!symbolicName.startsWith("java.") && !symbolicName.startsWith("jdk.")) {
+									logger.warn("No manifest for bundle " + symbolicName + " at " + location);
+								}
+								return Optional.empty();
+							}
+							var manifest = bySymbolicName.get(symbolicName).get(0);
+							return Optional.of(manifest.atomosHeaders());
+						}
+					};
+			Atomos atomos = Atomos.newAtomos(headerProvider);
 			// Set atomos.content.install to false to prevent automatic bundle installation
 			Framework framework =
 					atomos.newFramework(
