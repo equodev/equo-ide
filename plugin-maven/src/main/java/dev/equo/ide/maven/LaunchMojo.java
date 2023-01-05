@@ -53,6 +53,9 @@ public class LaunchMojo extends AbstractMojo {
 	@Parameter(property = "useAtomos", defaultValue = "true")
 	private boolean useAtomos;
 
+	@Parameter(property = "showConsole", defaultValue = "false")
+	private boolean showConsole;
+
 	@Parameter(property = "release")
 	private String release;
 
@@ -134,10 +137,9 @@ public class LaunchMojo extends AbstractMojo {
 				files.add(nested.getValue());
 			}
 
-			boolean inheritIO = initOnly;
 			var exitCode =
 					JavaLaunch.launch(
-							inheritIO,
+							JavaLaunch.Mode.isBlockingAndHasOwnConsole(initOnly, showConsole),
 							"dev.equo.solstice.IdeMain",
 							files,
 							"-installDir",
@@ -147,7 +149,7 @@ public class LaunchMojo extends AbstractMojo {
 							"-initOnly",
 							Boolean.toString(initOnly),
 							"-Dorg.slf4j.simpleLogger.defaultLogLevel=INFO");
-			if (inheritIO) {
+			if (initOnly) {
 				System.out.println("exit code: " + exitCode);
 			}
 		} catch (DependencyResolutionException | IOException | InterruptedException e) {
