@@ -28,7 +28,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -60,27 +59,14 @@ public class JavaLaunch {
 		command.add("-classpath");
 		command.add(classpathJar.getAbsolutePath());
 		command.add(mainClass);
-		for (var arg : args) {
-			command.add(arg);
-		}
+		command.addAll(Arrays.asList(args));
 
 		if (inheritIO) {
 			return launchAndInheritIO(null, command);
 		} else {
-			if (OS.getNative().isWindows()) {
-				return launchAndInheritIO(null, Arrays.asList("cmd", "/c", "start", quoteAll(command)));
-			} else {
-				return launchAndInheritIO(null, Arrays.asList("/bin/sh", "-c", quoteAll(command)));
-			}
+			ScriptExec.script(ScriptExec.quoteAll(command)).execSeparate();
+			return 0;
 		}
-	}
-
-	private static String quoteAll(List<String> args) {
-		return args.stream().map(JavaLaunch::quote).collect(Collectors.joining(" "));
-	}
-
-	private static String quote(String arg) {
-		return arg.contains(" ") ? "\"" + arg + "\"" : arg;
 	}
 
 	public static int launchAndInheritIO(File cwd, List<String> args)
@@ -149,8 +135,7 @@ public class JavaLaunch {
 					bufferClassPath.append(file.toURI());
 				}
 				pw.println(
-						Arrays.stream(bufferClassPath.toString().split(MATCH_CHUNKS_OF_70_CHARACTERS))
-								.collect(Collectors.joining("\n ")));
+						String.join("\n ", bufferClassPath.toString().split(MATCH_CHUNKS_OF_70_CHARACTERS)));
 			}
 		}
 		return jarFile;
