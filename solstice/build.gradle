@@ -12,6 +12,15 @@ apply from: 干.file('sonatype.gradle')
 apply plugin: 'eclipse'
 
 jar.manifest.attributes.put('Implementation-Version', spotlessChangelog.versionNext)
+spotless {
+	java {
+		custom 'AtomosFrontend', { text ->
+			if (text.contains('import org.apache.felix.atomos.') && !text.contains('class AtomosFrontend ')) {
+				throw new AssertionError("Atomos imports are only allowed within `AtomosFrontend.java`")
+			}
+		}
+	}
+}
 
 String VER_SLF4J = '2.0.6'
 
