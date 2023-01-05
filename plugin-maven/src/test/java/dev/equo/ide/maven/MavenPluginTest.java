@@ -29,16 +29,28 @@ import org.junit.jupiter.api.io.TempDir;
 
 public class MavenPluginTest {
 	@Test
-	public void integrationTest() throws IOException, InterruptedException {
+	public void integrationTestAtomos() throws IOException, InterruptedException {
+		integrationTestUseAtomos(true);
+	}
+
+	@Test
+	public void integrationTestSolstice() throws IOException, InterruptedException {
+		integrationTestUseAtomos(false);
+	}
+
+	private void integrationTestUseAtomos(boolean useAtomos)
+			throws IOException, InterruptedException {
 		setFile("pom.xml").toResource("/dev/equo/ide/maven/pom.xml");
 		var output =
 				NestedJars.consoleExec(
 						rootFolder(),
 						"mvn",
 						"dev.equo.ide:equo-ide-maven-plugin:" + pluginVersion() + ":launch",
-						"-DinitOnly=true");
+						"-DinitOnly=true",
+						"-DuseAtomos=" + useAtomos);
 		Assertions.assertThat(output).contains("exit code: 0");
 		Assertions.assertThat(output).matches("(?s)(.*)stdout: Loaded (\\d+) bundles(.*)");
+		Assertions.assertThat(output).contains(useAtomos ? "using Atomos" : "not using Atomos");
 	}
 
 	@Disabled

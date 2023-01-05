@@ -64,7 +64,11 @@ public class IdeMain {
 			context = Solstice.initialize(new SolsticeInit(installDir));
 		}
 		if (initOnly) {
-			System.out.println("Loaded " + context.getBundles().length + " bundles");
+			System.out.println(
+					"Loaded "
+							+ context.getBundles().length
+							+ " bundles "
+							+ (useAtomos ? "using Atomos" : "not using Atomos"));
 			System.exit(0);
 			return;
 		}
