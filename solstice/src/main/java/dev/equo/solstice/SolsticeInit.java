@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.PropertyResourceBundle;
@@ -39,28 +38,9 @@ import org.osgi.service.packageadmin.PackageAdmin;
 /** Controls the initialization of the {@link Solstice} runtime. */
 public class SolsticeInit {
 	private File installDir;
-	private final MissingPolicy packages = new MissingPolicy.Permissive("packages");
-	private final MissingPolicy bundles = new MissingPolicy.Permissive("bundles");
 
 	public SolsticeInit(File installDir) {
 		this.installDir = installDir;
-	}
-
-	public SolsticeInit() {
-		this(defaultDir());
-	}
-
-	private static File defaultDir() {
-		var userDir = System.getProperty("user.dir");
-		if (userDir.endsWith("equo-ide")) {
-			return new File(userDir + "/solstice/build/testSetup");
-		} else {
-			return new File(userDir + "/build/testSetup");
-		}
-	}
-
-	public List<String> startOrder() {
-		return Arrays.asList();
 	}
 
 	public Map<String, List<String>> additionalDeps() {
@@ -78,20 +58,8 @@ public class SolsticeInit {
 		return new File(installDir, NestedJars.DIR);
 	}
 
-	public List<String> okayIfActivatorFails() {
-		return Collections.emptyList();
-	}
-
 	public List<String> requiresWorkbench() {
 		return Arrays.asList("org.eclipse.debug.ui", "org.eclipse.help.ui");
-	}
-
-	public MissingPolicy bundlePolicy() {
-		return bundles;
-	}
-
-	public MissingPolicy packagePolicy() {
-		return packages;
 	}
 
 	public void bootstrapServices(Bundle systemBundle, BundleContext context) {

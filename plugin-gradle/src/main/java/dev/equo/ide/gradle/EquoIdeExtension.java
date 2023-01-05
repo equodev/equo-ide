@@ -26,12 +26,14 @@ import org.gradle.api.GradleException;
 
 /** The DSL inside the equoIde block. */
 public class EquoIdeExtension {
+	public boolean useAtomos = true;
 	private final Set<String> repos = new LinkedHashSet<>();
 	private final Set<String> targets = new LinkedHashSet<>();
 	private final LinkedHashMap<String, Action<P2Query>> filters = new LinkedHashMap<>();
 
 	private EquoIdeExtension copy() {
 		var copy = new EquoIdeExtension();
+		copy.useAtomos = useAtomos;
 		copy.repos.addAll(repos);
 		copy.targets.addAll(targets);
 		copy.filters.putAll(filters);

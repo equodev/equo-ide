@@ -106,6 +106,7 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 						equoIdeTask.configure(
 								task -> {
 									task.getQuery().set(query);
+									task.getUseAtomos().set(extension.useAtomos);
 								});
 					} catch (Exception e) {
 						throw new RuntimeException(e);

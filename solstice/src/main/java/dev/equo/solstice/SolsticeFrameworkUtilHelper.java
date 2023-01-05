@@ -27,6 +27,10 @@ public class SolsticeFrameworkUtilHelper implements FrameworkUtilHelper {
 
 	@Override
 	public Optional<Bundle> getBundle(Class<?> classFromBundle) {
+		if (owner == null) {
+			// this class is not needed when running under Atomos, otherwise this ought to be a hard error
+			return Optional.empty();
+		}
 		var domain = classFromBundle.getProtectionDomain();
 		var source = domain.getCodeSource();
 		if (source == null) {

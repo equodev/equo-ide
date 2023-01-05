@@ -22,7 +22,7 @@ public class SolsticeSmokeTest {
 	@Test
 	public void bundleIds() {
 		System.setProperty(SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "WARN");
-		var solstice = Solstice.initialize(new SolsticeInit() {});
+		var solstice = Solstice.initialize(new SolsticeInit(IdeMain.defaultDir()));
 		Assertions.assertThat(solstice.systemBundle().getBundleId()).isEqualTo(0);
 		int count = 0;
 		for (Bundle bundle : solstice.getBundles()) {

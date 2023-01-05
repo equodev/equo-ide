@@ -14,6 +14,7 @@ bin/
 tmp/
 .settings/
 .project
+.classpath
 
 # idea
 .idea/

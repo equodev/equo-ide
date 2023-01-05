@@ -15,7 +15,7 @@ OSGi provides a lot of power:
 However, this power brings a lot of complexity into the system. You can remove a lot of this complexity by imposing these constraints:
 
 - no dynamic unloading or refreshing of plugins -> less code
-- all plugins sorted and loaded on startup -> no heisenbugs caused by initialization order
+- sorted plugins -> no heisenbugs caused by initialization order
 - only one version of a class is allowed to exist in the runtime -> `Class.forName` just works 
 
 ### p2 but just for jars
@@ -27,4 +27,6 @@ The implementation in this project is only suitable for jars. It traverses depen
 The solstice p2 client can navigate p2 "categories" and "features", but it only cares about getting the jars at the end.
 
 ## Acknowledgments
-Solstice is heavily inspired by [spotless-eclipse-base](https://github.com/diffplug/spotless/tree/main/_ext/eclipse-base) by [Frank Vennemeyer](https://github.com/fvgh).
+
+- Huge thanks to [Thomas Watson](https://github.com/tjwatson) for helping us learn about and integrate the [Atomos OSGi Framework](https://github.com/apache/felix-atomos). 
+- Solstice is heavily inspired by [spotless-eclipse-base](https://github.com/diffplug/spotless/tree/main/_ext/eclipse-base) by [Frank Vennemeyer](https://github.com/fvgh).
