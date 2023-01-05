@@ -223,7 +223,7 @@ public class SolsticeManifest {
 		// if we export a package, we don't actually have to import it, that's just for letting
 		// multiple bundles define the same classes, which is a dubious feature to support
 		// https://access.redhat.com/documentation/en-us/red_hat_jboss_fuse/6.3/html/managing_osgi_dependencies/importexport
-		getPkgImports().removeAll(getPkgExports());
+		pkgImports.removeAll(pkgExports);
 	}
 
 	public String getSymbolicName() {
