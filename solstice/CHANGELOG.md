@@ -3,6 +3,10 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+### Added
+- `IdeMain` has gained a `-useAtomos true` flag which, when enabled, uses [Atomos](https://github.com/apache/felix-atomos) as a single-classloader OSGi connector to Equinox. This is used instead of the OSGi runtime which is built-in to Solstice. ([#36](https://github.com/equodev/equo-ide/pull/36))
+  - It is recommended to set `-useAtomos true` for the foreseeable future, because it has better compatibility with existing applications.
+  - For simple applications, you can experiment with `-useAtomos false`.
 
 ## [0.6.0] - 2022-12-16
 ### Added
