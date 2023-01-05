@@ -17,7 +17,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.apache.felix.atomos.Atomos;
@@ -86,36 +85,14 @@ public class IdeMainTest {
 									Constants.FRAMEWORK_STORAGE_CLEAN_ONFIRSTINIT));
 			// framework must be initialized before any bundles can be installed
 			framework.init();
-			List<Bundle> bundles = new ArrayList<>();
+			var bundles = new ArrayList<Bundle>();
 			for (AtomosContent content : atomos.getBootLayer().getAtomosContents()) {
-				// The resulting bundle will use a bundle location of
-				// "atomos:" + atomosContent.getAtomosLocation();
 				bundles.add(content.install());
 			}
 			bundles.sort(Comparator.comparing(Bundle::getSymbolicName));
 			for (Bundle b : bundles) {
-				try {
-					if (b.getHeaders().get("Fragment-Host") == null) {
-						b.start();
-					}
-				} catch (BundleException e) {
-					System.err.println("BUNDLE " + b.getSymbolicName());
-					e.printStackTrace();
-					if (e.getMessage() == null) {
-						System.err.println("  " + e.getClass());
-					} else {
-						String[] lines = e.getMessage().split("\n");
-						System.err.println("  " + lines[0]);
-						for (int i = 1; i < Math.min(5, lines.length); ++i) {
-							System.err.println("  " + lines[i]);
-						}
-						var headers = b.getHeaders();
-						var keys = headers.keys();
-						while (keys.hasMoreElements()) {
-							var key = keys.nextElement();
-							System.err.println("  HEADER " + key + " = " + headers.get(key));
-						}
-					}
+				if (b.getHeaders().get("Fragment-Host") == null) {
+					b.start();
 				}
 			}
 			// The installed bundles will not actually activate until the framework is started
