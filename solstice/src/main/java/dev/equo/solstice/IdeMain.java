@@ -56,7 +56,10 @@ public class IdeMain {
 
 		BundleContext context;
 		if (useAtomos) {
-			context = new AtomosFrontend(installDir).getBundleContext();
+			// the spelled-out package is on purpose so that Atomos can remain an optional component
+			// works together with
+			// https://github.com/equodev/equo-ide/blob/aa7d30cba9988bc740ff4bc4b3015475d30d187c/solstice/build.gradle#L16-L22
+			context = new dev.equo.solstice.AtomosFrontend(installDir).getBundleContext();
 		} else {
 			context = Solstice.initialize(new SolsticeInit(installDir));
 		}
