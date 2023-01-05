@@ -90,11 +90,11 @@ public abstract class EquoIdeTask extends DefaultTask {
 						.collect(Collectors.toList());
 		var nestedDefs = getObjectFactory().fileCollection().from(nestedJars);
 
-		boolean sameJVM = initOnly;
+		boolean inheritIO = initOnly;
 		boolean useAtomos = dontUseAtomosOverride ? false : getUseAtomos().get();
 		var exitCode =
 				JavaLaunch.launch(
-						sameJVM,
+						inheritIO,
 						"dev.equo.solstice.IdeMain",
 						p2AndMavenDeps.plus(nestedDefs),
 						"-installDir",
@@ -104,7 +104,7 @@ public abstract class EquoIdeTask extends DefaultTask {
 						"-initOnly",
 						Boolean.toString(initOnly),
 						"-Dorg.slf4j.simpleLogger.defaultLogLevel=INFO");
-		if (sameJVM) {
+		if (inheritIO) {
 			System.out.println("exit code: " + exitCode);
 		}
 	}

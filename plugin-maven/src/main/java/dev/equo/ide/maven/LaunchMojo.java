@@ -134,10 +134,10 @@ public class LaunchMojo extends AbstractMojo {
 				files.add(nested.getValue());
 			}
 
-			boolean sameJVM = initOnly;
+			boolean inheritIO = initOnly;
 			var exitCode =
 					JavaLaunch.launch(
-							sameJVM,
+							inheritIO,
 							"dev.equo.solstice.IdeMain",
 							files,
 							"-installDir",
@@ -147,7 +147,7 @@ public class LaunchMojo extends AbstractMojo {
 							"-initOnly",
 							Boolean.toString(initOnly),
 							"-Dorg.slf4j.simpleLogger.defaultLogLevel=INFO");
-			if (sameJVM) {
+			if (inheritIO) {
 				System.out.println("exit code: " + exitCode);
 			}
 		} catch (DependencyResolutionException | IOException | InterruptedException e) {
