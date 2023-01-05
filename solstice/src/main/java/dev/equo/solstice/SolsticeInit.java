@@ -43,19 +43,6 @@ public class SolsticeInit {
 		this.installDir = installDir;
 	}
 
-	public SolsticeInit() {
-		this(defaultDir());
-	}
-
-	private static File defaultDir() {
-		var userDir = System.getProperty("user.dir");
-		if (userDir.endsWith("equo-ide")) {
-			return new File(userDir + "/solstice/build/testSetup");
-		} else {
-			return new File(userDir + "/build/testSetup");
-		}
-	}
-
 	public Map<String, List<String>> additionalDeps() {
 		var additional = new TreeMap<String, List<String>>();
 		additional.put(

@@ -14,7 +14,7 @@
 package dev.equo.solstice;
 
 import java.io.File;
-import java.util.Arrays;
+import java.util.function.Function;
 import org.osgi.framework.InvalidSyntaxException;
 
 /**
@@ -28,19 +28,32 @@ import org.osgi.framework.InvalidSyntaxException;
  * </ul>
  */
 public class IdeMain {
-	public static void main(String[] args) throws InvalidSyntaxException {
-		var argList = Arrays.asList(args);
-		int idx = argList.indexOf("-installDir");
-		SolsticeInit init;
-		if (idx == -1) {
-			init = new SolsticeInit();
-		} else {
-			init = new SolsticeInit(new File(args[idx + 1]));
+	private static <T> T parseArg(
+			String[] args, String arg, Function<String, T> parser, T defaultValue) {
+		for (int i = 0; i < args.length - 1; ++i) {
+			if (arg.equals(args[i])) {
+				return parser.apply(args[i + 1]);
+			}
 		}
+		return defaultValue;
+	}
+
+	static File defaultDir() {
+		var userDir = System.getProperty("user.dir");
+		if (userDir.endsWith("equo-ide")) {
+			return new File(userDir + "/solstice/build/testSetup");
+		} else {
+			return new File(userDir + "/build/testSetup");
+		}
+	}
+
+	public static void main(String[] args) throws InvalidSyntaxException {
+		File installDir = parseArg(args, "-installDir", File::new, defaultDir());
+		SolsticeInit init = new SolsticeInit(installDir);
 		var solstice = Solstice.initialize(init);
 
-		var dontRunIdx = argList.indexOf("-initOnly");
-		if (dontRunIdx != -1 && Boolean.parseBoolean(argList.get(dontRunIdx + 1))) {
+		boolean initOnly = parseArg(args, "-initOnly", Boolean::parseBoolean, false);
+		if (initOnly) {
 			System.out.println("Loaded " + solstice.getBundles().length + " bundles");
 			System.exit(0);
 			return;

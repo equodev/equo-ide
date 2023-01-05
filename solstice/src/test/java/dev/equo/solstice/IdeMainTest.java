@@ -19,7 +19,7 @@ import org.osgi.framework.InvalidSyntaxException;
 import org.slf4j.simple.SimpleLogger;
 
 public class IdeMainTest {
-	static boolean useSolstice = false;
+	static boolean useSolstice = true;
 
 	public static void main(String[] args) throws InvalidSyntaxException, BundleException {
 		System.setProperty(SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "INFO");
@@ -27,7 +27,7 @@ public class IdeMainTest {
 
 		BundleContext context;
 		if (useSolstice) {
-			var init = new SolsticeInit();
+			var init = new SolsticeInit(IdeMain.defaultDir());
 			context = Solstice.initialize(init);
 		} else {
 			var atomos = new AtomosFrontend();
