@@ -38,7 +38,7 @@ import java.util.zip.ZipOutputStream;
  * <p>https://discuss.gradle.org/t/javaexec-fails-for-long-classpaths-on-windows/15266
  */
 public class JavaLaunch {
-	public static int launch(boolean sameJVM, String mainClass, Iterable<File> cp, String... args)
+	public static int launch(boolean inheritIO, String mainClass, Iterable<File> cp, String... args)
 			throws IOException, InterruptedException {
 		String javaHome = System.getProperty("java.home");
 		String javaBin = javaHome + File.separator + "bin" + File.separator + "java";
@@ -64,7 +64,7 @@ public class JavaLaunch {
 			command.add(arg);
 		}
 
-		if (sameJVM) {
+		if (inheritIO) {
 			return launchAndInheritIO(null, command);
 		} else {
 			if (OS.getNative().isWindows()) {
