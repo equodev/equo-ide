@@ -13,18 +13,15 @@
  *******************************************************************************/
 package dev.equo.solstice;
 
+import java.io.File;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.apache.felix.atomos.Atomos;
-import org.apache.felix.atomos.AtomosContent;
 import org.eclipse.osgi.service.urlconversion.URLConverter;
-import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
@@ -87,8 +84,11 @@ public class AtomosFrontend {
 		}
 	}
 
-	public AtomosFrontend() throws BundleException, InvalidSyntaxException {
+	public AtomosFrontend(File installDir) throws BundleException, InvalidSyntaxException {
 		Logger logger = LoggerFactory.getLogger(AtomosFrontend.class);
+		NestedJars.onClassPath()
+				.confirmAllNestedJarsArePresentOnClasspath(new File(installDir, NestedJars.DIR));
+
 		var bundleSet = SolsticeManifest.discoverBundles();
 		bundleSet.warnAndModifyManifestsToFix(logger);
 		Atomos atomos = Atomos.newAtomos(new HeaderProvider(bundleSet, logger));
@@ -96,23 +96,7 @@ public class AtomosFrontend {
 		Framework framework =
 				atomos.newFramework(
 						Map.of(
-								"atomos.content.install",
-								"false",
-								Constants.FRAMEWORK_STORAGE_CLEAN,
-								Constants.FRAMEWORK_STORAGE_CLEAN_ONFIRSTINIT));
-		// framework must be initialized before any bundles can be installed
-		framework.init();
-		var bundles = new ArrayList<Bundle>();
-		for (AtomosContent content : atomos.getBootLayer().getAtomosContents()) {
-			bundles.add(content.install());
-		}
-		bundles.sort(Comparator.comparing(Bundle::getSymbolicName));
-		for (Bundle b : bundles) {
-			if (b.getHeaders().get("Fragment-Host") == null) {
-				b.start();
-			}
-		}
-		// The installed bundles will not actually activate until the framework is started
+								Constants.FRAMEWORK_STORAGE_CLEAN, Constants.FRAMEWORK_STORAGE_CLEAN_ONFIRSTINIT));
 		framework.start();
 		bundleContext = framework.getBundleContext();
 

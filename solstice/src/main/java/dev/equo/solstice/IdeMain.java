@@ -56,7 +56,7 @@ public class IdeMain {
 
 		BundleContext context;
 		if (useAtomos) {
-			context = new AtomosFrontend().getBundleContext();
+			context = new AtomosFrontend(installDir).getBundleContext();
 		} else {
 			context = Solstice.initialize(new SolsticeInit(installDir));
 		}
