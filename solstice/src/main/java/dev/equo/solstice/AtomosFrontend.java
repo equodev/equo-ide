@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.apache.felix.atomos.Atomos;
+import org.eclipse.osgi.service.datalocation.Location;
 import org.eclipse.osgi.service.urlconversion.URLConverter;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
@@ -93,10 +94,14 @@ public class AtomosFrontend {
 		bundleSet.warnAndModifyManifestsToFix(logger);
 		Atomos atomos = Atomos.newAtomos(new HeaderProvider(bundleSet, logger));
 		// Set atomos.content.install to false to prevent automatic bundle installation
-		Framework framework =
-				atomos.newFramework(
-						Map.of(
-								Constants.FRAMEWORK_STORAGE_CLEAN, Constants.FRAMEWORK_STORAGE_CLEAN_ONFIRSTINIT));
+		var props = new LinkedHashMap<String, String>();
+		props.put(Constants.FRAMEWORK_STORAGE_CLEAN, Constants.FRAMEWORK_STORAGE_CLEAN_ONFIRSTINIT);
+		props.put(
+				Constants.FRAMEWORK_STORAGE, new File(installDir, "framework-storage").getAbsolutePath());
+		props.put(Location.INSTANCE_AREA_TYPE, new File(installDir, "instance").getAbsolutePath());
+		props.put(Location.INSTALL_AREA_TYPE, new File(installDir, "install").getAbsolutePath());
+		props.put(Location.CONFIGURATION_AREA_TYPE, new File(installDir, "config").getAbsolutePath());
+		Framework framework = atomos.newFramework(props);
 		framework.start();
 		bundleContext = framework.getBundleContext();
 
