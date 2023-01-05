@@ -13,26 +13,22 @@
  *******************************************************************************/
 package dev.equo.solstice;
 
-import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.InvalidSyntaxException;
 import org.slf4j.simple.SimpleLogger;
 
 public class IdeMainTest {
-	static boolean useSolstice = true;
-
 	public static void main(String[] args) throws InvalidSyntaxException, BundleException {
+		boolean useAtomos = true;
+
 		System.setProperty(SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "INFO");
 		System.setProperty(SimpleLogger.LOG_FILE_KEY, "System.out");
 
-		BundleContext context;
-		if (useSolstice) {
-			var init = new SolsticeInit(IdeMain.defaultDir());
-			context = Solstice.initialize(init);
-		} else {
-			var atomos = new AtomosFrontend();
-			context = atomos.getBundleContext();
-		}
-		IdeMainUi.main(context);
+		IdeMain.main(
+				new String[] {
+					"-installDir", IdeMain.defaultDir().getAbsolutePath(),
+					"-useAtomos", Boolean.toString(useAtomos),
+					"-initOnly", "false"
+				});
 	}
 }

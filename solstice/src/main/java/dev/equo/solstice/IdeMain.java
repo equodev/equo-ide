@@ -15,6 +15,8 @@ package dev.equo.solstice;
 
 import java.io.File;
 import java.util.function.Function;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleException;
 import org.osgi.framework.InvalidSyntaxException;
 
 /**
@@ -47,19 +49,24 @@ public class IdeMain {
 		}
 	}
 
-	public static void main(String[] args) throws InvalidSyntaxException {
+	public static void main(String[] args) throws InvalidSyntaxException, BundleException {
 		File installDir = parseArg(args, "-installDir", File::new, defaultDir());
-		SolsticeInit init = new SolsticeInit(installDir);
-		var solstice = Solstice.initialize(init);
-
+		boolean useAtomos = parseArg(args, "-useAtomos", Boolean::parseBoolean, false);
 		boolean initOnly = parseArg(args, "-initOnly", Boolean::parseBoolean, false);
+
+		BundleContext context;
+		if (useAtomos) {
+			context = new AtomosFrontend().getBundleContext();
+		} else {
+			context = Solstice.initialize(new SolsticeInit(installDir));
+		}
 		if (initOnly) {
-			System.out.println("Loaded " + solstice.getBundles().length + " bundles");
+			System.out.println("Loaded " + context.getBundles().length + " bundles");
 			System.exit(0);
 			return;
 		}
 
-		int exitCode = IdeMainUi.main(solstice);
+		int exitCode = IdeMainUi.main(context);
 		if (exitCode == 0) {
 			System.exit(0);
 		} else {
