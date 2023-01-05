@@ -140,6 +140,9 @@ public class P2Query {
 			return;
 		}
 		for (var requirement : toResolve.requires) {
+			if (requirement.isOptional()) {
+				continue;
+			}
 			if (requirement.hasOnlyOneProvider()) {
 				install(requirement.getOnlyProvider());
 			} else {

@@ -139,10 +139,10 @@ public class ConsoleTable {
 			}
 			for (var req : unit.requires) {
 				if (req.hasOnlyOneProvider()) {
-					table.add("req " + req.name, req.getOnlyProvider().toString());
+					table.add("req " + req.getName(), req.getOnlyProvider().toString());
 				} else {
 					var available = req.getProviders();
-					table.add("req " + req.name, available.size() + " available");
+					table.add("req " + req.getName(), available.size() + " available");
 					for (var a : available) {
 						table.add("", a.toString());
 					}
