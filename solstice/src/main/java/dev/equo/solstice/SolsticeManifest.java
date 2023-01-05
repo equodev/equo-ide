@@ -24,12 +24,23 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.function.Function;
 import java.util.jar.Manifest;
 import javax.annotation.Nullable;
 import org.osgi.framework.Constants;
 import org.slf4j.Logger;
 
+/**
+ * Parses a jar manifest, removing some fine-grained details for the purpose of simplifying the
+ * developer experience.
+ *
+ * <ul>
+ *   <li>optional imports and requirements are removed
+ *   <li>version constraints are removed
+ * </ul>
+ */
 public class SolsticeManifest {
+	/** Represents a closed universe of OSGi bundles. */
 	public static class BundleSet {
 		private final List<SolsticeManifest> bundles;
 
@@ -38,48 +49,44 @@ public class SolsticeManifest {
 		}
 
 		public List<SolsticeManifest> getBundles() {
-			return bundles;
+			return Collections.unmodifiableList(bundles);
 		}
 
 		public Map<String, List<SolsticeManifest>> bySymbolicName() {
-			TreeMap<String, List<SolsticeManifest>> map = new TreeMap<>();
-			for (SolsticeManifest bundle : bundles) {
-				mapAdd(map, bundle.getSymbolicName(), bundle);
-			}
-			return map;
+			return groupBundles(manifest -> Collections.singletonList(manifest.getSymbolicName()));
 		}
 
 		public Map<String, List<SolsticeManifest>> byExportedPackage() {
-			TreeMap<String, List<SolsticeManifest>> map = new TreeMap<>();
-			for (SolsticeManifest bundle : bundles) {
-				for (String pkg : bundle.getPkgExports()) {
-					mapAdd(map, pkg, bundle);
-				}
-			}
-			return map;
+			return groupBundles(SolsticeManifest::getPkgExports);
 		}
 
-		public Map<String, List<SolsticeManifest>> calculateMissingBundles(
-				Set<String> availableBundles) {
+		public Map<String, List<SolsticeManifest>> calculateMissingBundles(Set<String> available) {
+			return calculateMissing(available, SolsticeManifest::getRequiredBundles);
+		}
+
+		public Map<String, List<SolsticeManifest>> calculateMissingPackages(Set<String> available) {
+			return calculateMissing(available, SolsticeManifest::getPkgImports);
+		}
+
+		private Map<String, List<SolsticeManifest>> calculateMissing(
+				Set<String> available, Function<SolsticeManifest, List<String>> neededFunc) {
 			TreeMap<String, List<SolsticeManifest>> map = new TreeMap<>();
 			for (SolsticeManifest bundle : bundles) {
-				for (var required : bundle.getRequiredBundles()) {
-					if (!availableBundles.contains(required)) {
-						mapAdd(map, required, bundle);
+				for (var needed : neededFunc.apply(bundle)) {
+					if (!available.contains(needed)) {
+						mapAdd(map, needed, bundle);
 					}
 				}
 			}
 			return map;
 		}
 
-		public Map<String, List<SolsticeManifest>> calculateMissingPackages(
-				Set<String> availablePackages) {
+		private Map<String, List<SolsticeManifest>> groupBundles(
+				Function<SolsticeManifest, List<String>> groupBy) {
 			TreeMap<String, List<SolsticeManifest>> map = new TreeMap<>();
 			for (SolsticeManifest bundle : bundles) {
-				for (var importedPkg : bundle.getPkgImports()) {
-					if (!availablePackages.contains(importedPkg)) {
-						mapAdd(map, importedPkg, bundle);
-					}
+				for (String extracted : groupBy.apply(bundle)) {
+					mapAdd(map, extracted, bundle);
 				}
 			}
 			return map;
@@ -99,6 +106,20 @@ public class SolsticeManifest {
 			}
 		}
 
+		/**
+		 * Sends warnings to logger, then modifies every manifest to resolve all these warnings.
+		 *
+		 * <ul>
+		 *   <li>multiple bundles with same symbolic name (resolved by first one on the classpath, since
+		 *       that's what <code>Class.forName</code> will do)
+		 *   <li>multiple bundles which export the same package (resolved by first one on the classpath,
+		 *       since that's what <code>Class.forName</code> will do)
+		 *   <li>required bundle which is not present (resolved by removing requirement from the
+		 *       SolsticeManifest)
+		 *   <li>imported package which is not present (resolved by removing import from the
+		 *       SolsticeManifest)
+		 * </ul>
+		 */
 		public void warnAndModifyManifestsToFix(Logger logger) {
 			var bySymbolicName = bySymbolicName();
 			var byExportedPackage = byExportedPackage();
@@ -138,7 +159,7 @@ public class SolsticeManifest {
 		}
 	}
 
-	/** Returns an array list of all bundles on the classpath. */
+	/** Finds every OSGi bundle on the classpath and returns it inside a {@link BundleSet}. */
 	public static BundleSet discoverBundles() {
 		Enumeration<URL> manifestURLs =
 				Unchecked.get(
@@ -218,7 +239,7 @@ public class SolsticeManifest {
 		if (attribute == null) {
 			return Collections.emptyList();
 		}
-		return parseManifestHeaderSimple(attribute);
+		return parseAndStripManifestHeader(attribute);
 	}
 
 	@Override
@@ -230,8 +251,11 @@ public class SolsticeManifest {
 		}
 	}
 
-	/** Parse out a manifest header, and ignore the versions */
-	static List<String> parseManifestHeaderSimple(String in) {
+	/**
+	 * Parses a jar manifest header, ignoring versions and removing anything with <code>
+	 * resolution:=optional</code>.
+	 */
+	static List<String> parseAndStripManifestHeader(String in) {
 		String[] bundlesAndVersions = in.split(",");
 		List<String> attrs = new ArrayList<>();
 		List<String> required = new ArrayList<>(bundlesAndVersions.length);
@@ -264,18 +288,19 @@ public class SolsticeManifest {
 	}
 
 	public List<String> getRequiredBundles() {
-		return requiredBundles;
+		return Collections.unmodifiableList(requiredBundles);
 	}
 
 	public List<String> getPkgImports() {
-		return pkgImports;
+		return Collections.unmodifiableList(pkgImports);
 	}
 
 	public List<String> getPkgExports() {
-		return pkgExports;
+		return Collections.unmodifiableList(pkgExports);
 	}
 
+	/** Returns the original headers, unmodified by our parsing. */
 	public Map<String, String> getHeadersOriginal() {
-		return headersOriginal;
+		return Collections.unmodifiableMap(headersOriginal);
 	}
 }

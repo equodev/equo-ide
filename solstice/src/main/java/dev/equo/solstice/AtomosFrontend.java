@@ -32,6 +32,11 @@ import org.osgi.framework.launch.Framework;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Starts an OSGi context using Atomos. All problems related to missing bundles and missing packages
+ * are resolved by modifying bundle headers with {@link
+ * SolsticeManifest.BundleSet#warnAndModifyManifestsToFix(Logger)}.
+ */
 public class AtomosFrontend {
 	private final BundleContext bundleContext;
 
@@ -53,7 +58,7 @@ public class AtomosFrontend {
 				return Optional.empty();
 			}
 			String symbolicName =
-					SolsticeManifest.parseManifestHeaderSimple(
+					SolsticeManifest.parseAndStripManifestHeader(
 									existingHeaders.get(Constants.BUNDLE_SYMBOLICNAME))
 							.get(0);
 			var candidates = bySymbolicName.get(symbolicName);
