@@ -15,7 +15,7 @@ OSGi provides a lot of power:
 However, this power brings a lot of complexity into the system. You can remove a lot of this complexity by imposing these constraints:
 
 - no dynamic unloading or refreshing of plugins -> less code
-- all plugins sorted and loaded on startup -> no heisenbugs caused by initialization order
+- sorted plugins -> no heisenbugs caused by initialization order
 - only one version of a class is allowed to exist in the runtime -> `Class.forName` just works 
 
 ### p2 but just for jars
