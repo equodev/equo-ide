@@ -402,14 +402,16 @@ public class Solstice extends ServiceRegistry {
 		ShimBundle(SolsticeManifest manifest) {
 			super(Solstice.this);
 			this.manifest = manifest;
-			activator = manifest.headersOriginal.get(Constants.BUNDLE_ACTIVATOR);
-
-			manifest.headersOriginal.forEach(
-					(key, value) -> {
-						if (!Constants.IMPORT_PACKAGE.equals(key) && !Constants.EXPORT_PACKAGE.equals(key)) {
-							headers.put(key, value);
-						}
-					});
+			activator = manifest.getHeadersOriginal().get(Constants.BUNDLE_ACTIVATOR);
+			manifest
+					.getHeadersOriginal()
+					.forEach(
+							(key, value) -> {
+								if (!Constants.IMPORT_PACKAGE.equals(key)
+										&& !Constants.EXPORT_PACKAGE.equals(key)) {
+									headers.put(key, value);
+								}
+							});
 		}
 
 		private void addFragment(ShimBundle bundle) {
@@ -417,7 +419,7 @@ public class Solstice extends ServiceRegistry {
 		}
 
 		String fragmentHost() {
-			var host = manifest.headersOriginal.get(Constants.FRAGMENT_HOST);
+			var host = manifest.getHeadersOriginal().get(Constants.FRAGMENT_HOST);
 			if (host == null) {
 				return null;
 			}

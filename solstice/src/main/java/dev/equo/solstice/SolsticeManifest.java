@@ -25,7 +25,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.jar.Manifest;
-import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.osgi.framework.Constants;
 import org.slf4j.Logger;
@@ -161,7 +160,7 @@ public class SolsticeManifest {
 	private final String jarUrl;
 	private final int classpathOrder;
 	private final @Nullable String symbolicName;
-	final LinkedHashMap<String, String> headersOriginal = new LinkedHashMap<>();
+	private final LinkedHashMap<String, String> headersOriginal = new LinkedHashMap<>();
 	private final List<String> requiredBundles;
 	private final List<String> pkgImports;
 	private final List<String> pkgExports;
@@ -222,23 +221,6 @@ public class SolsticeManifest {
 		return parseManifestHeaderSimple(attribute);
 	}
 
-	public Map<String, String> atomosHeaders() {
-		Map<String, String> atomos = new LinkedHashMap<>(headersOriginal);
-		atomos.remove(Constants.REQUIRE_CAPABILITY);
-		set(atomos, Constants.IMPORT_PACKAGE, pkgImports);
-		set(atomos, Constants.EXPORT_PACKAGE, pkgExports);
-		set(atomos, Constants.REQUIRE_BUNDLE, requiredBundles);
-		return atomos;
-	}
-
-	private void set(Map<String, String> map, String key, List<String> values) {
-		if (values.isEmpty()) {
-			map.remove(key);
-		} else {
-			map.put(key, values.stream().collect(Collectors.joining(",")));
-		}
-	}
-
 	@Override
 	public String toString() {
 		if (symbolicName != null) {
@@ -291,5 +273,9 @@ public class SolsticeManifest {
 
 	public List<String> getPkgExports() {
 		return pkgExports;
+	}
+
+	public Map<String, String> getHeadersOriginal() {
+		return headersOriginal;
 	}
 }

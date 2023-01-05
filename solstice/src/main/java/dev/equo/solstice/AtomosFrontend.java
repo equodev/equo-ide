@@ -16,8 +16,11 @@ package dev.equo.solstice;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import org.apache.felix.atomos.Atomos;
 import org.apache.felix.atomos.AtomosContent;
 import org.eclipse.osgi.service.urlconversion.URLConverter;
@@ -34,37 +37,61 @@ import org.slf4j.LoggerFactory;
 public class AtomosFrontend {
 	private final BundleContext bundleContext;
 
+	static class HeaderProvider implements Atomos.HeaderProvider {
+		final Map<String, List<SolsticeManifest>> bySymbolicName;
+		final Logger logger;
+
+		HeaderProvider(SolsticeManifest.BundleSet bundleSet, Logger logger) {
+			bySymbolicName = bundleSet.bySymbolicName();
+			this.logger = logger;
+		}
+
+		@Override
+		public Optional<Map<String, String>> apply(
+				String location, Map<String, String> existingHeaders) {
+			var symbolicNameHeader = existingHeaders.get(Constants.BUNDLE_SYMBOLICNAME);
+			if (symbolicNameHeader == null) {
+				// represents a jar that didn't have OSGi metadata. no problem!
+				return Optional.empty();
+			}
+			String symbolicName =
+					SolsticeManifest.parseManifestHeaderSimple(
+									existingHeaders.get(Constants.BUNDLE_SYMBOLICNAME))
+							.get(0);
+			var candidates = bySymbolicName.get(symbolicName);
+			if (candidates == null || candidates.isEmpty()) {
+				if (!symbolicName.startsWith("java.") && !symbolicName.startsWith("jdk.")) {
+					logger.warn("No manifest for bundle " + symbolicName + " at " + location);
+				}
+				return Optional.empty();
+			}
+			var manifest = bySymbolicName.get(symbolicName).get(0);
+			return Optional.of(atomosHeaders(manifest));
+		}
+
+		public Map<String, String> atomosHeaders(SolsticeManifest manifest) {
+			Map<String, String> atomos = new LinkedHashMap<>(manifest.getHeadersOriginal());
+			atomos.remove(Constants.REQUIRE_CAPABILITY);
+			set(atomos, Constants.IMPORT_PACKAGE, manifest.getPkgImports());
+			set(atomos, Constants.EXPORT_PACKAGE, manifest.getPkgExports());
+			set(atomos, Constants.REQUIRE_BUNDLE, manifest.getRequiredBundles());
+			return atomos;
+		}
+
+		private static void set(Map<String, String> map, String key, List<String> values) {
+			if (values.isEmpty()) {
+				map.remove(key);
+			} else {
+				map.put(key, values.stream().collect(Collectors.joining(",")));
+			}
+		}
+	}
+
 	public AtomosFrontend() throws BundleException, InvalidSyntaxException {
-		Logger logger = LoggerFactory.getLogger(Solstice.class);
+		Logger logger = LoggerFactory.getLogger(AtomosFrontend.class);
 		var bundleSet = SolsticeManifest.discoverBundles();
 		bundleSet.warnAndModifyManifestsToFix(logger);
-		var bySymbolicName = bundleSet.bySymbolicName();
-		Atomos.HeaderProvider headerProvider =
-				new Atomos.HeaderProvider() {
-					@Override
-					public Optional<Map<String, String>> apply(
-							String location, Map<String, String> existingHeaders) {
-						var symbolicNameHeader = existingHeaders.get(Constants.BUNDLE_SYMBOLICNAME);
-						if (symbolicNameHeader == null) {
-							// represents a jar that didn't have OSGi metadata. no problem!
-							return Optional.empty();
-						}
-						String symbolicName =
-								SolsticeManifest.parseManifestHeaderSimple(
-												existingHeaders.get(Constants.BUNDLE_SYMBOLICNAME))
-										.get(0);
-						var candidates = bySymbolicName.get(symbolicName);
-						if (candidates == null) {
-							if (!symbolicName.startsWith("java.") && !symbolicName.startsWith("jdk.")) {
-								logger.warn("No manifest for bundle " + symbolicName + " at " + location);
-							}
-							return Optional.empty();
-						}
-						var manifest = bySymbolicName.get(symbolicName).get(0);
-						return Optional.of(manifest.atomosHeaders());
-					}
-				};
-		Atomos atomos = Atomos.newAtomos(headerProvider);
+		Atomos atomos = Atomos.newAtomos(new HeaderProvider(bundleSet, logger));
 		// Set atomos.content.install to false to prevent automatic bundle installation
 		Framework framework =
 				atomos.newFramework(
