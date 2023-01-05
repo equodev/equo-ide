@@ -265,24 +265,24 @@ No unmet requirements.
 dev.equo.ide.gradle.P2MultitoolExamples._05[apt]=[
 1 unit available with id org.eclipse.jdt.compiler.apt
   1.4.300.v20221108-0856  [x] included by install
-+--------------------------------------------+-------------------------------------------------------------+
-| key                                        | value                                                       |
-+--------------------------------------------+-------------------------------------------------------------+
-| id                                         | org.eclipse.jdt.compiler.apt                                |
-| version                                    | 1.4.300.v20221108-0856                                      |
-| maven coordinate                           | org.eclipse.jdt:org.eclipse.jdt.compiler.apt:1.4.300        |
-| maven repo                                 | maven central?                                              |
-| prop artifact-classifier                   | osgi.bundle                                                 |
-| prop maven-artifactId                      | org.eclipse.jdt.compiler.apt                                |
-| prop maven-groupId                         | org.eclipse.jdt                                             |
-| prop maven-type                            | eclipse-plugin                                              |
-| prop maven-version                         | 1.4.300-SNAPSHOT                                            |
-| prop org.eclipse.equinox.p2.name           | Java Compiler Apt                                           |
-| req org.eclipse.jdt.internal.compiler.tool | 2 available                                                 |
-|                                            |   org.eclipse.jdt.compiler.tool:1.3.200.v20220802-0458      |
-|                                            |   org.eclipse.jdt.core.compiler.batch:3.32.0.v20221108-1853 |
-| req org.eclipse.jdt.core                   | org.eclipse.jdt.core:3.32.0.v20221108-1853                  |
-+--------------------------------------------+-------------------------------------------------------------+
++--------------------------------------------------+-------------------------------------------------------------+
+| key                                              | value                                                       |
++--------------------------------------------------+-------------------------------------------------------------+
+| id                                               | org.eclipse.jdt.compiler.apt                                |
+| version                                          | 1.4.300.v20221108-0856                                      |
+| maven coordinate                                 | org.eclipse.jdt:org.eclipse.jdt.compiler.apt:1.4.300        |
+| maven repo                                       | maven central?                                              |
+| prop artifact-classifier                         | osgi.bundle                                                 |
+| prop maven-artifactId                            | org.eclipse.jdt.compiler.apt                                |
+| prop maven-groupId                               | org.eclipse.jdt                                             |
+| prop maven-type                                  | eclipse-plugin                                              |
+| prop maven-version                               | 1.4.300-SNAPSHOT                                            |
+| prop org.eclipse.equinox.p2.name                 | Java Compiler Apt                                           |
+| req org.eclipse.jdt.core                         | org.eclipse.jdt.core:3.32.0.v20221108-1853                  |
+| req (opt) org.eclipse.jdt.internal.compiler.tool | 2 available                                                 |
+|                                                  |   org.eclipse.jdt.compiler.tool:1.3.200.v20220802-0458      |
+|                                                  |   org.eclipse.jdt.core.compiler.batch:3.32.0.v20221108-1853 |
++--------------------------------------------------+-------------------------------------------------------------+
 ]
 
 

@@ -137,12 +137,17 @@ public class ConsoleTable {
 			for (var prop : unit.properties.entrySet()) {
 				table.add("prop " + prop.getKey(), prop.getValue());
 			}
-			for (var req : unit.requires) {
+			var sortedOptionalsLast = new ArrayList<>(unit.requires);
+			sortedOptionalsLast.sort(
+					Comparator.<P2Session.Requirement>comparingInt(u -> u.isOptional() ? 1 : 0)
+							.thenComparing(Comparator.naturalOrder()));
+			for (var req : sortedOptionalsLast) {
+				String reqName = req.isOptional() ? "req (opt) " : "req ";
 				if (req.hasOnlyOneProvider()) {
-					table.add("req " + req.getName(), req.getOnlyProvider().toString());
+					table.add(reqName + req.getName(), req.getOnlyProvider().toString());
 				} else {
 					var available = req.getProviders();
-					table.add("req " + req.getName(), available.size() + " available");
+					table.add(reqName + req.getName(), available.size() + " available");
 					for (var a : available) {
 						table.add("", a.toString());
 					}
