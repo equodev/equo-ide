@@ -13,7 +13,7 @@
  *******************************************************************************/
 package dev.equo.ide.maven;
 
-import dev.equo.solstice.JavaLaunch;
+import dev.equo.solstice.Launcher;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -25,7 +25,6 @@ import java.util.Arrays;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -57,11 +56,11 @@ public class MavenPluginTest {
 		Assertions.assertThat(output).contains(useAtomos ? "using Atomos" : "not using Atomos");
 	}
 
-	@Disabled
+	//	@Disabled
 	@Test
 	public void integrationTestReal() throws IOException, InterruptedException {
 		setFile("pom.xml").toResource("/dev/equo/ide/maven/pom.xml");
-		JavaLaunch.launchAndInheritIO(
+		Launcher.launchAndInheritIO(
 				rootFolder(),
 				Arrays.asList("mvn", "dev.equo.ide:equo-ide-maven-plugin:" + pluginVersion() + ":launch"));
 	}
