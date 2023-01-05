@@ -43,13 +43,15 @@ public class MavenPluginTest {
 	private void integrationTestUseAtomos(boolean useAtomos)
 			throws IOException, InterruptedException {
 		setFile("pom.xml").toResource("/dev/equo/ide/maven/pom.xml");
-		var output =
-				NestedJars.consoleExec(
-						rootFolder(),
-						"mvn",
-						"dev.equo.ide:equo-ide-maven-plugin:" + pluginVersion() + ":launch",
-						"-DinitOnly=true",
-						"-DuseAtomos=" + useAtomos);
+		var outputBytes =
+				new ProcessRunner(rootFolder())
+						.exec(
+								"mvn",
+								"dev.equo.ide:equo-ide-maven-plugin:" + pluginVersion() + ":launch",
+								"-DinitOnly=true",
+								"-DuseAtomos=" + useAtomos)
+						.stdOut();
+		var output = new String(outputBytes, StandardCharsets.UTF_8);
 		Assertions.assertThat(output).contains("exit code: 0");
 		Assertions.assertThat(output).matches("(?s)(.*)stdout: Loaded (\\d+) bundles(.*)");
 		Assertions.assertThat(output).contains(useAtomos ? "using Atomos" : "not using Atomos");

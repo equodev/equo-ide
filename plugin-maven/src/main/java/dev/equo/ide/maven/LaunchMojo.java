@@ -124,7 +124,7 @@ public class LaunchMojo extends AbstractMojo {
 				files.add(nested.getValue());
 			}
 
-			boolean sameJVM = initOnlyTrue;
+			boolean sameJVM = initOnly;
 			var exitCode =
 					JavaLaunch.launch(
 							sameJVM,
@@ -135,7 +135,7 @@ public class LaunchMojo extends AbstractMojo {
 							"-useAtomos",
 							Boolean.toString(useAtomos),
 							"-initOnly",
-							initOnly,
+							Boolean.toString(initOnly),
 							"-Dorg.slf4j.simpleLogger.defaultLogLevel=INFO");
 			if (sameJVM) {
 				System.out.println("exit code: " + exitCode);
