@@ -48,6 +48,9 @@ public class LaunchMojo extends AbstractMojo {
 	@Parameter(property = "initOnly", defaultValue = "false")
 	private boolean initOnly;
 
+	@Parameter(property = "useAtomos", defaultValue = "true")
+	private boolean useAtomos;
+
 	@Parameter(property = "release")
 	private String release;
 
@@ -127,6 +130,8 @@ public class LaunchMojo extends AbstractMojo {
 							files,
 							"-installDir",
 							workspaceDir.getAbsolutePath(),
+							"-useAtomos",
+							Boolean.toString(useAtomos),
 							"-initOnly",
 							Boolean.toString(initOnly));
 			System.out.println(result);

@@ -42,6 +42,9 @@ public abstract class EquoIdeTask extends DefaultTask {
 	@Internal
 	public abstract Property<File> getWorkspaceDir();
 
+	@Internal
+	public abstract Property<Boolean> getUseAtomos();
+
 	private boolean initOnly = false;
 
 	@Option(
@@ -83,6 +86,8 @@ public abstract class EquoIdeTask extends DefaultTask {
 						p2AndMavenDeps.plus(nestedDefs),
 						"-installDir",
 						workspaceDir.getAbsolutePath(),
+						"-useAtomos",
+						getUseAtomos().get().toString(),
 						"-initOnly",
 						Boolean.toString(initOnly),
 						"-Dorg.slf4j.simpleLogger.defaultLogLevel=INFO");
