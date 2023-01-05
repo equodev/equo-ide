@@ -37,7 +37,6 @@ maven org.junit.platform:junit-platform-suite-api:1.9.0
 maven org.junit.platform:junit-platform-suite-commons:1.9.0
 maven org.junit.platform:junit-platform-suite-engine:1.9.0
 maven org.junit.vintage:junit-vintage-engine:5.9.0
-maven commons-fileupload:commons-fileupload:1.4
 maven commons-io:commons-io:2.11.0
 maven org.apache.felix:org.apache.felix.scr:2.2.2
 maven org.apiguardian:apiguardian-api:1.1.2
@@ -204,4 +203,3 @@ maven org.osgi:org.osgi.util.measurement:1.0.2
 maven org.osgi:org.osgi.util.position:1.0.1
 maven org.osgi:org.osgi.util.promise:1.2.0
 maven org.osgi:org.osgi.util.xml:1.0.2
-maven org.tukaani:xz:1.9

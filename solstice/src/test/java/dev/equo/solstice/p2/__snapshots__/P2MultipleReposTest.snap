@@ -78,40 +78,20 @@ dev.equo.solstice.p2.P2MultipleReposTest.query=[
 | java.package:com.google.gson.stream                         | com.google.gson:2.9.1.v20220915-1632                      | [x]       |
 |                                                             | com.google.gson:2.9.1                                     | [ ]       |
 |                                                             | com.google.gson:2.8.9.v20220111-1409                      | [ ]       |
-| java.package:com.sun.jna                                    | com.sun.jna:5.12.1                                        | [x]       |
-|                                                             | com.sun.jna:5.12.1                                        | [ ]       |
-| java.package:com.sun.jna.platform.win32                     | com.sun.jna.platform:5.12.1                               | [x]       |
-|                                                             | com.sun.jna.platform:5.12.1                               | [ ]       |
-| java.package:com.sun.jna.ptr                                | com.sun.jna:5.12.1                                        | [x]       |
-|                                                             | com.sun.jna:5.12.1                                        | [ ]       |
 | java.package:org.apache.commons.io                          | org.apache.commons.commons-io:2.11.0                      | [x]       |
 |                                                             | org.apache.commons.commons-io:2.11.0                      | [x]       |
 |                                                             | org.apache.commons.io:2.8.0.v20210415-0900                | [ ]       |
 | java.package:org.apache.commons.io.output                   | org.apache.commons.commons-io:2.11.0                      | [x]       |
 |                                                             | org.apache.commons.commons-io:2.11.0                      | [x]       |
 |                                                             | org.apache.commons.io:2.8.0.v20210415-0900                | [ ]       |
-| java.package:org.eclipse.jdt.core.compiler                  | org.eclipse.jdt.core:3.32.0.v20221108-1853                | [x]       |
-|                                                             | org.eclipse.jdt.core.compiler.batch:3.32.0.v20221108-1853 | [ ]       |
-| java.package:org.eclipse.jdt.internal.compiler              | org.eclipse.jdt.core:3.32.0.v20221108-1853                | [x]       |
-|                                                             | org.eclipse.jdt.core.compiler.batch:3.32.0.v20221108-1853 | [ ]       |
 | java.package:org.eclipse.jdt.internal.compiler.apt.dispatch | org.eclipse.jdt.compiler.apt:1.4.300.v20221108-0856       | [x]       |
 |                                                             | org.eclipse.jdt.core.compiler.batch:3.32.0.v20221108-1853 | [ ]       |
 | java.package:org.eclipse.jdt.internal.compiler.apt.model    | org.eclipse.jdt.compiler.apt:1.4.300.v20221108-0856       | [x]       |
 |                                                             | org.eclipse.jdt.core.compiler.batch:3.32.0.v20221108-1853 | [ ]       |
 | java.package:org.eclipse.jdt.internal.compiler.apt.util     | org.eclipse.jdt.compiler.apt:1.4.300.v20221108-0856       | [x]       |
 |                                                             | org.eclipse.jdt.core.compiler.batch:3.32.0.v20221108-1853 | [ ]       |
-| java.package:org.eclipse.jdt.internal.compiler.classfmt     | org.eclipse.jdt.core:3.32.0.v20221108-1853                | [x]       |
-|                                                             | org.eclipse.jdt.core.compiler.batch:3.32.0.v20221108-1853 | [ ]       |
-| java.package:org.eclipse.jdt.internal.compiler.env          | org.eclipse.jdt.core:3.32.0.v20221108-1853                | [x]       |
-|                                                             | org.eclipse.jdt.core.compiler.batch:3.32.0.v20221108-1853 | [ ]       |
-| java.package:org.eclipse.jdt.internal.compiler.impl         | org.eclipse.jdt.core:3.32.0.v20221108-1853                | [x]       |
-|                                                             | org.eclipse.jdt.core.compiler.batch:3.32.0.v20221108-1853 | [ ]       |
-| java.package:org.eclipse.jdt.internal.compiler.problem      | org.eclipse.jdt.core:3.32.0.v20221108-1853                | [x]       |
-|                                                             | org.eclipse.jdt.core.compiler.batch:3.32.0.v20221108-1853 | [ ]       |
 | java.package:org.eclipse.jdt.internal.compiler.tool         | org.eclipse.jdt.compiler.tool:1.3.200.v20220802-0458      | [x]       |
 |                                                             | org.eclipse.jdt.core.compiler.batch:3.32.0.v20221108-1853 | [ ]       |
-| java.package:org.osgi.service.component.annotations         | org.eclipse.osgi.services:3.11.100.v20221006-1531         | [x]       |
-|                                                             | org.osgi.service.component.annotations:1.5.0.202109301733 | [ ]       |
 | java.package:org.slf4j                                      | org.slf4j.api:1.7.30.v20200204-2150                       | [x]       |
 |                                                             | slf4j.api:1.7.36                                          | [ ]       |
 | java.package:org.slf4j.event                                | org.slf4j.api:1.7.30.v20200204-2150                       | [x]       |
@@ -135,102 +115,13 @@ dev.equo.solstice.p2.P2MultipleReposTest.query=[
 |                                                             | com.sun.jna:5.12.1                                        | [ ]       |
 | osgi.bundle:com.sun.jna.platform                            | com.sun.jna.platform:5.12.1                               | [x]       |
 |                                                             | com.sun.jna.platform:5.12.1                               | [ ]       |
-| osgi.bundle:org.eclipse.jdt.annotation                      | org.eclipse.jdt.annotation:2.2.700.v20220826-1026         | [x]       |
-|                                                             | org.eclipse.jdt.annotation:1.2.100.v20220826-1026         | [ ]       |
 +-------------------------------------------------------------+-----------------------------------------------------------+-----------+
 
-+-----------------------------------------------------------+--------------------------------------------------------------------+
-| unmet requirement                                         | needed by                                                          |
-+-----------------------------------------------------------+--------------------------------------------------------------------+
-| java.package:COM.ibm.netrexx.process                      | org.apache.ant:1.10.12.v20211102-1452                              |
-| java.package:com.google.errorprone.annotations            | com.google.guava:30.1.0.v20210127-2300                             |
-| java.package:com.google.errorprone.annotations.concurrent | com.google.guava:30.1.0.v20210127-2300                             |
-| java.package:com.jcraft.jzlib                             | com.jcraft.jsch:0.1.55.v20221112-0806                              |
-| java.package:com.sun.media.jai.codec                      | org.apache.ant:1.10.12.v20211102-1452                              |
-| java.package:com.sun.net.ssl.internal.ssl                 | org.apache.ant:1.10.12.v20211102-1452                              |
-| java.package:com.sun.org.apache.xml.internal.utils        | org.freemarker:2.3.22.v20160210-1233                               |
-| java.package:com.sun.org.apache.xpath.internal            | org.freemarker:2.3.22.v20160210-1233                               |
-| java.package:com.sun.org.apache.xpath.internal.objects    | org.freemarker:2.3.22.v20160210-1233                               |
-| java.package:com.sun.tools.javah                          | org.apache.ant:1.10.12.v20211102-1452                              |
-| java.package:com.sun.tools.javah.oldjavah                 | org.apache.ant:1.10.12.v20211102-1452                              |
-| java.package:com.sun.xml.fastinfoset.sax                  | com.sun.xml.bind:2.3.3.v20221112-0806                              |
-| java.package:com.sun.xml.fastinfoset.stax                 | com.sun.xml.bind:2.3.3.v20221112-0806                              |
-| java.package:gnu.classpath                                | org.apache.ant:1.10.12.v20211102-1452                              |
-| java.package:gnu.gcj                                      | org.apache.ant:1.10.12.v20211102-1452                              |
-| java.package:javax.mail                                   | org.apache.ant:1.10.12.v20211102-1452                              |
-| java.package:javax.mail.internet                          | org.apache.ant:1.10.12.v20211102-1452                              |
-| java.package:javax.media.jai                              | org.apache.ant:1.10.12.v20211102-1452                              |
-| java.package:jdepend.framework                            | org.apache.ant:1.10.12.v20211102-1452                              |
-| java.package:jdepend.textui                               | org.apache.ant:1.10.12.v20211102-1452                              |
-| java.package:jdepend.xmlui                                | org.apache.ant:1.10.12.v20211102-1452                              |
-| java.package:kaffe.util                                   | org.apache.ant:1.10.12.v20211102-1452                              |
-| java.package:kotlin                                       | junit-jupiter-api:5.9.1                                            |
-|                                                           | junit-jupiter-params:5.9.1                                         |
-| java.package:kotlin.collections                           | junit-jupiter-api:5.9.1                                            |
-| java.package:kotlin.jvm.functions                         | junit-jupiter-api:5.9.1                                            |
-| java.package:kotlin.jvm.internal                          | junit-jupiter-api:5.9.1                                            |
-|                                                           | junit-jupiter-params:5.9.1                                         |
-| java.package:netrexx.lang                                 | org.apache.ant:1.10.12.v20211102-1452                              |
-| java.package:org.apache.avalon.framework.logger           | org.apache.commons.logging:1.2.0.v20180409-1502                    |
-| java.package:org.apache.bcel.classfile                    | org.apache.ant:1.10.12.v20211102-1452                              |
-| java.package:org.apache.bsf                               | org.apache.ant:1.10.12.v20211102-1452                              |
-| java.package:org.apache.commons.net.bsd                   | org.apache.ant:1.10.12.v20211102-1452                              |
-| java.package:org.apache.commons.net.ftp                   | org.apache.ant:1.10.12.v20211102-1452                              |
-| java.package:org.apache.commons.net.telnet                | org.apache.ant:1.10.12.v20211102-1452                              |
-| java.package:org.apache.env                               | org.apache.ant:1.10.12.v20211102-1452                              |
-| java.package:org.apache.harmony.luni.util                 | org.apache.ant:1.10.12.v20211102-1452                              |
-| java.package:org.apache.log                               | org.apache.commons.logging:1.2.0.v20180409-1502                    |
-|                                                           | org.freemarker:2.3.22.v20160210-1233                               |
-| java.package:org.apache.log4j                             | org.apache.ant:1.10.12.v20211102-1452                              |
-|                                                           | org.apache.commons.logging:1.2.0.v20180409-1502                    |
-|                                                           | org.freemarker:2.3.22.v20160210-1233                               |
-| java.package:org.apache.oro.text.regex                    | org.apache.ant:1.10.12.v20211102-1452                              |
-| java.package:org.apache.regexp                            | org.apache.ant:1.10.12.v20211102-1452                              |
-| java.package:org.apache.xalan.trace                       | org.apache.ant:1.10.12.v20211102-1452                              |
-| java.package:org.apache.xalan.transformer                 | org.apache.ant:1.10.12.v20211102-1452                              |
-| java.package:org.apache.xml.resolver                      | org.apache.ant:1.10.12.v20211102-1452                              |
-| java.package:org.apache.xml.resolver.helpers              | org.apache.ant:1.10.12.v20211102-1452                              |
-| java.package:org.apache.xml.resolver.tools                | org.apache.ant:1.10.12.v20211102-1452                              |
-| java.package:org.apache.xml.utils                         | org.freemarker:2.3.22.v20160210-1233                               |
-| java.package:org.apache.xpath                             | org.freemarker:2.3.22.v20160210-1233                               |
-| java.package:org.apache.xpath.objects                     | org.freemarker:2.3.22.v20160210-1233                               |
-| java.package:org.checkerframework.checker.nullness.qual   | com.google.guava:30.1.0.v20210127-2300                             |
-| java.package:org.conscrypt                                | org.apache.httpcomponents.client5.httpclient5:5.1.3.v20221013-1742 |
-|                                                           | org.apache.httpcomponents.core5.httpcore5-h2:5.1.4.v20221013-1742  |
-| java.package:org.dom4j                                    | org.freemarker:2.3.22.v20160210-1233                               |
-| java.package:org.dom4j.tree                               | org.freemarker:2.3.22.v20160210-1233                               |
-| java.package:org.eclipse.jetty.jmx                        | org.eclipse.jetty.io:10.0.12                                       |
-|                                                           | org.eclipse.jetty.server:10.0.12                                   |
-|                                                           | org.eclipse.jetty.servlet:10.0.12                                  |
-| java.package:org.eclipse.swt.accessibility2               | org.eclipse.swt:3.122.0.v20221123-2302                             |
-| java.package:org.glassfish.hk2.osgiresourcelocator        | jakarta.xml.bind:2.3.3.v20221112-0806                              |
-| java.package:org.jaxen                                    | org.freemarker:2.3.22.v20160210-1233                               |
-| java.package:org.jaxen.dom                                | org.freemarker:2.3.22.v20160210-1233                               |
-| java.package:org.jaxen.dom4j                              | org.freemarker:2.3.22.v20160210-1233                               |
-| java.package:org.jaxen.jdom                               | org.freemarker:2.3.22.v20160210-1233                               |
-| java.package:org.jdom                                     | org.freemarker:2.3.22.v20160210-1233                               |
-| java.package:org.jdom.input                               | org.freemarker:2.3.22.v20160210-1233                               |
-| java.package:org.jdom.output                              | org.freemarker:2.3.22.v20160210-1233                               |
-| java.package:org.junit.Suite                              | org.apache.ant:1.10.12.v20211102-1452                              |
-| java.package:org.jvnet.fastinfoset                        | com.sun.xml.bind:2.3.3.v20221112-0806                              |
-| java.package:org.jvnet.fastinfoset.stax                   | com.sun.xml.bind:2.3.3.v20221112-0806                              |
-| java.package:org.jvnet.staxex                             | com.sun.xml.bind:2.3.3.v20221112-0806                              |
-| java.package:org.mozilla.javascript                       | org.freemarker:2.3.22.v20160210-1233                               |
-| java.package:org.python.core                              | org.freemarker:2.3.22.v20160210-1233                               |
-| java.package:org.python.util                              | org.freemarker:2.3.22.v20160210-1233                               |
-| java.package:org.zeroturnaround.javarebel                 | org.freemarker:2.3.22.v20160210-1233                               |
-| java.package:sun.nio.ch                                   | org.apache.commons.commons-io:2.11.0                               |
-| java.package:sun.rmi.rmic                                 | org.apache.ant:1.10.12.v20211102-1452                              |
-| java.package:sun.tools.javac                              | org.apache.ant:1.10.12.v20211102-1452                              |
-| java.package:sun.tools.native2ascii                       | org.apache.ant:1.10.12.v20211102-1452                              |
-| java.package:weblogic                                     | org.apache.ant:1.10.12.v20211102-1452                              |
-+-----------------------------------------------------------+--------------------------------------------------------------------+
-
+No unmet requirements.
 +---------------------------------------------------------------------------------+-------------------------+
 | maven coordinate / p2 id                                                        | repo                    |
 +---------------------------------------------------------------------------------+-------------------------+
 | com.ibm.icu:icu4j:72.1                                                          | maven central           |
-| commons-fileupload:commons-fileupload:1.4                                       | maven central           |
 | commons-io:commons-io:2.11.0                                                    | maven central           |
 | jakarta.servlet:jakarta.servlet-api:4.0.4                                       | maven central           |
 | javax.servlet.jsp:javax.servlet.jsp-api:2.3.3                                   | maven central           |
