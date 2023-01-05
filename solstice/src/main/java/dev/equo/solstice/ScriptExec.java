@@ -15,7 +15,6 @@ package dev.equo.solstice;
 
 import com.diffplug.common.swt.os.OS;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -37,9 +36,8 @@ class ScriptExec {
 		return new ScriptExec(script);
 	}
 
-	private String script;
+	private final String script;
 	private Optional<File> directory = Optional.empty();
-	private boolean isVisible = false;
 
 	private ScriptExec(String script) {
 		this.script = Objects.requireNonNull(script);
@@ -48,12 +46,6 @@ class ScriptExec {
 	/** Sets the directory that the script will be run in. */
 	public ScriptExec directory(File directory) {
 		this.directory = Optional.of(directory);
-		return this;
-	}
-
-	/** Runs the script in a visible way. */
-	public ScriptExec visible() {
-		isVisible = true;
 		return this;
 	}
 
@@ -74,10 +66,10 @@ class ScriptExec {
 						directory.map(dir -> "cd " + quote(dir) + "\n").orElse("") + script);
 
 		// get the right arguments
-		List<String> fullArgs = getPlatformCmds(scriptFile, isVisible, isSeparate);
+		List<String> fullArgs = getPlatformCmds(scriptFile, isSeparate);
 
 		// set the cmds
-		int exitValue = JavaLaunch.launchAndInheritIO(null, fullArgs);
+		int exitValue = Launcher.launchAndInheritIO(null, fullArgs);
 		if (exitValue != EXIT_VALUE_SUCCESS) {
 			throw new RuntimeException("'" + script + "' exited with " + exitValue);
 		}
@@ -152,8 +144,7 @@ class ScriptExec {
 	 * Writes all of byte[] content to the given file, being sure to flush the file to the OS before
 	 * returning.
 	 */
-	private static File writeFlushed(File file, byte[] content)
-			throws FileNotFoundException, IOException {
+	private static File writeFlushed(File file, byte[] content) throws IOException {
 		try (FileOutputStream output = new FileOutputStream(file)) {
 			output.write(content);
 			output.flush();
@@ -163,29 +154,18 @@ class ScriptExec {
 	}
 
 	/** Returns the arguments needed to run the scriptFile with the given properties. */
-	private static List<String> getPlatformCmds(
-			File scriptFile, boolean isVisible, boolean isSeparate)
-			throws IOException, InterruptedException {
-		String scriptAbsPath = scriptFile.getAbsolutePath();
-		String scriptToExecute = scriptAbsPath;
+	private static List<String> getPlatformCmds(File scriptFile, boolean isSeparate)
+			throws IOException {
+		String scriptToExecute = scriptFile.getAbsolutePath();
 		List<String> args = new ArrayList<>();
-
 		if (OS.getNative().isWindows()) {
 			// wscript.exe invisible.vbs script.bat
 			args.addAll(
 					Arrays.asList(
-							"wscript.exe",
-							createInvisibleVbs(isSeparate, isVisible).getAbsolutePath(),
-							scriptToExecute));
+							"wscript.exe", createInvisibleVbs(isSeparate).getAbsolutePath(), scriptToExecute));
 		} else {
 			// use sh to execute
-			if (isVisible) {
-				// open an xterm on the (verbose, interactive) sh if we want it visible
-				String xterm = OS.getNative().isMac() ? "/opt/X11/bin/xterm" : "xterm";
-				args.addAll(Arrays.asList(xterm, "-e", "/bin/sh", "-vi", scriptToExecute));
-			} else {
-				args.addAll(Arrays.asList("/bin/sh", scriptToExecute));
-			}
+			args.addAll(Arrays.asList("/bin/sh", scriptToExecute));
 
 			if (isSeparate) {
 				File blockingScript = createSelfDeletingScript(quoteAll(args));
@@ -198,12 +178,12 @@ class ScriptExec {
 	}
 
 	/** Creates a .vbs file which will execute a batch command and then delete itself. */
-	private static File createInvisibleVbs(boolean isSeparate, boolean isVisible) throws IOException {
+	private static File createInvisibleVbs(boolean isSeparate) throws IOException {
 		return createGenericScript(
 				".vbs",
 				(file, printer) -> {
 					// args are at http://ss64.com/vb/run.html
-					String windowStyle = isVisible ? "1" : "0";
+					String windowStyle = "1";
 					String waitOnReturn = isSeparate ? "False" : "True";
 					// open the shell
 					printer.println(
@@ -240,12 +220,7 @@ class ScriptExec {
 	}
 
 	/** Quotes a list of String or File objects. */
-	public static String quoteAll(Object... args) {
-		return quoteAll(Arrays.asList(args));
-	}
-
-	/** Quotes a list of String or File objects. */
-	public static String quoteAll(List<? extends Object> args) {
+	public static String quoteAll(List<?> args) {
 		StringBuilder completeArgs = new StringBuilder();
 		if (args.size() == 0) {
 			return "";

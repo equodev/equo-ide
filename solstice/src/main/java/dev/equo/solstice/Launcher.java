@@ -36,22 +36,9 @@ import java.util.zip.ZipOutputStream;
  *
  * <p>https://discuss.gradle.org/t/javaexec-fails-for-long-classpaths-on-windows/15266
  */
-public class JavaLaunch {
-	public enum Mode {
-		BLOCKING,
-		SEPARATE,
-		SEPARATE_WITH_OWN_CONSOLE;
-
-		public static Mode isBlockingAndHasOwnConsole(boolean isBlocking, boolean hasConsole) {
-			if (isBlocking) {
-				return BLOCKING;
-			} else {
-				return hasConsole ? SEPARATE_WITH_OWN_CONSOLE : SEPARATE;
-			}
-		}
-	}
-
-	public static int launch(Mode mode, String mainClass, Iterable<File> cp, String... args)
+public class Launcher {
+	public static int launchJavaBlocking(
+			boolean blocking, String mainClass, Iterable<File> cp, String... args)
 			throws IOException, InterruptedException {
 		String javaHome = System.getProperty("java.home");
 		String javaBin = javaHome + File.separator + "bin" + File.separator + "java";
@@ -62,7 +49,7 @@ public class JavaLaunch {
 			javaCmd = "java";
 		}
 
-		File classpathJar = JavaLaunch.toJarWithClasspath(cp);
+		File classpathJar = Launcher.toJarWithClasspath(cp);
 		classpathJar.deleteOnExit();
 
 		List<String> command = new ArrayList<>();
@@ -75,14 +62,10 @@ public class JavaLaunch {
 		command.add(mainClass);
 		command.addAll(Arrays.asList(args));
 
-		if (mode == Mode.BLOCKING) {
+		if (blocking) {
 			return launchAndInheritIO(null, command);
 		} else {
-			var script = ScriptExec.script(ScriptExec.quoteAll(command));
-			if (mode == Mode.SEPARATE_WITH_OWN_CONSOLE) {
-				script.visible();
-			}
-			script.execSeparate();
+			ScriptExec.script(ScriptExec.quoteAll(command)).execSeparate();
 			return 0;
 		}
 	}

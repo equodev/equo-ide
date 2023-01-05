@@ -14,7 +14,7 @@
 package dev.equo.ide.maven;
 
 import com.diffplug.common.swt.os.SwtPlatform;
-import dev.equo.solstice.JavaLaunch;
+import dev.equo.solstice.Launcher;
 import dev.equo.solstice.NestedJars;
 import dev.equo.solstice.p2.JdtSetup;
 import dev.equo.solstice.p2.P2Client;
@@ -138,8 +138,8 @@ public class LaunchMojo extends AbstractMojo {
 			}
 
 			var exitCode =
-					JavaLaunch.launch(
-							JavaLaunch.Mode.isBlockingAndHasOwnConsole(initOnly, showConsole),
+					Launcher.launchJavaBlocking(
+							initOnly || showConsole,
 							"dev.equo.solstice.IdeMain",
 							files,
 							"-installDir",
@@ -149,7 +149,7 @@ public class LaunchMojo extends AbstractMojo {
 							"-initOnly",
 							Boolean.toString(initOnly),
 							"-Dorg.slf4j.simpleLogger.defaultLogLevel=INFO");
-			if (initOnly) {
+			if (initOnly || showConsole) {
 				System.out.println("exit code: " + exitCode);
 			}
 		} catch (DependencyResolutionException | IOException | InterruptedException e) {

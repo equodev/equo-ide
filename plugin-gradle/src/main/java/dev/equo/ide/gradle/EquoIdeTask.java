@@ -13,7 +13,7 @@
  *******************************************************************************/
 package dev.equo.ide.gradle;
 
-import dev.equo.solstice.JavaLaunch;
+import dev.equo.solstice.Launcher;
 import dev.equo.solstice.NestedJars;
 import dev.equo.solstice.p2.P2Client;
 import dev.equo.solstice.p2.P2Query;
@@ -101,8 +101,8 @@ public abstract class EquoIdeTask extends DefaultTask {
 
 		boolean useAtomos = dontUseAtomosOverride ? false : getUseAtomos().get();
 		var exitCode =
-				JavaLaunch.launch(
-						JavaLaunch.Mode.isBlockingAndHasOwnConsole(initOnly, showConsole),
+				Launcher.launchJavaBlocking(
+						initOnly || showConsole,
 						"dev.equo.solstice.IdeMain",
 						p2AndMavenDeps.plus(nestedDefs),
 						"-installDir",
@@ -112,7 +112,7 @@ public abstract class EquoIdeTask extends DefaultTask {
 						"-initOnly",
 						Boolean.toString(initOnly),
 						"-Dorg.slf4j.simpleLogger.defaultLogLevel=INFO");
-		if (initOnly) {
+		if (initOnly || showConsole) {
 			System.out.println("exit code: " + exitCode);
 		}
 	}
