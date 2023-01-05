@@ -24,6 +24,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -143,10 +144,11 @@ public class Solstice extends ServiceRegistry {
 	private final TreeSet<String> pkgs = new TreeSet<>();
 
 	private void discoverAndSortBundles() {
-		var manifests = SolsticeManifest.discoverAndSortBundles();
-		for (var manifest : manifests) {
+		var bundleSet = SolsticeManifest.discoverBundles();
+		for (var manifest : bundleSet.getBundles()) {
 			bundles.add(new ShimBundle(manifest));
 		}
+		bundles.sort(Comparator.comparing(ShimBundle::getSymbolicName));
 		for (var bundle : bundles) {
 			var host = bundle.fragmentHost();
 			if (host != null) {
