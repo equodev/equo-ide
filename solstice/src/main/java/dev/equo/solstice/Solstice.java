@@ -102,8 +102,6 @@ public class Solstice extends ServiceRegistry {
 				throw Unchecked.wrap(e);
 			}
 		}
-		init.bundlePolicy().initFinished();
-		init.packagePolicy().initFinished();
 	}
 
 	public void activateWorkbenchBundles() {
@@ -145,6 +143,7 @@ public class Solstice extends ServiceRegistry {
 
 	private void discoverAndSortBundles() {
 		var bundleSet = SolsticeManifest.discoverBundles();
+		bundleSet.warnAndModifyManifestsToFix(logger);
 		for (var manifest : bundleSet.getBundles()) {
 			bundles.add(new ShimBundle(manifest));
 		}
@@ -514,8 +513,7 @@ public class Solstice extends ServiceRegistry {
 				var bundle = bundleForPkg(pkg);
 				logger.info("{} import {} package {}", this, bundle == null ? "missing" : bundle, pkg);
 				if (bundle == null) {
-					init.packagePolicy().isMissing(pkg, this);
-					pkgs.add(pkg);
+					throw new IllegalArgumentException(this + " imports missing package " + pkg);
 				} else {
 					if (!bundle.tryActivate()) {
 						addToWorkbenchQueue(this);
@@ -540,7 +538,7 @@ public class Solstice extends ServiceRegistry {
 						return false;
 					}
 				} else {
-					init.bundlePolicy().isMissing(required, this);
+					throw new IllegalArgumentException(this + " requires missing bundle " + required);
 				}
 			}
 			logger.info("/START ACTIVATE {}", this);

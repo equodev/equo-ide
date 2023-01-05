@@ -38,8 +38,6 @@ import org.osgi.service.packageadmin.PackageAdmin;
 /** Controls the initialization of the {@link Solstice} runtime. */
 public class SolsticeInit {
 	private File installDir;
-	private final MissingPolicy packages = new MissingPolicy.Permissive("packages");
-	private final MissingPolicy bundles = new MissingPolicy.Permissive("bundles");
 
 	public SolsticeInit(File installDir) {
 		this.installDir = installDir;
@@ -75,14 +73,6 @@ public class SolsticeInit {
 
 	public List<String> requiresWorkbench() {
 		return Arrays.asList("org.eclipse.debug.ui", "org.eclipse.help.ui");
-	}
-
-	public MissingPolicy bundlePolicy() {
-		return bundles;
-	}
-
-	public MissingPolicy packagePolicy() {
-		return packages;
 	}
 
 	public void bootstrapServices(Bundle systemBundle, BundleContext context) {
