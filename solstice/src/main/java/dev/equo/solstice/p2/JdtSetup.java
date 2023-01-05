@@ -23,6 +23,7 @@ public class JdtSetup {
 		query.excludePrefix("org.eclipse.equinox.console");
 		query.excludePrefix("org.eclipse.equinox.p2");
 		query.exclude("org.eclipse.equinox.supplement");
+		query.excludeSuffix(".source");
 		query.install("org.eclipse.releng.java.languages.categoryIU");
 		query.install("org.eclipse.platform.ide.categoryIU");
 	}

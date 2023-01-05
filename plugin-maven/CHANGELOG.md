@@ -5,6 +5,8 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 ## [Unreleased]
 ### Added
 - Added a parameter `useAtomos`, default value is `true`. ([#36](https://github.com/equodev/equo-ide/pull/36))
+### Fixed
+- Dependency resolution no longer walks through unnecessary transitive dependency versions. (fixes [#37](https://github.com/equodev/equo-ide/issues/37)) 
 
 ## [0.6.0] - 2022-12-16
 ### Added
