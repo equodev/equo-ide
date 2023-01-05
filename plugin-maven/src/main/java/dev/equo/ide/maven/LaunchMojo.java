@@ -71,12 +71,22 @@ public class LaunchMojo extends AbstractMojo {
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		try {
-			System.setProperty("osgi.platform", SwtPlatform.getRunning().toString());
-
 			List<Dependency> deps = new ArrayList<>();
 			deps.add(
 					new Dependency(
 							new DefaultArtifact("dev.equo.ide:solstice:" + NestedJars.solsticeVersion()), null));
+			deps.add(
+					new Dependency(
+							new DefaultArtifact("org.slf4j:slf4j-api:2.0.6"),
+							null,
+							null,
+							EXCLUDE_ALL_TRANSITIVES));
+			deps.add(
+					new Dependency(
+							new DefaultArtifact("org.slf4j:slf4j-simple:2.0.6"),
+							null,
+							null,
+							EXCLUDE_ALL_TRANSITIVES));
 
 			var workspaceRegistry = WorkspaceRegistry.instance();
 			var workspaceDir = workspaceRegistry.workspaceDir(baseDir);

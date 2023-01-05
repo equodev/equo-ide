@@ -13,7 +13,6 @@
  *******************************************************************************/
 package dev.equo.ide.gradle;
 
-import com.diffplug.common.swt.os.SwtPlatform;
 import dev.equo.solstice.p2.CacheLocations;
 import dev.equo.solstice.p2.P2Client;
 import dev.equo.solstice.p2.WorkspaceRegistry;
@@ -26,7 +25,6 @@ import org.gradle.api.GradleException;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
-import org.gradle.api.artifacts.ModuleVersionSelector;
 import org.gradle.api.attributes.Bundling;
 
 public class EquoIdeGradlePlugin implements Plugin<Project> {
@@ -138,21 +136,7 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 												Bundling.BUNDLING_ATTRIBUTE,
 												project.getObjects().named(Bundling.class, Bundling.EXTERNAL));
 									});
-							config
-									.getResolutionStrategy()
-									.eachDependency(
-											details -> {
-												ModuleVersionSelector req = details.getRequested();
-												if (req.getName().contains($_OSGI_PLATFORM)) {
-													String running = SwtPlatform.getRunning().toString();
-													details.useTarget(
-															req.getGroup()
-																	+ ":"
-																	+ req.getName().replace($_OSGI_PLATFORM, running)
-																	+ ":"
-																	+ req.getVersion());
-												}
-											});
+							config.setTransitive(false);
 						});
 	}
 
