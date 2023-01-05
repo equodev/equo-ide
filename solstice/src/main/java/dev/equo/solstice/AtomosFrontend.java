@@ -70,13 +70,13 @@ public class AtomosFrontend {
 		public Map<String, String> atomosHeaders(SolsticeManifest manifest) {
 			Map<String, String> atomos = new LinkedHashMap<>(manifest.getHeadersOriginal());
 			atomos.remove(Constants.REQUIRE_CAPABILITY);
-			set(atomos, Constants.IMPORT_PACKAGE, manifest.getPkgImports());
-			set(atomos, Constants.EXPORT_PACKAGE, manifest.getPkgExports());
-			set(atomos, Constants.REQUIRE_BUNDLE, manifest.getRequiredBundles());
+			setHeader(atomos, Constants.IMPORT_PACKAGE, manifest.getPkgImports());
+			setHeader(atomos, Constants.EXPORT_PACKAGE, manifest.getPkgExports());
+			setHeader(atomos, Constants.REQUIRE_BUNDLE, manifest.getRequiredBundles());
 			return atomos;
 		}
 
-		private static void set(Map<String, String> map, String key, List<String> values) {
+		private static void setHeader(Map<String, String> map, String key, List<String> values) {
 			if (values.isEmpty()) {
 				map.remove(key);
 			} else {
@@ -105,33 +105,31 @@ public class AtomosFrontend {
 		framework.start();
 		bundleContext = framework.getBundleContext();
 
-		// Atomos is backing our bundles with ConnectBundleFile
-		// versus Eclipse which backs them with FileBundleEntry
-		// and that causes problems in org.eclipse.core.internal.runtime.PlatformURLConverter
-		// We'll workaround for now with this surgery
-		{
-			var converters =
-					bundleContext.getServiceReferences(URLConverter.class, "(protocol=platform)");
-			for (ServiceReference<URLConverter> toRemove : converters) {
-				((org.eclipse.osgi.internal.serviceregistry.ServiceReferenceImpl) toRemove)
-						.getRegistration()
-						.unregister();
-			}
-			bundleContext.registerService(
-					URLConverter.class,
-					new URLConverter() {
-						@Override
-						public URL toFileURL(URL url) {
-							return url;
-						}
+		urlWorkaround();
+	}
 
-						@Override
-						public URL resolve(URL url) {
-							return url;
-						}
-					},
-					Dictionaries.of("protocol", "platform"));
+	/** https://github.com/eclipse-equinox/equinox/issues/179 */
+	private void urlWorkaround() throws InvalidSyntaxException {
+		var converters = bundleContext.getServiceReferences(URLConverter.class, "(protocol=platform)");
+		for (ServiceReference<URLConverter> toRemove : converters) {
+			((org.eclipse.osgi.internal.serviceregistry.ServiceReferenceImpl) toRemove)
+					.getRegistration()
+					.unregister();
 		}
+		bundleContext.registerService(
+				URLConverter.class,
+				new URLConverter() {
+					@Override
+					public URL toFileURL(URL url) {
+						return url;
+					}
+
+					@Override
+					public URL resolve(URL url) {
+						return url;
+					}
+				},
+				Dictionaries.of("protocol", "platform"));
 	}
 
 	public BundleContext getBundleContext() {
