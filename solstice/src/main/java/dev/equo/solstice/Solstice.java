@@ -24,6 +24,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -34,8 +35,6 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Function;
-import java.util.jar.Attributes;
-import java.util.jar.Manifest;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -100,15 +99,9 @@ public class Solstice extends ServiceRegistry {
 			try {
 				bundle.tryActivate();
 			} catch (ActivatorException e) {
-				if (init.okayIfActivatorFails().contains(bundle.getSymbolicName())) {
-					logger.warn(e.bundle + " activator exception but okayIfActivatorFails", e);
-				} else {
-					throw Unchecked.wrap(e);
-				}
+				throw Unchecked.wrap(e);
 			}
 		}
-		init.bundlePolicy().initFinished();
-		init.packagePolicy().initFinished();
 	}
 
 	public void activateWorkbenchBundles() {
@@ -124,11 +117,7 @@ public class Solstice extends ServiceRegistry {
 			try {
 				bundle.tryActivate();
 			} catch (ActivatorException e) {
-				if (init.okayIfActivatorFails().contains(bundle.getSymbolicName())) {
-					logger.warn(e.bundle + " activator exception but okayIfActivatorFails", e);
-				} else {
-					throw Unchecked.wrap(e);
-				}
+				throw Unchecked.wrap(e);
 			}
 		}
 	}
@@ -142,7 +131,7 @@ public class Solstice extends ServiceRegistry {
 	}
 
 	private boolean workbenchIsActive = false;
-	private Set<ShimBundle> workbenchQueue = new LinkedHashSet<>();
+	private final Set<ShimBundle> workbenchQueue = new LinkedHashSet<>();
 
 	@Override
 	protected Bundle systemBundle() {
@@ -153,33 +142,12 @@ public class Solstice extends ServiceRegistry {
 	private final TreeSet<String> pkgs = new TreeSet<>();
 
 	private void discoverAndSortBundles() {
-		Enumeration<URL> manifests =
-				Unchecked.get(() -> getClass().getClassLoader().getResources("META-INF/MANIFEST.MF"));
-		while (manifests.hasMoreElements()) {
-			bundles.add(new ShimBundle(manifests.nextElement()));
+		var bundleSet = SolsticeManifest.discoverBundles();
+		bundleSet.warnAndModifyManifestsToFix(logger);
+		for (var manifest : bundleSet.getBundles()) {
+			bundles.add(new ShimBundle(manifest));
 		}
-		List<String> startOrder = init.startOrder();
-		bundles.sort(
-				(o1, o2) -> {
-					int start1 = startOrder.indexOf(o1.symbolicName);
-					int start2 = startOrder.indexOf(o2.symbolicName);
-					if (start1 != -1 || start2 != -1) {
-						if (start1 == -1) {
-							start1 = Integer.MAX_VALUE;
-						}
-						if (start2 == -1) {
-							start2 = Integer.MAX_VALUE;
-						}
-						return start1 - start2;
-					}
-					if ((o1.symbolicName != null) == (o2.symbolicName != null)) {
-						// sort based on name for the same "types"
-						return o1.toString().compareTo(o2.toString());
-					} else {
-						// otherwise put the symbolic names first
-						return o1.symbolicName != null ? -1 : 1;
-					}
-				});
+		bundles.sort(Comparator.comparing(ShimBundle::getSymbolicName));
 		for (var bundle : bundles) {
 			var host = bundle.fragmentHost();
 			if (host != null) {
@@ -204,7 +172,7 @@ public class Solstice extends ServiceRegistry {
 	public Bundle bundleForURL(URL source) {
 		String sourceString = "jar:" + source.toExternalForm() + "!";
 		for (ShimBundle bundle : bundles) {
-			if (sourceString.equals(bundle.jarUrl)) {
+			if (sourceString.equals(bundle.manifest.getJarUrl())) {
 				return bundle;
 			}
 		}
@@ -213,7 +181,7 @@ public class Solstice extends ServiceRegistry {
 
 	private ShimBundle bundleForPkg(String targetPkg) {
 		for (var bundle : bundles) {
-			if (bundle.pkgExports.contains(targetPkg)) {
+			if (bundle.manifest.getPkgExports().contains(targetPkg)) {
 				return bundle;
 			}
 		}
@@ -235,7 +203,7 @@ public class Solstice extends ServiceRegistry {
 
 				@Override
 				public String getSymbolicName() {
-					return "osgi-shim-system-bundle";
+					return "solstice-system-bundle";
 				}
 
 				@Override
@@ -372,7 +340,7 @@ public class Solstice extends ServiceRegistry {
 
 	@Override
 	public Bundle[] getBundles() {
-		return bundles.stream().filter(bundle -> bundle.symbolicName != null).toArray(Bundle[]::new);
+		return bundles.toArray(new Bundle[0]);
 	}
 
 	@Override
@@ -414,9 +382,6 @@ public class Solstice extends ServiceRegistry {
 	}
 
 	private synchronized void notifyBundleListeners(int type, ShimBundle bundle) {
-		if (bundle.symbolicName == null) {
-			return;
-		}
 		var event = new BundleEvent(type, bundle);
 		for (BundleListener listener : bundleListeners) {
 			listener.bundleChanged(event);
@@ -428,81 +393,23 @@ public class Solstice extends ServiceRegistry {
 		return id == -1 ? systemBundle : bundles.get((int) id);
 	}
 
-	static final Attributes.Name SYMBOLIC_NAME = new Attributes.Name(Constants.BUNDLE_SYMBOLICNAME);
-	static final Attributes.Name ACTIVATOR = new Attributes.Name(Constants.BUNDLE_ACTIVATOR);
-	static final Attributes.Name REQUIRE_BUNDLE = new Attributes.Name(Constants.REQUIRE_BUNDLE);
-	static final Attributes.Name IMPORT_PACKAGE = new Attributes.Name(Constants.IMPORT_PACKAGE);
-	static final Attributes.Name EXPORT_PACKAGE = new Attributes.Name(Constants.EXPORT_PACKAGE);
-
-	static final String MANIFEST_PATH = "/META-INF/MANIFEST.MF";
-
 	public class ShimBundle extends BundleContextDelegate implements Unimplemented.Bundle {
-		final String jarUrl;
+		final SolsticeManifest manifest;
 		final @Nullable String activator;
-		final @Nullable String symbolicName;
-		final List<String> requiredBundles;
-		final Hashtable<String, String> headers;
 		final List<ShimBundle> fragments = new ArrayList<>();
-		final List<String> pkgImports, pkgExports;
+		final Hashtable<String, String> headers = new Hashtable<>();
 
-		ShimBundle(URL manifestURL) {
+		ShimBundle(SolsticeManifest manifest) {
 			super(Solstice.this);
-			var externalForm = manifestURL.toExternalForm();
-			if (!externalForm.endsWith(MANIFEST_PATH)) {
-				throw new IllegalArgumentException(
-						"Expected manifest to end with " + MANIFEST_PATH + " but was " + externalForm);
-			}
-			jarUrl = externalForm.substring(0, externalForm.length() - MANIFEST_PATH.length());
-			Manifest manifest;
-			try (InputStream stream = manifestURL.openStream()) {
-				manifest = new Manifest(stream);
-			} catch (IOException e) {
-				throw Unchecked.wrap(e);
-			}
-			activator = manifest.getMainAttributes().getValue(ACTIVATOR);
-			String symbolicNameRaw = manifest.getMainAttributes().getValue(SYMBOLIC_NAME);
-			if (symbolicNameRaw == null) {
-				symbolicName = null;
-			} else {
-				// strip off singleton stuff
-				int firstDirective = symbolicNameRaw.indexOf(';');
-				if (firstDirective == -1) {
-					symbolicName = symbolicNameRaw;
-				} else {
-					symbolicName = symbolicNameRaw.substring(0, firstDirective);
-				}
-			}
-			if (!jarUrl.endsWith("!")) {
-				if (jarUrl.endsWith("build/resources/main")) {
-					// we're inside a Gradle build/test, no worries
-				} else {
-					throw new IllegalArgumentException(
-							"Must end with !  SEE getEntry if this changes  " + jarUrl);
-				}
-			}
-			requiredBundles = requiredBundles(manifest);
-			if (symbolicName != null) {
-				var additional = init.additionalDeps().get(symbolicName);
-				if (additional != null) {
-					requiredBundles.addAll(additional);
-				}
-			}
-			pkgImports = parsePackages(manifest.getMainAttributes().get(IMPORT_PACKAGE));
-			pkgExports = parsePackages(manifest.getMainAttributes().get(EXPORT_PACKAGE));
-			// if we export a package, we don't actually have to import it, that's just for letting
-			// multiple bundles define the same classes, which is a dubious feature to support
-			// https://access.redhat.com/documentation/en-us/red_hat_jboss_fuse/6.3/html/managing_osgi_dependencies/importexport
-			pkgImports.removeAll(pkgExports);
-
-			headers = new Hashtable<>();
+			this.manifest = manifest;
+			activator = manifest.getHeadersOriginal().get(Constants.BUNDLE_ACTIVATOR);
 			manifest
-					.getMainAttributes()
+					.getHeadersOriginal()
 					.forEach(
 							(key, value) -> {
-								String keyStr = key.toString();
-								if (!Constants.IMPORT_PACKAGE.equals(keyStr)
-										&& !Constants.EXPORT_PACKAGE.equals(keyStr)) {
-									headers.put(keyStr, value.toString());
+								if (!Constants.IMPORT_PACKAGE.equals(key)
+										&& !Constants.EXPORT_PACKAGE.equals(key)) {
+									headers.put(key, value);
 								}
 							});
 		}
@@ -512,7 +419,7 @@ public class Solstice extends ServiceRegistry {
 		}
 
 		String fragmentHost() {
-			var host = headers.get(Constants.FRAGMENT_HOST);
+			var host = manifest.getHeadersOriginal().get(Constants.FRAGMENT_HOST);
 			if (host == null) {
 				return null;
 			}
@@ -525,49 +432,13 @@ public class Solstice extends ServiceRegistry {
 			return host == null ? null : bundleByName(host);
 		}
 
-		private List<String> parsePackages(Object attribute) {
-			if (attribute == null) {
-				return Collections.emptyList();
-			}
-			return parseManifestHeaderSimple(attribute.toString());
-		}
-
-		private List<String> requiredBundles(Manifest manifest) {
-			String requireBundle = manifest.getMainAttributes().getValue(REQUIRE_BUNDLE);
-			if (requireBundle == null) {
-				return Collections.emptyList();
-			}
-			return parseManifestHeaderSimple(requireBundle);
-		}
-
-		/** Parse out a manifest header, and ignore the versions */
-		private List<String> parseManifestHeaderSimple(String in) {
-			String[] bundlesAndVersions = in.split(",");
-			List<String> required = new ArrayList<>(bundlesAndVersions.length);
-			for (String s : bundlesAndVersions) {
-				int attrDelim = s.indexOf(';');
-				if (attrDelim == -1) {
-					attrDelim = s.length();
-				}
-				String bundle = s.substring(0, attrDelim);
-				if (bundle.indexOf('"') == -1) {
-					required.add(bundle.trim());
-				}
-			}
-			return required;
-		}
-
 		public ShimBundle bundleByName(String name) {
 			return Solstice.this.bundleByName(name);
 		}
 
 		@Override
 		public String toString() {
-			if (symbolicName != null) {
-				return symbolicName;
-			} else {
-				return jarUrl;
-			}
+			return manifest.toString();
 		}
 
 		@Override
@@ -623,7 +494,7 @@ public class Solstice extends ServiceRegistry {
 				return true;
 			}
 			if (!workbenchIsActive) {
-				if (init.requiresWorkbench().contains(symbolicName)) {
+				if (init.requiresWorkbench().contains(manifest.getSymbolicName())) {
 					logger.info("Activating {} will wait for workbench", this);
 					addToWorkbenchQueue(this);
 					return false;
@@ -632,8 +503,8 @@ public class Solstice extends ServiceRegistry {
 			activating = true;
 
 			logger.info("Request activate {}", this);
-			pkgs.addAll(pkgExports);
-			if ("org.eclipse.osgi".equals(symbolicName)) {
+			pkgs.addAll(manifest.getPkgExports());
+			if ("org.eclipse.osgi".equals(getSymbolicName())) {
 				state = ACTIVE;
 				// skip org.eclipse.osgi on purpose
 				logger.info("  skipping because of shim implementation");
@@ -644,8 +515,7 @@ public class Solstice extends ServiceRegistry {
 				var bundle = bundleForPkg(pkg);
 				logger.info("{} import {} package {}", this, bundle == null ? "missing" : bundle, pkg);
 				if (bundle == null) {
-					init.packagePolicy().isMissing(pkg, this);
-					pkgs.add(pkg);
+					throw new IllegalArgumentException(this + " imports missing package " + pkg);
 				} else {
 					if (!bundle.tryActivate()) {
 						addToWorkbenchQueue(this);
@@ -654,6 +524,11 @@ public class Solstice extends ServiceRegistry {
 					}
 				}
 				pkg = missingPkg();
+			}
+			var requiredBundles = new ArrayList<>(manifest.getRequiredBundles());
+			var additional = init.additionalDeps().get(getSymbolicName());
+			if (additional != null) {
+				requiredBundles.addAll(additional);
 			}
 			for (var required : requiredBundles) {
 				logger.info("{} requires {}", this, required);
@@ -665,7 +540,7 @@ public class Solstice extends ServiceRegistry {
 						return false;
 					}
 				} else {
-					init.bundlePolicy().isMissing(required, this);
+					throw new IllegalArgumentException(this + " requires missing bundle " + required);
 				}
 			}
 			logger.info("/START ACTIVATE {}", this);
@@ -681,11 +556,7 @@ public class Solstice extends ServiceRegistry {
 					var bundleActivator = c.newInstance();
 					bundleActivator.start(this);
 				} catch (Exception e) {
-					if (init.okayIfActivatorFails().contains(getSymbolicName())) {
-						logger.warn(this + " Bundle-Activator failed but okayIfActivatorFails", e);
-					} else {
-						throw new ActivatorException(this, e);
-					}
+					throw new ActivatorException(this, e);
 				}
 			}
 			state = ACTIVE;
@@ -695,7 +566,7 @@ public class Solstice extends ServiceRegistry {
 		}
 
 		private String missingPkg() {
-			for (var pkg : pkgImports) {
+			for (var pkg : manifest.getPkgImports()) {
 				if (!pkgs.contains(pkg)) {
 					return pkg;
 				}
@@ -720,7 +591,7 @@ public class Solstice extends ServiceRegistry {
 
 		@Override
 		public String getSymbolicName() {
-			return symbolicName;
+			return manifest.getSymbolicName();
 		}
 
 		private String stripLeadingSlash(String path) {
@@ -743,7 +614,7 @@ public class Solstice extends ServiceRegistry {
 		@Override
 		public URL getEntry(String path) {
 			try {
-				return new URL(jarUrl + "/" + stripLeadingSlash(path));
+				return new URL(manifest.getJarUrl() + "/" + stripLeadingSlash(path));
 			} catch (MalformedURLException e) {
 				throw Unchecked.wrap(e);
 			}
@@ -751,13 +622,16 @@ public class Solstice extends ServiceRegistry {
 
 		private <T> T parseFromZip(Function<ZipFile, T> function) {
 			String prefix = "jar:file:";
-			if (!jarUrl.startsWith(prefix)) {
-				throw new IllegalArgumentException("Must start with " + prefix + " was " + jarUrl);
+			if (!manifest.getJarUrl().startsWith(prefix)) {
+				throw new IllegalArgumentException(
+						"Must start with " + prefix + " was " + manifest.getJarUrl());
 			}
-			if (!jarUrl.endsWith("!")) {
-				throw new IllegalArgumentException("Must end with ! was " + jarUrl);
+			if (!manifest.getJarUrl().endsWith("!")) {
+				throw new IllegalArgumentException("Must end with ! was " + manifest.getJarUrl());
 			}
-			try (var zipFile = new ZipFile(jarUrl.substring(prefix.length(), jarUrl.length() - 1))) {
+			try (var zipFile =
+					new ZipFile(
+							manifest.getJarUrl().substring(prefix.length(), manifest.getJarUrl().length() - 1))) {
 				return function.apply(zipFile);
 			} catch (IOException e) {
 				throw Unchecked.wrap(e);
@@ -835,7 +709,7 @@ public class Solstice extends ServiceRegistry {
 							});
 			try {
 				for (var withinZip : pathsWithinZip) {
-					urls.add(new URL(jarUrl + "/" + withinZip));
+					urls.add(new URL(manifest.getJarUrl() + "/" + withinZip));
 				}
 			} catch (MalformedURLException e) {
 				throw Unchecked.wrap(e);
@@ -844,7 +718,7 @@ public class Solstice extends ServiceRegistry {
 
 		@Override
 		public String getLocation() {
-			return jarUrl;
+			return manifest.getJarUrl();
 		}
 
 		// implemented for OSGi DS
@@ -875,5 +749,38 @@ public class Solstice extends ServiceRegistry {
 			super(cause);
 			this.bundle = bundle;
 		}
+	}
+
+	/** Parse out a manifest header, and ignore the versions */
+	static List<String> parseManifestHeaderSimple(String in) {
+		String[] bundlesAndVersions = in.split(",");
+		List<String> attrs = new ArrayList<>();
+		List<String> required = new ArrayList<>(bundlesAndVersions.length);
+		for (String s : bundlesAndVersions) {
+			attrs.clear();
+			int attrDelim = s.indexOf(';');
+			if (attrDelim == -1) {
+				attrDelim = s.length();
+			} else {
+				int start = attrDelim;
+				while (start < s.length()) {
+					int next = s.indexOf(';', start + 1);
+					if (next == -1) {
+						next = s.length();
+					}
+					attrs.add(s.substring(start + 1, next).trim());
+					start = next;
+				}
+			}
+			if (attrs.contains("resolution:=optional")) {
+				// skip everything optional
+				continue;
+			}
+			String simple = s.substring(0, attrDelim);
+			if (simple.indexOf('"') == -1) {
+				required.add(simple.trim());
+			}
+		}
+		return required;
 	}
 }

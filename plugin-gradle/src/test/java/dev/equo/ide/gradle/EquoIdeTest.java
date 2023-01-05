@@ -65,9 +65,34 @@ public class EquoIdeTest extends GradleHarness {
 						"  p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'",
 						"  install 'org.eclipse.swt'",
 						"}");
-		runAndAssert("equoIde", "--init-only", "--stacktrace")
+		runAndAssert("equoIde", "--init-only")
 				.contains("exit code: 0")
-				.matches("(?s)(.*)Loaded (\\d+) bundles(.*)");
+				.matches("(?s)(.*)stdout: Loaded (\\d+) bundles using Atomos(.*)");
+
+		// useAtomos = false in buildscript
+		setFile("build.gradle")
+				.toLines(
+						"plugins { id 'dev.equo.ide' }",
+						"equoIde {",
+						"  p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'",
+						"  install 'org.eclipse.swt'",
+						"  useAtomos = false",
+						"}");
+		runAndAssert("equoIde", "--init-only")
+				.contains("exit code: 0")
+				.matches("(?s)(.*)stdout: Loaded (\\d+) bundles not using Atomos(.*)");
+
+		// --dont-use-atomos at command line
+		setFile("build.gradle")
+				.toLines(
+						"plugins { id 'dev.equo.ide' }",
+						"equoIde {",
+						"  p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'",
+						"  install 'org.eclipse.swt'",
+						"}");
+		runAndAssert("equoIde", "--init-only", "--dont-use-atomos")
+				.contains("exit code: 0")
+				.matches("(?s)(.*)stdout: Loaded (\\d+) bundles not using Atomos(.*)");
 	}
 
 	@Test

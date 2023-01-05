@@ -9,7 +9,18 @@ targetCompatibility = java_compat
 apply from: 干.file('maven.gradle')
 apply from: 干.file('sonatype.gradle')
 
+apply plugin: 'eclipse'
+
 jar.manifest.attributes.put('Implementation-Version', spotlessChangelog.versionNext)
+spotless {
+	java {
+		custom 'AtomosFrontend', { text ->
+			if (text.contains('import org.apache.felix.atomos.') && !text.contains('class AtomosFrontend ')) {
+				throw new AssertionError("Atomos imports are only allowed within `AtomosFrontend.java`")
+			}
+		}
+	}
+}
 
 String VER_SLF4J = '2.0.6'
 
@@ -33,6 +44,9 @@ dependencies {
 	implementation 'org.apache.felix:org.apache.felix.scr:2.2.2'
 	implementation 'org.apache.felix:org.apache.felix.configadmin:1.9.26'
 	implementation 'org.apache.felix:org.apache.felix.dependencymanager:4.6.1'
+
+	implementation 'org.apache.felix:org.apache.felix.atomos:1.0.0'
+	implementation 'org.apache.felix.atomos:osgi.core:8.0.0:AtomosEquinox'
 
 	// needed to shim out parts of the runtime
 	implementation 'org.objenesis:objenesis:3.3'
@@ -110,5 +124,13 @@ eclipseMavenCentral {
 
 		useNativesForRunningPlatform()
 		constrainTransitivesToThisRelease()
+	}
+}
+
+tasks.register('IdeMainTest', JavaExec) {
+	mainClass = 'dev.equo.solstice.IdeMainTest'
+	classpath = sourceSets.test.runtimeClasspath
+	if (com.diffplug.common.swt.os.OS.getNative().isMac()) {
+		jvmArgs = ['-XstartOnFirstThread']
 	}
 }

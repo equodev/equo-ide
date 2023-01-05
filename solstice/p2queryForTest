@@ -109,7 +109,6 @@ maven org.eclipse.platform:org.eclipse.equinox.security:1.3.1000
 maven org.eclipse.platform:org.eclipse.equinox.security.ui:1.3.300
 maven org.eclipse.platform:org.eclipse.equinox.simpleconfigurator:1.4.100
 maven org.eclipse.platform:org.eclipse.equinox.simpleconfigurator.manipulator:2.2.0
-maven org.eclipse.platform:org.eclipse.equinox.supplement:1.10.600
 maven org.eclipse.platform:org.eclipse.help:3.9.100
 maven org.eclipse.platform:org.eclipse.help.base:4.3.800
 maven org.eclipse.platform:org.eclipse.help.ui:4.4.100

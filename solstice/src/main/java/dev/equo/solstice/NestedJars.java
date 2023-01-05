@@ -78,11 +78,12 @@ public abstract class NestedJars {
 								() ->
 										NestedJars.class
 												.getClassLoader()
-												.getResources(Solstice.MANIFEST_PATH.substring(1)));
+												.getResources(SolsticeManifest.MANIFEST_PATH.substring(1)));
 				while (manifests.hasMoreElements()) {
 					var manifestUrl = manifests.nextElement();
 					var fullUrl = manifestUrl.toExternalForm();
-					var jarUrl = fullUrl.substring(0, fullUrl.length() - Solstice.MANIFEST_PATH.length());
+					var jarUrl =
+							fullUrl.substring(0, fullUrl.length() - SolsticeManifest.MANIFEST_PATH.length());
 					try (InputStream stream = manifestUrl.openStream()) {
 						addNestedJarsFromManifest(nestedJars, jarUrl, stream);
 					} catch (IOException e) {
@@ -101,7 +102,7 @@ public abstract class NestedJars {
 				List<URL> nestedJars = new ArrayList<>();
 				for (File file : files) {
 					try (var jarFile = new JarFile(file)) {
-						var zipEntry = jarFile.getEntry(Solstice.MANIFEST_PATH.substring(1));
+						var zipEntry = jarFile.getEntry(SolsticeManifest.MANIFEST_PATH.substring(1));
 						if (zipEntry != null) {
 							var jarUrl = "jar:" + file.toURI().toURL().toExternalForm() + "!";
 							try (var input = jarFile.getInputStream(zipEntry)) {
@@ -141,10 +142,10 @@ public abstract class NestedJars {
 						() ->
 								NestedJars.class
 										.getClassLoader()
-										.getResources(Solstice.MANIFEST_PATH.substring(1)));
+										.getResources(SolsticeManifest.MANIFEST_PATH.substring(1)));
 		while (manifests.hasMoreElements()) {
 			var fullUrl = manifests.nextElement().toExternalForm();
-			var jarUrl = fullUrl.substring(0, fullUrl.length() - Solstice.MANIFEST_PATH.length());
+			var jarUrl = fullUrl.substring(0, fullUrl.length() - SolsticeManifest.MANIFEST_PATH.length());
 			if (!jarUrl.endsWith("!")) {
 				throw new IllegalArgumentException("Expected " + jarUrl + " to end with !");
 			}

@@ -43,6 +43,9 @@ public abstract class EquoIdeTask extends DefaultTask {
 	@Internal
 	public abstract Property<File> getWorkspaceDir();
 
+	@Internal
+	public abstract Property<Boolean> getUseAtomos();
+
 	private boolean initOnly = false;
 
 	@Option(
@@ -50,6 +53,15 @@ public abstract class EquoIdeTask extends DefaultTask {
 			description = "Initializes the runtime to check for errors then exits.")
 	void setInitOnly(boolean initOnly) {
 		this.initOnly = initOnly;
+	}
+
+	private boolean dontUseAtomosOverride = false;
+
+	@Option(
+			option = "dont-use-atomos",
+			description = "Initializes the runtime to check for errors then exits.")
+	void dontUseAtomos(boolean dontUseAtomos) {
+		this.dontUseAtomosOverride = dontUseAtomos;
 	}
 
 	@Inject
@@ -79,6 +91,7 @@ public abstract class EquoIdeTask extends DefaultTask {
 		var nestedDefs = getObjectFactory().fileCollection().from(nestedJars);
 
 		boolean sameJVM = initOnly;
+		boolean useAtomos = dontUseAtomosOverride ? false : getUseAtomos().get();
 		var exitCode =
 				JavaLaunch.launch(
 						sameJVM,
@@ -86,6 +99,8 @@ public abstract class EquoIdeTask extends DefaultTask {
 						p2AndMavenDeps.plus(nestedDefs),
 						"-installDir",
 						workspaceDir.getAbsolutePath(),
+						"-useAtomos",
+						Boolean.toString(useAtomos),
 						"-initOnly",
 						Boolean.toString(initOnly),
 						"-Dorg.slf4j.simpleLogger.defaultLogLevel=INFO");

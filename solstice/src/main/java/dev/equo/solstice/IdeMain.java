@@ -14,7 +14,9 @@
 package dev.equo.solstice;
 
 import java.io.File;
-import java.util.Arrays;
+import java.util.function.Function;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleException;
 import org.osgi.framework.InvalidSyntaxException;
 
 /**
@@ -28,25 +30,50 @@ import org.osgi.framework.InvalidSyntaxException;
  * </ul>
  */
 public class IdeMain {
-	public static void main(String[] args) throws InvalidSyntaxException {
-		var argList = Arrays.asList(args);
-		int idx = argList.indexOf("-installDir");
-		SolsticeInit init;
-		if (idx == -1) {
-			init = new SolsticeInit();
-		} else {
-			init = new SolsticeInit(new File(args[idx + 1]));
+	private static <T> T parseArg(
+			String[] args, String arg, Function<String, T> parser, T defaultValue) {
+		for (int i = 0; i < args.length - 1; ++i) {
+			if (arg.equals(args[i])) {
+				return parser.apply(args[i + 1]);
+			}
 		}
-		var solstice = Solstice.initialize(init);
+		return defaultValue;
+	}
 
-		var dontRunIdx = argList.indexOf("-initOnly");
-		if (dontRunIdx != -1 && Boolean.parseBoolean(argList.get(dontRunIdx + 1))) {
-			System.out.println("Loaded " + solstice.getBundles().length + " bundles");
+	static File defaultDir() {
+		var userDir = System.getProperty("user.dir");
+		if (userDir.endsWith("equo-ide")) {
+			return new File(userDir + "/solstice/build/testSetup");
+		} else {
+			return new File(userDir + "/build/testSetup");
+		}
+	}
+
+	public static void main(String[] args) throws InvalidSyntaxException, BundleException {
+		File installDir = parseArg(args, "-installDir", File::new, defaultDir());
+		boolean useAtomos = parseArg(args, "-useAtomos", Boolean::parseBoolean, false);
+		boolean initOnly = parseArg(args, "-initOnly", Boolean::parseBoolean, false);
+
+		BundleContext context;
+		if (useAtomos) {
+			// the spelled-out package is on purpose so that Atomos can remain an optional component
+			// works together with
+			// https://github.com/equodev/equo-ide/blob/aa7d30cba9988bc740ff4bc4b3015475d30d187c/solstice/build.gradle#L16-L22
+			context = new dev.equo.solstice.AtomosFrontend(installDir).getBundleContext();
+		} else {
+			context = Solstice.initialize(new SolsticeInit(installDir));
+		}
+		if (initOnly) {
+			System.out.println(
+					"Loaded "
+							+ context.getBundles().length
+							+ " bundles "
+							+ (useAtomos ? "using Atomos" : "not using Atomos"));
 			System.exit(0);
 			return;
 		}
 
-		int exitCode = IdeMainUi.main(solstice);
+		int exitCode = IdeMainUi.main(context);
 		if (exitCode == 0) {
 			System.exit(0);
 		} else {

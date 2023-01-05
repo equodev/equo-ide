@@ -46,6 +46,7 @@ public class P2QueryForTest {
 		query.excludePrefix("org.eclipse.equinox.p2");
 		query.excludeSuffix(".source");
 		query.exclude("org.slf4j.api");
+		query.exclude("org.eclipse.equinox.supplement");
 
 		// don't know why, but glassfish includes a copy of jdt core which causes package signing errors
 		query.exclude("org.eclipse.equinox.jsp.jasper");
