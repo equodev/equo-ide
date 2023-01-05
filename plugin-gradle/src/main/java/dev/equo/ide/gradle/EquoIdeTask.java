@@ -54,13 +54,13 @@ public abstract class EquoIdeTask extends DefaultTask {
 		this.initOnly = initOnly;
 	}
 
-	private boolean dontUseAtomos = false;
+	private boolean dontUseAtomosOverride = false;
 
 	@Option(
 			option = "dont-use-atomos",
 			description = "Initializes the runtime to check for errors then exits.")
 	void dontUseAtomos(boolean dontUseAtomos) {
-		this.dontUseAtomos = dontUseAtomos;
+		this.dontUseAtomosOverride = dontUseAtomos;
 	}
 
 	@Inject
@@ -89,12 +89,7 @@ public abstract class EquoIdeTask extends DefaultTask {
 						.collect(Collectors.toList());
 		var nestedDefs = getObjectFactory().fileCollection().from(nestedJars);
 
-		boolean useAtomos;
-		if (dontUseAtomos) {
-			useAtomos = false;
-		} else {
-			useAtomos = getUseAtomos().get();
-		}
+		boolean useAtomos = dontUseAtomosOverride ? false : getUseAtomos().get();
 		var result =
 				NestedJars.javaExec(
 						"dev.equo.solstice.IdeMain",
