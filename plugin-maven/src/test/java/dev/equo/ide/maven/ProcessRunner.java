@@ -11,7 +11,7 @@
  * Contributors:
  *     EquoTech, Inc. - initial API and implementation
  *******************************************************************************/
-package dev.equo.solstice;
+package dev.equo.ide.maven;
 
 import com.diffplug.common.swt.os.OS;
 import java.io.ByteArrayOutputStream;

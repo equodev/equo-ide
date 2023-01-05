@@ -5,6 +5,9 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 ## [Unreleased]
 ### Added
 - Added a parameter `useAtomos`, default value is `true`. ([#36](https://github.com/equodev/equo-ide/pull/36))
+- `equo-ide:launch` now launches the IDE in an independent process so that the build task can complete. ([#39](https://github.com/equodev/equo-ide/pull/39))
+    - Use the command line flag `-DshowConsole=true` to launch the IDE as a child process and redirect its console output to the build console.
+
 ### Fixed
 - Dependency resolution no longer walks through unnecessary transitive dependency versions. (fixes [#37](https://github.com/equodev/equo-ide/issues/37)) 
 

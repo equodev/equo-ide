@@ -29,6 +29,12 @@ public class EquoIdeTest extends GradleHarness {
 	}
 
 	@Test
+	public void help(Expect expect) throws IOException {
+		setFile("build.gradle").toContent("plugins { id 'dev.equo.ide' }");
+		run("-q", "help", "--task", "equoIde").snapshot(expect);
+	}
+
+	@Test
 	public void p2repoArgCheck(Expect expect) throws IOException {
 		setFile("build.gradle")
 				.toLines(
@@ -67,7 +73,7 @@ public class EquoIdeTest extends GradleHarness {
 						"}");
 		runAndAssert("equoIde", "--init-only")
 				.contains("exit code: 0")
-				.matches("(?s)(.*)stdout: Loaded (\\d+) bundles using Atomos(.*)");
+				.matches("(?s)(.*)Loaded (\\d+) bundles using Atomos(.*)");
 
 		// useAtomos = false in buildscript
 		setFile("build.gradle")
@@ -80,7 +86,7 @@ public class EquoIdeTest extends GradleHarness {
 						"}");
 		runAndAssert("equoIde", "--init-only")
 				.contains("exit code: 0")
-				.matches("(?s)(.*)stdout: Loaded (\\d+) bundles not using Atomos(.*)");
+				.matches("(?s)(.*)Loaded (\\d+) bundles not using Atomos(.*)");
 
 		// --dont-use-atomos at command line
 		setFile("build.gradle")
@@ -92,7 +98,7 @@ public class EquoIdeTest extends GradleHarness {
 						"}");
 		runAndAssert("equoIde", "--init-only", "--dont-use-atomos")
 				.contains("exit code: 0")
-				.matches("(?s)(.*)stdout: Loaded (\\d+) bundles not using Atomos(.*)");
+				.matches("(?s)(.*)Loaded (\\d+) bundles not using Atomos(.*)");
 	}
 
 	@Test

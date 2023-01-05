@@ -13,6 +13,7 @@
  *******************************************************************************/
 package dev.equo.ide.gradle;
 
+import dev.equo.solstice.Launcher;
 import dev.equo.solstice.NestedJars;
 import dev.equo.solstice.p2.P2Client;
 import dev.equo.solstice.p2.P2Query;
@@ -54,11 +55,20 @@ public abstract class EquoIdeTask extends DefaultTask {
 		this.initOnly = initOnly;
 	}
 
+	private boolean showConsole = false;
+
+	@Option(
+			option = "show-console",
+			description = "Adds a visible console to the launched application.")
+	void showConsole(boolean showConsole) {
+		this.showConsole = showConsole;
+	}
+
 	private boolean dontUseAtomosOverride = false;
 
 	@Option(
 			option = "dont-use-atomos",
-			description = "Initializes the runtime to check for errors then exits.")
+			description = "Uses Solstice's built-in OSGi runtime instead of Atomos+Equinox.")
 	void dontUseAtomos(boolean dontUseAtomos) {
 		this.dontUseAtomosOverride = dontUseAtomos;
 	}
@@ -90,8 +100,9 @@ public abstract class EquoIdeTask extends DefaultTask {
 		var nestedDefs = getObjectFactory().fileCollection().from(nestedJars);
 
 		boolean useAtomos = dontUseAtomosOverride ? false : getUseAtomos().get();
-		var result =
-				NestedJars.javaExec(
+		var exitCode =
+				Launcher.launchJavaBlocking(
+						initOnly || showConsole,
 						"dev.equo.solstice.IdeMain",
 						p2AndMavenDeps.plus(nestedDefs),
 						"-installDir",
@@ -101,6 +112,8 @@ public abstract class EquoIdeTask extends DefaultTask {
 						"-initOnly",
 						Boolean.toString(initOnly),
 						"-Dorg.slf4j.simpleLogger.defaultLogLevel=INFO");
-		System.out.println(result);
+		if (initOnly || showConsole) {
+			System.out.println("exit code: " + exitCode);
+		}
 	}
 }

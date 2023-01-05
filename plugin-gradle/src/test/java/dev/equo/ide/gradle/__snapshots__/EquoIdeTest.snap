@@ -1,3 +1,27 @@
+dev.equo.ide.gradle.EquoIdeTest.help=[
+Detailed task information for equoIde
+
+Path
+     :equoIde
+
+Type
+     EquoIdeTask (dev.equo.ide.gradle.EquoIdeTask)
+
+Options
+     --dont-use-atomos     Uses Solstice's built-in OSGi runtime instead of Atomos+Equinox.
+
+     --init-only     Initializes the runtime to check for errors then exits.
+
+     --show-console     Adds a visible console to the launched application.
+
+Description
+     Launches an Eclipse application
+
+Group
+     IDE
+]
+
+
 dev.equo.ide.gradle.EquoIdeTest.p2repoArgCheck[double-slash]=[
 .
 > Must end with a single /

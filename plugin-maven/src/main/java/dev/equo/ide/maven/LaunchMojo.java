@@ -14,6 +14,7 @@
 package dev.equo.ide.maven;
 
 import com.diffplug.common.swt.os.SwtPlatform;
+import dev.equo.solstice.Launcher;
 import dev.equo.solstice.NestedJars;
 import dev.equo.solstice.p2.JdtSetup;
 import dev.equo.solstice.p2.P2Client;
@@ -52,6 +53,9 @@ public class LaunchMojo extends AbstractMojo {
 	@Parameter(property = "useAtomos", defaultValue = "true")
 	private boolean useAtomos;
 
+	@Parameter(property = "showConsole", defaultValue = "false")
+	private boolean showConsole;
+
 	@Parameter(property = "release")
 	private String release;
 
@@ -70,15 +74,27 @@ public class LaunchMojo extends AbstractMojo {
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		try {
-			System.setProperty("osgi.platform", SwtPlatform.getRunning().toString());
-
 			List<Dependency> deps = new ArrayList<>();
 			deps.add(
 					new Dependency(
 							new DefaultArtifact("dev.equo.ide:solstice:" + NestedJars.solsticeVersion()), null));
+			deps.add(
+					new Dependency(
+							new DefaultArtifact("org.slf4j:slf4j-api:2.0.6"),
+							null,
+							null,
+							EXCLUDE_ALL_TRANSITIVES));
+			deps.add(
+					new Dependency(
+							new DefaultArtifact("org.slf4j:slf4j-simple:2.0.6"),
+							null,
+							null,
+							EXCLUDE_ALL_TRANSITIVES));
 
 			var workspaceRegistry = WorkspaceRegistry.instance();
 			var workspaceDir = workspaceRegistry.workspaceDir(baseDir);
+			workspaceRegistry.clean();
+
 			var session = new P2Session();
 			try (var client = new P2Client()) {
 				if (release == null) {
@@ -121,8 +137,9 @@ public class LaunchMojo extends AbstractMojo {
 				files.add(nested.getValue());
 			}
 
-			String result =
-					NestedJars.javaExec(
+			var exitCode =
+					Launcher.launchJavaBlocking(
+							initOnly || showConsole,
 							"dev.equo.solstice.IdeMain",
 							files,
 							"-installDir",
@@ -130,9 +147,11 @@ public class LaunchMojo extends AbstractMojo {
 							"-useAtomos",
 							Boolean.toString(useAtomos),
 							"-initOnly",
-							Boolean.toString(initOnly));
-			System.out.println(result);
-			workspaceRegistry.clean();
+							Boolean.toString(initOnly),
+							"-Dorg.slf4j.simpleLogger.defaultLogLevel=INFO");
+			if (initOnly || showConsole) {
+				System.out.println("exit code: " + exitCode);
+			}
 		} catch (DependencyResolutionException | IOException | InterruptedException e) {
 			throw new RuntimeException(e);
 		}

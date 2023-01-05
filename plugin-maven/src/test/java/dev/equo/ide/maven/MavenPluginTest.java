@@ -13,13 +13,15 @@
  *******************************************************************************/
 package dev.equo.ide.maven;
 
-import dev.equo.solstice.NestedJars;
+import dev.equo.solstice.Launcher;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.JarURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.Arrays;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 import org.assertj.core.api.Assertions;
@@ -41,15 +43,17 @@ public class MavenPluginTest {
 	private void integrationTestUseAtomos(boolean useAtomos)
 			throws IOException, InterruptedException {
 		setFile("pom.xml").toResource("/dev/equo/ide/maven/pom.xml");
-		var output =
-				NestedJars.consoleExec(
-						rootFolder(),
-						"mvn",
-						"dev.equo.ide:equo-ide-maven-plugin:" + pluginVersion() + ":launch",
-						"-DinitOnly=true",
-						"-DuseAtomos=" + useAtomos);
+		var outputBytes =
+				new ProcessRunner(rootFolder())
+						.exec(
+								"mvn",
+								"dev.equo.ide:equo-ide-maven-plugin:" + pluginVersion() + ":launch",
+								"-DinitOnly=true",
+								"-DuseAtomos=" + useAtomos)
+						.stdOut();
+		var output = new String(outputBytes, StandardCharsets.UTF_8);
 		Assertions.assertThat(output).contains("exit code: 0");
-		Assertions.assertThat(output).matches("(?s)(.*)stdout: Loaded (\\d+) bundles(.*)");
+		Assertions.assertThat(output).matches("(?s)(.*)Loaded (\\d+) bundles(.*)");
 		Assertions.assertThat(output).contains(useAtomos ? "using Atomos" : "not using Atomos");
 	}
 
@@ -57,11 +61,9 @@ public class MavenPluginTest {
 	@Test
 	public void integrationTestReal() throws IOException, InterruptedException {
 		setFile("pom.xml").toResource("/dev/equo/ide/maven/pom.xml");
-		var output =
-				NestedJars.consoleExec(
-						rootFolder(),
-						"mvn",
-						"dev.equo.ide:equo-ide-maven-plugin:" + pluginVersion() + ":launch");
+		Launcher.launchAndInheritIO(
+				rootFolder(),
+				Arrays.asList("mvn", "dev.equo.ide:equo-ide-maven-plugin:" + pluginVersion() + ":launch"));
 	}
 
 	private static String pluginVersion() throws IOException {
