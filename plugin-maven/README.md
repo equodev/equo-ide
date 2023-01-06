@@ -35,6 +35,13 @@ Use it like this with `mvn equo-ide:launch`
 - A p2 multitool for Eclipse ecosystem developers ([#25](https://github.com/equodev/equo-ide/issues/25))
 - Use m2e to import this maven project ([#18](https://github.com/equodev/equo-ide/issues/18))
 
+## Task listing
+
+- `equo-ide:launch` to launch
+    - `equoIde -DinitOnly=true` initializes the runtime to check for errors then exits.
+    - `equoIde -DshowConsole=true` pipes console output of launched IDE to the build console.
+    - `equoIde -DdebugClasspath=[names|paths]` dumps the classpath (in order) without starting the application.
+
 ## Limitations
 
 - Java 11+
