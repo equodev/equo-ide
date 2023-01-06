@@ -5,8 +5,7 @@
 [//]: <> ($ rm *.tar)
 [//]: <> ($ ./gradlew p2multitool)
 [//]: <> ($ cp p2multi<tab> p2multitool-latest.tar)
-[//]: <> (update link in paragraph immediately below)
-[//]: <> (update version in paragraph quickstart)
+[//]: <> (find-replace existing '0.5.0' with '$NEW' in this document)
 
 The EquoIDE gradle plugin can help you browse and debug p2 repositories. The maven plugin will get these features someday ([#25](https://github.com/equodev/equo-ide/issues/25)), but in the meantime this quickstart assumes that you have zero knowledge of gradle and p2. If you'd like to follow along and modify the examples to suit your problem, just download [`p2multitool-0.5.0.tar`](https://github.com/equodev/equo-ide/raw/main/p2multitool-0.5.0.tar) and extract it to a directory of your choice - you don't need to install anything else (besides a JDK on your system path).
 
@@ -17,6 +16,7 @@ The EquoIDE gradle plugin can help you browse and debug p2 repositories. The mav
   - `equoList --all=jars`
 - [`equoList --installed`](#equolist-installed)
 - [`equoList --problems`](#equolist-problems)
+- [`equoList --optional`](#equolist-optional)
 - [`equoList --detail=any.unit.id`](#equolist-detail)
 - [`equoList --raw=any.unit.id`](#equolist-raw)
 - (any command) `--format=csv` to output diff-friendly CSV instead of the default `ascii` table
@@ -29,7 +29,7 @@ The EquoIDE gradle plugin can help you browse and debug p2 repositories. The mav
 
 ```gradle
 // build.gradle
-plugins { id 'dev.equo.ide' version '0.4.0' }
+plugins { id 'dev.equo.ide' version '0.5.0' }
 equoIde {
   p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'
 }
@@ -135,14 +135,14 @@ equoIde {
 [//]: <> (P2MultitoolExamples._03)
 ```console
 user@machine p2-multitool % ./gradlew equoList --installed
-WARNING!!! 46 unmet requirement(s), 8 ambigous requirement(s). For more info:
-WARNING!!! gradlew equoList --problems
+0 unmet requirement(s), 7 ambigous requirement(s). For more info: `gradlew equoList --problems`
+49 optional requirement(s) were not installed. For more info: `gradlew equoList --optional`
 +----------------------------------------------------------+------------------------+
 | maven coordinate / p2 id                                 | repo                   |
 +----------------------------------------------------------+------------------------+
 | com.ibm.icu:icu4j:72.1                                   | maven central          |
-| commons-fileupload:commons-fileupload:1.4                | maven central          |
 | commons-io:commons-io:2.11.0                             | maven central          |
+| net.java.dev.jna:jna-platform:5.12.1                     | maven central          |
 ...
 | org.eclipse.jdt:org.eclipse.jdt.annotation:2.2.700       | maven central?         |
 | org.eclipse.jdt:org.eclipse.jdt.apt.core:3.7.50          | maven central?         |
@@ -156,11 +156,11 @@ WARNING!!! gradlew equoList --problems
 
 The first thing to note is that some dependencies come from `mavenCentral`, which means that the p2 metadata declares *exactly* where on `mavenCentral` that jar comes from. Other dependencies come from `mavenCentral?`, which means that [our (possibly flawed) heuristic](https://github.com/equodev/equo-ide/blob/main/solstice/src/main/java/dev/equo/solstice/p2/MavenCentralMapping.java) has identified that the jar is available on `mavenCentral`. And the rest of the jars will come from `p2`.
 
-The second thing to note is the warning at the top:
+The second thing to note are the lines at the top:
 
 ```
-WARNING!!! 46 unmet requirement(s), 8 ambigous requirement(s). For more info:
-WARNING!!! gradlew equoList --problems
+0 unmet requirement(s), 7 ambigous requirement(s). For more info: `gradlew equoList --problems`
+49 optional requirement(s) were not installed. For more info: `gradlew equoList --optional`
 ```
 
 So let's try that!
@@ -171,18 +171,8 @@ So let's try that!
 [//]: <> (P2MultitoolExamples._04)
 ```console
 user@machine p2-multitool % ./gradlew equoList --problems
-+-------------------------------------------+---------------------------------------+
-| unmet requirement                         | needed by                             |
-+-------------------------------------------+---------------------------------------+
-...
-| java.package:COM.ibm.netrexx.process      | org.apache.ant:1.10.12.v20211102-1452 |
-| java.package:com.jcraft.jzlib             | com.jcraft.jsch:0.1.55.v20221112-0806 |
-| java.package:com.sun.tools.javah          | org.apache.ant:1.10.12.v20211102-1452 |
-| java.package:org.eclipse.jetty.jmx        | org.eclipse.jetty.io:10.0.12          |
-|                                           | org.eclipse.jetty.server:10.0.12      |
-|                                           | org.eclipse.jetty.servlet:10.0.12     |
-+-------------------------------------------+---------------------------------------+
-
+0 unmet requirement(s).
+6 ambiguous requirement(s).
 +-------------------------------------------------------------+-----------------------------------------------------------+-----------+
 | ambiguous requirement                                       | candidate                                                 | installed |
 +-------------------------------------------------------------+-----------------------------------------------------------+-----------+
@@ -194,15 +184,27 @@ user@machine p2-multitool % ./gradlew equoList --problems
 |                                                             | org.eclipse.jdt.core.compiler.batch:3.32.0.v20221108-1853 | [ ]       |
 | java.package:org.eclipse.jdt.internal.compiler.tool         | org.eclipse.jdt.compiler.tool:1.3.200.v20220802-0458      | [x]       |
 |                                                             | org.eclipse.jdt.core.compiler.batch:3.32.0.v20221108-1853 | [ ]       |
-| java.package:org.osgi.service.component.annotations         | org.eclipse.osgi.services:3.11.100.v20221006-1531         | [x]       |
-|                                                             | org.osgi.service.component.annotations:1.5.0.202109301733 | [ ]       |
+| java.package:org.osgi.service.log                           | org.eclipse.osgi:3.18.200.v20221116-1324                  | [x]       |
+|                                                             | org.eclipse.osgi.services:3.11.100.v20221006-1531         | [ ]       |
 | org.eclipse.equinox.p2.iu:org.eclipse.jdt.annotation        | org.eclipse.jdt.annotation:2.2.700.v20220826-1026         | [x]       |
 |                                                             | org.eclipse.jdt.annotation:1.2.100.v20220826-1026         | [ ]       |
 | org.eclipse.equinox.p2.iu:org.eclipse.jdt.annotation.source | org.eclipse.jdt.annotation.source:2.2.700.v20220826-1026  | [x]       |
 |                                                             | org.eclipse.jdt.annotation.source:1.2.100.v20220826-1026  | [ ]       |
-| osgi.bundle:org.eclipse.jdt.annotation                      | org.eclipse.jdt.annotation:2.2.700.v20220826-1026         | [x]       |
-|                                                             | org.eclipse.jdt.annotation:1.2.100.v20220826-1026         | [ ]       |
 +-------------------------------------------------------------+-----------------------------------------------------------+-----------+
+```
+
+<a name="equolist-optional"></a>
+### `equoList --optional`
+
+```console
+user@machine p2-multitool % ./gradlew equoList --optional
++------------------------------------+---------------------------------------------+---------------------------------------------------------+
+| requirement (not installed)        | provided by                                 | optionally needed by                                    |
++------------------------------------+---------------------------------------------+---------------------------------------------------------+
+| org.apache.avalon.framework.logger | -- none available --                        | org.apache.commons.logging:1.2.0.v20180409-1502         |
+| org.apache.commons.fileupload      | org.apache.commons.commons-fileupload:1.4.0 | org.eclipse.equinox.http.servlet:1.7.400.v20221006-1531 |
+| org.apache.felix.service.command   | org.apache.felix.gogo.runtime:1.1.6         | org.apache.felix.scr:2.2.4                              |
+...
 ```
 
 <a name="equolist-detail"></a>
