@@ -3,6 +3,11 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+### Added
+- Add tools to help debug classpath issues. ([#43](https://github.com/equodev/equo-ide/pull/43))
+  - Rename `IdeMain` to `BUildPluginIdeMain` because it has a weird interface that only makes sense for our build plugins.
+  - Add `enum DebugClasspath` for dumping all classpath entires (names or full paths)
+  - Stop sorting classpath entries implicitly, make it explicit via `Launcher.copyAndSortClasspath`, which is now used by all build plugins.
 
 ## [0.7.0] - 2023-01-06
 ### Added
