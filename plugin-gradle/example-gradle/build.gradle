@@ -1,12 +1,6 @@
 plugins {
-  id 'dev.equo.ide' version '0.5.0'
+  id 'dev.equo.ide' version '0.8.0'
 }
 equoIde {
-  p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'
-  install 'org.eclipse.releng.java.languages.categoryIU'
-  addFilter 'exclude-noise', { // 'exclude-noise' is just a label for the end user
-    excludeSuffix '.source'  // no source bundles
-    excludePrefix 'tooling'  // ignore internal tooling
-    exclude 'org.apache.sshd.osgi' // we don't want sshd
-  }
+  release '4.26'
 }

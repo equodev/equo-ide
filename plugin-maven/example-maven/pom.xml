@@ -32,7 +32,7 @@
       <plugin>
         <groupId>dev.equo.ide</groupId>
         <artifactId>equo-ide-maven-plugin</artifactId>
-        <version>0.7.0</version>
+        <version>0.8.0</version>
         <configuration>
           <release>4.25</release>
         </configuration>
