@@ -8,6 +8,10 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
   - You can override the `useAtomos` buildscript parameter at the command line with `--dont-use-atomos`.
 - `equoIde` now launches the IDE in an independent process so that the build task can complete. ([#39](https://github.com/equodev/equo-ide/pull/39))
   - Use the command line flag `--show-console` to launch the IDE as a child process and redirect its console output to the build console.
+    https://github.com/equodev/equo-ide/issues/35
+- Respect optionality of p2 requirements. ([#41](https://github.com/equodev/equo-ide/pull/41) fixes [#35](https://github.com/equodev/equo-ide/issues/35))
+  - Optional requirements are by default not followed.
+  - New command `gradlew equoList --optional` to explore uninstalled optional requirements to help discover helpful features.
 
 ## [0.6.0] - 2022-12-16
 ### Added
