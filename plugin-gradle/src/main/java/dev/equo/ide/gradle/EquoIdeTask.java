@@ -112,7 +112,7 @@ public abstract class EquoIdeTask extends DefaultTask {
 
 		boolean useAtomos = dontUseAtomosOverride ? false : getUseAtomos().get();
 
-		var classpath = Launcher.sortClasspath(p2AndMavenDeps.plus(nestedDefs));
+		var classpath = Launcher.copyAndSortClasspath(p2AndMavenDeps.plus(nestedDefs));
 		debugClasspath.printWithHead(
 				"jars about to be launched", classpath.stream().map(File::getAbsolutePath));
 		var exitCode =

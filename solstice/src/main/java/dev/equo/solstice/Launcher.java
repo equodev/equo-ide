@@ -137,7 +137,7 @@ public class Launcher {
 		return jarFile;
 	}
 
-	public static List<File> sortClasspath(Iterable<File> files) {
+	public static List<File> copyAndSortClasspath(Iterable<File> files) {
 		List<File> copy = new ArrayList<>();
 		files.forEach(copy::add);
 		copy.sort(

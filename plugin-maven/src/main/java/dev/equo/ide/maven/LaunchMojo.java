@@ -141,7 +141,7 @@ public class LaunchMojo extends AbstractMojo {
 				files.add(nested.getValue());
 			}
 
-			var classpath = Launcher.sortClasspath(files);
+			var classpath = Launcher.copyAndSortClasspath(files);
 			debugClasspath.printWithHead(
 					"jars about to be launched", classpath.stream().map(File::getAbsolutePath));
 			var exitCode =
