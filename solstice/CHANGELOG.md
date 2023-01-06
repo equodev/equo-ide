@@ -8,6 +8,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
   - It is recommended to set `-useAtomos true` for the foreseeable future, because it has better compatibility with existing applications.
   - For simple applications, you can experiment with `-useAtomos false`.
 - Improve process launching. ([#39](https://github.com/equodev/equo-ide/pull/39))
+- Respect optionality of p2 requirements. ([#41](https://github.com/equodev/equo-ide/pull/41) fixes [#35](https://github.com/equodev/equo-ide/issues/35))
 
 ## [0.6.0] - 2022-12-16
 ### Added

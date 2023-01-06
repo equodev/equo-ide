@@ -36,7 +36,7 @@ public class P2Session {
 	private void sort() {
 		units.sort(Comparator.naturalOrder());
 		for (var namespace : requirements.values()) {
-			for (Requirement requirement : namespace.values()) {
+			for (RequirementRoot requirement : namespace.values()) {
 				requirement.sortProviders();
 			}
 		}
@@ -61,22 +61,66 @@ public class P2Session {
 	}
 
 	/** Keeps track of every unit which provides the given capability. */
-	public static class Requirement implements Comparable<Requirement> {
-		final String namespace;
-		final String name;
+	public interface Requirement extends Comparable<P2Session.Requirement> {
+		// these properties are per-requirement-specific
+		boolean isOptional();
+		// the properties below are for both requirements and providers
+		String getNamespace();
+
+		String getName();
+
+		boolean hasOnlyOneProvider();
+
+		P2Unit getOnlyProvider();
+
+		List<P2Unit> getProviders();
+
+		/** Returns a non-optional form of the requirement. */
+		Requirement getRoot();
+
+		@Override
+		default int compareTo(@NotNull Requirement o) {
+			int byNamespace = getNamespace().compareTo(o.getNamespace());
+			if (byNamespace != 0) {
+				return byNamespace;
+			}
+			int byName = getName().compareTo(o.getName());
+			if (byName != 0) {
+				return byName;
+			}
+			return toString().compareTo(o.toString());
+		}
+	}
+
+	/**
+	 * In terms of design {@link RequirementRoot} represents both a mandatory requirement on a
+	 * capability and also the matching ability to provide that capability.
+	 *
+	 * <p>{@link RequirementOptional} delegates everything about describing that capability to {@link
+	 * RequirementRoot}, but layers on top the ability to add detail to the requirement (specifically
+	 * that it is optional).
+	 */
+	private static class RequirementRoot implements Requirement {
+		private final String namespace;
+		private final String name;
 		private Object providers;
 
-		private Requirement(String namespace, String name) {
+		private RequirementRoot(String namespace, String name) {
 			this.namespace = namespace;
 			this.name = name;
 		}
 
-		/** The namespace of the capability. */
+		@Override
+		public boolean isOptional() {
+			return false;
+		}
+
+		@Override
 		public String getNamespace() {
 			return namespace;
 		}
 
-		/** The name of the capability. */
+		@Override
 		public String getName() {
 			return name;
 		}
@@ -85,17 +129,24 @@ public class P2Session {
 			providers = add(providers, unit);
 		}
 
+		@Override
 		public boolean hasOnlyOneProvider() {
 			return providers instanceof P2Unit;
 		}
 
-		/** Pairs with {@link #hasOnlyOneProvider()}. */
+		@Override
 		public P2Unit getOnlyProvider() {
 			return (P2Unit) providers;
 		}
 
+		@Override
 		public List<P2Unit> getProviders() {
 			return get(providers);
+		}
+
+		@Override
+		public Requirement getRoot() {
+			return this;
 		}
 
 		private void sortProviders() {
@@ -129,28 +180,71 @@ public class P2Session {
 			}
 		}
 
-		/** Sorts based on namespace then on name. */
-		@Override
-		public int compareTo(@NotNull Requirement o) {
-			int byNamespace = namespace.compareTo(o.namespace);
-			if (byNamespace == 0) {
-				return name.compareTo(o.name);
-			} else {
-				return byNamespace;
-			}
-		}
-
 		@Override
 		public String toString() {
 			return namespace + ":" + name;
 		}
 	}
 
-	private final Map<String, Map<String, Requirement>> requirements = new HashMap<>();
+	private static class RequirementOptional implements Requirement {
+		final RequirementRoot root;
 
-	Requirement requires(String namespace, String name) {
+		RequirementOptional(RequirementRoot root) {
+			this.root = root;
+		}
+
+		@Override
+		public boolean isOptional() {
+			return true;
+		}
+
+		// methods below this are all pure delegation
+		@Override
+		public String getNamespace() {
+			return root.getNamespace();
+		}
+
+		@Override
+		public String getName() {
+			return root.getName();
+		}
+
+		@Override
+		public boolean hasOnlyOneProvider() {
+			return root.hasOnlyOneProvider();
+		}
+
+		@Override
+		public P2Unit getOnlyProvider() {
+			return root.getOnlyProvider();
+		}
+
+		@Override
+		public List<P2Unit> getProviders() {
+			return root.getProviders();
+		}
+
+		@Override
+		public Requirement getRoot() {
+			return root;
+		}
+
+		@Override
+		public String toString() {
+			return root.toString() + " (opt)";
+		}
+	}
+
+	private final Map<String, Map<String, RequirementRoot>> requirements = new HashMap<>();
+
+	private RequirementRoot requires(String namespace, String name) {
 		var perName = requirements.computeIfAbsent(namespace, unused -> new HashMap<>());
-		return perName.computeIfAbsent(name, n -> new Requirement(namespace, n));
+		return perName.computeIfAbsent(name, n -> new RequirementRoot(namespace, n));
+	}
+
+	Requirement requires(String namespace, String name, boolean optional) {
+		var root = requires(namespace, name);
+		return optional ? new RequirementOptional(root) : root;
 	}
 
 	void provides(String namespace, String name, P2Unit unit) {

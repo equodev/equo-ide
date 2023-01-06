@@ -58,8 +58,9 @@ public class ConsoleTable {
 
 	/** Returns a table describing all ambiguous requirements and how they ended up. */
 	public static String ambiguousRequirements(P2Query query, Format format) {
+		String firstLine = query.getAmbiguousRequirements().size() + " ambiguous requirement(s).";
 		if (query.getAmbiguousRequirements().isEmpty()) {
-			return "No ambiguous requirements.";
+			return firstLine;
 		}
 		var table = new NColumnTable("ambiguous requirement", "candidate", "installed");
 		for (var requirement : query.getAmbiguousRequirements()) {
@@ -70,13 +71,14 @@ public class ConsoleTable {
 				table.addRow(firstCell, candidate.toString(), query.isInstalled(candidate) ? "[x]" : "[ ]");
 			}
 		}
-		return table.toString(format);
+		return firstLine + "\n" + table.toString(format);
 	}
 
 	/** Returns a table describing all unmet requirements and who they affect. */
 	public static String unmetRequirements(P2Query query, Format format) {
+		String firstLine = query.getUnmetRequirements().size() + " unmet requirement(s).";
 		if (query.getUnmetRequirements().isEmpty()) {
-			return "No unmet requirements.";
+			return firstLine;
 		}
 		var table = new NColumnTable("unmet requirement", "needed by");
 		for (var unmet : query.getUnmetRequirements().entrySet()) {
@@ -84,6 +86,30 @@ public class ConsoleTable {
 			for (var neededBy : unmet.getValue()) {
 				var firstCell = neededBy == neededByFirst ? unmet.getKey().toString() : "";
 				table.addRow(firstCell, neededBy.toString());
+			}
+		}
+		return firstLine + "\n" + table.toString(format);
+	}
+
+	/** Returns a table describing all optional requirements which were not installed. */
+	public static String optionalRequirementsNotInstalled(P2Query query, Format format) {
+		if (query.getOptionalRequirementsNotInstalled().isEmpty()) {
+			return "Every optional requirement was installed.";
+		}
+		var table =
+				new NColumnTable("requirement (not installed)", "provided by", "optionally needed by");
+		for (var unmet : query.getOptionalRequirementsNotInstalled().entrySet()) {
+			var notInstalled = unmet.getKey();
+			var providedBy = new ArrayList<>(notInstalled.getProviders());
+			var neededBy = new ArrayList<>(unmet.getValue());
+			for (int i = 0; i < Math.max(neededBy.size(), providedBy.size()); ++i) {
+				var cell0 = i == 0 ? notInstalled.getName() : "";
+				var cell1 = i < providedBy.size() ? providedBy.get(i).toString() : "";
+				var cell2 = i < neededBy.size() ? neededBy.get(i).toString() : "";
+				if (i == 0 && cell1.equals("")) {
+					cell1 = "-- none available --";
+				}
+				table.addRow(cell0, cell1, cell2);
 			}
 		}
 		return table.toString(format);
@@ -137,12 +163,17 @@ public class ConsoleTable {
 			for (var prop : unit.properties.entrySet()) {
 				table.add("prop " + prop.getKey(), prop.getValue());
 			}
-			for (var req : unit.requires) {
+			var sortedOptionalsLast = new ArrayList<>(unit.requires);
+			sortedOptionalsLast.sort(
+					Comparator.<P2Session.Requirement>comparingInt(u -> u.isOptional() ? 1 : 0)
+							.thenComparing(Comparator.naturalOrder()));
+			for (var req : sortedOptionalsLast) {
+				String reqName = req.isOptional() ? "req (opt) " : "req ";
 				if (req.hasOnlyOneProvider()) {
-					table.add("req " + req.name, req.getOnlyProvider().toString());
+					table.add(reqName + req.getName(), req.getOnlyProvider().toString());
 				} else {
 					var available = req.getProviders();
-					table.add("req " + req.name, available.size() + " available");
+					table.add(reqName + req.getName(), available.size() + " available");
 					for (var a : available) {
 						table.add("", a.toString());
 					}

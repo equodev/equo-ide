@@ -157,8 +157,14 @@ public class P2Unit implements Comparable<P2Unit> {
 				if (EXCLUDED_REQUIRE_PROVIDE_NAMESPACES.contains(namespace)) {
 					continue;
 				}
+				boolean isOptional = false;
+				var optionalNode = node.getAttributes().getNamedItem("optional");
+				if (optionalNode != null) {
+					isOptional = "true".equals(optionalNode.getNodeValue().trim());
+				}
+
 				var name = node.getAttributes().getNamedItem("name").getNodeValue();
-				requires.add(session.requires(namespace, name));
+				requires.add(session.requires(namespace, name, isOptional));
 			}
 		}
 	}

@@ -63,6 +63,15 @@ public abstract class EquoListTask extends DefaultTask {
 		this.problems = problems;
 	}
 
+	private boolean optional = false;
+
+	@Option(
+			option = "optional",
+			description = "Lists any optional requirements which were not installed")
+	void setOptional(boolean optional) {
+		this.optional = optional;
+	}
+
 	private All all;
 
 	public enum All {
@@ -108,12 +117,14 @@ public abstract class EquoListTask extends DefaultTask {
 		int numArgs = 0;
 		if (installed) ++numArgs;
 		if (problems) ++numArgs;
+		if (optional) ++numArgs;
 		if (all != null) ++numArgs;
 		if (detail != null) ++numArgs;
 		if (raw != null) ++numArgs;
 		if (numArgs != 1) {
 			throw new IllegalArgumentException(
-					"Exactly one of --installed, --problems, --all, --detail, or --raw must be set");
+					"Exactly one of --installed, --problems, --optional, --all, --detail, or --raw must be set.\n"
+							+ "`gradlew help --task equoList` for more info or visit https://github.com/equodev/equo-ide/blob/main/P2_MULTITOOL.md");
 		}
 		var extension = getExtension().get();
 		var query = extension.performQuery(getCaching().get());
@@ -127,6 +138,8 @@ public abstract class EquoListTask extends DefaultTask {
 			installed(query, format);
 		} else if (problems) {
 			problems(query, format);
+		} else if (optional) {
+			optional(query, format);
 		} else {
 			throw new UnsupportedOperationException("Programming error");
 		}
@@ -178,16 +191,35 @@ public abstract class EquoListTask extends DefaultTask {
 	}
 
 	private static void installed(P2Query query, ConsoleTable.Format format) {
+		if (query.getJars().isEmpty()) {
+			System.out.println(ConsoleTable.mavenStatus(query.getJars(), format));
+			return;
+		}
 		int numUnmet = query.getUnmetRequirements().size();
 		int numAmbiguous = query.getAmbiguousRequirements().size();
-		if (numUnmet > 0 || numAmbiguous > 0) {
+		if (numUnmet > 0) {
 			System.out.println(
 					"WARNING!!! "
 							+ numUnmet
 							+ " unmet requirement(s), "
 							+ numAmbiguous
-							+ " ambigous requirement(s). For more info:");
-			System.out.println("WARNING!!! gradlew equoList --problems");
+							+ " ambigous requirement(s).");
+			System.out.println("WARNING!!!  For more info: `gradlew equoList --problems`");
+		} else {
+			System.out.println(
+					numUnmet
+							+ " unmet requirement(s), "
+							+ numAmbiguous
+							+ " ambigous requirement(s). For more info: `gradlew equoList --problems`");
+		}
+		int numOptional = query.getOptionalRequirementsNotInstalled().size();
+		if (numOptional > 0) {
+			System.out.println(
+					numOptional
+							+ " optional requirement(s) were not installed. For more info: `gradlew equoList --optional`");
+		} else {
+			System.out.println(
+					"Every optional requirement was installed. For more info: `gradlew equoList --optional`");
 		}
 		System.out.println(ConsoleTable.mavenStatus(query.getJars(), format));
 	}
@@ -195,5 +227,9 @@ public abstract class EquoListTask extends DefaultTask {
 	private static void problems(P2Query query, ConsoleTable.Format format) {
 		System.out.println(ConsoleTable.unmetRequirements(query, format));
 		System.out.println(ConsoleTable.ambiguousRequirements(query, format));
+	}
+
+	private static void optional(P2Query query, ConsoleTable.Format format) {
+		System.out.println(ConsoleTable.optionalRequirementsNotInstalled(query, format));
 	}
 }

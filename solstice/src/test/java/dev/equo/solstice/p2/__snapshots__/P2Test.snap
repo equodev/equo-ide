@@ -3,7 +3,6 @@ dev.equo.solstice.p2.P2Test.queryOffline=[
 | maven coordinate / p2 id                                                        | repo                   |
 +---------------------------------------------------------------------------------+------------------------+
 | com.ibm.icu:icu4j:67.1                                                          | maven central          |
-| commons-fileupload:commons-fileupload:1.4                                       | maven central          |
 | commons-io:commons-io:2.11.0                                                    | maven central          |
 | jakarta.servlet:jakarta.servlet-api:4.0.4                                       | maven central          |
 | javax.servlet.jsp:javax.servlet.jsp-api:2.3.3                                   | maven central          |
@@ -13,7 +12,6 @@ dev.equo.solstice.p2.P2Test.queryOffline=[
 | org.apache.felix:org.apache.felix.gogo.runtime:1.1.6                            | maven central          |
 | org.apache.felix:org.apache.felix.gogo.shell:1.1.4                              | maven central          |
 | org.apache.felix:org.apache.felix.scr:2.2.2                                     | maven central          |
-| org.apiguardian:apiguardian-api:1.1.2                                           | maven central          |
 | org.eclipse.jetty:jetty-http:10.0.11                                            | maven central          |
 | org.eclipse.jetty:jetty-io:10.0.11                                              | maven central          |
 | org.eclipse.jetty:jetty-security:10.0.11                                        | maven central          |
@@ -21,10 +19,6 @@ dev.equo.solstice.p2.P2Test.queryOffline=[
 | org.eclipse.jetty:jetty-servlet:10.0.11                                         | maven central          |
 | org.eclipse.jetty:jetty-util-ajax:10.0.11                                       | maven central          |
 | org.eclipse.jetty:jetty-util:10.0.11                                            | maven central          |
-| org.junit.platform:junit-platform-commons:1.9.0                                 | maven central          |
-| org.junit.platform:junit-platform-engine:1.9.0                                  | maven central          |
-| org.junit.platform:junit-platform-launcher:1.9.0                                | maven central          |
-| org.opentest4j:opentest4j:1.2.0                                                 | maven central          |
 | org.osgi:org.osgi.service.cm:1.6.1                                              | maven central          |
 | org.osgi:org.osgi.service.component:1.5.0                                       | maven central          |
 | org.osgi:org.osgi.service.device:1.1.1                                          | maven central          |
@@ -55,8 +49,6 @@ dev.equo.solstice.p2.P2Test.queryOffline=[
 | org.eclipse.emf:org.eclipse.emf.ecore.change:2.14.0                             | maven central?         |
 | org.eclipse.emf:org.eclipse.emf.ecore.xmi:2.17.0                                | maven central?         |
 | org.eclipse.emf:org.eclipse.emf.ecore:2.28.0                                    | maven central?         |
-| org.eclipse.jdt:org.eclipse.jdt.annotation:2.2.700                              | maven central?         |
-| org.eclipse.jdt:org.eclipse.jdt.core:3.31.0                                     | maven central?         |
 | org.eclipse.platform:org.eclipse.ant.core:3.6.500                               | maven central?         |
 | org.eclipse.platform:org.eclipse.compare.core:3.7.100                           | maven central?         |
 | org.eclipse.platform:org.eclipse.compare.win32:1.2.900                          | maven central?         |
@@ -255,8 +247,6 @@ dev.equo.solstice.p2.P2Test.queryOffline=[
 | org.apache.xmlgraphics:2.6.0.v20210409-0748                                     | p2 R-4.25-202208311800 |
 | org.bouncycastle.bcpg:1.71.0.v20220723-1943                                     | p2 R-4.25-202208311800 |
 | org.bouncycastle.bcprov:1.71.0.v20220723-1943                                   | p2 R-4.25-202208311800 |
-| org.hamcrest.core:1.3.0.v20180420-1519                                          | p2 R-4.25-202208311800 |
-| org.junit:4.13.2.v20211018-1956                                                 | p2 R-4.25-202208311800 |
 | org.slf4j.api:1.7.30.v20200204-2150                                             | p2 R-4.25-202208311800 |
 | org.w3c.css.sac:1.3.1.v200903091627                                             | p2 R-4.25-202208311800 |
 | org.w3c.dom.events:3.0.0.draft20060413_v201105210656                            | p2 R-4.25-202208311800 |

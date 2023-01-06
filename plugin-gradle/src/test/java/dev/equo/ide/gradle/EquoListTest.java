@@ -42,6 +42,8 @@ public class EquoListTest extends GradleHarness {
 				.snapshotBetween("Task :equoList", "BUILD SUCCESSFUL", expect.scenario("installed"));
 		run("equoList", "--problems")
 				.snapshotBetween("Task :equoList", "BUILD SUCCESSFUL", expect.scenario("problems"));
+		run("equoList", "--optional")
+				.snapshotBetween("Task :equoList", "BUILD SUCCESSFUL", expect.scenario("optional"));
 	}
 
 	@Test
