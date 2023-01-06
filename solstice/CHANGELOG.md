@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+
+## [0.8.0] - 2023-01-06
 ### Added
 - Add tools to help debug classpath issues. ([#43](https://github.com/equodev/equo-ide/pull/43))
   - Rename `IdeMain` to `BUildPluginIdeMain` because it has a weird interface that only makes sense for our build plugins.
