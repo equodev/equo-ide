@@ -240,7 +240,8 @@ dev.equo.ide.gradle.P2MultitoolExamples._03=[
 
 
 dev.equo.ide.gradle.P2MultitoolExamples._04=[
-No unmet requirements.
+0 unmet requirement(s).
+7 ambiguous requirement(s).
 +-------------------------------------------------------------+-----------------------------------------------------------+-----------+
 | ambiguous requirement                                       | candidate                                                 | installed |
 +-------------------------------------------------------------+-----------------------------------------------------------+-----------+

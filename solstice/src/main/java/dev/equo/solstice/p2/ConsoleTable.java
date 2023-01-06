@@ -58,8 +58,9 @@ public class ConsoleTable {
 
 	/** Returns a table describing all ambiguous requirements and how they ended up. */
 	public static String ambiguousRequirements(P2Query query, Format format) {
+		String firstLine = query.getAmbiguousRequirements().size() + " ambiguous requirement(s).";
 		if (query.getAmbiguousRequirements().isEmpty()) {
-			return "No ambiguous requirements.";
+			return firstLine;
 		}
 		var table = new NColumnTable("ambiguous requirement", "candidate", "installed");
 		for (var requirement : query.getAmbiguousRequirements()) {
@@ -70,13 +71,14 @@ public class ConsoleTable {
 				table.addRow(firstCell, candidate.toString(), query.isInstalled(candidate) ? "[x]" : "[ ]");
 			}
 		}
-		return table.toString(format);
+		return firstLine + "\n" + table.toString(format);
 	}
 
 	/** Returns a table describing all unmet requirements and who they affect. */
 	public static String unmetRequirements(P2Query query, Format format) {
+		String firstLine = query.getUnmetRequirements().size() + " unmet requirement(s).";
 		if (query.getUnmetRequirements().isEmpty()) {
-			return "No unmet requirements.";
+			return firstLine;
 		}
 		var table = new NColumnTable("unmet requirement", "needed by");
 		for (var unmet : query.getUnmetRequirements().entrySet()) {
@@ -86,7 +88,7 @@ public class ConsoleTable {
 				table.addRow(firstCell, neededBy.toString());
 			}
 		}
-		return table.toString(format);
+		return firstLine + "\n" + table.toString(format);
 	}
 
 	/** Returns a table describing all optional requirements which were not installed. */

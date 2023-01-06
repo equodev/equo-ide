@@ -1148,7 +1148,8 @@ dev.equo.ide.gradle.EquoListTest.defaultP2[optional]=[
 
 
 dev.equo.ide.gradle.EquoListTest.defaultP2[problems]=[
-No unmet requirements.
+0 unmet requirement(s).
+6 ambiguous requirement(s).
 +-------------------------------------------------------------+-----------------------------------------------------------+-----------+
 | ambiguous requirement                                       | candidate                                                 | installed |
 +-------------------------------------------------------------+-----------------------------------------------------------+-----------+
@@ -1245,8 +1246,8 @@ No jars were specified.
 
 
 dev.equo.ide.gradle.EquoListTest.installedEmpty[problems]=[
-No unmet requirements.
-No ambiguous requirements.
+0 unmet requirement(s).
+0 ambiguous requirement(s).
 ]
 
 
@@ -1259,8 +1260,8 @@ org.eclipse.platform:org.eclipse.swt:3.122.0,maven central?
 
 
 dev.equo.ide.gradle.EquoListTest.installedSwtCsv[problems]=[
-No unmet requirements.
-No ambiguous requirements.
+0 unmet requirement(s).
+0 ambiguous requirement(s).
 ]
 
 
@@ -1276,8 +1277,8 @@ dev.equo.ide.gradle.EquoListTest.installedSwt[installed]=[
 
 
 dev.equo.ide.gradle.EquoListTest.installedSwt[problems]=[
-No unmet requirements.
-No ambiguous requirements.
+0 unmet requirement(s).
+0 ambiguous requirement(s).
 ]
 
 
