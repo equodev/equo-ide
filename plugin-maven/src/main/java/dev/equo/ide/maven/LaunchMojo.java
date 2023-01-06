@@ -14,6 +14,7 @@
 package dev.equo.ide.maven;
 
 import com.diffplug.common.swt.os.SwtPlatform;
+import dev.equo.solstice.BuildPluginIdeMain;
 import dev.equo.solstice.Launcher;
 import dev.equo.solstice.NestedJars;
 import dev.equo.solstice.p2.JdtSetup;
@@ -140,7 +141,7 @@ public class LaunchMojo extends AbstractMojo {
 			var exitCode =
 					Launcher.launchJavaBlocking(
 							initOnly || showConsole,
-							"dev.equo.solstice.IdeMain",
+							BuildPluginIdeMain.class.getName(),
 							files,
 							"-installDir",
 							workspaceDir.getAbsolutePath(),

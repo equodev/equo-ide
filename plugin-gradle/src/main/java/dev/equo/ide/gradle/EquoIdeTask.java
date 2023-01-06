@@ -13,6 +13,7 @@
  *******************************************************************************/
 package dev.equo.ide.gradle;
 
+import dev.equo.solstice.BuildPluginIdeMain;
 import dev.equo.solstice.Launcher;
 import dev.equo.solstice.NestedJars;
 import dev.equo.solstice.p2.P2Client;
@@ -103,7 +104,7 @@ public abstract class EquoIdeTask extends DefaultTask {
 		var exitCode =
 				Launcher.launchJavaBlocking(
 						initOnly || showConsole,
-						"dev.equo.solstice.IdeMain",
+						BuildPluginIdeMain.class.getName(),
 						p2AndMavenDeps.plus(nestedDefs),
 						"-installDir",
 						workspaceDir.getAbsolutePath(),

@@ -20,16 +20,11 @@ import org.osgi.framework.BundleException;
 import org.osgi.framework.InvalidSyntaxException;
 
 /**
- * A main method for launching an IDE using Solstice. It supports the following command line
- * arguments
- *
- * <ul>
- *   <li>{@code -installDir C:\SomeDir} determines where the IDE will store its data.
- *   <li>{@code -initOnly true} signals that instead of running an IDE, just activate all bundles
- *       then shut down. Useful for integration testing.
- * </ul>
+ * A main method for launching an IDE using Solstice. It has a verbose command line interface which
+ * is optimized for integration with the EquoIDE Gradle and Maven build plugins, but it can be used
+ * in other contexts as well.
  */
-public class IdeMain {
+public class BuildPluginIdeMain {
 	private static <T> T parseArg(
 			String[] args, String arg, Function<String, T> parser, T defaultValue) {
 		for (int i = 0; i < args.length - 1; ++i) {

@@ -17,16 +17,16 @@ import org.osgi.framework.BundleException;
 import org.osgi.framework.InvalidSyntaxException;
 import org.slf4j.simple.SimpleLogger;
 
-public class IdeMainTest {
+public class IdeMainBuildPluginTest {
 	public static void main(String[] args) throws InvalidSyntaxException, BundleException {
 		boolean useAtomos = true;
 
 		System.setProperty(SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "INFO");
 		System.setProperty(SimpleLogger.LOG_FILE_KEY, "System.out");
 
-		IdeMain.main(
+		BuildPluginIdeMain.main(
 				new String[] {
-					"-installDir", IdeMain.defaultDir().getAbsolutePath(),
+					"-installDir", BuildPluginIdeMain.defaultDir().getAbsolutePath(),
 					"-useAtomos", Boolean.toString(useAtomos),
 					"-initOnly", "false"
 				});
