@@ -14,6 +14,7 @@
 package dev.equo.ide.maven;
 
 import com.diffplug.common.swt.os.SwtPlatform;
+import dev.equo.solstice.BuildPluginIdeMain;
 import dev.equo.solstice.Launcher;
 import dev.equo.solstice.NestedJars;
 import dev.equo.solstice.p2.JdtSetup;
@@ -55,6 +56,9 @@ public class LaunchMojo extends AbstractMojo {
 
 	@Parameter(property = "showConsole", defaultValue = "false")
 	private boolean showConsole;
+
+	@Parameter(property = "debugClasspath", defaultValue = "disabled")
+	private BuildPluginIdeMain.DebugClasspath debugClasspath;
 
 	@Parameter(property = "release")
 	private String release;
@@ -137,20 +141,27 @@ public class LaunchMojo extends AbstractMojo {
 				files.add(nested.getValue());
 			}
 
+			var classpath = Launcher.copyAndSortClasspath(files);
+			debugClasspath.printWithHead(
+					"jars about to be launched", classpath.stream().map(File::getAbsolutePath));
 			var exitCode =
 					Launcher.launchJavaBlocking(
-							initOnly || showConsole,
-							"dev.equo.solstice.IdeMain",
-							files,
+							initOnly
+									|| showConsole
+									|| debugClasspath != BuildPluginIdeMain.DebugClasspath.disabled,
+							BuildPluginIdeMain.class.getName(),
+							classpath,
 							"-installDir",
 							workspaceDir.getAbsolutePath(),
 							"-useAtomos",
 							Boolean.toString(useAtomos),
 							"-initOnly",
 							Boolean.toString(initOnly),
+							"-debugClasspath",
+							debugClasspath.name(),
 							"-Dorg.slf4j.simpleLogger.defaultLogLevel=INFO");
-			if (initOnly || showConsole) {
-				System.out.println("exit code: " + exitCode);
+			if (exitCode != 0) {
+				System.out.println("WARNING! Exit code: " + exitCode);
 			}
 		} catch (DependencyResolutionException | IOException | InterruptedException e) {
 			throw new RuntimeException(e);

@@ -25,6 +25,7 @@ import org.gradle.api.GradleException;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
+import org.gradle.api.artifacts.ModuleDependency;
 import org.gradle.api.attributes.Bundling;
 
 public class EquoIdeGradlePlugin implements Plugin<Project> {
@@ -32,7 +33,6 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 
 	private static final String TASK_GROUP = "IDE";
 	private static final String EQUO_IDE = "equoIde";
-	private static final String WITH_TRANSITIVES = "equoIdeWithTransitives";
 	private static final String $_OSGI_PLATFORM = "${osgi.platform}";
 
 	@Override
@@ -54,18 +54,15 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 		}
 
 		EquoIdeExtension extension = project.getExtensions().create(EQUO_IDE, EquoIdeExtension.class);
-		Configuration withTransitives =
-				createConfigurationWithTransitives(project, WITH_TRANSITIVES, true);
-		Configuration equoIde = createConfigurationWithTransitives(project, EQUO_IDE, false);
-		equoIde.extendsFrom(withTransitives);
+		Configuration equoIde = createConfigurationWithTransitives(project, EQUO_IDE);
 
 		project.getRepositories().mavenCentral();
 		try {
 			for (var dep : DepsResolve.resolveSolsticeAndTransitives()) {
 				if (dep instanceof File) {
-					project.getDependencies().add(WITH_TRANSITIVES, project.files(dep));
+					project.getDependencies().add(EQUO_IDE, project.files(dep));
 				} else if (dep instanceof String) {
-					project.getDependencies().add(WITH_TRANSITIVES, dep);
+					project.getDependencies().add(EQUO_IDE, dep);
 				} else {
 					throw new IllegalArgumentException("Expected String or File, got " + dep);
 				}
@@ -103,7 +100,9 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 								.getJarsOnMavenCentral()
 								.forEach(
 										coordinate -> {
-											project.getDependencies().add(EQUO_IDE, coordinate);
+											ModuleDependency dep =
+													(ModuleDependency) project.getDependencies().add(EQUO_IDE, coordinate);
+											dep.setTransitive(false);
 										});
 						equoIdeTask.configure(
 								task -> {
@@ -128,8 +127,7 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 						});
 	}
 
-	private Configuration createConfigurationWithTransitives(
-			Project project, String name, boolean withTransitives) {
+	private Configuration createConfigurationWithTransitives(Project project, String name) {
 		return project
 				.getConfigurations()
 				.create(
@@ -143,7 +141,6 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 									});
 							config.setCanBeConsumed(false);
 							config.setVisible(false);
-							config.setTransitive(withTransitives);
 						});
 	}
 

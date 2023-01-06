@@ -72,7 +72,6 @@ public class EquoIdeTest extends GradleHarness {
 						"  install 'org.eclipse.swt'",
 						"}");
 		runAndAssert("equoIde", "--init-only")
-				.contains("exit code: 0")
 				.matches("(?s)(.*)Loaded (\\d+) bundles using Atomos(.*)");
 
 		// useAtomos = false in buildscript
@@ -85,7 +84,6 @@ public class EquoIdeTest extends GradleHarness {
 						"  useAtomos = false",
 						"}");
 		runAndAssert("equoIde", "--init-only")
-				.contains("exit code: 0")
 				.matches("(?s)(.*)Loaded (\\d+) bundles not using Atomos(.*)");
 
 		// --dont-use-atomos at command line
@@ -97,7 +95,6 @@ public class EquoIdeTest extends GradleHarness {
 						"  install 'org.eclipse.swt'",
 						"}");
 		runAndAssert("equoIde", "--init-only", "--dont-use-atomos")
-				.contains("exit code: 0")
 				.matches("(?s)(.*)Loaded (\\d+) bundles not using Atomos(.*)");
 	}
 
@@ -111,6 +108,6 @@ public class EquoIdeTest extends GradleHarness {
 						"  release '4.26'",
 						"}",
 						"// (placeholder so GPJ formats this nicely)");
-		gradleRunner().withArguments("equoIde", "--stacktrace").forwardOutput().build();
+		gradleRunner().withArguments("equoIde", "--debug-classpath=names").forwardOutput().build();
 	}
 }

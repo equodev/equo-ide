@@ -176,8 +176,7 @@ public class SolsticeManifest {
 	/** Finds every OSGi bundle on the classpath and returns it inside a {@link BundleSet}. */
 	public static BundleSet discoverBundles() {
 		Enumeration<URL> manifestURLs =
-				Unchecked.get(
-						() -> SolsticeManifest.class.getClassLoader().getResources("META-INF/MANIFEST.MF"));
+				Unchecked.get(() -> SolsticeManifest.class.getClassLoader().getResources(MANIFEST_PATH));
 
 		int classpathOrder = 0;
 		List<SolsticeManifest> manifests = new ArrayList<>();
@@ -190,7 +189,8 @@ public class SolsticeManifest {
 		return new BundleSet(manifests);
 	}
 
-	static final String MANIFEST_PATH = "/META-INF/MANIFEST.MF";
+	static final String MANIFEST_PATH = "META-INF/MANIFEST.MF";
+	static final String SLASH_MANIFEST_PATH = "/" + MANIFEST_PATH;
 
 	private final String jarUrl;
 	private final int classpathOrder;
@@ -203,11 +203,11 @@ public class SolsticeManifest {
 	SolsticeManifest(URL manifestURL, int classpathOrder) {
 		this.classpathOrder = classpathOrder;
 		var externalForm = manifestURL.toExternalForm();
-		if (!externalForm.endsWith(MANIFEST_PATH)) {
+		if (!externalForm.endsWith(SLASH_MANIFEST_PATH)) {
 			throw new IllegalArgumentException(
-					"Expected manifest to end with " + MANIFEST_PATH + " but was " + externalForm);
+					"Expected manifest to end with " + SLASH_MANIFEST_PATH + " but was " + externalForm);
 		}
-		jarUrl = externalForm.substring(0, externalForm.length() - MANIFEST_PATH.length());
+		jarUrl = externalForm.substring(0, externalForm.length() - SLASH_MANIFEST_PATH.length());
 		if (!jarUrl.endsWith("!")) {
 			if (jarUrl.endsWith("build/resources/main")) {
 				// we're inside a Gradle build/test, no worries

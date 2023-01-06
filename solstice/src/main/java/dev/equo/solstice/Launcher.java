@@ -38,7 +38,7 @@ import java.util.zip.ZipOutputStream;
  */
 public class Launcher {
 	public static int launchJavaBlocking(
-			boolean blocking, String mainClass, Iterable<File> cp, String... args)
+			boolean blocking, String mainClass, List<File> cp, String... args)
 			throws IOException, InterruptedException {
 		String javaHome = System.getProperty("java.home");
 		String javaBin = javaHome + File.separator + "bin" + File.separator + "java";
@@ -114,7 +114,7 @@ public class Launcher {
 	private static final String LONG_CLASSPATH_JAR_PREFIX = "long-classpath";
 
 	/** Creates a jar with a Class-Path entry to workaround the windows classpath limitation. */
-	private static File toJarWithClasspath(Iterable<File> files) throws IOException {
+	private static File toJarWithClasspath(List<File> files) throws IOException {
 		File jarFile = File.createTempFile(LONG_CLASSPATH_JAR_PREFIX, ".jar");
 		try (ZipOutputStream zip =
 				new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(jarFile)))) {
@@ -124,12 +124,7 @@ public class Launcher {
 							new BufferedWriter(new OutputStreamWriter(zip, StandardCharsets.UTF_8)))) {
 				pw.println("Manifest-Version: 1.0");
 				StringBuilder bufferClassPath = new StringBuilder("Class-Path: ");
-				List<File> sortedCopy = new ArrayList<>();
-				files.forEach(sortedCopy::add);
-				sortedCopy.sort(
-						Comparator.comparing(File::getName)
-								.reversed()); // TODO: reversed() fixes a signing problem
-				for (File file : sortedCopy) {
+				for (File file : files) {
 					if (bufferClassPath.length() != 0) {
 						bufferClassPath.append(' ');
 					}
@@ -140,6 +135,14 @@ public class Launcher {
 			}
 		}
 		return jarFile;
+	}
+
+	public static List<File> copyAndSortClasspath(Iterable<File> files) {
+		List<File> copy = new ArrayList<>();
+		files.forEach(copy::add);
+		copy.sort(
+				Comparator.comparing(File::getName).reversed()); // TODO: reversed() fixes a signing problem
+		return copy;
 	}
 
 	private static final String MATCH_CHUNKS_OF_70_CHARACTERS = "(?<=\\G.{70})";

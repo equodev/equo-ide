@@ -24,7 +24,7 @@ public class NestedJarsForTest {
 	 * for the test task to run. This needs to be run if the jars in testSetupImplementation change.
 	 */
 	public static void main(String[] args) throws IOException {
-		var nestedJarFolder = new SolsticeInit(IdeMain.defaultDir()).nestedJarFolder();
+		var nestedJarFolder = new SolsticeInit(BuildPluginIdeMain.defaultDir()).nestedJarFolder();
 		var nestedJars = NestedJars.onClassPath().extractAllNestedJars(nestedJarFolder);
 		var content = new StringBuilder();
 		var base = nestedJarFolder.getParentFile().getParentFile().getParentFile().getAbsolutePath();

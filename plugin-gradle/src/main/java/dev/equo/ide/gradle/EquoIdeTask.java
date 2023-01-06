@@ -13,6 +13,7 @@
  *******************************************************************************/
 package dev.equo.ide.gradle;
 
+import dev.equo.solstice.BuildPluginIdeMain;
 import dev.equo.solstice.Launcher;
 import dev.equo.solstice.NestedJars;
 import dev.equo.solstice.p2.P2Client;
@@ -64,6 +65,16 @@ public abstract class EquoIdeTask extends DefaultTask {
 		this.showConsole = showConsole;
 	}
 
+	private BuildPluginIdeMain.DebugClasspath debugClasspath =
+			BuildPluginIdeMain.DebugClasspath.disabled;
+
+	@Option(
+			option = "debug-classpath",
+			description = "Dumps the classpath (in order) without starting the application.")
+	void debugClasspath(BuildPluginIdeMain.DebugClasspath debugClasspath) {
+		this.debugClasspath = debugClasspath;
+	}
+
 	private boolean dontUseAtomosOverride = false;
 
 	@Option(
@@ -100,20 +111,26 @@ public abstract class EquoIdeTask extends DefaultTask {
 		var nestedDefs = getObjectFactory().fileCollection().from(nestedJars);
 
 		boolean useAtomos = dontUseAtomosOverride ? false : getUseAtomos().get();
+
+		var classpath = Launcher.copyAndSortClasspath(p2AndMavenDeps.plus(nestedDefs));
+		debugClasspath.printWithHead(
+				"jars about to be launched", classpath.stream().map(File::getAbsolutePath));
 		var exitCode =
 				Launcher.launchJavaBlocking(
-						initOnly || showConsole,
-						"dev.equo.solstice.IdeMain",
-						p2AndMavenDeps.plus(nestedDefs),
+						initOnly || showConsole || debugClasspath != BuildPluginIdeMain.DebugClasspath.disabled,
+						BuildPluginIdeMain.class.getName(),
+						classpath,
 						"-installDir",
 						workspaceDir.getAbsolutePath(),
 						"-useAtomos",
 						Boolean.toString(useAtomos),
 						"-initOnly",
 						Boolean.toString(initOnly),
+						"-debugClasspath",
+						debugClasspath.name(),
 						"-Dorg.slf4j.simpleLogger.defaultLogLevel=INFO");
-		if (initOnly || showConsole) {
-			System.out.println("exit code: " + exitCode);
+		if (exitCode != 0) {
+			System.out.println("WARNING! Exit code: " + exitCode);
 		}
 	}
 }
