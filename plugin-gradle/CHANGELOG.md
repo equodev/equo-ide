@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+### Fixed
+- Transitive dependencies of Solstice were not being added, now fixed. ([#42](https://github.com/equodev/equo-ide/pull/42))
 
 ## [0.7.0] - 2023-01-06
 ### Added
