@@ -75,6 +75,7 @@ public class P2Session {
 
 		List<P2Unit> getProviders();
 
+		/** Returns a non-optional form of the requirement. */
 		Requirement getRoot();
 
 		@Override
@@ -91,55 +92,14 @@ public class P2Session {
 		}
 	}
 
-	private static class RequirementOptional implements Requirement {
-		final RequirementRoot root;
-
-		RequirementOptional(RequirementRoot root) {
-			this.root = root;
-		}
-
-		@Override
-		public boolean isOptional() {
-			return true;
-		}
-
-		// methods below this are all pure delegation
-		@Override
-		public String getNamespace() {
-			return root.getNamespace();
-		}
-
-		@Override
-		public String getName() {
-			return root.getName();
-		}
-
-		@Override
-		public boolean hasOnlyOneProvider() {
-			return root.hasOnlyOneProvider();
-		}
-
-		@Override
-		public P2Unit getOnlyProvider() {
-			return root.getOnlyProvider();
-		}
-
-		@Override
-		public List<P2Unit> getProviders() {
-			return root.getProviders();
-		}
-
-		@Override
-		public Requirement getRoot() {
-			return root;
-		}
-
-		@Override
-		public String toString() {
-			return root.toString() + " (opt)";
-		}
-	}
-
+	/**
+	 * In terms of design {@link RequirementRoot} represents both a mandatory requirement on a
+	 * capability and also the matching ability to provide that capability.
+	 *
+	 * <p>{@link RequirementOptional} delegates everything about describing that capability to {@link
+	 * RequirementRoot}, but layers on top the ability to add detail to the requirement (specifically
+	 * that it is optional).
+	 */
 	private static class RequirementRoot implements Requirement {
 		private final String namespace;
 		private final String name;
@@ -223,6 +183,55 @@ public class P2Session {
 		@Override
 		public String toString() {
 			return namespace + ":" + name;
+		}
+	}
+
+	private static class RequirementOptional implements Requirement {
+		final RequirementRoot root;
+
+		RequirementOptional(RequirementRoot root) {
+			this.root = root;
+		}
+
+		@Override
+		public boolean isOptional() {
+			return true;
+		}
+
+		// methods below this are all pure delegation
+		@Override
+		public String getNamespace() {
+			return root.getNamespace();
+		}
+
+		@Override
+		public String getName() {
+			return root.getName();
+		}
+
+		@Override
+		public boolean hasOnlyOneProvider() {
+			return root.hasOnlyOneProvider();
+		}
+
+		@Override
+		public P2Unit getOnlyProvider() {
+			return root.getOnlyProvider();
+		}
+
+		@Override
+		public List<P2Unit> getProviders() {
+			return root.getProviders();
+		}
+
+		@Override
+		public Requirement getRoot() {
+			return root;
+		}
+
+		@Override
+		public String toString() {
+			return root.toString() + " (opt)";
 		}
 	}
 
