@@ -74,6 +74,21 @@ public class P2Session {
 		P2Unit getOnlyProvider();
 
 		List<P2Unit> getProviders();
+
+		Requirement getRoot();
+
+		@Override
+		default int compareTo(@NotNull Requirement o) {
+			int byNamespace = getNamespace().compareTo(o.getNamespace());
+			if (byNamespace != 0) {
+				return byNamespace;
+			}
+			int byName = getName().compareTo(o.getName());
+			if (byName != 0) {
+				return byName;
+			}
+			return toString().compareTo(o.toString());
+		}
 	}
 
 	private static class RequirementOptional implements Requirement {
@@ -115,8 +130,13 @@ public class P2Session {
 		}
 
 		@Override
-		public int compareTo(@NotNull Requirement o) {
-			return root.compareTo(o);
+		public Requirement getRoot() {
+			return root;
+		}
+
+		@Override
+		public String toString() {
+			return root.toString() + " (opt)";
 		}
 	}
 
@@ -164,6 +184,11 @@ public class P2Session {
 			return get(providers);
 		}
 
+		@Override
+		public Requirement getRoot() {
+			return this;
+		}
+
 		private void sortProviders() {
 			if (providers instanceof ArrayList) {
 				((ArrayList<P2Unit>) providers).sort(Comparator.naturalOrder());
@@ -192,17 +217,6 @@ public class P2Session {
 				return Collections.singletonList((P2Unit) existing);
 			} else {
 				return (ArrayList<P2Unit>) existing;
-			}
-		}
-
-		/** Sorts based on namespace then on name. */
-		@Override
-		public int compareTo(@NotNull Requirement o) {
-			int byNamespace = namespace.compareTo(o.getNamespace());
-			if (byNamespace == 0) {
-				return name.compareTo(o.getName());
-			} else {
-				return byNamespace;
 			}
 		}
 

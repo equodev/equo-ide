@@ -42,6 +42,7 @@ public class P2Query {
 	private Map<String, String> filterProps = new HashMap<>();
 
 	private TreeMap<String, P2Unit> installed = new TreeMap<>();
+	private TreeMap<P2Session.Requirement, Set<P2Unit>> optionalSoMaybeNotInstalled = new TreeMap<>();
 	private TreeMap<P2Session.Requirement, Set<P2Unit>> unmetRequirements = new TreeMap<>();
 	private TreeSet<P2Session.Requirement> ambiguousRequirements = new TreeSet<>();
 
@@ -141,6 +142,9 @@ public class P2Query {
 		}
 		for (var requirement : toResolve.requires) {
 			if (requirement.isOptional()) {
+				optionalSoMaybeNotInstalled
+						.computeIfAbsent(requirement.getRoot(), unused -> new TreeSet<>())
+						.add(toResolve);
 				continue;
 			}
 			if (requirement.hasOnlyOneProvider()) {
@@ -260,5 +264,30 @@ public class P2Query {
 	/** Returns true of the given unit was installed. */
 	public boolean isInstalled(P2Unit unit) {
 		return installed.get(unit.getId()) == unit;
+	}
+
+	/**
+	 * Returns all optional requirements which were not installed, along with every unit which
+	 * optionally wanted it.
+	 */
+	public Map<P2Session.Requirement, Set<P2Unit>> getOptionalRequirementsNotInstalled() {
+		var iter = optionalSoMaybeNotInstalled.entrySet().iterator();
+		while (iter.hasNext()) {
+			var entry = iter.next();
+			var req = entry.getKey();
+
+			// if an optional requirement ended up getting installed,
+			// then MaybeNotInstalled has resolved to YesDefinitelyInstalled
+			if (req.getProviders().stream().anyMatch(this::isInstalled)) {
+				iter.remove();
+				continue;
+			}
+
+			// lots of annoying declaration of java.blah packages, ignore all of that
+			if (req.getProviders().stream().anyMatch(u -> u.id.equals("a.jre.javase"))) {
+				iter.remove();
+			}
+		}
+		return optionalSoMaybeNotInstalled;
 	}
 }

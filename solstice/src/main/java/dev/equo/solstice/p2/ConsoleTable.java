@@ -89,6 +89,30 @@ public class ConsoleTable {
 		return table.toString(format);
 	}
 
+	/** Returns a table describing all optional requirements which were not installed. */
+	public static String optionalRequirementsNotInstalled(P2Query query, Format format) {
+		if (query.getOptionalRequirementsNotInstalled().isEmpty()) {
+			return "Every optional requirement was installed.";
+		}
+		var table =
+				new NColumnTable("requirement (not installed)", "provided by", "optionally needed by");
+		for (var unmet : query.getOptionalRequirementsNotInstalled().entrySet()) {
+			var notInstalled = unmet.getKey();
+			var providedBy = new ArrayList<>(notInstalled.getProviders());
+			var neededBy = new ArrayList<>(unmet.getValue());
+			for (int i = 0; i < Math.max(neededBy.size(), providedBy.size()); ++i) {
+				var cell0 = i == 0 ? notInstalled.getName() : "";
+				var cell1 = i < providedBy.size() ? providedBy.get(i).toString() : "";
+				var cell2 = i < neededBy.size() ? neededBy.get(i).toString() : "";
+				if (i == 0 && cell1.equals("")) {
+					cell1 = "-- none available --";
+				}
+				table.addRow(cell0, cell1, cell2);
+			}
+		}
+		return table.toString(format);
+	}
+
 	static class NColumnTable {
 		private final TableColumn[] headers;
 		private final List<String[]> rows = new ArrayList<>();

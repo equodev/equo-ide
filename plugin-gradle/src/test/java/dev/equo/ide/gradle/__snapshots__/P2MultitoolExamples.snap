@@ -41,8 +41,8 @@ No jars were specified.
 
 
 dev.equo.ide.gradle.P2MultitoolExamples._03=[
-WARNING!!! 0 unmet requirement(s), 7 ambigous requirement(s). For more info:
-WARNING!!! gradlew equoList --problems
+0 unmet requirement(s), 7 ambigous requirement(s). For more info: `gradlew equoList --problems`
+49 optional requirement(s) were not installed. For more info: `gradlew equoList --optional`
 +---------------------------------------------------------------------------------+------------------------+
 | maven coordinate / p2 id                                                        | repo                   |
 +---------------------------------------------------------------------------------+------------------------+
