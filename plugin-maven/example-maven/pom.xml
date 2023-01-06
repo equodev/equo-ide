@@ -1,5 +1,15 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <!--
+  EXAMPLE HOW-TO:
+
+  Windows:     mvnw equo-ide:launch
+  Mac/Linux: ./mvnw equo-ide:launch
+
+  Recommend subscribing to these for the next big changes to the maven plugin.
+    - https://github.com/equodev/equo-ide/issues/18  use m2e to import "this" project
+    - https://github.com/equodev/equo-ide/issues/25  add the p2 multitool to the maven plugin
+  -->
   <modelVersion>4.0.0</modelVersion>
  
   <groupId>dev.equo.ide</groupId>

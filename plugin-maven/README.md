@@ -30,6 +30,11 @@ Use it like this with `mvn equo-ide:launch`
   ...
 ```
 
+## Coming soon
+
+- A p2 multitool for Eclipse ecosystem developers ([#25](https://github.com/equodev/equo-ide/issues/25))
+- Use m2e to import this maven project ([#18](https://github.com/equodev/equo-ide/issues/18))
+
 ## Limitations
 
 - Java 11+
