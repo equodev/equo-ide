@@ -16,8 +16,11 @@ package dev.equo.solstice;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.function.Function;
+import java.util.stream.Stream;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.InvalidSyntaxException;
@@ -33,7 +36,30 @@ public class BuildPluginIdeMain {
 		names,
 		paths;
 
-		public void doAction() throws IOException {
+		public void printWithHead(String header, Stream<String> paths) {
+			switch (this) {
+				case disabled:
+					return;
+				case names:
+				case paths:
+					System.out.println("/ " + header);
+					if (this == names) {
+						paths =
+								paths.map(
+										path -> {
+											int lastSlash = Math.max(path.lastIndexOf('/'), path.lastIndexOf('\\'));
+											return path.substring(lastSlash + 1);
+										});
+					}
+					paths.forEach(System.out::println);
+					System.out.println("\\ " + header);
+					return;
+				default:
+					throw new IllegalArgumentException("Unexpected enum value " + this);
+			}
+		}
+
+		private void printAndExitIfEnabled() throws IOException {
 			switch (this) {
 				case disabled:
 					return;
@@ -41,18 +67,14 @@ public class BuildPluginIdeMain {
 				case paths:
 					Enumeration<URL> manifestURLs =
 							SolsticeManifest.class.getClassLoader().getResources(SolsticeManifest.MANIFEST_PATH);
+					List<String> paths = new ArrayList<>();
 					while (manifestURLs.hasMoreElements()) {
 						String url = manifestURLs.nextElement().toExternalForm();
-						String jarPath =
+						paths.add(
 								url.substring(
-										0, url.length() - (SolsticeManifest.SLASH_MANIFEST_PATH.length() + 1));
-						if (this == paths) {
-							System.out.println(jarPath);
-						} else {
-							int lastSlash = Math.max(jarPath.lastIndexOf('/'), jarPath.lastIndexOf('\\'));
-							System.out.println(jarPath.substring(lastSlash + 1));
-						}
+										0, url.length() - (SolsticeManifest.SLASH_MANIFEST_PATH.length() + 1)));
 					}
+					printWithHead("jars with manifests inside runtime", paths.stream());
 					System.exit(0);
 				default:
 					throw new IllegalArgumentException("Unexpected enum value " + this);
@@ -86,7 +108,7 @@ public class BuildPluginIdeMain {
 		boolean initOnly = parseArg(args, "-initOnly", Boolean::parseBoolean, false);
 		DebugClasspath debugClasspath =
 				parseArg(args, "-debugClasspath", DebugClasspath::valueOf, DebugClasspath.disabled);
-		debugClasspath.doAction();
+		debugClasspath.printAndExitIfEnabled();
 
 		BundleContext context;
 		if (useAtomos) {

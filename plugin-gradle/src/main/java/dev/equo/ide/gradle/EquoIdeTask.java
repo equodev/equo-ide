@@ -111,11 +111,15 @@ public abstract class EquoIdeTask extends DefaultTask {
 		var nestedDefs = getObjectFactory().fileCollection().from(nestedJars);
 
 		boolean useAtomos = dontUseAtomosOverride ? false : getUseAtomos().get();
+
+		var classpath = Launcher.sortClasspath(p2AndMavenDeps.plus(nestedDefs));
+		debugClasspath.printWithHead(
+				"jars about to be launched", classpath.stream().map(File::getAbsolutePath));
 		var exitCode =
 				Launcher.launchJavaBlocking(
 						initOnly || showConsole || debugClasspath != BuildPluginIdeMain.DebugClasspath.disabled,
 						BuildPluginIdeMain.class.getName(),
-						p2AndMavenDeps.plus(nestedDefs),
+						classpath,
 						"-installDir",
 						workspaceDir.getAbsolutePath(),
 						"-useAtomos",

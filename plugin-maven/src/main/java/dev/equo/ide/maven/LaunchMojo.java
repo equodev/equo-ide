@@ -141,13 +141,16 @@ public class LaunchMojo extends AbstractMojo {
 				files.add(nested.getValue());
 			}
 
+			var classpath = Launcher.sortClasspath(files);
+			debugClasspath.printWithHead(
+					"jars about to be launched", classpath.stream().map(File::getAbsolutePath));
 			var exitCode =
 					Launcher.launchJavaBlocking(
 							initOnly
 									|| showConsole
 									|| debugClasspath != BuildPluginIdeMain.DebugClasspath.disabled,
 							BuildPluginIdeMain.class.getName(),
-							files,
+							classpath,
 							"-installDir",
 							workspaceDir.getAbsolutePath(),
 							"-useAtomos",
