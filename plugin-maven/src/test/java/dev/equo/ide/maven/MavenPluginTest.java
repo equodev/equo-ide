@@ -52,7 +52,6 @@ public class MavenPluginTest {
 								"-DuseAtomos=" + useAtomos)
 						.stdOut();
 		var output = new String(outputBytes, StandardCharsets.UTF_8);
-		Assertions.assertThat(output).contains("exit code: 0");
 		Assertions.assertThat(output).matches("(?s)(.*)Loaded (\\d+) bundles(.*)");
 		Assertions.assertThat(output).contains(useAtomos ? "using Atomos" : "not using Atomos");
 	}

@@ -65,6 +65,16 @@ public abstract class EquoIdeTask extends DefaultTask {
 		this.showConsole = showConsole;
 	}
 
+	private BuildPluginIdeMain.DebugClasspath debugClasspath =
+			BuildPluginIdeMain.DebugClasspath.disabled;
+
+	@Option(
+			option = "debug-classpath",
+			description = "Dumps the classpath (in order) without starting the application.")
+	void debugClasspath(BuildPluginIdeMain.DebugClasspath debugClasspath) {
+		this.debugClasspath = debugClasspath;
+	}
+
 	private boolean dontUseAtomosOverride = false;
 
 	@Option(
@@ -103,7 +113,7 @@ public abstract class EquoIdeTask extends DefaultTask {
 		boolean useAtomos = dontUseAtomosOverride ? false : getUseAtomos().get();
 		var exitCode =
 				Launcher.launchJavaBlocking(
-						initOnly || showConsole,
+						initOnly || showConsole || debugClasspath != BuildPluginIdeMain.DebugClasspath.disabled,
 						BuildPluginIdeMain.class.getName(),
 						p2AndMavenDeps.plus(nestedDefs),
 						"-installDir",
@@ -112,9 +122,11 @@ public abstract class EquoIdeTask extends DefaultTask {
 						Boolean.toString(useAtomos),
 						"-initOnly",
 						Boolean.toString(initOnly),
+						"-debugClasspath",
+						debugClasspath.name(),
 						"-Dorg.slf4j.simpleLogger.defaultLogLevel=INFO");
-		if (initOnly || showConsole) {
-			System.out.println("exit code: " + exitCode);
+		if (exitCode != 0) {
+			System.out.println("WARNING! Exit code: " + exitCode);
 		}
 	}
 }

@@ -57,6 +57,9 @@ public class LaunchMojo extends AbstractMojo {
 	@Parameter(property = "showConsole", defaultValue = "false")
 	private boolean showConsole;
 
+	@Parameter(property = "debugClasspath", defaultValue = "disabled")
+	private BuildPluginIdeMain.DebugClasspath debugClasspath;
+
 	@Parameter(property = "release")
 	private String release;
 
@@ -140,7 +143,9 @@ public class LaunchMojo extends AbstractMojo {
 
 			var exitCode =
 					Launcher.launchJavaBlocking(
-							initOnly || showConsole,
+							initOnly
+									|| showConsole
+									|| debugClasspath != BuildPluginIdeMain.DebugClasspath.disabled,
 							BuildPluginIdeMain.class.getName(),
 							files,
 							"-installDir",
@@ -149,9 +154,11 @@ public class LaunchMojo extends AbstractMojo {
 							Boolean.toString(useAtomos),
 							"-initOnly",
 							Boolean.toString(initOnly),
+							"-debugClasspath",
+							debugClasspath.name(),
 							"-Dorg.slf4j.simpleLogger.defaultLogLevel=INFO");
-			if (initOnly || showConsole) {
-				System.out.println("exit code: " + exitCode);
+			if (exitCode != 0) {
+				System.out.println("WARNING! Exit code: " + exitCode);
 			}
 		} catch (DependencyResolutionException | IOException | InterruptedException e) {
 			throw new RuntimeException(e);

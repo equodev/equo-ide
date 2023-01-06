@@ -8,6 +8,12 @@ Type
      EquoIdeTask (dev.equo.ide.gradle.EquoIdeTask)
 
 Options
+     --debug-classpath     Dumps the classpath (in order) without starting the application.
+                           Available values are:
+                                disabled
+                                names
+                                paths
+
      --dont-use-atomos     Uses Solstice's built-in OSGi runtime instead of Atomos+Equinox.
 
      --init-only     Initializes the runtime to check for errors then exits.
