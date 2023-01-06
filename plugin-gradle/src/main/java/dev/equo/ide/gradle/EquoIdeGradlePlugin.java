@@ -32,7 +32,7 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 
 	private static final String TASK_GROUP = "IDE";
 	private static final String EQUO_IDE = "equoIde";
-	private static final String EQUO_IDE_WITH_TRANSITIVES = "equoIdeWithTransitives";
+	private static final String WITH_TRANSITIVES = "equoIdeWithTransitives";
 	private static final String $_OSGI_PLATFORM = "${osgi.platform}";
 
 	@Override
@@ -53,21 +53,19 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 			}
 		}
 
-		EquoIdeExtension extension =
-				project.getExtensions().create(EQUO_IDE_WITH_TRANSITIVES, EquoIdeExtension.class);
-
+		EquoIdeExtension extension = project.getExtensions().create(EQUO_IDE, EquoIdeExtension.class);
 		Configuration withTransitives =
-				this.createConfigurationWithTransitives(project, EQUO_IDE_WITH_TRANSITIVES, true);
-		Configuration equoIde = this.createConfigurationWithTransitives(project, EQUO_IDE, false);
+				createConfigurationWithTransitives(project, WITH_TRANSITIVES, true);
+		Configuration equoIde = createConfigurationWithTransitives(project, EQUO_IDE, false);
 		equoIde.extendsFrom(withTransitives);
 
 		project.getRepositories().mavenCentral();
 		try {
 			for (var dep : DepsResolve.resolveSolsticeAndTransitives()) {
 				if (dep instanceof File) {
-					project.getDependencies().add(EQUO_IDE_WITH_TRANSITIVES, project.files(dep));
+					project.getDependencies().add(WITH_TRANSITIVES, project.files(dep));
 				} else if (dep instanceof String) {
-					project.getDependencies().add(EQUO_IDE_WITH_TRANSITIVES, dep);
+					project.getDependencies().add(WITH_TRANSITIVES, dep);
 				} else {
 					throw new IllegalArgumentException("Expected String or File, got " + dep);
 				}
