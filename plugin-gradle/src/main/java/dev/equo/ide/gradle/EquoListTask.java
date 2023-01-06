@@ -123,7 +123,8 @@ public abstract class EquoListTask extends DefaultTask {
 		if (raw != null) ++numArgs;
 		if (numArgs != 1) {
 			throw new IllegalArgumentException(
-					"Exactly one of --installed, --problems, --optional, --all, --detail, or --raw must be set");
+					"Exactly one of --installed, --problems, --optional, --all, --detail, or --raw must be set.\n"
+							+ "`gradlew help --task equoList` for more info or visit https://github.com/equodev/equo-ide/blob/main/P2_MULTITOOL.md");
 		}
 		var extension = getExtension().get();
 		var query = extension.performQuery(getCaching().get());
