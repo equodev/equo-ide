@@ -193,7 +193,15 @@ public class P2Session {
 
 		@Override
 		public String toString() {
-			return namespace + ":" + name;
+			if (namespace.equals("java.package")) {
+				return "pkg " + name;
+			} else if (namespace.equals("osgi.bundle")) {
+				return "bundle " + name;
+			} else if (namespace.equals("org.eclipse.equinox.p2.iu")) {
+				return "iu " + name;
+			} else {
+				return namespace + " " + name;
+			}
 		}
 	}
 

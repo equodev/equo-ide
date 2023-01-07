@@ -54,69 +54,69 @@ dev.equo.solstice.p2.P2MultipleReposTest.features=[
 
 dev.equo.solstice.p2.P2MultipleReposTest.query=[
 26 ambiguous requirement(s).
-+-------------------------------------------------------------+-----------------------------------------------------------+-----------+
-| ambiguous requirement                                       | candidate                                                 | installed |
-+-------------------------------------------------------------+-----------------------------------------------------------+-----------+
-| java.package:com.google.gson                                | com.google.gson:2.9.1.v20220915-1632                      | [x]       |
-|                                                             | com.google.gson:2.9.1                                     | [ ]       |
-|                                                             | com.google.gson:2.8.9.v20220111-1409                      | [ ]       |
-| java.package:com.google.gson.annotations                    | com.google.gson:2.9.1.v20220915-1632                      | [x]       |
-|                                                             | com.google.gson:2.9.1                                     | [ ]       |
-|                                                             | com.google.gson:2.8.9.v20220111-1409                      | [ ]       |
-| java.package:com.google.gson.internal                       | com.google.gson:2.9.1.v20220915-1632                      | [x]       |
-|                                                             | com.google.gson:2.8.9.v20220111-1409                      | [ ]       |
-| java.package:com.google.gson.internal.bind                  | com.google.gson:2.9.1.v20220915-1632                      | [x]       |
-|                                                             | com.google.gson:2.8.9.v20220111-1409                      | [ ]       |
-| java.package:com.google.gson.internal.bind.util             | com.google.gson:2.9.1.v20220915-1632                      | [x]       |
-|                                                             | com.google.gson:2.8.9.v20220111-1409                      | [ ]       |
-| java.package:com.google.gson.internal.reflect               | com.google.gson:2.9.1.v20220915-1632                      | [x]       |
-|                                                             | com.google.gson:2.8.9.v20220111-1409                      | [ ]       |
-| java.package:com.google.gson.internal.sql                   | com.google.gson:2.9.1.v20220915-1632                      | [x]       |
-|                                                             | com.google.gson:2.8.9.v20220111-1409                      | [ ]       |
-| java.package:com.google.gson.reflect                        | com.google.gson:2.9.1.v20220915-1632                      | [x]       |
-|                                                             | com.google.gson:2.9.1                                     | [ ]       |
-|                                                             | com.google.gson:2.8.9.v20220111-1409                      | [ ]       |
-| java.package:com.google.gson.stream                         | com.google.gson:2.9.1.v20220915-1632                      | [x]       |
-|                                                             | com.google.gson:2.9.1                                     | [ ]       |
-|                                                             | com.google.gson:2.8.9.v20220111-1409                      | [ ]       |
-| java.package:org.apache.commons.io                          | org.apache.commons.commons-io:2.11.0                      | [x]       |
-|                                                             | org.apache.commons.commons-io:2.11.0                      | [x]       |
-|                                                             | org.apache.commons.io:2.8.0.v20210415-0900                | [ ]       |
-| java.package:org.apache.commons.io.output                   | org.apache.commons.commons-io:2.11.0                      | [x]       |
-|                                                             | org.apache.commons.commons-io:2.11.0                      | [x]       |
-|                                                             | org.apache.commons.io:2.8.0.v20210415-0900                | [ ]       |
-| java.package:org.eclipse.jdt.internal.compiler.apt.dispatch | org.eclipse.jdt.compiler.apt:1.4.300.v20221108-0856       | [x]       |
-|                                                             | org.eclipse.jdt.core.compiler.batch:3.32.0.v20221108-1853 | [ ]       |
-| java.package:org.eclipse.jdt.internal.compiler.apt.model    | org.eclipse.jdt.compiler.apt:1.4.300.v20221108-0856       | [x]       |
-|                                                             | org.eclipse.jdt.core.compiler.batch:3.32.0.v20221108-1853 | [ ]       |
-| java.package:org.eclipse.jdt.internal.compiler.apt.util     | org.eclipse.jdt.compiler.apt:1.4.300.v20221108-0856       | [x]       |
-|                                                             | org.eclipse.jdt.core.compiler.batch:3.32.0.v20221108-1853 | [ ]       |
-| java.package:org.eclipse.jdt.internal.compiler.tool         | org.eclipse.jdt.compiler.tool:1.3.200.v20220802-0458      | [x]       |
-|                                                             | org.eclipse.jdt.core.compiler.batch:3.32.0.v20221108-1853 | [ ]       |
-| java.package:org.slf4j                                      | org.slf4j.api:1.7.30.v20200204-2150                       | [x]       |
-|                                                             | slf4j.api:1.7.36                                          | [ ]       |
-| java.package:org.slf4j.event                                | org.slf4j.api:1.7.30.v20200204-2150                       | [x]       |
-|                                                             | slf4j.api:1.7.36                                          | [ ]       |
-| java.package:org.slf4j.helpers                              | org.slf4j.api:1.7.30.v20200204-2150                       | [x]       |
-|                                                             | slf4j.api:1.7.36                                          | [ ]       |
-| java.package:org.slf4j.spi                                  | org.slf4j.api:1.7.30.v20200204-2150                       | [x]       |
-|                                                             | slf4j.api:1.7.36                                          | [ ]       |
-| org.eclipse.equinox.p2.iu:com.sun.jna                       | com.sun.jna:5.12.1                                        | [x]       |
-|                                                             | com.sun.jna:5.12.1                                        | [ ]       |
-| org.eclipse.equinox.p2.iu:com.sun.jna.platform              | com.sun.jna.platform:5.12.1                               | [x]       |
-|                                                             | com.sun.jna.platform:5.12.1                               | [ ]       |
-| org.eclipse.equinox.p2.iu:org.eclipse.jdt.annotation        | org.eclipse.jdt.annotation:2.2.700.v20220826-1026         | [x]       |
-|                                                             | org.eclipse.jdt.annotation:1.2.100.v20220826-1026         | [ ]       |
-| org.eclipse.equinox.p2.iu:org.eclipse.jdt.annotation.source | org.eclipse.jdt.annotation.source:2.2.700.v20220826-1026  | [ ]       |
-|                                                             | org.eclipse.jdt.annotation.source:1.2.100.v20220826-1026  | [ ]       |
-| osgi.bundle:com.google.gson                                 | com.google.gson:2.9.1.v20220915-1632                      | [x]       |
-|                                                             | com.google.gson:2.9.1                                     | [ ]       |
-|                                                             | com.google.gson:2.8.9.v20220111-1409                      | [ ]       |
-| osgi.bundle:com.sun.jna                                     | com.sun.jna:5.12.1                                        | [x]       |
-|                                                             | com.sun.jna:5.12.1                                        | [ ]       |
-| osgi.bundle:com.sun.jna.platform                            | com.sun.jna.platform:5.12.1                               | [x]       |
-|                                                             | com.sun.jna.platform:5.12.1                               | [ ]       |
-+-------------------------------------------------------------+-----------------------------------------------------------+-----------+
++----------------------------------------------------+-----------------------------------------------------------+-----------+
+| ambiguous requirement                              | candidate                                                 | installed |
++----------------------------------------------------+-----------------------------------------------------------+-----------+
+| pkg com.google.gson                                | com.google.gson:2.9.1.v20220915-1632                      | [x]       |
+|                                                    | com.google.gson:2.9.1                                     | [ ]       |
+|                                                    | com.google.gson:2.8.9.v20220111-1409                      | [ ]       |
+| pkg com.google.gson.annotations                    | com.google.gson:2.9.1.v20220915-1632                      | [x]       |
+|                                                    | com.google.gson:2.9.1                                     | [ ]       |
+|                                                    | com.google.gson:2.8.9.v20220111-1409                      | [ ]       |
+| pkg com.google.gson.internal                       | com.google.gson:2.9.1.v20220915-1632                      | [x]       |
+|                                                    | com.google.gson:2.8.9.v20220111-1409                      | [ ]       |
+| pkg com.google.gson.internal.bind                  | com.google.gson:2.9.1.v20220915-1632                      | [x]       |
+|                                                    | com.google.gson:2.8.9.v20220111-1409                      | [ ]       |
+| pkg com.google.gson.internal.bind.util             | com.google.gson:2.9.1.v20220915-1632                      | [x]       |
+|                                                    | com.google.gson:2.8.9.v20220111-1409                      | [ ]       |
+| pkg com.google.gson.internal.reflect               | com.google.gson:2.9.1.v20220915-1632                      | [x]       |
+|                                                    | com.google.gson:2.8.9.v20220111-1409                      | [ ]       |
+| pkg com.google.gson.internal.sql                   | com.google.gson:2.9.1.v20220915-1632                      | [x]       |
+|                                                    | com.google.gson:2.8.9.v20220111-1409                      | [ ]       |
+| pkg com.google.gson.reflect                        | com.google.gson:2.9.1.v20220915-1632                      | [x]       |
+|                                                    | com.google.gson:2.9.1                                     | [ ]       |
+|                                                    | com.google.gson:2.8.9.v20220111-1409                      | [ ]       |
+| pkg com.google.gson.stream                         | com.google.gson:2.9.1.v20220915-1632                      | [x]       |
+|                                                    | com.google.gson:2.9.1                                     | [ ]       |
+|                                                    | com.google.gson:2.8.9.v20220111-1409                      | [ ]       |
+| pkg org.apache.commons.io                          | org.apache.commons.commons-io:2.11.0                      | [x]       |
+|                                                    | org.apache.commons.commons-io:2.11.0                      | [x]       |
+|                                                    | org.apache.commons.io:2.8.0.v20210415-0900                | [ ]       |
+| pkg org.apache.commons.io.output                   | org.apache.commons.commons-io:2.11.0                      | [x]       |
+|                                                    | org.apache.commons.commons-io:2.11.0                      | [x]       |
+|                                                    | org.apache.commons.io:2.8.0.v20210415-0900                | [ ]       |
+| pkg org.eclipse.jdt.internal.compiler.apt.dispatch | org.eclipse.jdt.compiler.apt:1.4.300.v20221108-0856       | [x]       |
+|                                                    | org.eclipse.jdt.core.compiler.batch:3.32.0.v20221108-1853 | [ ]       |
+| pkg org.eclipse.jdt.internal.compiler.apt.model    | org.eclipse.jdt.compiler.apt:1.4.300.v20221108-0856       | [x]       |
+|                                                    | org.eclipse.jdt.core.compiler.batch:3.32.0.v20221108-1853 | [ ]       |
+| pkg org.eclipse.jdt.internal.compiler.apt.util     | org.eclipse.jdt.compiler.apt:1.4.300.v20221108-0856       | [x]       |
+|                                                    | org.eclipse.jdt.core.compiler.batch:3.32.0.v20221108-1853 | [ ]       |
+| pkg org.eclipse.jdt.internal.compiler.tool         | org.eclipse.jdt.compiler.tool:1.3.200.v20220802-0458      | [x]       |
+|                                                    | org.eclipse.jdt.core.compiler.batch:3.32.0.v20221108-1853 | [ ]       |
+| pkg org.slf4j                                      | org.slf4j.api:1.7.30.v20200204-2150                       | [x]       |
+|                                                    | slf4j.api:1.7.36                                          | [ ]       |
+| pkg org.slf4j.event                                | org.slf4j.api:1.7.30.v20200204-2150                       | [x]       |
+|                                                    | slf4j.api:1.7.36                                          | [ ]       |
+| pkg org.slf4j.helpers                              | org.slf4j.api:1.7.30.v20200204-2150                       | [x]       |
+|                                                    | slf4j.api:1.7.36                                          | [ ]       |
+| pkg org.slf4j.spi                                  | org.slf4j.api:1.7.30.v20200204-2150                       | [x]       |
+|                                                    | slf4j.api:1.7.36                                          | [ ]       |
+| iu com.sun.jna                                     | com.sun.jna:5.12.1                                        | [x]       |
+|                                                    | com.sun.jna:5.12.1                                        | [ ]       |
+| iu com.sun.jna.platform                            | com.sun.jna.platform:5.12.1                               | [x]       |
+|                                                    | com.sun.jna.platform:5.12.1                               | [ ]       |
+| iu org.eclipse.jdt.annotation                      | org.eclipse.jdt.annotation:2.2.700.v20220826-1026         | [x]       |
+|                                                    | org.eclipse.jdt.annotation:1.2.100.v20220826-1026         | [ ]       |
+| iu org.eclipse.jdt.annotation.source               | org.eclipse.jdt.annotation.source:2.2.700.v20220826-1026  | [ ]       |
+|                                                    | org.eclipse.jdt.annotation.source:1.2.100.v20220826-1026  | [ ]       |
+| bundle com.google.gson                             | com.google.gson:2.9.1.v20220915-1632                      | [x]       |
+|                                                    | com.google.gson:2.9.1                                     | [ ]       |
+|                                                    | com.google.gson:2.8.9.v20220111-1409                      | [ ]       |
+| bundle com.sun.jna                                 | com.sun.jna:5.12.1                                        | [x]       |
+|                                                    | com.sun.jna:5.12.1                                        | [ ]       |
+| bundle com.sun.jna.platform                        | com.sun.jna.platform:5.12.1                               | [x]       |
+|                                                    | com.sun.jna.platform:5.12.1                               | [ ]       |
++----------------------------------------------------+-----------------------------------------------------------+-----------+
 
 0 unmet requirement(s).
 +---------------------------------------------------------------------------------+-------------------------+
