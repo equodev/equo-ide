@@ -182,25 +182,39 @@ public class ConsoleTable {
 		}
 
 		private void compress() {
-			String[] row = rows.get(widestRow);
-			String bestDict = null;
-			int bestSavings = MIN_SAVINGS;
-			for (String dict : DICTIONARY) {
-				int numOccurrences = 0;
-				for (int c = 0; c < ncol; ++c) {
-					if (row[c].contains(dict)) {
-						++numOccurrences;
+			do {
+				String[] row = rows.get(widestRow);
+				String bestDict = null;
+				int bestSavings = MIN_SAVINGS;
+				for (String dict : DICTIONARY) {
+					int numOccurrences = 0;
+					for (int c = 0; c < ncol; ++c) {
+						if (row[c].contains(dict)) {
+							++numOccurrences;
+						}
+					}
+					int savings = numOccurrences * (dict.length() - 1);
+					if (savings > bestSavings) {
+						bestDict = dict;
+						bestSavings = savings;
 					}
 				}
-				int savings = numOccurrences * (dict.length() - 1);
-				if (savings > bestSavings) {
-					bestDict = dict;
-					bestSavings = savings;
+				if (bestDict != null) {
+					addKeyToLegend(bestDict);
+				} else {
+					// couldn't find anything worthwhile
+					return;
 				}
+			} while (key.size() < LEGEND.length && recalculateWidestWidth() > MAX_WIDTH);
+		}
+
+		private int recalculateWidestWidth() {
+			widestWidth = -1;
+			widestRow = -1;
+			for (int r = 0; r < rows.size(); ++r) {
+				updateWidest(r, rows.get(r));
 			}
-			if (bestDict != null) {
-				addKeyToLegend(bestDict);
-			}
+			return widestWidth;
 		}
 
 		public String toString(Format format) {
