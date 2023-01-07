@@ -116,26 +116,102 @@ public class ConsoleTable {
 	}
 
 	static class NColumnTable {
+		/** The maximum width a table can have. */
+		private static final int MAX_WIDTH = 120;
+		/** We have to save at least this much for a shortening to be worth it. */
+		private static final int MIN_SAVINGS = ("org.apache".length() - 1) * 2;
+
+		private static final String[] LEGEND = new String[] {"¹", "²", "³"};
+		private static final String[] DICTIONARY =
+				new String[] {
+					"feature.feature.group",
+					"feature.group",
+					"org.eclipse.equinox",
+					"org.eclipse",
+					"org.apache"
+				};
+		private final List<String> key = new ArrayList<>();
+
+		private final int ncol;
 		private final TableColumn[] headers;
 		private final List<String[]> rows = new ArrayList<>();
 
 		public NColumnTable(String... headers) {
-			this.headers = new TableColumn[headers.length];
-			for (int i = 0; i < headers.length; ++i) {
+			ncol = headers.length;
+			this.headers = new TableColumn[ncol];
+			for (int i = 0; i < ncol; ++i) {
 				this.headers[i] = new TableColumn(headers[i]);
 			}
 		}
 
 		public void addRow(String... data) {
-			if (data.length != headers.length) {
+			if (data.length != ncol) {
 				throw new IllegalArgumentException(
 						"Expected " + headers.length + " items but got " + data.length);
 			}
+			updateWidest(rows.size(), data);
 			rows.add(data);
 		}
 
+		int widestWidth = -1;
+		int widestRow = -1;
+
+		private void updateWidest(int row, String[] data) {
+			int width = 1; // 2 + 3 + ... + 3 + 2 = 1 + (3 * n)
+			for (String d : data) {
+				width += d.length() + 3;
+			}
+			if (row != -1 && width > widestWidth) {
+				widestWidth = width;
+				widestRow = row;
+			}
+		}
+
+		private void addKeyToLegend(String dict) {
+			String legend = LEGEND[key.size()];
+			key.add(dict);
+			for (int r = 0; r < rows.size(); ++r) {
+				String[] row = rows.get(r);
+				for (int c = 0; c < ncol; ++c) {
+					String e = row[c];
+					if (e.contains(dict)) {
+						row[c] = e.replace(dict, legend);
+					}
+				}
+			}
+		}
+
+		private void compress() {
+			String[] row = rows.get(widestRow);
+			String bestDict = null;
+			int bestSavings = MIN_SAVINGS;
+			for (String dict : DICTIONARY) {
+				int numOccurrences = 0;
+				for (int c = 0; c < ncol; ++c) {
+					if (row[c].contains(dict)) {
+						++numOccurrences;
+					}
+				}
+				int savings = numOccurrences * (dict.length() - 1);
+				if (savings > bestSavings) {
+					bestDict = dict;
+					bestSavings = savings;
+				}
+			}
+			if (bestDict != null) {
+				addKeyToLegend(bestDict);
+			}
+		}
+
 		public String toString(Format format) {
-			return Table.getTable(format, headers, rows.toArray(new String[0][]));
+			if (format == Format.ASCII && widestWidth > MAX_WIDTH) {
+				compress();
+			}
+			String result = Table.getTable(format, headers, rows.toArray(new String[0][]));
+			for (int i = 0; i < key.size(); ++i) {
+				result = result + LEGEND[i] + " " + key.get(i) + "\n";
+			}
+			return result;
 		}
 	}
 

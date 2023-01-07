@@ -1083,67 +1083,68 @@ dev.equo.ide.gradle.EquoListTest.defaultP2[installed]=[
 
 
 dev.equo.ide.gradle.EquoListTest.defaultP2[optional]=[
-+----------------------------------------------+----------------------------------------------------------------------+----------------------------------------------------------+
-| requirement (not installed)                  | provided by                                                          | optionally needed by                                     |
-+----------------------------------------------+----------------------------------------------------------------------+----------------------------------------------------------+
-| COM.ibm.netrexx.process                      | -- none available --                                                 | org.apache.ant:1.10.12.v20211102-1452                    |
-| com.jcraft.jzlib                             | -- none available --                                                 | com.jcraft.jsch:0.1.55.v20221112-0806                    |
-| com.sun.media.jai.codec                      | -- none available --                                                 | org.apache.ant:1.10.12.v20211102-1452                    |
-| com.sun.net.ssl.internal.ssl                 | -- none available --                                                 | org.apache.ant:1.10.12.v20211102-1452                    |
-| com.sun.tools.javah                          | -- none available --                                                 | org.apache.ant:1.10.12.v20211102-1452                    |
-| com.sun.tools.javah.oldjavah                 | -- none available --                                                 | org.apache.ant:1.10.12.v20211102-1452                    |
-| gnu.classpath                                | -- none available --                                                 | org.apache.ant:1.10.12.v20211102-1452                    |
-| gnu.gcj                                      | -- none available --                                                 | org.apache.ant:1.10.12.v20211102-1452                    |
-| javax.activation                             | -- none available --                                                 | org.apache.ant:1.10.12.v20211102-1452                    |
-| javax.mail                                   | -- none available --                                                 | org.apache.ant:1.10.12.v20211102-1452                    |
-| javax.mail.internet                          | -- none available --                                                 | org.apache.ant:1.10.12.v20211102-1452                    |
-| javax.media.jai                              | -- none available --                                                 | org.apache.ant:1.10.12.v20211102-1452                    |
-| jdepend.framework                            | -- none available --                                                 | org.apache.ant:1.10.12.v20211102-1452                    |
-| jdepend.textui                               | -- none available --                                                 | org.apache.ant:1.10.12.v20211102-1452                    |
-| jdepend.xmlui                                | -- none available --                                                 | org.apache.ant:1.10.12.v20211102-1452                    |
-| kaffe.util                                   | -- none available --                                                 | org.apache.ant:1.10.12.v20211102-1452                    |
-| kotlin                                       | -- none available --                                                 | junit-jupiter-api:5.9.1                                  |
-|                                              |                                                                      | junit-jupiter-params:5.9.1                               |
-| kotlin.collections                           | -- none available --                                                 | junit-jupiter-api:5.9.1                                  |
-| kotlin.jvm.functions                         | -- none available --                                                 | junit-jupiter-api:5.9.1                                  |
-| kotlin.jvm.internal                          | -- none available --                                                 | junit-jupiter-api:5.9.1                                  |
-|                                              |                                                                      | junit-jupiter-params:5.9.1                               |
-| netrexx.lang                                 | -- none available --                                                 | org.apache.ant:1.10.12.v20211102-1452                    |
-| org.apache.avalon.framework.logger           | -- none available --                                                 | org.apache.commons.logging:1.2.0.v20180409-1502          |
-| org.apache.bcel.classfile                    | -- none available --                                                 | org.apache.ant:1.10.12.v20211102-1452                    |
-| org.apache.bsf                               | -- none available --                                                 | org.apache.ant:1.10.12.v20211102-1452                    |
-| org.apache.commons.fileupload                | org.apache.commons.commons-fileupload:1.4.0                          | org.eclipse.equinox.http.servlet:1.7.400.v20221006-1531  |
-| org.apache.commons.fileupload.disk           | org.apache.commons.commons-fileupload:1.4.0                          | org.eclipse.equinox.http.servlet:1.7.400.v20221006-1531  |
-| org.apache.commons.fileupload.servlet        | org.apache.commons.commons-fileupload:1.4.0                          | org.eclipse.equinox.http.servlet:1.7.400.v20221006-1531  |
-| org.apache.commons.net.bsd                   | -- none available --                                                 | org.apache.ant:1.10.12.v20211102-1452                    |
-| org.apache.commons.net.ftp                   | -- none available --                                                 | org.apache.ant:1.10.12.v20211102-1452                    |
-| org.apache.commons.net.telnet                | -- none available --                                                 | org.apache.ant:1.10.12.v20211102-1452                    |
-| org.apache.env                               | -- none available --                                                 | org.apache.ant:1.10.12.v20211102-1452                    |
-| org.apache.felix.service.command             | org.apache.felix.gogo.runtime:1.1.6                                  | org.apache.felix.scr:2.2.4                               |
-| org.apache.harmony.luni.util                 | -- none available --                                                 | org.apache.ant:1.10.12.v20211102-1452                    |
-| org.apache.log                               | -- none available --                                                 | org.apache.commons.logging:1.2.0.v20180409-1502          |
-| org.apache.log4j                             | -- none available --                                                 | org.apache.ant:1.10.12.v20211102-1452                    |
-|                                              |                                                                      | org.apache.commons.logging:1.2.0.v20180409-1502          |
-| org.apache.oro.text.regex                    | -- none available --                                                 | org.apache.ant:1.10.12.v20211102-1452                    |
-| org.apache.regexp                            | -- none available --                                                 | org.apache.ant:1.10.12.v20211102-1452                    |
-| org.apache.xalan.trace                       | -- none available --                                                 | org.apache.ant:1.10.12.v20211102-1452                    |
-| org.apache.xalan.transformer                 | -- none available --                                                 | org.apache.ant:1.10.12.v20211102-1452                    |
-| org.apache.xml.resolver                      | -- none available --                                                 | org.apache.ant:1.10.12.v20211102-1452                    |
-| org.apache.xml.resolver.helpers              | -- none available --                                                 | org.apache.ant:1.10.12.v20211102-1452                    |
-| org.apache.xml.resolver.tools                | -- none available --                                                 | org.apache.ant:1.10.12.v20211102-1452                    |
-| org.eclipse.jetty.jmx                        | -- none available --                                                 | org.eclipse.jetty.io:10.0.12                             |
-|                                              |                                                                      | org.eclipse.jetty.server:10.0.12                         |
-|                                              |                                                                      | org.eclipse.jetty.servlet:10.0.12                        |
-| org.eclipse.swt.accessibility2               | -- none available --                                                 | org.eclipse.swt:3.122.0.v20221123-2302                   |
-| org.junit.Suite                              | -- none available --                                                 | org.apache.ant:1.10.12.v20211102-1452                    |
-| org.tukaani.xz                               | org.tukaani.xz:1.9.0                                                 | org.apache.ant:1.10.12.v20211102-1452                    |
-| sun.nio.ch                                   | -- none available --                                                 | org.apache.commons.commons-io:2.11.0                     |
-| sun.rmi.rmic                                 | -- none available --                                                 | org.apache.ant:1.10.12.v20211102-1452                    |
-| sun.tools.javac                              | -- none available --                                                 | org.apache.ant:1.10.12.v20211102-1452                    |
-| sun.tools.native2ascii                       | -- none available --                                                 | org.apache.ant:1.10.12.v20211102-1452                    |
-| weblogic                                     | -- none available --                                                 | org.apache.ant:1.10.12.v20211102-1452                    |
-| org.eclipse.equinox.p2.user.ui.feature.group | org.eclipse.equinox.p2.user.ui.feature.group:2.4.1800.v20221117-1044 | org.eclipse.platform.feature.group:4.26.0.v20221123-2302 |
-+----------------------------------------------+----------------------------------------------------------------------+----------------------------------------------------------+
++---------------------------------------+----------------------------------------------------------+---------------------------------------------------------+
+| requirement (not installed)           | provided by                                              | optionally needed by                                    |
++---------------------------------------+----------------------------------------------------------+---------------------------------------------------------+
+| COM.ibm.netrexx.process               | -- none available --                                     | org.apache.ant:1.10.12.v20211102-1452                   |
+| com.jcraft.jzlib                      | -- none available --                                     | com.jcraft.jsch:0.1.55.v20221112-0806                   |
+| com.sun.media.jai.codec               | -- none available --                                     | org.apache.ant:1.10.12.v20211102-1452                   |
+| com.sun.net.ssl.internal.ssl          | -- none available --                                     | org.apache.ant:1.10.12.v20211102-1452                   |
+| com.sun.tools.javah                   | -- none available --                                     | org.apache.ant:1.10.12.v20211102-1452                   |
+| com.sun.tools.javah.oldjavah          | -- none available --                                     | org.apache.ant:1.10.12.v20211102-1452                   |
+| gnu.classpath                         | -- none available --                                     | org.apache.ant:1.10.12.v20211102-1452                   |
+| gnu.gcj                               | -- none available --                                     | org.apache.ant:1.10.12.v20211102-1452                   |
+| javax.activation                      | -- none available --                                     | org.apache.ant:1.10.12.v20211102-1452                   |
+| javax.mail                            | -- none available --                                     | org.apache.ant:1.10.12.v20211102-1452                   |
+| javax.mail.internet                   | -- none available --                                     | org.apache.ant:1.10.12.v20211102-1452                   |
+| javax.media.jai                       | -- none available --                                     | org.apache.ant:1.10.12.v20211102-1452                   |
+| jdepend.framework                     | -- none available --                                     | org.apache.ant:1.10.12.v20211102-1452                   |
+| jdepend.textui                        | -- none available --                                     | org.apache.ant:1.10.12.v20211102-1452                   |
+| jdepend.xmlui                         | -- none available --                                     | org.apache.ant:1.10.12.v20211102-1452                   |
+| kaffe.util                            | -- none available --                                     | org.apache.ant:1.10.12.v20211102-1452                   |
+| kotlin                                | -- none available --                                     | junit-jupiter-api:5.9.1                                 |
+|                                       |                                                          | junit-jupiter-params:5.9.1                              |
+| kotlin.collections                    | -- none available --                                     | junit-jupiter-api:5.9.1                                 |
+| kotlin.jvm.functions                  | -- none available --                                     | junit-jupiter-api:5.9.1                                 |
+| kotlin.jvm.internal                   | -- none available --                                     | junit-jupiter-api:5.9.1                                 |
+|                                       |                                                          | junit-jupiter-params:5.9.1                              |
+| netrexx.lang                          | -- none available --                                     | org.apache.ant:1.10.12.v20211102-1452                   |
+| org.apache.avalon.framework.logger    | -- none available --                                     | org.apache.commons.logging:1.2.0.v20180409-1502         |
+| org.apache.bcel.classfile             | -- none available --                                     | org.apache.ant:1.10.12.v20211102-1452                   |
+| org.apache.bsf                        | -- none available --                                     | org.apache.ant:1.10.12.v20211102-1452                   |
+| org.apache.commons.fileupload         | org.apache.commons.commons-fileupload:1.4.0              | org.eclipse.equinox.http.servlet:1.7.400.v20221006-1531 |
+| org.apache.commons.fileupload.disk    | org.apache.commons.commons-fileupload:1.4.0              | org.eclipse.equinox.http.servlet:1.7.400.v20221006-1531 |
+| org.apache.commons.fileupload.servlet | org.apache.commons.commons-fileupload:1.4.0              | org.eclipse.equinox.http.servlet:1.7.400.v20221006-1531 |
+| org.apache.commons.net.bsd            | -- none available --                                     | org.apache.ant:1.10.12.v20211102-1452                   |
+| org.apache.commons.net.ftp            | -- none available --                                     | org.apache.ant:1.10.12.v20211102-1452                   |
+| org.apache.commons.net.telnet         | -- none available --                                     | org.apache.ant:1.10.12.v20211102-1452                   |
+| org.apache.env                        | -- none available --                                     | org.apache.ant:1.10.12.v20211102-1452                   |
+| org.apache.felix.service.command      | org.apache.felix.gogo.runtime:1.1.6                      | org.apache.felix.scr:2.2.4                              |
+| org.apache.harmony.luni.util          | -- none available --                                     | org.apache.ant:1.10.12.v20211102-1452                   |
+| org.apache.log                        | -- none available --                                     | org.apache.commons.logging:1.2.0.v20180409-1502         |
+| org.apache.log4j                      | -- none available --                                     | org.apache.ant:1.10.12.v20211102-1452                   |
+|                                       |                                                          | org.apache.commons.logging:1.2.0.v20180409-1502         |
+| org.apache.oro.text.regex             | -- none available --                                     | org.apache.ant:1.10.12.v20211102-1452                   |
+| org.apache.regexp                     | -- none available --                                     | org.apache.ant:1.10.12.v20211102-1452                   |
+| org.apache.xalan.trace                | -- none available --                                     | org.apache.ant:1.10.12.v20211102-1452                   |
+| org.apache.xalan.transformer          | -- none available --                                     | org.apache.ant:1.10.12.v20211102-1452                   |
+| org.apache.xml.resolver               | -- none available --                                     | org.apache.ant:1.10.12.v20211102-1452                   |
+| org.apache.xml.resolver.helpers       | -- none available --                                     | org.apache.ant:1.10.12.v20211102-1452                   |
+| org.apache.xml.resolver.tools         | -- none available --                                     | org.apache.ant:1.10.12.v20211102-1452                   |
+| org.eclipse.jetty.jmx                 | -- none available --                                     | org.eclipse.jetty.io:10.0.12                            |
+|                                       |                                                          | org.eclipse.jetty.server:10.0.12                        |
+|                                       |                                                          | org.eclipse.jetty.servlet:10.0.12                       |
+| org.eclipse.swt.accessibility2        | -- none available --                                     | org.eclipse.swt:3.122.0.v20221123-2302                  |
+| org.junit.Suite                       | -- none available --                                     | org.apache.ant:1.10.12.v20211102-1452                   |
+| org.tukaani.xz                        | org.tukaani.xz:1.9.0                                     | org.apache.ant:1.10.12.v20211102-1452                   |
+| sun.nio.ch                            | -- none available --                                     | org.apache.commons.commons-io:2.11.0                    |
+| sun.rmi.rmic                          | -- none available --                                     | org.apache.ant:1.10.12.v20211102-1452                   |
+| sun.tools.javac                       | -- none available --                                     | org.apache.ant:1.10.12.v20211102-1452                   |
+| sun.tools.native2ascii                | -- none available --                                     | org.apache.ant:1.10.12.v20211102-1452                   |
+| weblogic                              | -- none available --                                     | org.apache.ant:1.10.12.v20211102-1452                   |
+| org.eclipse.equinox.p2.user.ui.¹      | org.eclipse.equinox.p2.user.ui.¹:2.4.1800.v20221117-1044 | org.eclipse.platform.¹:4.26.0.v20221123-2302            |
++---------------------------------------+----------------------------------------------------------+---------------------------------------------------------+
+¹ feature.group
 ]
 
 
