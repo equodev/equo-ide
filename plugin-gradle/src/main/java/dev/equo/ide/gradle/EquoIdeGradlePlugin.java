@@ -27,12 +27,15 @@ import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ModuleDependency;
 import org.gradle.api.attributes.Bundling;
+import org.gradle.api.tasks.Delete;
 
 public class EquoIdeGradlePlugin implements Plugin<Project> {
 	static final String MINIMUM_GRADLE = "6.0";
 
 	private static final String TASK_GROUP = "IDE";
 	private static final String EQUO_IDE = "equoIde";
+	private static final String EQUO_IDE_CLEAN = EQUO_IDE + "Clean";
+	private static final String EQUO_IDE_FRESH = EQUO_IDE + "Fresh";
 	private static final String $_OSGI_PLATFORM = "${osgi.platform}";
 
 	@Override
@@ -78,6 +81,16 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 		var workspaceRegistry = WorkspaceRegistry.instance();
 		var workspaceDir = workspaceRegistry.workspaceDir(project.getProjectDir());
 		workspaceRegistry.clean();
+		var cleanTask =
+				project
+						.getTasks()
+						.register(
+								EQUO_IDE_CLEAN,
+								Delete.class,
+								task -> {
+									task.setDelete(workspaceDir);
+									task.setDescription("Deletes the IDE workspace and settings");
+								});
 		var equoIdeTask =
 				project
 						.getTasks()
@@ -86,12 +99,22 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 								EquoIdeTask.class,
 								task -> {
 									task.setGroup(TASK_GROUP);
-									task.setDescription("Launches an Eclipse application");
+									task.setDescription("Launches an Eclipse-based IDE for this project");
+									task.mustRunAfter(cleanTask);
 
 									task.getCaching().set(caching);
 									task.getMavenDeps().set(equoIde);
 									task.getWorkspaceDir().set(workspaceDir);
 								});
+		project
+				.getTasks()
+				.register(
+						EQUO_IDE_FRESH,
+						task -> {
+							task.setGroup(TASK_GROUP);
+							task.setDescription("Deletes, rebuilds, and launches a fresh copy of the IDE");
+							task.dependsOn(cleanTask, equoIdeTask);
+						});
 		project.afterEvaluate(
 				unused -> {
 					try {
