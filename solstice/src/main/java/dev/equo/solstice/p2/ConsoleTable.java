@@ -14,6 +14,7 @@
 package dev.equo.solstice.p2;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
@@ -121,15 +122,14 @@ public class ConsoleTable {
 		/** We have to save at least this much for a shortening to be worth it. */
 		private static final int MIN_SAVINGS = (("org.apache".length() - 1) * 2) - 1;
 
-		private static final String[] LEGEND = new String[] {"¹", "²", "³"};
-		private static final String[] DICTIONARY =
-				new String[] {
-					"feature.feature.group",
-					"feature.group",
-					"org.eclipse.equinox",
-					"org.eclipse",
-					"org.apache"
-				};
+		private static final List<String> LEGEND = Arrays.asList("§§", "§", "ë", "é", "á");
+		private static final List<String> DICTIONARY =
+				Arrays.asList(
+						"feature.feature.group",
+						"feature.group",
+						"org.eclipse.equinox",
+						"org.eclipse",
+						"org.apache");
 		private final List<String> key = new ArrayList<>();
 
 		private final int ncol;
@@ -168,7 +168,8 @@ public class ConsoleTable {
 		}
 
 		private void addKeyToLegend(String dict) {
-			String legend = LEGEND[key.size()];
+			int idx = DICTIONARY.indexOf(dict);
+			String legend = LEGEND.get(idx);
 			key.add(dict);
 			for (int r = 0; r < rows.size(); ++r) {
 				String[] row = rows.get(r);
@@ -205,7 +206,7 @@ public class ConsoleTable {
 					// couldn't find anything worthwhile
 					return;
 				}
-			} while (key.size() < LEGEND.length && recalculateWidestWidth() > MAX_WIDTH);
+			} while (key.size() < LEGEND.size() && recalculateWidestWidth() > MAX_WIDTH);
 		}
 
 		private int recalculateWidestWidth() {
@@ -222,8 +223,9 @@ public class ConsoleTable {
 				compress();
 			}
 			String result = Table.getTable(format, headers, rows.toArray(new String[0][]));
-			for (int i = 0; i < key.size(); ++i) {
-				result = result + LEGEND[i] + " " + key.get(i) + "\n";
+			key.sort(Comparator.naturalOrder());
+			for (String k : key) {
+				result = result + LEGEND.get(DICTIONARY.indexOf(k)) + " " + k + "\n";
 			}
 			return result;
 		}
