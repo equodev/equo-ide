@@ -1150,22 +1150,22 @@ dev.equo.ide.gradle.EquoListTest.defaultP2[optional]=[
 dev.equo.ide.gradle.EquoListTest.defaultP2[problems]=[
 0 unmet requirement(s).
 6 ambiguous requirement(s).
-+-------------------------------------------------------------+-----------------------------------------------------------+-----------+
-| ambiguous requirement                                       | candidate                                                 | installed |
-+-------------------------------------------------------------+-----------------------------------------------------------+-----------+
-| java.package:org.eclipse.jdt.internal.compiler.apt.dispatch | org.eclipse.jdt.compiler.apt:1.4.300.v20221108-0856       | [x]       |
-|                                                             | org.eclipse.jdt.core.compiler.batch:3.32.0.v20221108-1853 | [ ]       |
-| java.package:org.eclipse.jdt.internal.compiler.apt.model    | org.eclipse.jdt.compiler.apt:1.4.300.v20221108-0856       | [x]       |
-|                                                             | org.eclipse.jdt.core.compiler.batch:3.32.0.v20221108-1853 | [ ]       |
-| java.package:org.eclipse.jdt.internal.compiler.apt.util     | org.eclipse.jdt.compiler.apt:1.4.300.v20221108-0856       | [x]       |
-|                                                             | org.eclipse.jdt.core.compiler.batch:3.32.0.v20221108-1853 | [ ]       |
-| java.package:org.eclipse.jdt.internal.compiler.tool         | org.eclipse.jdt.compiler.tool:1.3.200.v20220802-0458      | [x]       |
-|                                                             | org.eclipse.jdt.core.compiler.batch:3.32.0.v20221108-1853 | [ ]       |
-| org.eclipse.equinox.p2.iu:org.eclipse.jdt.annotation        | org.eclipse.jdt.annotation:2.2.700.v20220826-1026         | [x]       |
-|                                                             | org.eclipse.jdt.annotation:1.2.100.v20220826-1026         | [ ]       |
-| org.eclipse.equinox.p2.iu:org.eclipse.jdt.annotation.source | org.eclipse.jdt.annotation.source:2.2.700.v20220826-1026  | [ ]       |
-|                                                             | org.eclipse.jdt.annotation.source:1.2.100.v20220826-1026  | [ ]       |
-+-------------------------------------------------------------+-----------------------------------------------------------+-----------+
++----------------------------------------------------+-----------------------------------------------------------+-----------+
+| ambiguous requirement                              | candidate                                                 | installed |
++----------------------------------------------------+-----------------------------------------------------------+-----------+
+| pkg org.eclipse.jdt.internal.compiler.apt.dispatch | org.eclipse.jdt.compiler.apt:1.4.300.v20221108-0856       | [x]       |
+|                                                    | org.eclipse.jdt.core.compiler.batch:3.32.0.v20221108-1853 | [ ]       |
+| pkg org.eclipse.jdt.internal.compiler.apt.model    | org.eclipse.jdt.compiler.apt:1.4.300.v20221108-0856       | [x]       |
+|                                                    | org.eclipse.jdt.core.compiler.batch:3.32.0.v20221108-1853 | [ ]       |
+| pkg org.eclipse.jdt.internal.compiler.apt.util     | org.eclipse.jdt.compiler.apt:1.4.300.v20221108-0856       | [x]       |
+|                                                    | org.eclipse.jdt.core.compiler.batch:3.32.0.v20221108-1853 | [ ]       |
+| pkg org.eclipse.jdt.internal.compiler.tool         | org.eclipse.jdt.compiler.tool:1.3.200.v20220802-0458      | [x]       |
+|                                                    | org.eclipse.jdt.core.compiler.batch:3.32.0.v20221108-1853 | [ ]       |
+| iu org.eclipse.jdt.annotation                      | org.eclipse.jdt.annotation:2.2.700.v20220826-1026         | [x]       |
+|                                                    | org.eclipse.jdt.annotation:1.2.100.v20220826-1026         | [ ]       |
+| iu org.eclipse.jdt.annotation.source               | org.eclipse.jdt.annotation.source:2.2.700.v20220826-1026  | [ ]       |
+|                                                    | org.eclipse.jdt.annotation.source:1.2.100.v20220826-1026  | [ ]       |
++----------------------------------------------------+-----------------------------------------------------------+-----------+
 ]
 
 

@@ -5,9 +5,9 @@
 [//]: <> ($ rm *.tar)
 [//]: <> ($ ./gradlew p2multitool)
 [//]: <> ($ cp p2multi<tab> p2multitool-latest.tar)
-[//]: <> (find-replace existing '0.5.0' with '$NEW' in this document)
+[//]: <> (find-replace existing '0.8.0' with '$NEW' in this document)
 
-The EquoIDE gradle plugin can help you browse and debug p2 repositories. The maven plugin will get these features someday ([#25](https://github.com/equodev/equo-ide/issues/25)), but in the meantime this quickstart assumes that you have zero knowledge of gradle and p2. If you'd like to follow along and modify the examples to suit your problem, just download [`p2multitool-0.5.0.tar`](https://github.com/equodev/equo-ide/raw/main/p2multitool-0.5.0.tar) and extract it to a directory of your choice - you don't need to install anything else (besides a JDK on your system path).
+The EquoIDE gradle plugin can help you browse and debug p2 repositories. The maven plugin will get these features someday ([#25](https://github.com/equodev/equo-ide/issues/25)), but in the meantime this quickstart assumes that you have zero knowledge of gradle and p2. If you'd like to follow along and modify the examples to suit your problem, just download [`p2multitool-0.8.0.tar`](https://github.com/equodev/equo-ide/raw/main/p2multitool-0.8.0.tar) and extract it to a directory of your choice - you don't need to install anything else (besides a JDK on your system path).
 
 ## Command reference
 
@@ -24,25 +24,25 @@ The EquoIDE gradle plugin can help you browse and debug p2 repositories. The mav
 
 ## Quickstart
 
+In this tutorial we're going to start with nothing, then get a stripped-down Eclipse IDE, then get a full [Corrosion Rust IDE](https://github.com/eclipse/corrosion) running.
+
 <a name="equolist-all"></a>
 ### `equoList --all=categories` (or `features` or `jars`)
 
 ```gradle
 // build.gradle
-plugins { id 'dev.equo.ide' version '0.5.0' }
+plugins { id 'dev.equo.ide' version '0.8.0' }
 equoIde {
   p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'
 }
 ```
 
-To start, `cd` into the multitool directory where you'll see the `build.gradle` and then run `./gradlew  equoList --all=categories`.
+To start, `cd` into the multitool directory where you'll see the `build.gradle` and then run `./gradlew equoList --all=categories`.
 
 - (On windows, replace `ls` with `dir` and replace `./gradlew` with `gradlew`)
 
-[//]: <> (P2MultitoolExamples._01)
+[//]: <> (P2MultitoolExamples._01_minimal_allCategories)
 ```console
-user@machine p2-multitool % ls
-build           build.gradle    gradle          gradlew         gradlew.bat     P2_MULTITOOL.md
 user@machine p2-multitool % ./gradlew equoList --all=categories
 +----------------------------------------------+---------------------------------------------------+
 | id                                           | name \n description                               |
@@ -70,25 +70,7 @@ In addition to `--all=categories`, you can also pass `--all=features` or `--all=
 - A feature is a collection of jars and other features, representing a single "feature"
   - could be a high level feature like `org.eclipse.jdt` (Eclipse Java Development Tools)
   - or a fine-grained feature like `org.eclipse.jdt.ui.unittest.junit` (JUnit Test runner client for UnitTest View)
-- A jar is a literal jar. Ultimately, our objective is to get the right jars.
-
-If you run `./gradlew --all=jars` you'll get a *lot* of results. To make things easier, you can filter out results you don't care about.
-
-### filter
-
-```gradle
-// build.gradle
-equoIde {
-  p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'
-  addFilter 'exclude-noise', { // 'exclude-noise' is just a label for the end user
-    excludeSuffix '.source'  // no source bundles
-    excludePrefix 'tooling'  // ignore internal tooling
-    exclude 'org.apache.sshd.osgi' // we don't want sshd
-  }
-}
-```
-
-The filters will apply to every command of the `equoList` debugging tool and also to the `equoIde` launch command.
+- A jar is a literal `somefile.jar`.
 
 <a name="equolist-installed"></a>
 ### `equoList --installed`
@@ -96,8 +78,8 @@ The filters will apply to every command of the `equoList` debugging tool and als
 Ultimately, the point of `equoList` is to make sure we've got all of the jars we need for `equoIde` to run. That is a function of:
 
 - the repositories we specify
-- the units we filter out and exclude
 - the units we install
+- the units we filter out and exclude
 
 ```gradle
 // build.gradle
@@ -106,7 +88,7 @@ equoIde {
 }
 ```
 
-[//]: <> (P2MultitoolExamples._02)
+[//]: <> (P2MultitoolExamples._02_minimal_installed_empty)
 ```console
 user@machine p2-multitool % ./gradlew equoList --installed
 No jars were specified.
@@ -117,80 +99,187 @@ We haven't specified anything that we want installed, so there are no jars. Look
 ```console
 user@machine p2-multitool % ./gradlew equoList --all=categories
 ...
-| org.eclipse.releng.java.languages.categoryIU | Eclipse Java Development Tools                    |
-|                                              |   Tools to allow development with Java.           |
-...
+| org.eclipse.platform.ide.categoryIU | Eclipse Platform                               |
+|                                     |   Minimum version of Eclipse: no source or API |
+|                                     |   documentation, no PDE or JDT.                |
 ```
 
-So let's try installing that one.
+Minimum version of Eclipse seems like a good place to start, let's try installing that.
 
 ```gradle
 // build.gradle
 equoIde {
   p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'
-  install 'org.eclipse.releng.java.languages.categoryIU'
+  install 'org.eclipse.platform.ide.categoryIU'
 }
 ```
 
-[//]: <> (P2MultitoolExamples._03)
+[//]: <> (P2MultitoolExamples._02_minimal_installed)
 ```console
 user@machine p2-multitool % ./gradlew equoList --installed
-0 unmet requirement(s), 7 ambigous requirement(s). For more info: `gradlew equoList --problems`
-49 optional requirement(s) were not installed. For more info: `gradlew equoList --optional`
-+----------------------------------------------------------+------------------------+
-| maven coordinate / p2 id                                 | repo                   |
-+----------------------------------------------------------+------------------------+
-| com.ibm.icu:icu4j:72.1                                   | maven central          |
-| commons-io:commons-io:2.11.0                             | maven central          |
-| net.java.dev.jna:jna-platform:5.12.1                     | maven central          |
+0 unmet requirement(s), 0 ambigous requirement(s). For more info: `gradlew equoList --problems`
+60 optional requirement(s) were not installed. For more info: `gradlew equoList --optional`
++-------------------------------------------+---------------+
+| maven coordinate / p2 id                  | repo          |
++-------------------------------------------+---------------+
+| com.ibm.icu:icu4j:72.1                    | maven central |
+| commons-io:commons-io:2.11.0              | maven central |
+| jakarta.servlet:jakarta.servlet-api:4.0.4 | maven central |
 ...
-| org.eclipse.jdt:org.eclipse.jdt.annotation:2.2.700       | maven central?         |
-| org.eclipse.jdt:org.eclipse.jdt.apt.core:3.7.50          | maven central?         |
-| org.eclipse.jdt:org.eclipse.jdt.apt.pluggable.core:1.3.0 | maven central?         |
+```
+
+It says `0 unmet requirements`, let's see if that's really true with `./gradlew equoIde`.
+
+![screenshot of a running minimal Eclipse](p2multitool_screenshot.png)
+
+Awesome! A running IDE! Obviously we're going to want more than just the bare minimum, so let's look a little closer to see what's going on.
+
+[//]: <> (P2MultitoolExamples._02_minimal_installed - same as above)
+```console
+user@machine p2-multitool % ./gradlew equoList --installed
+0 unmet requirement(s), 0 ambigous requirement(s). For more info: `gradlew equoList --problems`
+60 optional requirement(s) were not installed. For more info: `gradlew equoList --optional`
++------------------------------------------------------+------------------------+
+| maven coordinate / p2 id                             | repo                   |
++------------------------------------------------------+------------------------+
+| com.ibm.icu:icu4j:72.1                               | maven central          |
+| commons-io:commons-io:2.11.0                         | maven central          |
 ...
-| org.apache.ant:1.10.12.v20211102-1452                    | p2 R-4.26-202211231800 |
-| org.apache.batik.constants:1.16.0.v20221027-0840         | p2 R-4.26-202211231800 |
-| org.apache.batik.css:1.16.0.v20221027-0840               | p2 R-4.26-202211231800 |
-+----------------------------------------------------------+------------------------+
+| org.eclipse.ecf:org.eclipse.ecf.filetransfer:5.1.102 | maven central?         |
+| org.eclipse.ecf:org.eclipse.ecf.identity:3.9.402     | maven central?         |
+...
+| com.jcraft.jsch:0.1.55.v20221112-0806                | p2 R-4.26-202211231800 |
+| com.sun.el:2.2.0.v201303151357                       | p2 R-4.26-202211231800 |
++------------------------------------------------------+------------------------+
 ```
 
 The first thing to note is that some dependencies come from `mavenCentral`, which means that the p2 metadata declares *exactly* where on `mavenCentral` that jar comes from. Other dependencies come from `mavenCentral?`, which means that [our (possibly flawed) heuristic](https://github.com/equodev/equo-ide/blob/main/solstice/src/main/java/dev/equo/solstice/p2/MavenCentralMapping.java) has identified that the jar is available on `mavenCentral`. And the rest of the jars will come from `p2`.
 
-The second thing to note are the lines at the top:
+## Advanced usage
 
-```
-0 unmet requirement(s), 7 ambigous requirement(s). For more info: `gradlew equoList --problems`
-49 optional requirement(s) were not installed. For more info: `gradlew equoList --optional`
+Now that we have started a minimal IDE and we understand where the jars are coming from, let's try something harder: the [Eclipse Corrosion](https://github.com/eclipse/corrosion) tooling for Rust.
+
+The first thing we need to do is add the update site and look at what categories are available.
+
+[//]: <> (P2MultitoolExamples._03_corrosion_allCategories)
+```gradle
+// build.gradle
+equoIde {
+  p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'
+  install 'org.eclipse.platform.ide.categoryIU'
+  // corrosion
+  p2repo 'https://download.eclipse.org/corrosion/releases/1.2.4/'
+}
 ```
 
-So let's try that!
+```console
+user@machine p2-multitool % ./gradlew equoList --all=categories
++-------------------------------------------------+---------------------------------------------------+
+| id                                              | name \n description                               |
++-------------------------------------------------+---------------------------------------------------+
+| 202206282034.Default                            | Uncategorized                                     |
+|                                                 |   Default category for otherwise uncategorized    |
+|                                                 |   features                                        |
+| 202206282034.org.eclipse.corrosion.category     | Corrosion: Rust edition in Eclipse IDE            |
+|                                                 |   Corrosion enables Rust application development  |
+|                                                 |   in the Eclipse IDE.                             |
+| 202206282034.org.eclipse.corrosion.dev.category | Developer Resources                               |
+|                                                 |   Useful resources for Corrosion contributors     |
+|                                                 |   and integrators.                                |
+...
+```
+
+Looks like `202206282034.org.eclipse.corrosion.category` is that we want. Let's see how that installation looks.
+
+```gradle
+// build.gradle
+equoIde {
+  p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'
+  install 'org.eclipse.platform.ide.categoryIU'
+  // corrosion
+  p2repo 'https://download.eclipse.org/corrosion/releases/1.2.4/'
+  install '202206282034.org.eclipse.corrosion.category'
+}
+```
+
+[//]: <> (P2MultitoolExamples._04_corrosion_installed)
+```console
+user@machine p2-multitool % ./gradlew equoList --installed
+WARNING!!! 14 unmet requirement(s), 786 ambigous requirement(s).
+WARNING!!!  For more info: `gradlew equoList --problems`
+62 optional requirement(s) were not installed. For more info: `gradlew equoList --optional`
++---------------------------------------------------------------------------------+------------------------+
+| maven coordinate / p2 id                                                        | repo                   |
++---------------------------------------------------------------------------------+------------------------+
+| com.google.code.gson:gson:2.9.1                                                 | maven central          |
+| com.ibm.icu:icu4j:72.1                                                          | maven central          |
+| commons-io:commons-io:2.11.0                                                    | maven central          |
+...
+```
+
+We could try `equoIde` here, but `14 unmet requirement(s)` seems like a problem. Let's see what we can do about it.
 
 <a name="equolist-problems"></a>
 ### `equoList --problems`
 
-[//]: <> (P2MultitoolExamples._04)
+[//]: <> (P2MultitoolExamples._05_corrosion_problems)
 ```console
 user@machine p2-multitool % ./gradlew equoList --problems
-0 unmet requirement(s).
-6 ambiguous requirement(s).
-+-------------------------------------------------------------+-----------------------------------------------------------+-----------+
-| ambiguous requirement                                       | candidate                                                 | installed |
-+-------------------------------------------------------------+-----------------------------------------------------------+-----------+
-| java.package:org.eclipse.jdt.internal.compiler.apt.dispatch | org.eclipse.jdt.compiler.apt:1.4.300.v20221108-0856       | [x]       |
-|                                                             | org.eclipse.jdt.core.compiler.batch:3.32.0.v20221108-1853 | [ ]       |
-| java.package:org.eclipse.jdt.internal.compiler.apt.model    | org.eclipse.jdt.compiler.apt:1.4.300.v20221108-0856       | [x]       |
-|                                                             | org.eclipse.jdt.core.compiler.batch:3.32.0.v20221108-1853 | [ ]       |
-| java.package:org.eclipse.jdt.internal.compiler.apt.util     | org.eclipse.jdt.compiler.apt:1.4.300.v20221108-0856       | [x]       |
-|                                                             | org.eclipse.jdt.core.compiler.batch:3.32.0.v20221108-1853 | [ ]       |
-| java.package:org.eclipse.jdt.internal.compiler.tool         | org.eclipse.jdt.compiler.tool:1.3.200.v20220802-0458      | [x]       |
-|                                                             | org.eclipse.jdt.core.compiler.batch:3.32.0.v20221108-1853 | [ ]       |
-| java.package:org.osgi.service.log                           | org.eclipse.osgi:3.18.200.v20221116-1324                  | [x]       |
-|                                                             | org.eclipse.osgi.services:3.11.100.v20221006-1531         | [ ]       |
-| org.eclipse.equinox.p2.iu:org.eclipse.jdt.annotation        | org.eclipse.jdt.annotation:2.2.700.v20220826-1026         | [x]       |
-|                                                             | org.eclipse.jdt.annotation:1.2.100.v20220826-1026         | [ ]       |
-| org.eclipse.equinox.p2.iu:org.eclipse.jdt.annotation.source | org.eclipse.jdt.annotation.source:2.2.700.v20220826-1026  | [x]       |
-|                                                             | org.eclipse.jdt.annotation.source:1.2.100.v20220826-1026  | [ ]       |
-+-------------------------------------------------------------+-----------------------------------------------------------+-----------+
+14 unmet requirement(s).
++----------------------------------------+-----------------------------------------------------------+
+| unmet requirement                      | needed by                                                 |
++----------------------------------------+-----------------------------------------------------------+
+| java.package:com.google.common.base    | org.eclipse.lsp4e:0.13.12.202206011407                    |
+|                                        | org.eclipse.lsp4j:0.14.0.v20220526-1518                   |
+|                                        | org.eclipse.mylyn.wikitext:3.0.42.20220107230029          |
+|                                        | org.eclipse.mylyn.wikitext.markdown:3.0.42.20220107230029 |
+| java.package:com.google.common.collect | org.eclipse.mylyn.wikitext:3.0.42.20220107230029          |
+|                                        | org.eclipse.mylyn.wikitext.markdown:3.0.42.20220107230029 |
+...
+| osgi.bundle:org.eclipse.cdt.core       | org.eclipse.corrosion:1.2.4.202206282034                  |
+| osgi.bundle:org.eclipse.cdt.debug.core | org.eclipse.corrosion:1.2.4.202206282034                  |
+| osgi.bundle:org.eclipse.cdt.debug.ui   | org.eclipse.corrosion:1.2.4.202206282034                  |
+...
+786 ambiguous requirement(s).
++------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------+-----------+
+| ambiguous requirement                                                                          | candidate                                                                                  | installed |
++------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------+-----------+
+| java.package:com.google.gson                                                                   | com.google.gson:2.9.1                                                                      | [x]       |
+|                                                                                                | com.google.gson:2.8.9.v20220111-1409                                                       | [ ]       |
+| java.package:com.google.gson.annotations                                                       | com.google.gson:2.9.1                                                                      | [x]       |
+|                                                                                                | com.google.gson:2.8.9.v20220111-1409                                                       | [ ]       |
+...
+```
+
+Okay so first thing - with 786 problems, it might be easier to try
+
+```
+unix    ./gradlew equoList --problems | less
+windows   gradlew equoList --problems | more 
+```
+
+The thing that sticks out is that many of the missing bundles are `org.eclipse.cdt`. Probably we should add the CDT update site. Let's try it!
+
+```gradle
+// build.gradle
+equoIde {
+  p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'
+  install 'org.eclipse.platform.ide.categoryIU'
+  // corrosion
+  p2repo 'https://download.eclipse.org/corrosion/releases/1.2.4/'
+  install '202206282034.org.eclipse.corrosion.category'
+  // cdt transitives for corrosion
+  p2repo 'https://download.eclipse.org/tools/cdt/releases/11.0/'
+}
+```
+
+[//]: <> (P2MultitoolExamples._06_corrosion_cdt_installed)
+```console
+user@machine p2-multitool % ./gradlew equoList --installed
+WARNING!!! 5 unmet requirement(s), 805 ambigous requirement(s).
+WARNING!!!  For more info: `gradlew equoList --problems`
+62 optional requirement(s) were not installed. For more info: `gradlew equoList --optional`
+...
 ```
 
 <a name="equolist-optional"></a>
@@ -325,3 +414,19 @@ in] INFO dev.equo.solstice.Solstice - Request activate org.eclipse.help.base
 ```
 
 This gives us a quick try-test loop to see if we have all the bundles we need.
+
+### filter
+
+```gradle
+// build.gradle
+equoIde {
+  p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'
+  addFilter 'exclude-noise', { // 'exclude-noise' is just a label for the end user
+    excludeSuffix '.source'  // no source bundles
+    excludePrefix 'tooling'  // ignore internal tooling
+    exclude 'org.apache.sshd.osgi' // we don't want sshd
+  }
+}
+```
+
+The filters will apply to every command of the `equoList` and `equoIde` - they will not be installed *and* they will not be shown in commands like `--all=jars`.

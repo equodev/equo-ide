@@ -19,8 +19,10 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.Nullable;
 import org.eclipse.osgi.internal.framework.FilterImpl;
 import org.jetbrains.annotations.NotNull;
+import org.osgi.framework.Filter;
 import org.osgi.framework.InvalidSyntaxException;
 
 /** In-memory store of all p2 metadata, especially provides/requires dependency information. */
@@ -64,6 +66,9 @@ public class P2Session {
 	public interface Requirement extends Comparable<P2Session.Requirement> {
 		// these properties are per-requirement-specific
 		boolean isOptional();
+
+		@Nullable
+		Filter getFilter();
 		// the properties below are for both requirements and providers
 		String getNamespace();
 
@@ -96,7 +101,7 @@ public class P2Session {
 	 * In terms of design {@link RequirementRoot} represents both a mandatory requirement on a
 	 * capability and also the matching ability to provide that capability.
 	 *
-	 * <p>{@link RequirementOptional} delegates everything about describing that capability to {@link
+	 * <p>{@link RequirementModified} delegates everything about describing that capability to {@link
 	 * RequirementRoot}, but layers on top the ability to add detail to the requirement (specifically
 	 * that it is optional).
 	 */
@@ -113,6 +118,12 @@ public class P2Session {
 		@Override
 		public boolean isOptional() {
 			return false;
+		}
+
+		@Nullable
+		@Override
+		public Filter getFilter() {
+			return null;
 		}
 
 		@Override
@@ -182,20 +193,51 @@ public class P2Session {
 
 		@Override
 		public String toString() {
-			return namespace + ":" + name;
+			if (namespace.equals("java.package")) {
+				return "pkg " + name;
+			} else if (namespace.equals("osgi.bundle")) {
+				return "bundle " + name;
+			} else if (namespace.equals("org.eclipse.equinox.p2.iu")) {
+				return "iu " + name;
+			} else {
+				return namespace + " " + name;
+			}
 		}
 	}
 
-	private static class RequirementOptional implements Requirement {
+	private static class RequirementModified implements Requirement {
 		final RequirementRoot root;
+		final boolean isOptional;
+		final @Nullable Filter filter;
 
-		RequirementOptional(RequirementRoot root) {
+		RequirementModified(RequirementRoot root, boolean isOptional, @Nullable Filter filter) {
 			this.root = root;
+			this.isOptional = isOptional;
+			this.filter = filter;
 		}
 
 		@Override
 		public boolean isOptional() {
-			return true;
+			return isOptional;
+		}
+
+		@Nullable
+		@Override
+		public Filter getFilter() {
+			return filter;
+		}
+
+		@Override
+		public String toString() {
+			if (isOptional) {
+				if (filter != null) {
+					return root + " (opt) " + filter;
+				} else {
+					return root + " (opt)";
+				}
+			} else {
+				return root + " " + filter;
+			}
 		}
 
 		// methods below this are all pure delegation
@@ -228,11 +270,6 @@ public class P2Session {
 		public Requirement getRoot() {
 			return root;
 		}
-
-		@Override
-		public String toString() {
-			return root.toString() + " (opt)";
-		}
 	}
 
 	private final Map<String, Map<String, RequirementRoot>> requirements = new HashMap<>();
@@ -242,9 +279,14 @@ public class P2Session {
 		return perName.computeIfAbsent(name, n -> new RequirementRoot(namespace, n));
 	}
 
-	Requirement requires(String namespace, String name, boolean optional) {
+	Requirement requires(
+			String namespace, String name, boolean optional, @Nullable FilterImpl filter) {
 		var root = requires(namespace, name);
-		return optional ? new RequirementOptional(root) : root;
+		if (!optional && filter == null) {
+			return root;
+		} else {
+			return new RequirementModified(root, optional, filter);
+		}
 	}
 
 	void provides(String namespace, String name, P2Unit unit) {

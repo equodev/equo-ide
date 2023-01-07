@@ -22,7 +22,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 @ExtendWith({SnapshotExtension.class})
 public class P2MultitoolExamples extends GradleHarness {
 	@Test
-	public void _01(Expect expect) throws IOException {
+	public void _01_minimal_allCategories(Expect expect) throws IOException {
 		setFile("build.gradle")
 				.toLines(
 						"plugins { id 'dev.equo.ide' }",
@@ -36,7 +36,7 @@ public class P2MultitoolExamples extends GradleHarness {
 	}
 
 	@Test
-	public void _02(Expect expect) throws IOException {
+	public void _02_minimal_installed_empty(Expect expect) throws IOException {
 		setFile("build.gradle")
 				.toLines(
 						"plugins { id 'dev.equo.ide' }",
@@ -50,7 +50,7 @@ public class P2MultitoolExamples extends GradleHarness {
 	}
 
 	@Test
-	public void _03(Expect expect) throws IOException {
+	public void _02_minimal_installed(Expect expect) throws IOException {
 		setFile("build.gradle")
 				.toLines(
 						"plugins { id 'dev.equo.ide' }",
@@ -59,13 +59,13 @@ public class P2MultitoolExamples extends GradleHarness {
 						"  addFilter 'platform-neutral', {",
 						"    platformNone()",
 						"  }",
-						"  install 'org.eclipse.releng.java.languages.categoryIU'",
+						"  install 'org.eclipse.platform.ide.categoryIU'",
 						"}");
 		run("-q", "equoList", "--installed").snapshot(expect);
 	}
 
 	@Test
-	public void _04(Expect expect) throws IOException {
+	public void _03_corrosion_allCategories(Expect expect) throws IOException {
 		setFile("build.gradle")
 				.toLines(
 						"plugins { id 'dev.equo.ide' }",
@@ -74,7 +74,63 @@ public class P2MultitoolExamples extends GradleHarness {
 						"  addFilter 'platform-neutral', {",
 						"    platformNone()",
 						"  }",
-						"  install 'org.eclipse.releng.java.languages.categoryIU'",
+						"  install 'org.eclipse.platform.ide.categoryIU'",
+						"",
+						"  p2repo 'https://download.eclipse.org/corrosion/releases/1.2.4/'",
+						"}");
+		run("-q", "equoList", "--installed").snapshot(expect);
+	}
+
+	@Test
+	public void _04_corrosion_installed(Expect expect) throws IOException {
+		setFile("build.gradle")
+				.toLines(
+						"plugins { id 'dev.equo.ide' }",
+						"equoIde {",
+						"  p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'",
+						"  addFilter 'platform-neutral', {",
+						"    platformNone()",
+						"  }",
+						"  install 'org.eclipse.platform.ide.categoryIU'",
+						"",
+						"  p2repo 'https://download.eclipse.org/corrosion/releases/1.2.4/'",
+						"  install '202206282034.org.eclipse.corrosion.category'",
+						"}");
+		run("-q", "equoList", "--installed").snapshot(expect);
+	}
+
+	@Test
+	public void _05_corrosion_problems(Expect expect) throws IOException {
+		setFile("build.gradle")
+				.toLines(
+						"plugins { id 'dev.equo.ide' }",
+						"equoIde {",
+						"  p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'",
+						"  addFilter 'platform-neutral', {",
+						"    platformNone()",
+						"  }",
+						"  install 'org.eclipse.platform.ide.categoryIU'",
+						"",
+						"  p2repo 'https://download.eclipse.org/corrosion/releases/1.2.4/'",
+						"  install '202206282034.org.eclipse.corrosion.category'",
+						"}");
+		run("-q", "equoList", "--problems").snapshot(expect);
+	}
+
+	@Test
+	public void _06_corrosion_cdt_installed(Expect expect) throws IOException {
+		setFile("build.gradle")
+				.toLines(
+						"plugins { id 'dev.equo.ide' }",
+						"equoIde {",
+						"  p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'",
+						"  addFilter 'platform-neutral', {",
+						"    platformNone()",
+						"  }",
+						"  install 'org.eclipse.platform.ide.categoryIU'",
+						"",
+						"  p2repo 'https://download.eclipse.org/corrosion/releases/1.2.4/'",
+						"  install '202206282034.org.eclipse.corrosion.category'",
 						"}");
 		run("-q", "equoList", "--problems").snapshot(expect);
 	}
@@ -89,7 +145,7 @@ public class P2MultitoolExamples extends GradleHarness {
 						"  addFilter 'platform-neutral', {",
 						"    platformNone()",
 						"  }",
-						"  install 'org.eclipse.releng.java.languages.categoryIU'",
+						"  install 'org.eclipse.platform.ide.categoryIU'",
 						"}");
 		run("-q", "equoList", "--detail=org.eclipse.jdt.compiler.apt", "--stacktrace")
 				.snapshot(expect.scenario("apt"));
@@ -107,25 +163,9 @@ public class P2MultitoolExamples extends GradleHarness {
 						"  addFilter 'platform-neutral', {",
 						"    platformNone()",
 						"  }",
-						"  install 'org.eclipse.releng.java.languages.categoryIU'",
+						"  install 'org.eclipse.platform.ide.categoryIU'",
 						"}");
 		run("-q", "equoList", "--raw=org.eclipse.jdt.core.compiler.batch", "--stacktrace")
 				.snapshot(expect.scenario("batch"));
-	}
-
-	@Test
-	public void _07(Expect expect) throws IOException {
-		setFile("build.gradle")
-				.toLines(
-						"plugins { id 'dev.equo.ide' }",
-						"equoIde {",
-						"  p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'",
-						"  addFilter 'platform-neutral', {",
-						"    platformNone()",
-						"  }",
-						"  install 'org.eclipse.swt'",
-						"}");
-		// var output = gradleRunner().withArguments("equoIde",
-		// "--init-only").build().getOutput().replace("\r", "");
 	}
 }

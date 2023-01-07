@@ -136,11 +136,18 @@ public class P2Query {
 		return installed.putIfAbsent(unit.id, unit) == null;
 	}
 
+	private boolean reqMatchesFilter(P2Session.Requirement req) {
+		return filterProps.isEmpty() || req.getFilter() == null || req.getFilter().matches(filterProps);
+	}
+
 	private void install(P2Unit toResolve) {
 		if (!addUnlessExcludedOrAlreadyPresent(toResolve)) {
 			return;
 		}
 		for (var requirement : toResolve.requires) {
+			if (!reqMatchesFilter(requirement)) {
+				continue;
+			}
 			if (requirement.isOptional()) {
 				optionalSoMaybeNotInstalled
 						.computeIfAbsent(requirement.getRoot(), unused -> new TreeSet<>())
