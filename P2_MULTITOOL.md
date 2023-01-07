@@ -88,6 +88,7 @@ equoIde {
 }
 ```
 
+[//]: <> (P2MultitoolExamples._02_minimal_installed_empty)
 ```console
 user@machine p2-multitool % ./gradlew equoList --installed
 No jars were specified.
