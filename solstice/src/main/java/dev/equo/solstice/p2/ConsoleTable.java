@@ -119,7 +119,7 @@ public class ConsoleTable {
 		/** The maximum width a table can have. */
 		private static final int MAX_WIDTH = 120;
 		/** We have to save at least this much for a shortening to be worth it. */
-		private static final int MIN_SAVINGS = ("org.apache".length() - 1) * 2;
+		private static final int MIN_SAVINGS = (("org.apache".length() - 1) * 2) - 1;
 
 		private static final String[] LEGEND = new String[] {"¹", "²", "³"};
 		private static final String[] DICTIONARY =
