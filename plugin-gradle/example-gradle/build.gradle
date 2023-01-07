@@ -1,6 +1,37 @@
 plugins {
   id 'dev.equo.ide' version '0.8.0'
 }
+// MINIMAL EXAMPLE
+// launch an ide
+//   gradlew equoIde
+// show everything available
+//   gradlew --all=categories
+//   gradlew --all=features
+//   gradlew --all=jars
+// show the jars we are installing
+//   gradlew equoList --installed
 equoIde {
-  release '4.26'
+  p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'
+  install 'org.eclipse.platform.ide.categoryIU'
 }
+
+// PROBLEM EXAMPLE
+//   gradlew --problems
+// equoIde {
+//   p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'
+//   install 'org.eclipse.platform.ide.categoryIU'
+//   // corrosion
+//   p2repo 'https://download.eclipse.org/corrosion/releases/1.2.4/'
+//   install '202206282034.org.eclipse.corrosion.category'
+// }
+
+// ADDED CDT
+// equoIde {
+//   p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'
+//   install 'org.eclipse.platform.ide.categoryIU'
+//   // corrosion
+//   p2repo 'https://download.eclipse.org/corrosion/releases/1.2.4/'
+//   install '202206282034.org.eclipse.corrosion.category'
+//   // cdt transitives for corrosion
+//   p2repo 'https://download.eclipse.org/tools/cdt/releases/11.0/cdt-11.0.0/'
+// }
