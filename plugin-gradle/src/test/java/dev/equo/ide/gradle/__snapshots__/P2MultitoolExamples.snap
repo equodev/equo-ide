@@ -795,30 +795,31 @@ dev.equo.ide.gradle.P2MultitoolExamples._05[batch]=[
 
 dev.equo.ide.gradle.P2MultitoolExamples._05_corrosion_problems=[
 13 unmet requirement(s).
-+-----------------------------------+-----------------------------------------------------------+
-| unmet requirement                 | needed by                                                 |
-+-----------------------------------+-----------------------------------------------------------+
-| pkg com.google.common.base        | org.eclipse.lsp4e:0.13.12.202206011407                    |
-|                                   | org.eclipse.lsp4j:0.14.0.v20220526-1518                   |
-|                                   | org.eclipse.mylyn.wikitext:3.0.42.20220107230029          |
-|                                   | org.eclipse.mylyn.wikitext.markdown:3.0.42.20220107230029 |
-| pkg com.google.common.collect     | org.eclipse.mylyn.wikitext:3.0.42.20220107230029          |
-|                                   | org.eclipse.mylyn.wikitext.markdown:3.0.42.20220107230029 |
-| pkg com.google.common.escape      | org.eclipse.mylyn.wikitext:3.0.42.20220107230029          |
-| pkg com.google.common.xml         | org.eclipse.mylyn.wikitext:3.0.42.20220107230029          |
-| bundle com.google.guava           | org.eclipse.lsp4e:0.13.12.202206011407                    |
-|                                   | org.eclipse.tm4e.core:0.4.4.202205101731                  |
-|                                   | org.eclipse.tm4e.ui:0.5.1.202205101731                    |
-|                                   | org.eclipse.xtext.xbase.lib:2.27.0.v20220530-0353         |
-| bundle org.eclipse.cdt.core       | org.eclipse.corrosion:1.2.4.202206282034                  |
-| bundle org.eclipse.cdt.debug.core | org.eclipse.corrosion:1.2.4.202206282034                  |
-| bundle org.eclipse.cdt.debug.ui   | org.eclipse.corrosion:1.2.4.202206282034                  |
-| bundle org.eclipse.cdt.dsf        | org.eclipse.corrosion:1.2.4.202206282034                  |
-| bundle org.eclipse.cdt.dsf.gdb    | org.eclipse.corrosion:1.2.4.202206282034                  |
-| bundle org.eclipse.cdt.dsf.gdb.ui | org.eclipse.corrosion:1.2.4.202206282034                  |
-| bundle org.eclipse.cdt.launch     | org.eclipse.corrosion:1.2.4.202206282034                  |
-| bundle org.yaml.snakeyaml         | org.eclipse.tm4e.core:0.4.4.202205101731                  |
-+-----------------------------------+-----------------------------------------------------------+
++-------------------------------+-------------------------------------------------+
+| unmet requirement             | needed by                                       |
++-------------------------------+-------------------------------------------------+
+| pkg com.google.common.base    | é.lsp4e:0.13.12.202206011407                    |
+|                               | é.lsp4j:0.14.0.v20220526-1518                   |
+|                               | é.mylyn.wikitext:3.0.42.20220107230029          |
+|                               | é.mylyn.wikitext.markdown:3.0.42.20220107230029 |
+| pkg com.google.common.collect | é.mylyn.wikitext:3.0.42.20220107230029          |
+|                               | é.mylyn.wikitext.markdown:3.0.42.20220107230029 |
+| pkg com.google.common.escape  | é.mylyn.wikitext:3.0.42.20220107230029          |
+| pkg com.google.common.xml     | é.mylyn.wikitext:3.0.42.20220107230029          |
+| bundle com.google.guava       | é.lsp4e:0.13.12.202206011407                    |
+|                               | é.tm4e.core:0.4.4.202205101731                  |
+|                               | é.tm4e.ui:0.5.1.202205101731                    |
+|                               | é.xtext.xbase.lib:2.27.0.v20220530-0353         |
+| bundle é.cdt.core             | é.corrosion:1.2.4.202206282034                  |
+| bundle é.cdt.debug.core       | é.corrosion:1.2.4.202206282034                  |
+| bundle é.cdt.debug.ui         | é.corrosion:1.2.4.202206282034                  |
+| bundle é.cdt.dsf              | é.corrosion:1.2.4.202206282034                  |
+| bundle é.cdt.dsf.gdb          | é.corrosion:1.2.4.202206282034                  |
+| bundle é.cdt.dsf.gdb.ui       | é.corrosion:1.2.4.202206282034                  |
+| bundle é.cdt.launch           | é.corrosion:1.2.4.202206282034                  |
+| bundle org.yaml.snakeyaml     | é.tm4e.core:0.4.4.202205101731                  |
++-------------------------------+-------------------------------------------------+
+é org.eclipse
 
 674 ambiguous requirement(s).
 +--------------------------------------------------------+----------------------------------------------------------------+-----------+
@@ -2265,30 +2266,31 @@ Bundle-Version: 3.32.0.v20221108-1853
 
 dev.equo.ide.gradle.P2MultitoolExamples._06_corrosion_cdt_installed=[
 13 unmet requirement(s).
-+-----------------------------------+-----------------------------------------------------------+
-| unmet requirement                 | needed by                                                 |
-+-----------------------------------+-----------------------------------------------------------+
-| pkg com.google.common.base        | org.eclipse.lsp4e:0.13.12.202206011407                    |
-|                                   | org.eclipse.lsp4j:0.14.0.v20220526-1518                   |
-|                                   | org.eclipse.mylyn.wikitext:3.0.42.20220107230029          |
-|                                   | org.eclipse.mylyn.wikitext.markdown:3.0.42.20220107230029 |
-| pkg com.google.common.collect     | org.eclipse.mylyn.wikitext:3.0.42.20220107230029          |
-|                                   | org.eclipse.mylyn.wikitext.markdown:3.0.42.20220107230029 |
-| pkg com.google.common.escape      | org.eclipse.mylyn.wikitext:3.0.42.20220107230029          |
-| pkg com.google.common.xml         | org.eclipse.mylyn.wikitext:3.0.42.20220107230029          |
-| bundle com.google.guava           | org.eclipse.lsp4e:0.13.12.202206011407                    |
-|                                   | org.eclipse.tm4e.core:0.4.4.202205101731                  |
-|                                   | org.eclipse.tm4e.ui:0.5.1.202205101731                    |
-|                                   | org.eclipse.xtext.xbase.lib:2.27.0.v20220530-0353         |
-| bundle org.eclipse.cdt.core       | org.eclipse.corrosion:1.2.4.202206282034                  |
-| bundle org.eclipse.cdt.debug.core | org.eclipse.corrosion:1.2.4.202206282034                  |
-| bundle org.eclipse.cdt.debug.ui   | org.eclipse.corrosion:1.2.4.202206282034                  |
-| bundle org.eclipse.cdt.dsf        | org.eclipse.corrosion:1.2.4.202206282034                  |
-| bundle org.eclipse.cdt.dsf.gdb    | org.eclipse.corrosion:1.2.4.202206282034                  |
-| bundle org.eclipse.cdt.dsf.gdb.ui | org.eclipse.corrosion:1.2.4.202206282034                  |
-| bundle org.eclipse.cdt.launch     | org.eclipse.corrosion:1.2.4.202206282034                  |
-| bundle org.yaml.snakeyaml         | org.eclipse.tm4e.core:0.4.4.202205101731                  |
-+-----------------------------------+-----------------------------------------------------------+
++-------------------------------+-------------------------------------------------+
+| unmet requirement             | needed by                                       |
++-------------------------------+-------------------------------------------------+
+| pkg com.google.common.base    | é.lsp4e:0.13.12.202206011407                    |
+|                               | é.lsp4j:0.14.0.v20220526-1518                   |
+|                               | é.mylyn.wikitext:3.0.42.20220107230029          |
+|                               | é.mylyn.wikitext.markdown:3.0.42.20220107230029 |
+| pkg com.google.common.collect | é.mylyn.wikitext:3.0.42.20220107230029          |
+|                               | é.mylyn.wikitext.markdown:3.0.42.20220107230029 |
+| pkg com.google.common.escape  | é.mylyn.wikitext:3.0.42.20220107230029          |
+| pkg com.google.common.xml     | é.mylyn.wikitext:3.0.42.20220107230029          |
+| bundle com.google.guava       | é.lsp4e:0.13.12.202206011407                    |
+|                               | é.tm4e.core:0.4.4.202205101731                  |
+|                               | é.tm4e.ui:0.5.1.202205101731                    |
+|                               | é.xtext.xbase.lib:2.27.0.v20220530-0353         |
+| bundle é.cdt.core             | é.corrosion:1.2.4.202206282034                  |
+| bundle é.cdt.debug.core       | é.corrosion:1.2.4.202206282034                  |
+| bundle é.cdt.debug.ui         | é.corrosion:1.2.4.202206282034                  |
+| bundle é.cdt.dsf              | é.corrosion:1.2.4.202206282034                  |
+| bundle é.cdt.dsf.gdb          | é.corrosion:1.2.4.202206282034                  |
+| bundle é.cdt.dsf.gdb.ui       | é.corrosion:1.2.4.202206282034                  |
+| bundle é.cdt.launch           | é.corrosion:1.2.4.202206282034                  |
+| bundle org.yaml.snakeyaml     | é.tm4e.core:0.4.4.202205101731                  |
++-------------------------------+-------------------------------------------------+
+é org.eclipse
 
 674 ambiguous requirement(s).
 +--------------------------------------------------------+----------------------------------------------------------------+-----------+

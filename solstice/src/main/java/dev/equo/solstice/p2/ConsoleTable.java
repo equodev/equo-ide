@@ -117,10 +117,10 @@ public class ConsoleTable {
 	}
 
 	static class NColumnTable {
-		/** The maximum width a table can have. */
-		private static final int MAX_WIDTH = 120;
+		/** The maximum width (we hope) a table will have. */
+		private static final int MAX_WIDTH = 80;
 		/** We have to save at least this much for a shortening to be worth it. */
-		private static final int MIN_SAVINGS = (("org.apache".length() - 1) * 2) - 1;
+		private static final int MIN_SAVINGS = 1;
 
 		private static final List<String> LEGEND = Arrays.asList("§§", "§", "ë", "é", "á");
 		private static final List<String> DICTIONARY =
