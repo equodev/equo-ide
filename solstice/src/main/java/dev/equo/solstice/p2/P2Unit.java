@@ -25,6 +25,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import org.eclipse.osgi.internal.framework.FilterImpl;
+import org.osgi.framework.Filter;
 import org.osgi.framework.Version;
 import org.w3c.dom.Node;
 
@@ -34,7 +35,7 @@ public class P2Unit implements Comparable<P2Unit> {
 	final P2Client.Folder index;
 	final String id;
 	final Version version;
-	FilterImpl filter;
+	Filter filter;
 	final TreeMap<String, String> properties = new TreeMap<>();
 	final TreeSet<P2Session.Requirement> requires = new TreeSet<>();
 
@@ -163,8 +164,19 @@ public class P2Unit implements Comparable<P2Unit> {
 					isOptional = "true".equals(optionalNode.getNodeValue().trim());
 				}
 
+				FilterImpl filter = null;
+				var filterNodes = node.getChildNodes();
+				for (int f = 0; f < filterNodes.getLength(); ++f) {
+					var filterNode = filterNodes.item(f);
+					if ("filter".equals(filterNode.getNodeName())) {
+						if (filter != null) {
+							throw new IllegalArgumentException("We don't support multiple filters: " + this);
+						}
+						filter = session.parseFilter(filterNode.getTextContent().trim());
+					}
+				}
 				var name = node.getAttributes().getNamedItem("name").getNodeValue();
-				requires.add(session.requires(namespace, name, isOptional));
+				requires.add(session.requires(namespace, name, isOptional, filter));
 			}
 		}
 	}
