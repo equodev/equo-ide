@@ -148,7 +148,6 @@ public class P2Query {
 			if (!reqMatchesFilter(requirement)) {
 				continue;
 			}
-
 			if (requirement.isOptional()) {
 				optionalSoMaybeNotInstalled
 						.computeIfAbsent(requirement.getRoot(), unused -> new TreeSet<>())
