@@ -44,6 +44,7 @@ tasks.register('p2multitool', Tar) {
 	}
 	from '../', {
 		include 'P2_MULTITOOL.md'
+		include 'p2*.png'
 	}
 	destinationDirectory = file("../")
 	compression = Compression.NONE
