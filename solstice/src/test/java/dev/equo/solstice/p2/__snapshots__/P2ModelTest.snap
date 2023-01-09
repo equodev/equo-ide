@@ -19,6 +19,24 @@ excludePrefix = ['exclude.prefix']}
 ]
 
 
+dev.equo.solstice.p2.P2ModelTest.toString[filter props multiple]=[
+{exclude = ['exclude.me']
+excludePrefix = ['exclude.prefix']
+excludeSuffix = ['exclude.suffix']
+props = { 'blue': '0,0,255',
+          'green': '0,255,0',
+          'red': '255,0,0' }}
+]
+
+
+dev.equo.solstice.p2.P2ModelTest.toString[filter props single]=[
+{exclude = ['exclude.me']
+excludePrefix = ['exclude.prefix']
+excludeSuffix = ['exclude.suffix']
+props = { 'red': '255,0,0' }}
+]
+
+
 dev.equo.solstice.p2.P2ModelTest.toString[filter suffix exclude]=[
 {exclude = ['exclude.me']
 excludePrefix = ['exclude.prefix']

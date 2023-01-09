@@ -36,5 +36,12 @@ public class P2ModelTest {
 
         filter.getExcludeSuffix().add("exclude.suffix");
         expect.scenario("filter suffix exclude").toMatchSnapshot(filter.toString());
+
+        filter.getProps().put("red", "255,0,0");
+        expect.scenario("filter props single").toMatchSnapshot(filter.toString());
+
+        filter.getProps().put("green", "0,255,0");
+        filter.getProps().put("blue", "0,0,255");
+        expect.scenario("filter props multiple").toMatchSnapshot(filter.toString());
     }
 }
