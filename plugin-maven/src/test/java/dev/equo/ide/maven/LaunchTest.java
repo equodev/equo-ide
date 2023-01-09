@@ -29,7 +29,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-public class MavenPluginTest {
+public class LaunchTest {
 	@Test
 	public void integrationTestAtomos() throws IOException, InterruptedException {
 		integrationTestUseAtomos(true);
@@ -120,7 +120,7 @@ public class MavenPluginTest {
 		}
 
 		public File toResource(String path) throws IOException {
-			try (var input = MavenPluginTest.class.getResource(path).openConnection().getInputStream()) {
+			try (var input = LaunchTest.class.getResource(path).openConnection().getInputStream()) {
 				return toContent(input.readAllBytes());
 			}
 		}

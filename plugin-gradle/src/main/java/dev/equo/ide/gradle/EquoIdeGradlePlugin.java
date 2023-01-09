@@ -15,7 +15,6 @@ package dev.equo.ide.gradle;
 
 import dev.equo.solstice.p2.CacheLocations;
 import dev.equo.solstice.p2.P2Client;
-import dev.equo.solstice.p2.WorkspaceRegistry;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -33,6 +32,8 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 
 	private static final String TASK_GROUP = "IDE";
 	private static final String EQUO_IDE = "equoIde";
+	private static final String EQUO_IDE_CLEAN = EQUO_IDE + "Clean";
+	private static final String EQUO_IDE_FRESH = EQUO_IDE + "Fresh";
 	private static final String $_OSGI_PLATFORM = "${osgi.platform}";
 
 	@Override
@@ -75,9 +76,6 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 		P2Client.Caching caching =
 				P2Client.Caching.defaultIfOfflineIs(project.getGradle().getStartParameter().isOffline());
 
-		var workspaceRegistry = WorkspaceRegistry.instance();
-		var workspaceDir = workspaceRegistry.workspaceDir(project.getProjectDir());
-		workspaceRegistry.clean();
 		var equoIdeTask =
 				project
 						.getTasks()
@@ -86,11 +84,11 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 								EquoIdeTask.class,
 								task -> {
 									task.setGroup(TASK_GROUP);
-									task.setDescription("Launches an Eclipse application");
+									task.setDescription("Launches an Eclipse-based IDE for this project");
 
 									task.getCaching().set(caching);
 									task.getMavenDeps().set(equoIde);
-									task.getWorkspaceDir().set(workspaceDir);
+									task.getProjectDir().set(project.getProjectDir());
 								});
 		project.afterEvaluate(
 				unused -> {

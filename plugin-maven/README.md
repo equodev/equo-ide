@@ -38,9 +38,10 @@ Use it like this with `mvn equo-ide:launch`
 ## Task listing
 
 - `equo-ide:launch` to launch
-    - `equoIde -DinitOnly=true` initializes the runtime to check for errors then exits.
-    - `equoIde -DshowConsole=true` pipes console output of launched IDE to the build console.
-    - `equoIde -DdebugClasspath=[names|paths]` dumps the classpath (in order) without starting the application.
+  - `equoIde -Dclean=true` wipes all workspace settings and state before rebuilding and launching.
+  - `equoIde -DshowConsole=true` pipes console output of launched IDE to the build console.
+  - `equoIde -DinitOnly=true` initializes the runtime to check for errors then exits.
+  - `equoIde -DdebugClasspath=[names|paths]` dumps the classpath (in order) without starting the application.
 
 ## Limitations
 
