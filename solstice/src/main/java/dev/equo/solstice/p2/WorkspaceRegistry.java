@@ -88,10 +88,6 @@ public class WorkspaceRegistry {
 		}
 	}
 
-	public File workspaceDir(File ideDir) {
-		return workspaceDir(ideDir, false);
-	}
-
 	/** Returns the workspace directory appropriate for the given name and file. */
 	public File workspaceDir(File ideDir, boolean clean) {
 		File workspaceDir =
