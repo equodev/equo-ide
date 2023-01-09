@@ -32,7 +32,7 @@ public class P2Model {
             appendSet(buf, "install", install);
         }
         if (!filters.isEmpty()) {
-            String START___ = "filters = { '";
+            String START___ = "filters: { '";
             String START = ",\n            '";
             boolean isFirst = true;
             for (var entry : filters.entrySet()) {
@@ -45,7 +45,7 @@ public class P2Model {
                 }
                 buf.append(lead + entry.getKey() + "': " + entry.getValue());
             }
-            buf.append(" }\n");
+            buf.append(" },\n");
         }
         return closeJson(buf);
     }
@@ -86,7 +86,7 @@ public class P2Model {
                 appendSet(buf, "excludeSuffix", excludeSuffix);
             }
             if (!props.isEmpty()) {
-                String START___ = "props = { '";
+                String START___ = "props: { '";
                 String START = ",\n          '";
                 boolean isFirst = true;
                 for (var entry : props.entrySet()) {
@@ -99,7 +99,7 @@ public class P2Model {
                     }
                     buf.append(lead + entry.getKey() + "': '" + entry.getValue() + "'");
                 }
-                buf.append(" }\n");
+                buf.append(" },\n");
             }
             return closeJson(buf);
         }
@@ -107,13 +107,14 @@ public class P2Model {
 
     private static void appendSet(StringBuilder buf, String name, Set<String> toAdd) {
         buf.append(name);
-        buf.append(" = ['");
+        buf.append(": ['");
         buf.append(String.join("', '", toAdd));
-        buf.append("']\n");
+        buf.append("'],\n");
     }
 
     private static String closeJson(StringBuilder buf) {
         if (buf.charAt(buf.length() - 1) == '\n') {
+            buf.setLength(buf.length() - 1);
             buf.setCharAt(buf.length() - 1, '}');
         } else {
             buf.append('}');
