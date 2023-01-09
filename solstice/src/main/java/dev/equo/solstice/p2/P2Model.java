@@ -13,6 +13,7 @@
  *******************************************************************************/
 package dev.equo.solstice.p2;
 
+import com.diffplug.common.swt.os.SwtPlatform;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Set;
@@ -34,6 +35,49 @@ public class P2Model {
 
 	public TreeMap<String, Filter> getFilters() {
 		return filters;
+	}
+
+	public boolean isEmpty() {
+		return p2repo.isEmpty() && install.isEmpty() && filters.isEmpty();
+	}
+
+	public boolean hasAnyPlatformFilter() {
+		return filters.values().stream()
+				.filter(
+						filter ->
+								filter.props.containsKey(OSGI_OS)
+										|| filter.props.containsKey(OSGI_WS)
+										|| filter.props.containsKey(OSGI_ARCH))
+				.findAny()
+				.isPresent();
+	}
+
+	public P2Model deepCopy() {
+		var deepCopy = new P2Model();
+		deepCopy.p2repo.addAll(p2repo);
+		deepCopy.install.addAll(install);
+		for (var filterEntry : filters.entrySet()) {
+			deepCopy.filters.put(filterEntry.getKey(), filterEntry.getValue().deepCopy());
+		}
+		return deepCopy;
+	}
+
+	public P2Query query(P2Client.Caching caching) throws Exception {
+		validateFilters();
+		var session = new P2Session();
+		try (var client = new P2Client(caching)) {
+			for (var repo : p2repo) {
+				session.populateFrom(client, repo);
+			}
+		}
+		var query = session.query();
+		for (var filter : filters.values()) {
+			query.filter(filter);
+		}
+		for (var target : install) {
+			query.install(target);
+		}
+		return query;
 	}
 
 	/** Ensures there are no conflicts between the existing filters. */
@@ -80,6 +124,14 @@ public class P2Model {
 		filters.put(filterName, filter);
 	}
 
+	public void removeFilter(String name) {
+		var existing = filters.remove(name);
+		if (existing == null) {
+			throw new IllegalArgumentException(
+					"You tried to remove a filter with name '" + name + "' but no such filter exists");
+		}
+	}
+
 	@Override
 	public String toString() {
 		StringBuilder buf = new StringBuilder();
@@ -109,6 +161,11 @@ public class P2Model {
 		return closeJson(buf);
 	}
 
+	public static final String WILDCARD = "*";
+	private static final String OSGI_OS = "osgi.os";
+	private static final String OSGI_WS = "osgi.ws";
+	private static final String OSGI_ARCH = "osgi.arch";
+
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
@@ -130,36 +187,96 @@ public class P2Model {
 		private final TreeSet<String> excludeSuffix = new TreeSet<>();
 		private final TreeMap<String, String> props = new TreeMap<>();
 
+		public Filter deepCopy() {
+			var deepCopy = new Filter();
+			deepCopy.exclude.addAll(exclude);
+			deepCopy.excludePrefix.addAll(excludePrefix);
+			deepCopy.excludeSuffix.addAll(excludeSuffix);
+			deepCopy.props.putAll(props);
+			return deepCopy;
+		}
+
 		public TreeSet<String> getExclude() {
 			return exclude;
+		}
+
+		public Filter exclude(String unit) {
+			exclude.add(unit);
+			return this;
 		}
 
 		public TreeSet<String> getExcludePrefix() {
 			return excludePrefix;
 		}
 
+		public Filter excludePrefix(String prefix) {
+			excludePrefix.add(prefix);
+			return this;
+		}
+
 		public TreeSet<String> getExcludeSuffix() {
 			return excludeSuffix;
+		}
+
+		public Filter excludeSuffix(String suffix) {
+			excludeSuffix.add(suffix);
+			return this;
 		}
 
 		public TreeMap<String, String> getProps() {
 			return props;
 		}
 
+		public Filter prop(String key, String value) {
+			props.put(key, value);
+			return this;
+		}
+
+		public Filter platformAll() {
+			props.put(OSGI_OS, WILDCARD);
+			props.put(OSGI_WS, WILDCARD);
+			props.put(OSGI_ARCH, WILDCARD);
+			return this;
+		}
+
+		public Filter platformNone() {
+			props.put(OSGI_OS, "dont-include-platform-specific-artifacts");
+			props.put(OSGI_WS, "dont-include-platform-specific-artifacts");
+			props.put(OSGI_ARCH, "dont-include-platform-specific-artifacts");
+			return this;
+		}
+
+		public Filter platform(SwtPlatform platform) {
+			props.put(OSGI_OS, platform.getOs());
+			props.put(OSGI_WS, platform.getWs());
+			props.put(OSGI_ARCH, platform.getArch());
+			return this;
+		}
+
+		public Filter platformNative() {
+			return platform(SwtPlatform.getNative());
+		}
+
+		public Filter platformRunning() {
+			return platform(SwtPlatform.getRunning());
+		}
+
 		public String conflictsWith(String nameThis, String nameOther, Filter other) {
 			for (var prop : props.entrySet()) {
 				var otherVal = other.getProps().get(prop.getKey());
-				if (!Objects.equals(prop.getValue(), otherVal)) {
-					return "conflict for prop "
-							+ prop.getKey()
-							+ "! "
-							+ nameThis
-							+ " has "
-							+ prop.getValue()
-							+ " but "
-							+ nameOther
-							+ " has "
-							+ otherVal;
+				if (otherVal != null || other.getProps().containsKey(prop.getKey())) {
+					if (!Objects.equals(prop.getValue(), otherVal)) {
+						return "conflict for prop "
+								+ prop.getKey()
+								+ "! "
+								+ nameThis
+								+ " has "
+								+ prop.getValue()
+								+ " but "
+								+ nameOther
+								+ " has "
+								+ otherVal;
+					}
 				}
 			}
 			return null;

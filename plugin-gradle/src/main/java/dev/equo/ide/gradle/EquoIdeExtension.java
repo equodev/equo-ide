@@ -13,35 +13,30 @@
  *******************************************************************************/
 package dev.equo.ide.gradle;
 
-import com.diffplug.common.swt.os.SwtPlatform;
 import dev.equo.solstice.p2.JdtSetup;
 import dev.equo.solstice.p2.P2Client;
+import dev.equo.solstice.p2.P2Model;
 import dev.equo.solstice.p2.P2Query;
-import dev.equo.solstice.p2.P2Session;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.Set;
 import org.gradle.api.Action;
 import org.gradle.api.GradleException;
 
 /** The DSL inside the equoIde block. */
 public class EquoIdeExtension {
 	public boolean useAtomos = true;
-	private final Set<String> repos = new LinkedHashSet<>();
-	private final Set<String> targets = new LinkedHashSet<>();
-	private final LinkedHashMap<String, Action<P2Query>> filters = new LinkedHashMap<>();
+	private final P2Model model;
 
-	private EquoIdeExtension copy() {
-		var copy = new EquoIdeExtension();
-		copy.useAtomos = useAtomos;
-		copy.repos.addAll(repos);
-		copy.targets.addAll(targets);
-		copy.filters.putAll(filters);
-		return copy;
+	public EquoIdeExtension() {
+		useAtomos = true;
+		model = new P2Model();
 	}
 
-	private boolean isEmpty() {
-		return repos.isEmpty() && targets.isEmpty() && filters.isEmpty();
+	private EquoIdeExtension(EquoIdeExtension existing) {
+		useAtomos = existing.useAtomos;
+		model = existing.model.deepCopy();
+	}
+
+	private EquoIdeExtension deepCopy() {
+		return new EquoIdeExtension(this);
 	}
 
 	private void setToDefault() {
@@ -88,73 +83,41 @@ public class EquoIdeExtension {
 							+ p2.substring(0, p2.length() - 1)
 							+ "\")   <- CORRECT\n");
 		}
-		repos.add(p2);
+		model.getP2repo().add(p2);
 	}
 
 	/** Marks the given unit id for installation. */
 	public void install(String target) {
-		targets.add(target);
+		model.getInstall().add(target);
 	}
 
 	/** Adds a filter with the given name. Duplicate names are not allowed. */
-	public void addFilter(String name, Action<P2Query> query) {
-		var lastFilter = filters.put(name, query);
-		if (lastFilter != null) {
-			throw new GradleException(
-					"There was already a filter with named '"
-							+ name
-							+ "'\n"
-							+ "You can fix this by:\n"
-							+ "  - picking a new name for the filter\n"
-							+ "  - calling `replaceFilter` instead of `addFilter`\n"
-							+ "  - calling `clearAllFilters()` and then `addFilter`");
-		}
+	public void addFilter(String name, Action<P2Model.Filter> filterSetup) {
+		P2Model.Filter filter = new P2Model.Filter();
+		filterSetup.execute(filter);
+		model.addFilterAndValidate(name, filter);
 	}
 
-	/** Replaces the filter with the given name. Throws an error if no such filter exists. */
-	public void replaceFilter(String name, Action<P2Query> query) {
-		var lastFilter = filters.put(name, query);
-		if (lastFilter == null) {
-			throw new GradleException(
-					"You called `replaceFilter('"
-							+ name
-							+ "', ...)` "
-							+ "but there wasn't a filter with that name.\n"
-							+ "Call `addFilter('"
-							+ name
-							+ "', ...) instead.");
-		}
+	/** Removes the filter with the given name. Throws an error if no such filter exists. */
+	public void removeFilter(String name) {
+		model.removeFilter(name);
 	}
 
 	/** Removes all filters. */
 	public void clearFilters() {
-		filters.clear();
+		model.getFilters().clear();
 	}
 
 	P2Query performQuery(P2Client.Caching caching) throws Exception {
 		var extension = this;
-		if (isEmpty()) {
-			extension = copy();
+		if (model.isEmpty()) {
+			extension = deepCopy();
 			extension.setToDefault();
 		}
-		return extension.performQueryInternal(caching);
-	}
-
-	private P2Query performQueryInternal(P2Client.Caching caching) throws Exception {
-		var session = new P2Session();
-		try (var client = new P2Client(caching)) {
-			for (var repo : repos) {
-				session.populateFrom(client, repo);
-			}
+		P2Model model = extension.model.deepCopy();
+		if (!model.hasAnyPlatformFilter()) {
+			model.addFilterAndValidate("platform running", new P2Model.Filter().platformRunning());
 		}
-		var query = session.query();
-		query.platform(SwtPlatform.getRunning());
-		for (var filter : filters.values()) {
-			filter.execute(query);
-		}
-		for (var target : targets) {
-			query.install(target);
-		}
-		return query;
+		return model.query(caching);
 	}
 }
