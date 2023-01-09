@@ -18,8 +18,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -61,15 +59,13 @@ class ScriptExec {
 
 	private void exec(boolean isSeparate) throws IOException, InterruptedException {
 		// create the self-deleting script file
-		File scriptFile =
-				createSelfDeletingScript(
-						directory.map(dir -> "cd " + quote(dir) + "\n").orElse("") + script);
+		File scriptFile = createSelfDeletingScript(script);
 
 		// get the right arguments
 		List<String> fullArgs = getPlatformCmds(scriptFile, isSeparate);
 
 		// set the cmds
-		int exitValue = Launcher.launchAndInheritIO(null, fullArgs);
+		int exitValue = Launcher.launchAndInheritIO(directory.orElse(null), fullArgs);
 		if (exitValue != EXIT_VALUE_SUCCESS) {
 			throw new RuntimeException("'" + script + "' exited with " + exitValue);
 		}
@@ -156,25 +152,22 @@ class ScriptExec {
 	/** Returns the arguments needed to run the scriptFile with the given properties. */
 	private static List<String> getPlatformCmds(File scriptFile, boolean isSeparate)
 			throws IOException {
-		String scriptToExecute = scriptFile.getAbsolutePath();
-		List<String> args = new ArrayList<>();
 		if (OS.getNative().isWindows()) {
 			// wscript.exe invisible.vbs script.bat
-			args.addAll(
-					Arrays.asList(
-							"wscript.exe", createInvisibleVbs(isSeparate).getAbsolutePath(), scriptToExecute));
+			return List.of(
+					"wscript.exe",
+					createInvisibleVbs(isSeparate).getAbsolutePath(),
+					scriptFile.getAbsolutePath());
 		} else {
 			// use sh to execute
-			args.addAll(Arrays.asList("/bin/sh", scriptToExecute));
-
 			if (isSeparate) {
-				File blockingScript = createSelfDeletingScript(quoteAll(args));
-				File spawningScript = createSelfDeletingScript("nohup " + quote(blockingScript) + " &");
-				args.clear();
-				args.addAll(Arrays.asList("/bin/sh", spawningScript.getAbsolutePath()));
+				File spawningScript =
+						createSelfDeletingScript("nohup " + quote(scriptFile) + " &" + "\n" + "disown");
+				return List.of("/bin/bash", spawningScript.getAbsolutePath());
+			} else {
+				return List.of("/bin/sh", scriptFile.getAbsolutePath());
 			}
 		}
-		return args;
 	}
 
 	/** Creates a .vbs file which will execute a batch command and then delete itself. */
@@ -183,7 +176,7 @@ class ScriptExec {
 				".vbs",
 				(file, printer) -> {
 					// args are at http://ss64.com/vb/run.html
-					String windowStyle = "1";
+					String windowStyle = "0";
 					String waitOnReturn = isSeparate ? "False" : "True";
 					// open the shell
 					printer.println(

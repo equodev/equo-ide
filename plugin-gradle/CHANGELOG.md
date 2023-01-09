@@ -11,7 +11,9 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
   - `ë org.eclipse.equinox`
   - `§ feature.group`
   - `§§ feature.feature.group`
-  
+### Fixed
+- Partial improvements to process launching ([#47](https://github.com/equodev/equo-ide/pull/47) partial fix for [#44](https://github.com/equodev/equo-ide/issues/44)) 
+
 ## [0.8.0] - 2023-01-06
 ### Added
 - `gradlew equoIde --debug-classpath=[names|paths]` to help debug classpath issues. ([#43](https://github.com/equodev/equo-ide/pull/43))

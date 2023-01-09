@@ -115,9 +115,11 @@ public abstract class EquoIdeTask extends DefaultTask {
 		var classpath = Launcher.copyAndSortClasspath(p2AndMavenDeps.plus(nestedDefs));
 		debugClasspath.printWithHead(
 				"jars about to be launched", classpath.stream().map(File::getAbsolutePath));
+		boolean isBlocking =
+				initOnly || showConsole || debugClasspath != BuildPluginIdeMain.DebugClasspath.disabled;
 		var exitCode =
 				Launcher.launchJavaBlocking(
-						initOnly || showConsole || debugClasspath != BuildPluginIdeMain.DebugClasspath.disabled,
+						isBlocking,
 						BuildPluginIdeMain.class.getName(),
 						classpath,
 						"-installDir",
@@ -129,6 +131,9 @@ public abstract class EquoIdeTask extends DefaultTask {
 						"-debugClasspath",
 						debugClasspath.name(),
 						"-Dorg.slf4j.simpleLogger.defaultLogLevel=INFO");
+		if (!isBlocking) {
+			System.out.println("NEED HELP? If the IDE doesn't appear, try adding --show-console");
+		}
 		if (exitCode != 0) {
 			System.out.println("WARNING! Exit code: " + exitCode);
 		}
