@@ -89,7 +89,7 @@ public abstract class EquoIdeTask extends DefaultTask {
 
 	@Option(
 			option = "clean",
-			description = "Wipes all IDE settings and state then rebuilds and launches a fresh instance.")
+			description = "Wipes all IDE settings and state before rebuilding and launching.")
 	void clean(boolean clean) {
 		this.clean = clean;
 	}
