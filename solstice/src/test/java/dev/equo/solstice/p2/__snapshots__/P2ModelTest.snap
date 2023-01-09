@@ -3,6 +3,29 @@ dev.equo.solstice.p2.P2ModelTest.toString[empty]=[
 ]
 
 
+dev.equo.solstice.p2.P2ModelTest.toString[filter empty]=[
+{}
+]
+
+
+dev.equo.solstice.p2.P2ModelTest.toString[filter exclude]=[
+{exclude = ['exclude.me']}
+]
+
+
+dev.equo.solstice.p2.P2ModelTest.toString[filter prefix exclude]=[
+{exclude = ['exclude.me']
+excludePrefix = ['exclude.prefix']}
+]
+
+
+dev.equo.solstice.p2.P2ModelTest.toString[filter suffix exclude]=[
+{exclude = ['exclude.me']
+excludePrefix = ['exclude.prefix']
+excludeSuffix = ['exclude.suffix']}
+]
+
+
 dev.equo.solstice.p2.P2ModelTest.toString[install multiple]=[
 {p2repo = ['https://download.eclipse.org/buildship/updates/e423/releases/3.x/3.1.6.v20220511-1359/', 'https://download.eclipse.org/eclipse/updates/4.26/']
 install = ['org.eclipse.buildship.feature.group', 'org.eclipse.platform.ide.categoryIU', 'org.eclipse.releng.java.languages.categoryIU']}
