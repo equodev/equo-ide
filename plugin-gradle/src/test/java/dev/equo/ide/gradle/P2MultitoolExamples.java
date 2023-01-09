@@ -78,7 +78,7 @@ public class P2MultitoolExamples extends GradleHarness {
 						"",
 						"  p2repo 'https://download.eclipse.org/corrosion/releases/1.2.4/'",
 						"}");
-		run("-q", "equoList", "--installed").snapshot(expect);
+		run("-q", "equoList", "--all=categories").snapshot(expect);
 	}
 
 	@Test
@@ -128,11 +128,13 @@ public class P2MultitoolExamples extends GradleHarness {
 						"    platformNone()",
 						"  }",
 						"  install 'org.eclipse.platform.ide.categoryIU'",
-						"",
+						"  // corrosion",
 						"  p2repo 'https://download.eclipse.org/corrosion/releases/1.2.4/'",
 						"  install '202206282034.org.eclipse.corrosion.category'",
+						"  // cdt transitives for corrosion",
+						"  p2repo 'https://download.eclipse.org/tools/cdt/releases/11.0/cdt-11.0.0/'",
 						"}");
-		run("-q", "equoList", "--problems").snapshot(expect);
+		run("-q", "equoList", "--installed").snapshot(expect);
 	}
 
 	@Test
