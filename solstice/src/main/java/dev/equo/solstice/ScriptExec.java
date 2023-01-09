@@ -183,7 +183,7 @@ class ScriptExec {
 				".vbs",
 				(file, printer) -> {
 					// args are at http://ss64.com/vb/run.html
-					String windowStyle = "1";
+					String windowStyle = "0";
 					String waitOnReturn = isSeparate ? "False" : "True";
 					// open the shell
 					printer.println(
