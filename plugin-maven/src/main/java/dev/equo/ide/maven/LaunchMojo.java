@@ -27,26 +27,20 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
-import org.eclipse.aether.RepositorySystem;
-import org.eclipse.aether.RepositorySystemSession;
 import org.eclipse.aether.artifact.DefaultArtifact;
 import org.eclipse.aether.collection.CollectRequest;
 import org.eclipse.aether.graph.Dependency;
 import org.eclipse.aether.graph.Exclusion;
-import org.eclipse.aether.repository.RemoteRepository;
 import org.eclipse.aether.resolution.DependencyRequest;
 import org.eclipse.aether.resolution.DependencyResolutionException;
 import org.eclipse.aether.resolution.DependencyResult;
 
 @Mojo(name = "launch")
-public class LaunchMojo extends AbstractMojo {
-	@Component private RepositorySystem repositorySystem;
+public class LaunchMojo extends AbstractP2Mojo {
 
 	@Parameter(property = "initOnly", defaultValue = "false")
 	private boolean initOnly;
@@ -59,18 +53,6 @@ public class LaunchMojo extends AbstractMojo {
 
 	@Parameter(property = "debugClasspath", defaultValue = "disabled")
 	private BuildPluginIdeMain.DebugClasspath debugClasspath;
-
-	@Parameter(property = "release")
-	private String release;
-
-	@Parameter(defaultValue = "${project.basedir}", required = true, readonly = true)
-	private File baseDir;
-
-	@Parameter(defaultValue = "${repositorySystemSession}", required = true, readonly = true)
-	private RepositorySystemSession repositorySystemSession;
-
-	@Parameter(defaultValue = "${project.remotePluginRepositories}", required = true, readonly = true)
-	private List<RemoteRepository> repositories;
 
 	private static final List<Exclusion> EXCLUDE_ALL_TRANSITIVES =
 			Collections.singletonList(new Exclusion("*", "*", "*", "*"));
