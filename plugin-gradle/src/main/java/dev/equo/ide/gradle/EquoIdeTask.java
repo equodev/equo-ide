@@ -18,6 +18,7 @@ import dev.equo.solstice.Launcher;
 import dev.equo.solstice.NestedJars;
 import dev.equo.solstice.p2.P2Client;
 import dev.equo.solstice.p2.P2Query;
+import dev.equo.solstice.p2.WorkspaceRegistry;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -42,7 +43,7 @@ public abstract class EquoIdeTask extends DefaultTask {
 	public abstract Property<FileCollection> getMavenDeps();
 
 	@Internal
-	public abstract Property<File> getWorkspaceDir();
+	public abstract Property<File> getProjectDir();
 
 	@Internal
 	public abstract Property<Boolean> getUseAtomos();
@@ -84,11 +85,24 @@ public abstract class EquoIdeTask extends DefaultTask {
 		this.dontUseAtomosOverride = dontUseAtomos;
 	}
 
+	private boolean clean = false;
+
+	@Option(
+			option = "clean",
+			description = "Wipes all IDE settings and state then rebuilds and launches a fresh instance.")
+	void clean(boolean clean) {
+		this.clean = clean;
+	}
+
 	@Inject
 	public abstract ObjectFactory getObjectFactory();
 
 	@TaskAction
 	public void launch() throws IOException, InterruptedException {
+		var workspaceRegistry = WorkspaceRegistry.instance();
+		var workspaceDir = workspaceRegistry.workspaceDir(getProjectDir().get(), clean);
+		workspaceRegistry.removeAbandoned();
+
 		var mavenDeps = getMavenDeps().get();
 
 		var p2files = new ArrayList<File>();
@@ -102,7 +116,6 @@ public abstract class EquoIdeTask extends DefaultTask {
 		var p2deps = getObjectFactory().fileCollection().from(p2files);
 		var p2AndMavenDeps = p2deps.plus(mavenDeps);
 
-		var workspaceDir = getWorkspaceDir().get();
 		var nestedJarFolder = new File(workspaceDir, NestedJars.DIR);
 		var nestedJars =
 				NestedJars.inFiles(p2AndMavenDeps).extractAllNestedJars(nestedJarFolder).stream()

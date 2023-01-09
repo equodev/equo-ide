@@ -15,7 +15,6 @@ package dev.equo.ide.gradle;
 
 import dev.equo.solstice.p2.CacheLocations;
 import dev.equo.solstice.p2.P2Client;
-import dev.equo.solstice.p2.WorkspaceRegistry;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -27,7 +26,6 @@ import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ModuleDependency;
 import org.gradle.api.attributes.Bundling;
-import org.gradle.api.tasks.Delete;
 
 public class EquoIdeGradlePlugin implements Plugin<Project> {
 	static final String MINIMUM_GRADLE = "6.0";
@@ -78,19 +76,6 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 		P2Client.Caching caching =
 				P2Client.Caching.defaultIfOfflineIs(project.getGradle().getStartParameter().isOffline());
 
-		var workspaceRegistry = WorkspaceRegistry.instance();
-		var workspaceDir = workspaceRegistry.workspaceDir(project.getProjectDir());
-		workspaceRegistry.removeAbandoned();
-		var cleanTask =
-				project
-						.getTasks()
-						.register(
-								EQUO_IDE_CLEAN,
-								Delete.class,
-								task -> {
-									task.setDelete(workspaceDir);
-									task.setDescription("Deletes the IDE workspace and settings");
-								});
 		var equoIdeTask =
 				project
 						.getTasks()
@@ -100,21 +85,11 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 								task -> {
 									task.setGroup(TASK_GROUP);
 									task.setDescription("Launches an Eclipse-based IDE for this project");
-									task.mustRunAfter(cleanTask);
 
 									task.getCaching().set(caching);
 									task.getMavenDeps().set(equoIde);
-									task.getWorkspaceDir().set(workspaceDir);
+									task.getProjectDir().set(project.getProjectDir());
 								});
-		project
-				.getTasks()
-				.register(
-						EQUO_IDE_FRESH,
-						task -> {
-							task.setGroup(TASK_GROUP);
-							task.setDescription("Deletes, rebuilds, and launches a fresh copy of the IDE");
-							task.dependsOn(cleanTask, equoIdeTask);
-						});
 		project.afterEvaluate(
 				unused -> {
 					try {
