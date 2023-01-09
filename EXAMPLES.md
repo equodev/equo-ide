@@ -99,12 +99,9 @@ TODO: MAVEN PLUGIN DOESNT SUPPORT ARBITRARY P2 YET: https://github.com/equodev/e
 ### JDT and Buildship
 
 ```gradle
-apply plugin: 'dev.equo.ide'
-equoIde {
-  p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'
-  install 'org.eclipse.platform.ide.categoryIU'
-  install 'org.eclipse.releng.java.languages.categoryIU'
-  p2repo 'https://download.eclipse.org/buildship/updates/e423/releases/3.x/3.1.6.v20220511-1359/'
-  install 'org.eclipse.buildship.feature.group'
-}
+p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'
+install 'org.eclipse.platform.ide.categoryIU'
+install 'org.eclipse.releng.java.languages.categoryIU'
+p2repo 'https://download.eclipse.org/buildship/updates/e423/releases/3.x/3.1.6.v20220511-1359/'
+install 'org.eclipse.buildship.feature.group'
 ```
