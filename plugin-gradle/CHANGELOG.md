@@ -5,7 +5,13 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 ## [Unreleased]
 ### Added
 - We now parse the `filter` property of p2 requirements and use it in queries. ([#45](https://github.com/equodev/equo-ide/pull/45))
-
+- If an ASCII table is too wide, we now add a legend of shortened replacements at the bottom so the rows can be narrower. ([#46](https://github.com/equodev/equo-ide/pull/46))
+  - `á org.apache`
+  - `é org.eclipse`
+  - `ë org.eclipse.equinox`
+  - `§ feature.group`
+  - `§§ feature.feature.group`
+  
 ## [0.8.0] - 2023-01-06
 ### Added
 - `gradlew equoIde --debug-classpath=[names|paths]` to help debug classpath issues. ([#43](https://github.com/equodev/equo-ide/pull/43))

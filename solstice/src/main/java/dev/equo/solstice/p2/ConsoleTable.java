@@ -14,6 +14,7 @@
 package dev.equo.solstice.p2;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
@@ -116,26 +117,117 @@ public class ConsoleTable {
 	}
 
 	static class NColumnTable {
+		/** The maximum width (we hope) a table will have. */
+		private static final int MAX_WIDTH = 80;
+		/** We have to save at least this much for a shortening to be worth it. */
+		private static final int MIN_SAVINGS = 1;
+
+		private static final List<String> LEGEND = Arrays.asList("§§", "§", "ë", "é", "á");
+		private static final List<String> DICTIONARY =
+				Arrays.asList(
+						"feature.feature.group",
+						"feature.group",
+						"org.eclipse.equinox",
+						"org.eclipse",
+						"org.apache");
+		private final List<String> key = new ArrayList<>();
+
+		private final int ncol;
 		private final TableColumn[] headers;
 		private final List<String[]> rows = new ArrayList<>();
 
 		public NColumnTable(String... headers) {
-			this.headers = new TableColumn[headers.length];
-			for (int i = 0; i < headers.length; ++i) {
+			ncol = headers.length;
+			this.headers = new TableColumn[ncol];
+			for (int i = 0; i < ncol; ++i) {
 				this.headers[i] = new TableColumn(headers[i]);
 			}
 		}
 
 		public void addRow(String... data) {
-			if (data.length != headers.length) {
+			if (data.length != ncol) {
 				throw new IllegalArgumentException(
 						"Expected " + headers.length + " items but got " + data.length);
 			}
+			updateWidest(rows.size(), data);
 			rows.add(data);
 		}
 
+		int widestWidth = -1;
+		int widestRow = -1;
+
+		private void updateWidest(int row, String[] data) {
+			int width = 1; // 2 + 3 + ... + 3 + 2 = 1 + (3 * n)
+			for (String d : data) {
+				width += d.length() + 3;
+			}
+			if (row != -1 && width > widestWidth) {
+				widestWidth = width;
+				widestRow = row;
+			}
+		}
+
+		private void addKeyToLegend(String dict) {
+			int idx = DICTIONARY.indexOf(dict);
+			String legend = LEGEND.get(idx);
+			key.add(dict);
+			for (int r = 0; r < rows.size(); ++r) {
+				String[] row = rows.get(r);
+				for (int c = 0; c < ncol; ++c) {
+					String e = row[c];
+					if (e.contains(dict)) {
+						row[c] = e.replace(dict, legend);
+					}
+				}
+			}
+		}
+
+		private void compress() {
+			do {
+				String[] row = rows.get(widestRow);
+				String bestDict = null;
+				int bestSavings = MIN_SAVINGS;
+				for (String dict : DICTIONARY) {
+					int numOccurrences = 0;
+					for (int c = 0; c < ncol; ++c) {
+						if (row[c].contains(dict)) {
+							++numOccurrences;
+						}
+					}
+					int savings = numOccurrences * (dict.length() - 1);
+					if (savings > bestSavings) {
+						bestDict = dict;
+						bestSavings = savings;
+					}
+				}
+				if (bestDict != null) {
+					addKeyToLegend(bestDict);
+				} else {
+					// couldn't find anything worthwhile
+					return;
+				}
+			} while (key.size() < LEGEND.size() && recalculateWidestWidth() > MAX_WIDTH);
+		}
+
+		private int recalculateWidestWidth() {
+			widestWidth = -1;
+			widestRow = -1;
+			for (int r = 0; r < rows.size(); ++r) {
+				updateWidest(r, rows.get(r));
+			}
+			return widestWidth;
+		}
+
 		public String toString(Format format) {
-			return Table.getTable(format, headers, rows.toArray(new String[0][]));
+			if (format == Format.ASCII && widestWidth > MAX_WIDTH) {
+				compress();
+			}
+			String result = Table.getTable(format, headers, rows.toArray(new String[0][]));
+			key.sort(Comparator.naturalOrder());
+			for (String k : key) {
+				result = result + LEGEND.get(DICTIONARY.indexOf(k)) + " " + k + "\n";
+			}
+			return result;
 		}
 	}
 

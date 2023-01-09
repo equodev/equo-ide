@@ -38,11 +38,11 @@ public class EquoListTest extends GradleHarness {
 						"    platformNone()",
 						"  }",
 						"}");
-		run("equoList", "--installed")
+		run("equoList", "--installed", "--stacktrace")
 				.snapshotBetween("Task :equoList", "BUILD SUCCESSFUL", expect.scenario("installed"));
-		run("equoList", "--problems")
+		run("equoList", "--problems", "--stacktrace")
 				.snapshotBetween("Task :equoList", "BUILD SUCCESSFUL", expect.scenario("problems"));
-		run("equoList", "--optional")
+		run("equoList", "--optional", "--stacktrace")
 				.snapshotBetween("Task :equoList", "BUILD SUCCESSFUL", expect.scenario("optional"));
 	}
 
