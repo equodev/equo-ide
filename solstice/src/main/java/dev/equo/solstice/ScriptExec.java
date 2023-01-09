@@ -65,7 +65,11 @@ class ScriptExec {
 		List<String> fullArgs = getPlatformCmds(scriptFile, isSeparate);
 
 		// set the cmds
-		int exitValue = Launcher.launchAndInheritIO(directory.orElse(null), fullArgs);
+		var processBuilder = new ProcessBuilder(fullArgs);
+		if (directory.isPresent()) {
+			processBuilder.directory(directory.get());
+		}
+		int exitValue = processBuilder.start().waitFor();
 		if (exitValue != EXIT_VALUE_SUCCESS) {
 			throw new RuntimeException("'" + script + "' exited with " + exitValue);
 		}
