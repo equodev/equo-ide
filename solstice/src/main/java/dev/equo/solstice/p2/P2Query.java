@@ -52,18 +52,6 @@ public class P2Query {
 		}
 	}
 
-	public void filter(P2Model.Filter filter) {
-		assertNotUsed();
-		exclude.addAll(filter.getExclude());
-		excludePrefix.addAll(filter.getExcludePrefix());
-		excludeSuffix.addAll(filter.getExcludeSuffix());
-		for (var prop : filter.getProps().entrySet()) {
-			if (!P2Model.WILDCARD.equals(prop.getValue())) {
-				filterProps.put(prop.getKey(), prop.getValue());
-			}
-		}
-	}
-
 	/** Excludes the unit with the given id. */
 	public void exclude(String toExclude) {
 		assertNotUsed();
@@ -107,6 +95,11 @@ public class P2Query {
 		filterProps.put("osgi.os", "zzz");
 		filterProps.put("osgi.ws", "zzz");
 		filterProps.put("osgi.arch", "zzz");
+	}
+
+	public void filterProp(String key, String value) {
+		assertNotUsed();
+		filterProps.put(key, value);
 	}
 
 	/** Resolves the given P2Unit by eagerly traversing all its dependencies. */

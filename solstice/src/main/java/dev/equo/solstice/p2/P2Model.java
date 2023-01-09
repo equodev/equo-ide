@@ -72,7 +72,14 @@ public class P2Model {
 		}
 		var query = session.query();
 		for (var filter : filters.values()) {
-			query.filter(filter);
+			filter.exclude.forEach(query::exclude);
+			filter.excludePrefix.forEach(query::excludePrefix);
+			filter.excludeSuffix.forEach(query::excludeSuffix);
+			for (var prop : filter.getProps().entrySet()) {
+				if (!P2Model.WILDCARD.equals(prop.getValue())) {
+					query.filterProp(prop.getKey(), prop.getValue());
+				}
+			}
 		}
 		for (var target : install) {
 			query.install(target);
