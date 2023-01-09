@@ -36,10 +36,10 @@ public class P2Query {
 	}
 
 	private TreeSet<String> exclude = new TreeSet<>();
-	private List<String> excludePrefix = new ArrayList<>();
-	private List<String> excludeSuffix = new ArrayList<>();
+	private TreeSet<String> excludePrefix = new TreeSet<>();
+	private TreeSet<String> excludeSuffix = new TreeSet<>();
 
-	private Map<String, String> filterProps = new HashMap<>();
+	private TreeMap<String, String> filterProps = new TreeMap<>();
 
 	private TreeMap<String, P2Unit> installed = new TreeMap<>();
 	private TreeMap<P2Session.Requirement, Set<P2Unit>> optionalSoMaybeNotInstalled = new TreeMap<>();
