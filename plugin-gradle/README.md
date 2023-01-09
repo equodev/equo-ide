@@ -25,10 +25,10 @@ equoIde { // launch with gradlew equoIde
 
 - `equoList` to debug IDE dependencies ([p2 multitool](../P2_MULTITOOL.md))
 - `equoIde` to launch the IDE
+  - `equoIde --clean` wipes all workspace settings and state before rebuilding and launching.
+  - `equoIde --show-console` pipes console output of the launched IDE to the build console.
   - `equoIde --init-only` initializes the runtime to check for errors then exits.
-  - `equoIde --show-console` pipes console output of launched IDE to the build console.
   - `equoIde --debug-classpath=[names|paths]` dumps the classpath (in order) without starting the application.
-- `equoIdeFresh` to delete, rebuild, and launch a fresh copy of the IDE
 
 ## Limitations
 
