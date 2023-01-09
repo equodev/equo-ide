@@ -5,7 +5,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 ## [Unreleased]
 ### Added
 - We now parse the `filter` property of p2 requirements and use it in queries. ([#45](https://github.com/equodev/equo-ide/pull/45))
-- If an ASCII table is too wide, we now add a legend like `¹ feature.feature.group` at the bottom so the rows can be narrower. ([#46](https://github.com/equodev/equo-ide/pull/46))
+- If an ASCII table is too wide, we now add a legend like `§§ feature.feature.group` at the bottom so the rows can be narrower. ([#46](https://github.com/equodev/equo-ide/pull/46))
 
 ## [0.8.0] - 2023-01-06
 ### Added
