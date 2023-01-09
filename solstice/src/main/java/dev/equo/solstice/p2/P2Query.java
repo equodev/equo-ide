@@ -15,7 +15,6 @@ package dev.equo.solstice.p2;
 
 import com.diffplug.common.swt.os.SwtPlatform;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;

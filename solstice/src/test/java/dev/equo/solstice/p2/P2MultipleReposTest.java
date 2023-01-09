@@ -26,7 +26,8 @@ public class P2MultipleReposTest {
 		try (var client = new P2Client()) {
 			session.populateFrom(client, "https://download.eclipse.org/eclipse/updates/4.26/");
 			session.populateFrom(
-					client, "https://download.eclipse.org/buildship/updates/e423/releases/3.x/3.1.6.v20220511-1359/");
+					client,
+					"https://download.eclipse.org/buildship/updates/e423/releases/3.x/3.1.6.v20220511-1359/");
 		}
 		return session;
 	}
