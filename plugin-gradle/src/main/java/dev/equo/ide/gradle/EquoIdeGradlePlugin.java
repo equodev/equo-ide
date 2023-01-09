@@ -80,7 +80,7 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 
 		var workspaceRegistry = WorkspaceRegistry.instance();
 		var workspaceDir = workspaceRegistry.workspaceDir(project.getProjectDir());
-		workspaceRegistry.clean();
+		workspaceRegistry.removeAbandoned();
 		var cleanTask =
 				project
 						.getTasks()

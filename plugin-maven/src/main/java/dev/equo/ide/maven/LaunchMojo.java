@@ -41,6 +41,8 @@ import org.eclipse.aether.resolution.DependencyResult;
 
 @Mojo(name = "launch")
 public class LaunchMojo extends AbstractP2Mojo {
+	@Parameter(property = "clean", defaultValue = "false")
+	private boolean clean;
 
 	@Parameter(property = "initOnly", defaultValue = "false")
 	private boolean initOnly;
@@ -78,8 +80,8 @@ public class LaunchMojo extends AbstractP2Mojo {
 							EXCLUDE_ALL_TRANSITIVES));
 
 			var workspaceRegistry = WorkspaceRegistry.instance();
-			var workspaceDir = workspaceRegistry.workspaceDir(baseDir);
-			workspaceRegistry.clean();
+			var workspaceDir = workspaceRegistry.workspaceDir(baseDir, clean);
+			workspaceRegistry.removeAbandoned();
 
 			var session = new P2Session();
 			try (var client = new P2Client()) {
