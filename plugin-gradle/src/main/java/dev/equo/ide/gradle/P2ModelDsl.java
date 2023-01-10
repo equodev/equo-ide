@@ -16,7 +16,8 @@ package dev.equo.ide.gradle;
 import dev.equo.solstice.p2.P2Model;
 import org.gradle.api.Action;
 
-abstract class P2ModelDsl {
+/** The DSL for defining a P2Model. */
+public abstract class P2ModelDsl {
 	protected final P2Model model;
 
 	P2ModelDsl(P2Model model) {
