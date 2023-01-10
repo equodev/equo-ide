@@ -18,7 +18,6 @@ import dev.equo.solstice.p2.P2Client;
 import dev.equo.solstice.p2.P2Model;
 import dev.equo.solstice.p2.P2Query;
 import org.gradle.api.Action;
-import org.gradle.api.GradleException;
 
 /** The DSL inside the equoIde block. */
 public class EquoIdeExtension {
@@ -63,27 +62,7 @@ public class EquoIdeExtension {
 
 	/** Adds the given p2 repo to the list of repositories to populate the session with. */
 	public void p2repo(String p2) {
-		if (!p2.endsWith("/")) {
-			throw new GradleException(
-					"Must end with /\n"
-							+ "p2repo(\""
-							+ p2
-							+ "\")   <- WRONG\n"
-							+ "p2repo(\""
-							+ p2
-							+ "/\")  <- CORRECT\n");
-		}
-		if (p2.endsWith(("//"))) {
-			throw new GradleException(
-					"Must end with a single /\n"
-							+ "p2repo(\""
-							+ p2
-							+ "\")  <- WRONG\n"
-							+ "p2repo(\""
-							+ p2.substring(0, p2.length() - 1)
-							+ "\")   <- CORRECT\n");
-		}
-		model.getP2repo().add(p2);
+		model.addP2Repo(p2);
 	}
 
 	/** Marks the given unit id for installation. */
@@ -116,7 +95,8 @@ public class EquoIdeExtension {
 		}
 		P2Model model = extension.model.deepCopy();
 		if (!model.hasAnyPlatformFilter()) {
-			model.addFilterAndValidate("platform running", new P2Model.Filter().platformRunning());
+			model.addFilterAndValidate(
+					"platform-specific-for-running", new P2Model.Filter().platformRunning());
 		}
 		return model.query(caching);
 	}

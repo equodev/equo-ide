@@ -41,6 +41,24 @@ public class P2Model {
 		return p2repo.isEmpty() && install.isEmpty() && filters.isEmpty();
 	}
 
+	public void addP2Repo(String p2url) {
+		if (!p2url.endsWith("/")) {
+			throw new IllegalArgumentException(
+					"Must end with /\n" + "  " + p2url + "   <- WRONG\n" + "  " + p2url + "/  <- CORRECT\n");
+		}
+		if (p2url.endsWith(("//"))) {
+			throw new IllegalArgumentException(
+					"Must end with a single /\n"
+							+ "  "
+							+ p2url
+							+ "  <- WRONG\n"
+							+ "  "
+							+ p2url.substring(0, p2url.length() - 1)
+							+ "   <- CORRECT\n");
+		}
+		p2repo.add(p2url);
+	}
+
 	public boolean hasAnyPlatformFilter() {
 		return filters.values().stream()
 				.filter(
