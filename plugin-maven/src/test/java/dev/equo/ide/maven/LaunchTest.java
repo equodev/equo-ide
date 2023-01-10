@@ -13,6 +13,7 @@
  *******************************************************************************/
 package dev.equo.ide.maven;
 
+import dev.equo.ide.ResourceHarness;
 import dev.equo.solstice.Launcher;
 import java.io.File;
 import java.io.FileInputStream;
@@ -29,7 +30,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-public class LaunchTest {
+public class LaunchTest extends ResourceHarness {
 	@Test
 	public void integrationTestAtomos() throws IOException, InterruptedException {
 		integrationTestUseAtomos(true);
@@ -81,47 +82,6 @@ public class LaunchTest {
 						.getMainAttributes()
 						.get(new Attributes.Name("Implementation-Version"))
 						.toString();
-			}
-		}
-	}
-
-	/**
-	 * On OS X, the temp folder is a symlink, and some of gradle's stuff breaks symlinks. By only
-	 * accessing it through the {@link #rootFolder()} and {@link #newFile(String)} apis, we can
-	 * guarantee there will be no symlink problems.
-	 */
-	@TempDir File folderDontUseDirectly;
-
-	/** Returns the root folder (canonicalized to fix OS X issue) */
-	protected File rootFolder() throws IOException {
-		return folderDontUseDirectly.getCanonicalFile();
-	}
-
-	protected WriteAsserter setFile(String path) throws IOException {
-		return new WriteAsserter(newFile(path));
-	}
-
-	/** Returns a new child of the root folder. */
-	protected File newFile(String subpath) throws IOException {
-		return new File(rootFolder(), subpath);
-	}
-
-	protected static class WriteAsserter {
-		private File file;
-
-		private WriteAsserter(File file) {
-			file.getParentFile().mkdirs();
-			this.file = file;
-		}
-
-		public File toContent(byte[] content) throws IOException {
-			Files.write(file.toPath(), content);
-			return file;
-		}
-
-		public File toResource(String path) throws IOException {
-			try (var input = LaunchTest.class.getResource(path).openConnection().getInputStream()) {
-				return toContent(input.readAllBytes());
 			}
 		}
 	}
