@@ -14,68 +14,22 @@
 package dev.equo.ide.gradle;
 
 import au.com.origin.snapshots.Expect;
-import java.io.File;
+import dev.equo.ide.ResourceHarness;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.regex.Pattern;
 import org.assertj.core.api.AbstractStringAssert;
 import org.assertj.core.api.Assertions;
 import org.gradle.testkit.runner.GradleRunner;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.io.TempDir;
 
-public class GradleHarness {
-	/**
-	 * On OS X, the temp folder is a symlink, and some of gradle's stuff breaks symlinks. By only
-	 * accessing it through the {@link #rootFolder()} and {@link #newFile(String)} apis, we can
-	 * guarantee there will be no symlink problems.
-	 */
-	@TempDir File folderDontUseDirectly;
-
+public class GradleHarness extends ResourceHarness {
 	@BeforeEach
 	void copyPluginUnderTestMetadata() throws IOException {
 		var content = Files.readAllBytes(Paths.get(DepsResolve.METADATA_PATH));
 		setFile(DepsResolve.METADATA_PATH).toContent(content);
 		setFile("settings.gradle").toContent("rootProject.name = 'under-test'");
-	}
-
-	/** Returns the root folder (canonicalized to fix OS X issue) */
-	protected File rootFolder() throws IOException {
-		return folderDontUseDirectly.getCanonicalFile();
-	}
-
-	/** Returns a new child of the root folder. */
-	protected File newFile(String subpath) throws IOException {
-		return new File(rootFolder(), subpath);
-	}
-
-	protected WriteAsserter setFile(String path) throws IOException {
-		return new WriteAsserter(newFile(path));
-	}
-
-	protected static class WriteAsserter {
-		private File file;
-
-		private WriteAsserter(File file) {
-			file.getParentFile().mkdirs();
-			this.file = file;
-		}
-
-		public File toContent(byte[] content) throws IOException {
-			Files.write(file.toPath(), content);
-			return file;
-		}
-
-		public File toContent(String content) throws IOException {
-			return toContent(content.getBytes(StandardCharsets.UTF_8));
-		}
-
-		public File toLines(String... lines) throws IOException {
-			return toContent(String.join("\n", Arrays.asList(lines)));
-		}
 	}
 
 	protected AbstractStringAssert<?> runAndAssert(String... args) throws IOException {
