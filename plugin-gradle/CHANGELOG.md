@@ -5,6 +5,8 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 ## [Unreleased]
 ### Added
 - `equoIde --clean` now launches a totally fresh IDE. ([#50](https://github.com/equodev/equo-ide/pull/50))
+### Removed
+- Removed the `release` parameter in favor of just the p2 stuff. ([#51](https://github.com/equodev/equo-ide/pull/51))
 
 ## [0.9.0] - 2023-01-09
 ### Added
