@@ -1,0 +1,52 @@
+/*******************************************************************************
+ * Copyright (c) 2022 EquoTech, Inc. and others.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
+ * which accompanies this distribution, and is available at
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Contributors:
+ *     EquoTech, Inc. - initial API and implementation
+ *******************************************************************************/
+package dev.equo.ide.gradle;
+
+import dev.equo.solstice.p2.P2Model;
+import org.gradle.api.Action;
+
+abstract class P2ModelDsl {
+	protected final P2Model model;
+
+	P2ModelDsl(P2Model model) {
+		this.model = model;
+	}
+
+	/** Adds the given p2 repo to the list of repositories to populate the session with. */
+	public void p2repo(String p2) {
+		model.addP2Repo(p2);
+	}
+
+	/** Marks the given unit id for installation. */
+	public void install(String target) {
+		model.getInstall().add(target);
+	}
+
+	/** Adds a filter with the given name. Duplicate names are not allowed. */
+	public void addFilter(String name, Action<P2Model.Filter> filterSetup) {
+		P2Model.Filter filter = new P2Model.Filter();
+		filterSetup.execute(filter);
+		model.addFilterAndValidate(name, filter);
+	}
+
+	/** Removes the filter with the given name. Throws an error if no such filter exists. */
+	public void removeFilter(String name) {
+		model.removeFilter(name);
+	}
+
+	/** Removes all filters. */
+	public void clearFilters() {
+		model.getFilters().clear();
+	}
+}
