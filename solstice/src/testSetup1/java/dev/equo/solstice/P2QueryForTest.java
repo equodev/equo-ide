@@ -15,7 +15,6 @@ package dev.equo.solstice;
 
 import com.diffplug.common.swt.os.SwtPlatform;
 import dev.equo.solstice.p2.CacheLocations;
-import dev.equo.solstice.p2.JdtSetup;
 import dev.equo.solstice.p2.P2Client;
 import dev.equo.solstice.p2.P2Session;
 import java.io.IOException;
@@ -31,7 +30,7 @@ public class P2QueryForTest {
 	public static void main(String[] args) throws IOException {
 		var session = new P2Session();
 		try (var client = new P2Client()) {
-			session.populateFrom(client, JdtSetup.URL_BASE + "4.25/");
+			session.populateFrom(client, "https://download.eclipse.org/eclipse/updates/4.25/");
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}

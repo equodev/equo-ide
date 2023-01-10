@@ -13,7 +13,6 @@
  *******************************************************************************/
 package dev.equo.ide.gradle;
 
-import dev.equo.solstice.p2.JdtSetup;
 import dev.equo.solstice.p2.P2Client;
 import dev.equo.solstice.p2.P2Model;
 import dev.equo.solstice.p2.P2Query;
@@ -37,25 +36,9 @@ public class EquoIdeExtension extends P2ModelDsl {
 	}
 
 	private void setToDefault() {
-		release(JdtSetup.DEFAULT_VERSION);
-	}
-
-	/** Sets which eclipse JDT release to use, such as "4.25", "4.26", or a future release. */
-	public void release(String version) {
-		if (version.indexOf('/') != -1) {
-			throw new IllegalArgumentException("Version should not have any slashes");
-		}
-		p2repo("https://download.eclipse.org/eclipse/updates/" + version + "/");
+		p2repo("https://download.eclipse.org/eclipse/updates/4.26/");
 		install("org.eclipse.releng.java.languages.categoryIU");
 		install("org.eclipse.platform.ide.categoryIU");
-		addFilter(
-				"JDT " + version,
-				query -> {
-					query.excludePrefix("org.apache.felix.gogo");
-					query.excludePrefix("org.eclipse.equinox.console");
-					query.excludePrefix("org.eclipse.equinox.p2");
-					query.excludeSuffix(".source");
-				});
 	}
 
 	P2Query performQuery(P2Client.Caching caching) throws Exception {
