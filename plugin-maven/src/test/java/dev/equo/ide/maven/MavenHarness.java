@@ -14,13 +14,13 @@
 package dev.equo.ide.maven;
 
 import dev.equo.ide.ResourceHarness;
+import io.takari.maven.testing.executor.MavenRuntime;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.net.JarURLConnection;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
@@ -35,16 +35,24 @@ public class MavenHarness extends ResourceHarness {
 						});
 	}
 
-	protected String mvnw(String... args) throws IOException, InterruptedException {
-		String[] argsFinal = new String[args.length + 2];
-		argsFinal[0] = "mvn";
-		argsFinal[1] = "-q";
-		System.arraycopy(args, 0, argsFinal, 2, args.length);
-		var outputBytes =
-				new ProcessRunner(rootFolder())
-						.exec(argsFinal)
-						.stdOut();
-		return new String(outputBytes, StandardCharsets.UTF_8);
+	protected String mvnw(String... args) throws Exception {
+		MavenRuntime runtime =
+				MavenRuntime.forkedBuilder(
+								new File(
+										"/Users/ntwigg/.m2/wrapper/dists/apache-maven-3.6.3-bin/lm9vem38rfmjij3jj0mk5bvnt/apache-maven-3.6.3"))
+						.withCliOptions("-Dmaven.repo.local=/Users/ntwigg/.m2/repository")
+						.build();
+		var lines = runtime.forProject(rootFolder()).withCliOptions(args).execute(args).getLog();
+		return String.join("\n", lines);
+		//		String[] argsFinal = new String[args.length + 2];
+		//		argsFinal[0] = "mvn";
+		//		argsFinal[1] = "-q";
+		//		System.arraycopy(args, 0, argsFinal, 2, args.length);
+		//		var outputBytes =
+		//				new ProcessRunner(rootFolder())
+		//						.exec(argsFinal)
+		//						.stdOut();
+		//		return new String(outputBytes, StandardCharsets.UTF_8);
 	}
 
 	private static String pluginVersion() {
