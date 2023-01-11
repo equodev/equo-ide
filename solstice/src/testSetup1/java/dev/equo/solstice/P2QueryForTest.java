@@ -57,10 +57,10 @@ public class P2QueryForTest {
 		query.install("org.eclipse.releng.java.languages.categoryIU");
 
 		var content = new StringBuilder();
-		var cacheRoot = CacheLocations.p2bundlePool().getAbsolutePath() + "/";
+		var cacheRoot = toUnix(CacheLocations.p2bundlePool().getAbsolutePath()) + "/";
 		try (var client = new P2Client()) {
 			for (var p2 : query.getJarsNotOnMavenCentral()) {
-				var path = client.download(p2).getAbsolutePath();
+				var path = toUnix(client.download(p2).getAbsolutePath());
 				if (!path.startsWith(cacheRoot)) {
 					throw new IllegalArgumentException(path + " does not start with " + cacheRoot);
 				}
@@ -75,5 +75,9 @@ public class P2QueryForTest {
 			content.append('\n');
 		}
 		Files.write(Paths.get("p2queryForTest"), content.toString().getBytes(StandardCharsets.UTF_8));
+	}
+
+	private static String toUnix(String path) {
+		return path.replace('\\', '/');
 	}
 }
