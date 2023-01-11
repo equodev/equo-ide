@@ -4,11 +4,19 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.mycompany.app</groupId>
-    <artifactId>my-app</artifactId>
+    <groupId>dev.equo.ide</groupId>
+    <artifactId>equo-maven-test-harness</artifactId>
     <version>1.0-SNAPSHOT</version>
 
-    <name>my-app</name>
-    <!-- FIXME change it to the project's website -->
-    <url>http://www.example.com</url>
+    <name>equo-maven-test-harness</name>
+    <url>https://github.com/equodev/equo-ide</url>
+
+    <build><plugins><plugin>
+        <groupId>dev.equo.ide</groupId>
+        <artifactId>equo-ide-maven-plugin</artifactId>
+        <version>{{version}}</version>
+        <configuration>
+{{configuration}}
+        </configuration>
+    </plugin></plugins></build>
 </project>

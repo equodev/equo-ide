@@ -6,6 +6,9 @@ apply from: 干.file('changelog.gradle')
 apply plugin: 'java-library'
 sourceCompatibility = java_compat
 targetCompatibility = java_compat
+tasks.withType(JavaCompile).configureEach {
+	options.encoding = 'UTF-8'
+}
 apply from: 干.file('maven.gradle')
 apply from: 干.file('sonatype.gradle')
 

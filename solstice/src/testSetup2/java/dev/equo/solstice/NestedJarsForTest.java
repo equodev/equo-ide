@@ -30,10 +30,19 @@ public class NestedJarsForTest {
 		var base = nestedJarFolder.getParentFile().getParentFile().getParentFile().getAbsolutePath();
 		for (var nestedJar : nestedJars) {
 			content.append(
-					nestedJar.getValue().getAbsolutePath().substring(base.length() + 1).replace('\\', '/'));
+					toUnix(
+							nestedJar
+									.getValue()
+									.getAbsolutePath()
+									.substring(base.length() + 1)
+									.replace('\\', '/')));
 			content.append('\n');
 		}
 		Files.write(
 				Paths.get("nestedJarsForTest"), content.toString().getBytes(StandardCharsets.UTF_8));
+	}
+
+	private static String toUnix(String path) {
+		return path.replace('\\', '/');
 	}
 }

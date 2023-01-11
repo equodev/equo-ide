@@ -7,6 +7,9 @@ apply from: 干.file('gradle-plugin.gradle')
 apply plugin: 'com.adarshr.test-logger'
 sourceCompatibility = java_compat
 targetCompatibility = java_compat
+tasks.withType(JavaCompile).configureEach {
+	options.encoding = 'UTF-8'
+}
 dependencies {
 	implementation gradleApi()
 	implementation project(':solstice')

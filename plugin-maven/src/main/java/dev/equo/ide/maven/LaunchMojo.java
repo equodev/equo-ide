@@ -13,13 +13,10 @@
  *******************************************************************************/
 package dev.equo.ide.maven;
 
-import com.diffplug.common.swt.os.SwtPlatform;
 import dev.equo.solstice.BuildPluginIdeMain;
 import dev.equo.solstice.Launcher;
 import dev.equo.solstice.NestedJars;
-import dev.equo.solstice.p2.JdtSetup;
 import dev.equo.solstice.p2.P2Client;
-import dev.equo.solstice.p2.P2Session;
 import dev.equo.solstice.p2.P2Unit;
 import dev.equo.solstice.p2.WorkspaceRegistry;
 import java.io.File;
@@ -29,12 +26,16 @@ import java.util.Collections;
 import java.util.List;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.eclipse.aether.RepositorySystem;
+import org.eclipse.aether.RepositorySystemSession;
 import org.eclipse.aether.artifact.DefaultArtifact;
 import org.eclipse.aether.collection.CollectRequest;
 import org.eclipse.aether.graph.Dependency;
 import org.eclipse.aether.graph.Exclusion;
+import org.eclipse.aether.repository.RemoteRepository;
 import org.eclipse.aether.resolution.DependencyRequest;
 import org.eclipse.aether.resolution.DependencyResolutionException;
 import org.eclipse.aether.resolution.DependencyResult;
@@ -55,6 +56,17 @@ public class LaunchMojo extends AbstractP2Mojo {
 
 	@Parameter(property = "debugClasspath", defaultValue = "disabled")
 	private BuildPluginIdeMain.DebugClasspath debugClasspath;
+
+	@Parameter(defaultValue = "${project.basedir}", required = true, readonly = true)
+	protected File baseDir;
+
+	@Component protected RepositorySystem repositorySystem;
+
+	@Parameter(defaultValue = "${repositorySystemSession}", required = true, readonly = true)
+	protected RepositorySystemSession repositorySystemSession;
+
+	@Parameter(defaultValue = "${project.remotePluginRepositories}", required = true, readonly = true)
+	protected List<RemoteRepository> repositories;
 
 	private static final List<Exclusion> EXCLUDE_ALL_TRANSITIVES =
 			Collections.singletonList(new Exclusion("*", "*", "*", "*"));
@@ -83,24 +95,7 @@ public class LaunchMojo extends AbstractP2Mojo {
 			var workspaceDir = workspaceRegistry.workspaceDir(baseDir, clean);
 			workspaceRegistry.removeAbandoned();
 
-			var session = new P2Session();
-			try (var client = new P2Client()) {
-				if (release == null) {
-					release = JdtSetup.DEFAULT_VERSION;
-				}
-				session.populateFrom(client, JdtSetup.URL_BASE + release + "/");
-			} catch (Exception e) {
-				throw new RuntimeException(e);
-			}
-
-			var query = session.query();
-			query.platform(SwtPlatform.getRunning());
-			if (initOnly) {
-				query.install("org.eclipse.swt");
-			} else {
-				JdtSetup.mavenCoordinate(query, session);
-			}
-
+			var query = super.query();
 			for (var coordinate : query.getJarsOnMavenCentral()) {
 				deps.add(
 						new Dependency(new DefaultArtifact(coordinate), null, null, EXCLUDE_ALL_TRANSITIVES));

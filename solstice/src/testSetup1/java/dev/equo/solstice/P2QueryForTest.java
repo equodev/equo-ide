@@ -15,7 +15,6 @@ package dev.equo.solstice;
 
 import com.diffplug.common.swt.os.SwtPlatform;
 import dev.equo.solstice.p2.CacheLocations;
-import dev.equo.solstice.p2.JdtSetup;
 import dev.equo.solstice.p2.P2Client;
 import dev.equo.solstice.p2.P2Session;
 import java.io.IOException;
@@ -31,7 +30,7 @@ public class P2QueryForTest {
 	public static void main(String[] args) throws IOException {
 		var session = new P2Session();
 		try (var client = new P2Client()) {
-			session.populateFrom(client, JdtSetup.URL_BASE + "4.25/");
+			session.populateFrom(client, "https://download.eclipse.org/eclipse/updates/4.25/");
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -58,10 +57,10 @@ public class P2QueryForTest {
 		query.install("org.eclipse.releng.java.languages.categoryIU");
 
 		var content = new StringBuilder();
-		var cacheRoot = CacheLocations.p2bundlePool().getAbsolutePath() + "/";
+		var cacheRoot = toUnix(CacheLocations.p2bundlePool().getAbsolutePath()) + "/";
 		try (var client = new P2Client()) {
 			for (var p2 : query.getJarsNotOnMavenCentral()) {
-				var path = client.download(p2).getAbsolutePath();
+				var path = toUnix(client.download(p2).getAbsolutePath());
 				if (!path.startsWith(cacheRoot)) {
 					throw new IllegalArgumentException(path + " does not start with " + cacheRoot);
 				}
@@ -76,5 +75,9 @@ public class P2QueryForTest {
 			content.append('\n');
 		}
 		Files.write(Paths.get("p2queryForTest"), content.toString().getBytes(StandardCharsets.UTF_8));
+	}
+
+	private static String toUnix(String path) {
+		return path.replace('\\', '/');
 	}
 }

@@ -13,27 +13,67 @@
  *******************************************************************************/
 package dev.equo.ide.maven;
 
-import java.io.File;
+import dev.equo.solstice.p2.P2Client;
+import dev.equo.solstice.p2.P2Model;
+import dev.equo.solstice.p2.P2Query;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import org.apache.maven.plugin.AbstractMojo;
-import org.apache.maven.plugins.annotations.Component;
+import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Parameter;
-import org.eclipse.aether.RepositorySystem;
-import org.eclipse.aether.RepositorySystemSession;
-import org.eclipse.aether.repository.RemoteRepository;
 
 public abstract class AbstractP2Mojo extends AbstractMojo {
-	@Parameter(property = "release")
-	protected String release;
+	public static class Filter {
+		@Parameter private List<String> excludes = Collections.emptyList();
 
-	@Parameter(defaultValue = "${project.basedir}", required = true, readonly = true)
-	protected File baseDir;
+		@Parameter private List<String> excludePrefixes = Collections.emptyList();
 
-	@Component protected RepositorySystem repositorySystem;
+		@Parameter private List<String> excludeSuffixes = Collections.emptyList();
 
-	@Parameter(defaultValue = "${repositorySystemSession}", required = true, readonly = true)
-	protected RepositorySystemSession repositorySystemSession;
+		@Parameter(defaultValue = "false")
+		boolean platformNone;
 
-	@Parameter(defaultValue = "${project.remotePluginRepositories}", required = true, readonly = true)
-	protected List<RemoteRepository> repositories;
+		private P2Model.Filter toFilter() {
+			var filter = new P2Model.Filter();
+			excludes.forEach(filter::exclude);
+			excludePrefixes.forEach(filter::excludePrefix);
+			excludeSuffixes.forEach(filter::excludeSuffix);
+			if (platformNone) {
+				filter.platformNone();
+			}
+			return filter;
+		}
+	}
+
+	@Parameter private List<Filter> filters = new ArrayList<>();
+
+	@Parameter private List<String> p2repos = new ArrayList<>();
+
+	@Parameter private List<String> installs = new ArrayList<>();
+
+	protected P2Query query() throws MojoFailureException {
+		var model = new P2Model();
+		p2repos.forEach(model::addP2Repo);
+		installs.forEach(model.getInstall()::add);
+		for (Filter filterModel : filters) {
+			var filter = filterModel.toFilter();
+			model.addFilterAndValidate(Integer.toString(filter.hashCode()), filter);
+		}
+		if (model.isEmpty()) {
+			setToDefault(model);
+		}
+		model.applyNativeFilterIfNoPlatformFilter();
+		try {
+			return model.query(P2Client.Caching.ALLOW_OFFLINE);
+		} catch (Exception e) {
+			throw new MojoFailureException(e.getMessage(), e);
+		}
+	}
+
+	private void setToDefault(P2Model model) {
+		model.addP2Repo("https://download.eclipse.org/eclipse/updates/4.26/");
+		model.getInstall().add("org.eclipse.releng.java.languages.categoryIU");
+		model.getInstall().add("org.eclipse.platform.ide.categoryIU");
+	}
 }

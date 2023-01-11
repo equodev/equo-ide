@@ -15,7 +15,6 @@ package dev.equo.solstice.p2;
 
 import com.diffplug.common.swt.os.SwtPlatform;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -36,10 +35,10 @@ public class P2Query {
 	}
 
 	private TreeSet<String> exclude = new TreeSet<>();
-	private List<String> excludePrefix = new ArrayList<>();
-	private List<String> excludeSuffix = new ArrayList<>();
+	private TreeSet<String> excludePrefix = new TreeSet<>();
+	private TreeSet<String> excludeSuffix = new TreeSet<>();
 
-	private Map<String, String> filterProps = new HashMap<>();
+	private TreeMap<String, String> filterProps = new TreeMap<>();
 
 	private TreeMap<String, P2Unit> installed = new TreeMap<>();
 	private TreeMap<P2Session.Requirement, Set<P2Unit>> optionalSoMaybeNotInstalled = new TreeMap<>();
@@ -96,6 +95,11 @@ public class P2Query {
 		filterProps.put("osgi.os", "zzz");
 		filterProps.put("osgi.ws", "zzz");
 		filterProps.put("osgi.arch", "zzz");
+	}
+
+	public void filterProp(String key, String value) {
+		assertNotUsed();
+		filterProps.put(key, value);
 	}
 
 	/** Resolves the given P2Unit by eagerly traversing all its dependencies. */
