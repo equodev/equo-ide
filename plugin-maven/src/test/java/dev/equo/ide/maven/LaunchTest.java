@@ -15,7 +15,6 @@ package dev.equo.ide.maven;
 
 import dev.equo.solstice.Launcher;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Disabled;
@@ -41,7 +40,7 @@ public class LaunchTest extends MavenHarness {
 						+ "<installs>\n"
 						+ "  <install>org.eclipse.swt</install>\n"
 						+ "</installs>");
-		var output = mvnw("equo-ide:launch", "-DinitOnly=true", "-DuseAtomos=" + useAtomos);
+		var output = mvnw("equo-ide:launch -DinitOnly=true -DuseAtomos=" + useAtomos);
 		Assertions.assertThat(output).matches("(?s)(.*)Loaded (\\d+) bundles(.*)");
 		Assertions.assertThat(output).contains(useAtomos ? "using Atomos" : "not using Atomos");
 	}

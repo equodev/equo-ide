@@ -21,10 +21,21 @@ import java.io.UncheckedIOException;
 import java.net.JarURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
+import org.junit.jupiter.api.BeforeEach;
 
 public class MavenHarness extends ResourceHarness {
+	@BeforeEach
+	void copyPluginUnderTestMetadata() throws IOException {
+		setFile(".mvn/wrapper/maven-wrapper.jar").toResource("/maven-wrapper.jar");
+		setFile(".mvn/wrapper/maven-wrapper.properties").toResource("/maven-wrapper.properties");
+		setFile("mvnw").toResource("/mvnw").setExecutable(true);
+		setFile("mvnw.cmd").toResource("/mvnw.cmd");
+	}
+
 	protected void setPom(String configuration) throws IOException {
 		setFile("pom.xml")
 				.toResourceProcessed(
@@ -35,15 +46,12 @@ public class MavenHarness extends ResourceHarness {
 						});
 	}
 
-	protected String mvnw(String... args) throws IOException, InterruptedException {
-		String[] argsFinal = new String[args.length + 2];
-		argsFinal[0] = "mvn";
-		argsFinal[1] = "-q";
-		System.arraycopy(args, 0, argsFinal, 2, args.length);
-		var outputBytes =
-				new ProcessRunner(rootFolder())
-						.exec(argsFinal)
-						.stdOut();
+	protected String mvnw(String argsAfterMvnw) throws IOException, InterruptedException {
+		List<String> args = new ArrayList<>();
+		args.add("/bin/sh");
+		args.add("-c");
+		args.add("./mvnw " + argsAfterMvnw);
+		var outputBytes = new ProcessRunner(rootFolder()).exec(args).stdOut();
 		return new String(outputBytes, StandardCharsets.UTF_8);
 	}
 
