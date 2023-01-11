@@ -41,7 +41,7 @@ public class P2DepsPluginTest extends GradleHarness {
 						"  runtimeClasspath += sourceSets.main.output",
 						"}",
 						"tasks.register('BuildshipTest', JavaExec) {",
-						"  mainClass = 'pkg.BuildshipTest'",
+						"  main = 'pkg.BuildshipTest'",
 						"  classpath = sourceSets.buildship.runtimeClasspath",
 						"}");
 		setFile("src/main/java/pkg/Test.java")
