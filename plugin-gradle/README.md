@@ -30,6 +30,10 @@ equoIde { // launch with gradlew equoIde
   - `equoIde --init-only` initializes the runtime to check for errors then exits.
   - `equoIde --debug-classpath=[names|paths]` dumps the classpath (in order) without starting the application.
 
+## User plugins
+
+You can develop your own Eclipse plugins using the [`dev.equo.p2deps` plugin](P2DEPS.md).
+
 ## Limitations
 
 - Java 11+
