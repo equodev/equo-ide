@@ -37,9 +37,9 @@ public class MavenHarness extends ResourceHarness {
 
 	protected String mvnw(String... args) throws Exception {
 		MavenRuntime runtime =
-				MavenRuntime.forkedBuilder(
+				MavenRuntime.builder(
 								new File(
-										"/Users/ntwigg/.m2/wrapper/dists/apache-maven-3.6.3-bin/lm9vem38rfmjij3jj0mk5bvnt/apache-maven-3.6.3"))
+										"/Users/ntwigg/.m2/wrapper/dists/apache-maven-3.6.3-bin/lm9vem38rfmjij3jj0mk5bvnt/apache-maven-3.6.3"), null)
 						.withCliOptions("-Dmaven.repo.local=/Users/ntwigg/.m2/repository")
 						.build();
 		var lines = runtime.forProject(rootFolder()).withCliOptions(args).execute(args).getLog();
