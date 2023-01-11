@@ -59,9 +59,7 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 		}
 		project.getDependencies().add(EQUO_IDE, "org.slf4j:slf4j-simple:2.0.6");
 
-		P2Client.Caching caching =
-				P2Client.Caching.defaultIfOfflineIs(project.getGradle().getStartParameter().isOffline());
-
+		P2Client.Caching caching = P2ModelDsl.caching(project);
 		var equoIdeTask =
 				project
 						.getTasks()

@@ -13,15 +13,21 @@
  *******************************************************************************/
 package dev.equo.ide.gradle;
 
+import dev.equo.solstice.p2.P2Client;
 import dev.equo.solstice.p2.P2Model;
 import org.gradle.api.Action;
+import org.gradle.api.Project;
 
 /** The DSL for defining a P2Model. */
-public abstract class P2ModelDsl {
+public class P2ModelDsl {
 	protected final P2Model model;
 
-	P2ModelDsl(P2Model model) {
+	public P2ModelDsl(P2Model model) {
 		this.model = model;
+	}
+
+	public P2ModelDsl() {
+		this(new P2Model());
 	}
 
 	/** Adds the given p2 repo to the list of repositories to populate the session with. */
@@ -49,5 +55,9 @@ public abstract class P2ModelDsl {
 	/** Removes all filters. */
 	public void clearFilters() {
 		model.getFilters().clear();
+	}
+
+	static P2Client.Caching caching(Project project) {
+		return P2Client.Caching.defaultIfOfflineIs(project.getGradle().getStartParameter().isOffline());
 	}
 }
