@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+
+## [0.10.0] - 2023-01-11
 ### Added
 - `dev.equo.p2deps` plugin allows you to compile against p2 dependencies. ([#53](https://github.com/equodev/equo-ide/pull/53))
 - `equoIde --clean` now launches a totally fresh IDE. ([#50](https://github.com/equodev/equo-ide/pull/50))
