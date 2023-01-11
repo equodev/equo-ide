@@ -33,7 +33,9 @@ public class EquoListTest extends GradleHarness {
 				.toLines(
 						"plugins { id 'dev.equo.ide' }",
 						"equoIde {",
-						"  release('4.26')",
+						"  p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'",
+						"  install 'org.eclipse.releng.java.languages.categoryIU'",
+						"  install 'org.eclipse.platform.ide.categoryIU'",
 						"  addFilter 'platform-neutral', {",
 						"    platformNone()",
 						"  }",

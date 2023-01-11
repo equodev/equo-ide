@@ -32,27 +32,13 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 
 	private static final String TASK_GROUP = "IDE";
 	private static final String EQUO_IDE = "equoIde";
-	private static final String EQUO_IDE_CLEAN = EQUO_IDE + "Clean";
-	private static final String EQUO_IDE_FRESH = EQUO_IDE + "Fresh";
-	private static final String $_OSGI_PLATFORM = "${osgi.platform}";
 
 	@Override
 	public void apply(Project project) {
 		if (gradleIsTooOld(project)) {
 			throw new GradleException("equoIde requires Gradle 6.0 or later");
 		}
-
-		// let the user override cache locations from ~/.gradle/gradle.properties
-		for (Field field : CacheLocations.class.getFields()) {
-			Object value = project.findProperty("equo_" + field.getName());
-			if (value != null) {
-				try {
-					field.set(null, new File(value.toString()));
-				} catch (IllegalAccessException e) {
-					throw new RuntimeException(e);
-				}
-			}
-		}
+		setCacheLocations(project);
 
 		EquoIdeExtension extension = project.getExtensions().create(EQUO_IDE, EquoIdeExtension.class);
 		Configuration equoIde = createConfigurationWithTransitives(project, EQUO_IDE);
@@ -140,6 +126,20 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 							config.setCanBeConsumed(false);
 							config.setVisible(false);
 						});
+	}
+
+	static void setCacheLocations(Project project) {
+		// let the user override cache locations from ~/.gradle/gradle.properties
+		for (Field field : CacheLocations.class.getFields()) {
+			Object value = project.findProperty("equo_" + field.getName());
+			if (value != null) {
+				try {
+					field.set(null, new File(value.toString()));
+				} catch (IllegalAccessException e) {
+					throw new RuntimeException(e);
+				}
+			}
+		}
 	}
 
 	private static final Pattern BAD_SEMVER = Pattern.compile("(\\d+)\\.(\\d+)");

@@ -10,7 +10,8 @@
   - [Eclipse Buildship (Gradle integration)](#eclipse-buildship)
   - (PR's welcome!)
 - [Working examples](#working-examples)
-  - [Eclipse JDT](#working-eclipse-jdt)
+  - [JDT](#working-jdt)
+  - [JDT and Buildship](#working-jdt-and-buildship)
 
 ## Active projects
 
@@ -68,8 +69,8 @@ A listing of:
 
 The examples below will work just as well in Gradle or Maven, but the Gradle format is shown for brevity. The very first example is shown in both formats to remove any ambiguity.
 
-<a name="working-eclipse-jdt"></a>
-### Eclipse JDT
+<a name="working-jdt"></a>
+### JDT
 
 ```gradle
 apply plugin: 'dev.equo.ide'
@@ -92,4 +93,15 @@ TODO: MAVEN PLUGIN DOESNT SUPPORT ARBITRARY P2 YET: https://github.com/equodev/e
     <install>org.eclipse.releng.java.languages.categoryIU</install>
   </configuration>
 </plugin>
+```
+
+<a name="working-jdt-and-buildship"></a>
+### JDT and Buildship
+
+```gradle
+p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'
+install 'org.eclipse.platform.ide.categoryIU'
+install 'org.eclipse.releng.java.languages.categoryIU'
+p2repo 'https://download.eclipse.org/buildship/updates/e423/releases/3.x/3.1.6.v20220511-1359/'
+install 'org.eclipse.buildship.feature.group'
 ```

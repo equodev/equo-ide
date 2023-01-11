@@ -26,8 +26,6 @@ public class P2MultipleReposTest {
 		try (var client = new P2Client()) {
 			session.populateFrom(client, "https://download.eclipse.org/eclipse/updates/4.26/");
 			session.populateFrom(
-					client, "https://download.eclipse.org/tools/cdt/releases/11.0/cdt-11.0.0/");
-			session.populateFrom(
 					client,
 					"https://download.eclipse.org/buildship/updates/e423/releases/3.x/3.1.6.v20220511-1359/");
 		}
@@ -37,13 +35,10 @@ public class P2MultipleReposTest {
 	private P2Query queryInstall() throws Exception {
 		var session = populateSession();
 		var query = session.query();
-		query.excludePrefix("tooling");
-		query.excludeSuffix(".source");
 		query.platformNone();
 		query.install("org.eclipse.platform.ide.categoryIU");
 		query.install("org.eclipse.releng.java.languages.categoryIU");
 		query.install("org.eclipse.buildship.feature.group");
-		query.install("202211300214.main");
 		return query;
 	}
 
