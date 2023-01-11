@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Arrays;
+import java.util.function.Function;
 import org.junit.jupiter.api.io.TempDir;
 
 public class ResourceHarness {
@@ -66,6 +67,15 @@ public class ResourceHarness {
 		public File toResource(String path) throws IOException {
 			try (var input = ResourceHarness.class.getResource(path).openConnection().getInputStream()) {
 				return toContent(input.readAllBytes());
+			}
+		}
+
+		public File toResourceProcessed(String path, Function<String, String> process)
+				throws IOException {
+			try (var input = ResourceHarness.class.getResource(path).openConnection().getInputStream()) {
+				var raw = new String(input.readAllBytes(), StandardCharsets.UTF_8);
+				var processed = process.apply(raw);
+				return toContent(processed);
 			}
 		}
 	}
