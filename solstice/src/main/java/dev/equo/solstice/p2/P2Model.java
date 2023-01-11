@@ -59,15 +59,23 @@ public class P2Model {
 		p2repo.add(p2url);
 	}
 
-	public boolean hasAnyPlatformFilter() {
-		return filters.values().stream()
-				.filter(
-						filter ->
-								filter.props.containsKey(OSGI_OS)
-										|| filter.props.containsKey(OSGI_WS)
-										|| filter.props.containsKey(OSGI_ARCH))
-				.findAny()
-				.isPresent();
+	/**
+	 * Applies a filter named `platform-specific-for-running` which selects artifacts for the running
+	 * platform iff there are no other platform-related filters so far.
+	 */
+	public void applyNativeFilterIfNoPlatformFilter() {
+		boolean hasAnyPlatformFilter =
+				filters.values().stream()
+						.filter(
+								filter ->
+										filter.props.containsKey(OSGI_OS)
+												|| filter.props.containsKey(OSGI_WS)
+												|| filter.props.containsKey(OSGI_ARCH))
+						.findAny()
+						.isPresent();
+		if (!hasAnyPlatformFilter) {
+			addFilterAndValidate("platform-specific-for-running", new P2Model.Filter().platformRunning());
+		}
 	}
 
 	public P2Model deepCopy() {

@@ -48,10 +48,7 @@ public class EquoIdeExtension extends P2ModelDsl {
 			extension.setToDefault();
 		}
 		P2Model model = extension.model.deepCopy();
-		if (!model.hasAnyPlatformFilter()) {
-			model.addFilterAndValidate(
-					"platform-specific-for-running", new P2Model.Filter().platformRunning());
-		}
+		model.applyNativeFilterIfNoPlatformFilter();
 		return model.query(caching);
 	}
 }

@@ -16,6 +16,7 @@ package dev.equo.ide.maven;
 import dev.equo.solstice.p2.P2Client;
 import dev.equo.solstice.p2.P2Model;
 import dev.equo.solstice.p2.P2Query;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import org.apache.maven.plugin.AbstractMojo;
@@ -45,11 +46,11 @@ public abstract class AbstractP2Mojo extends AbstractMojo {
 		}
 	}
 
-	@Parameter private List<Filter> filters = Collections.emptyList();
+	@Parameter private List<Filter> filters = new ArrayList<>();
 
-	@Parameter private List<String> p2repos = Collections.emptyList();
+	@Parameter private List<String> p2repos = new ArrayList<>();
 
-	@Parameter private List<String> installs = Collections.emptyList();
+	@Parameter private List<String> installs = new ArrayList<>();
 
 	protected P2Query query() throws MojoFailureException {
 		var model = new P2Model();
@@ -62,12 +63,8 @@ public abstract class AbstractP2Mojo extends AbstractMojo {
 		if (model.isEmpty()) {
 			setToDefault(model);
 		}
-		if (!model.hasAnyPlatformFilter()) {
-			model.addFilterAndValidate(
-					"platform-specific-for-running", new P2Model.Filter().platformRunning());
-		}
+		model.applyNativeFilterIfNoPlatformFilter();
 		try {
-			System.out.println("MODEL=" + model);
 			return model.query(P2Client.Caching.ALLOW_OFFLINE);
 		} catch (Exception e) {
 			throw new MojoFailureException(e.getMessage(), e);
