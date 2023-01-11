@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+
+## [0.10.0] - 2023-01-11
 ### Added
 - `WorkspaceRegistry` now supports cleaning. ([#50](https://github.com/equodev/equo-ide/pull/50))
 - Introduce `P2Model` so that Gradle and Maven DSLs can drive guts through a common model type. ([#51](https://github.com/equodev/equo-ide/pull/51))
