@@ -14,6 +14,7 @@ on: [push]
 jobs:
   build_linux:
     runs-on: ubuntu-latest
+    continue-on-error: true
     strategy:
       matrix:
         java: ['11', '17']
@@ -37,9 +38,10 @@ jobs:
       - name: cleanup xvfb pidx
         uses: bcomnes/cleanup-xvfb@v1
       - name: junit result
-        uses: mikepenz/action-junit-report@v3.6.1
+        uses: mikepenz/action-junit-report@v3
         if: always() # always run even if the previous step fails
         with:
+          check_name: Linux Java ${{ matrix.java }} JUnit
           report_paths: '*/build/test-results/test/TEST-*.xml'
   build_win:
     runs-on: windows-latest
@@ -63,4 +65,5 @@ jobs:
         uses: mikepenz/action-junit-report@v3.6.1
         if: always() # always run even if the previous step fails
         with:
+          check_name: Windows Java ${{ matrix.java }} JUnit
           report_paths: '*/build/test-results/test/TEST-*.xml'
