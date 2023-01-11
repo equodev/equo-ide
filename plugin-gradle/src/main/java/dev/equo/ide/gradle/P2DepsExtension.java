@@ -15,7 +15,7 @@ package dev.equo.ide.gradle;
 
 import dev.equo.solstice.p2.P2Client;
 import dev.equo.solstice.p2.P2Model;
-import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import org.gradle.api.Action;
@@ -53,12 +53,13 @@ public class P2DepsExtension {
 				ModuleDependency dep = (ModuleDependency) project.getDependencies().add(config, mavenCoord);
 				dep.setTransitive(false);
 			}
+			var localFiles = new ArrayList();
 			try (var client = new P2Client(caching)) {
 				for (var unit : query.getJarsNotOnMavenCentral()) {
-					File file = client.download(unit);
-					project.getDependencies().add(config, file);
+					localFiles.add(client.download(unit));
 				}
 			}
+			project.getDependencies().add(config, project.files(localFiles));
 		}
 	}
 }
