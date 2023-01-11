@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+
+## [0.10.0] - 2023-01-11
 ### Added
 - `equo-ide:launch -Dclean=true` now launches a totally fresh IDE. ([#50](https://github.com/equodev/equo-ide/pull/50))
 - Full generic p2 model, removed the `release` parameter. ([#51](https://github.com/equodev/equo-ide/pull/51))
