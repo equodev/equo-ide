@@ -15,6 +15,7 @@ package dev.equo.ide.maven;
 
 import dev.equo.solstice.Launcher;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Disabled;
@@ -22,30 +23,25 @@ import org.junit.jupiter.api.Test;
 
 public class LaunchTest extends MavenHarness {
 	@Test
-	public void integrationTestAtomos() throws Exception {
+	public void integrationTestAtomos() throws IOException, InterruptedException {
 		integrationTestUseAtomos(true);
 	}
 
 	@Test
-	public void integrationTestSolstice() throws Exception {
+	public void integrationTestSolstice() throws IOException, InterruptedException {
 		integrationTestUseAtomos(false);
 	}
 
-	private void integrationTestUseAtomos(boolean useAtomos) throws Exception {
+	private void integrationTestUseAtomos(boolean useAtomos)
+			throws IOException, InterruptedException {
 		setPom(
-				""
-						+ "<p2repos>\n"
+				"<p2repos>\n"
 						+ "  <p2repo>https://download.eclipse.org/eclipse/updates/4.26/</p2repo>\n"
 						+ "</p2repos>\n"
 						+ "<installs>\n"
 						+ "  <install>org.eclipse.swt</install>\n"
 						+ "</installs>");
-		var output =
-				mvnw(
-						"equo-ide:launch",
-						"-Dmaven.repo.local=/Users/ntwigg/.m2/repository",
-						"-DinitOnly=true",
-						"-DuseAtomos=" + useAtomos);
+		var output = mvnw("equo-ide:launch", "-DinitOnly=true", "-DuseAtomos=" + useAtomos);
 		Assertions.assertThat(output).matches("(?s)(.*)Loaded (\\d+) bundles(.*)");
 		Assertions.assertThat(output).contains(useAtomos ? "using Atomos" : "not using Atomos");
 	}
