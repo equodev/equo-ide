@@ -13,6 +13,7 @@
  *******************************************************************************/
 package dev.equo.ide.maven;
 
+import com.diffplug.common.swt.os.OS;
 import dev.equo.ide.ResourceHarness;
 import java.io.File;
 import java.io.FileInputStream;
@@ -48,9 +49,16 @@ public class MavenHarness extends ResourceHarness {
 
 	protected String mvnw(String argsAfterMvnw) throws IOException, InterruptedException {
 		List<String> args = new ArrayList<>();
-		args.add("/bin/sh");
-		args.add("-c");
-		args.add("./mvnw " + argsAfterMvnw);
+		if (OS.getRunning().isWindows()) {
+			args.add("cmd");
+			args.add("/S");
+			args.add("/C");
+			args.add("mvnw.cmd " + argsAfterMvnw);
+		} else {
+			args.add("/bin/sh");
+			args.add("-c");
+			args.add("./mvnw " + argsAfterMvnw);
+		}
 		var outputBytes = new ProcessRunner(rootFolder()).exec(args).stdOut();
 		return new String(outputBytes, StandardCharsets.UTF_8);
 	}
