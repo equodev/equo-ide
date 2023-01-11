@@ -12,12 +12,12 @@ name: ci
 on: [push]
 
 jobs:
-  build:
+  build_linux:
     runs-on: ubuntu-latest
     strategy:
       matrix:
         java: ['11', '17']
-    name: Java ${{ matrix.java }}
+    name: Linux Java ${{ matrix.java }}
     steps:
       - uses: actions/checkout@v3
       - name: jdk ${{ matrix.java }}
@@ -36,6 +36,29 @@ jobs:
           ./gradlew build
       - name: cleanup xvfb pidx
         uses: bcomnes/cleanup-xvfb@v1
+      - name: junit result
+        uses: mikepenz/action-junit-report@v3.6.1
+        if: always() # always run even if the previous step fails
+        with:
+          report_paths: '*/build/test-results/test/TEST-*.xml'
+  build_win:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        java: ['17']
+    name: Win Java ${{ matrix.java }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: jdk ${{ matrix.java }}
+        uses: actions/setup-java@v3
+        with:
+          java-version: ${{ matrix.java }}
+          distribution: 'temurin'
+      - name: gradle wrapper
+        uses: gradle/wrapper-validation-action@v1
+      - name: gradle caching
+        uses: gradle/gradle-build-action@v2
+      - run: ./gradlew build
       - name: junit result
         uses: mikepenz/action-junit-report@v3.6.1
         if: always() # always run even if the previous step fails
