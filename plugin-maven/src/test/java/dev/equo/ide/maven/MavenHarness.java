@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.net.JarURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
@@ -32,6 +33,18 @@ public class MavenHarness extends ResourceHarness {
 							return raw.replace("{{version}}", pluginVersion())
 									.replace("{{configuration}}", configuration);
 						});
+	}
+
+	protected String mvnw(String... args) throws IOException, InterruptedException {
+		String[] argsFinal = new String[args.length + 2];
+		argsFinal[0] = "mvn";
+		argsFinal[1] = "-q";
+		System.arraycopy(args, 0, argsFinal, 2, args.length);
+		var outputBytes =
+				new ProcessRunner(rootFolder())
+						.exec(argsFinal)
+						.stdOut();
+		return new String(outputBytes, StandardCharsets.UTF_8);
 	}
 
 	private static String pluginVersion() {
