@@ -63,23 +63,16 @@ tasks.named('test') {
 
 apply plugin: 'dev.equo.p2deps'
 p2deps {
-	into 'api', {
-		p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'
-		install 'org.eclipse.osgi'
-	}
 	into 'implementation', {
 		p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'
 		install 'org.osgi.service.component'
-		install 'org.eclipse.equinox.concurrent'
 	}
 	into 'compileOnly', {
 		p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'
-		install 'org.eclipse.core.runtime'
 		install 'org.eclipse.ui.ide.application'
 	}
 	into 'testImplementation', {
 		p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'
-		install 'org.eclipse.core.runtime'
 		install 'org.eclipse.ui.ide.application'
 		install 'org.eclipse.equinox.event'
 	}
