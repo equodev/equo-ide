@@ -61,26 +61,32 @@ tasks.named('test') {
 	}
 }
 
-apply plugin: 'com.diffplug.eclipse.mavencentral'
-eclipseMavenCentral {
-	release '4.25.0', {
-		api 'org.eclipse.osgi'
-		implementation 'org.osgi.service.component'
-		implementation 'org.eclipse.equinox.concurrent'
-
-		compileOnly 'org.eclipse.core.runtime'
-		// only needed for IdeMain
-		compileOnly 'org.eclipse.ui.ide.application'
-
-		//		dep 'testSetup1Implementation', 'org.eclipse.osgi'
-
-		useNativesForRunningPlatform()
-		constrainTransitivesToThisRelease()
+apply plugin: 'dev.equo.p2deps'
+p2deps {
+	into 'api', {
+		p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'
+		install 'org.eclipse.osgi'
+	}
+	into 'implementation', {
+		p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'
+		install 'org.osgi.service.component'
+		install 'org.eclipse.equinox.concurrent'
+	}
+	into 'compileOnly', {
+		p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'
+		install 'org.eclipse.core.runtime'
+		install 'org.eclipse.ui.ide.application'
+	}
+	into 'testImplementation', {
+		p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'
+		install 'org.eclipse.core.runtime'
+		install 'org.eclipse.ui.ide.application'
+		install 'org.eclipse.equinox.event'
 	}
 }
 
 tasks.register('IdeMainTest', JavaExec) {
-	mainClass = 'dev.equo.solstice.IdeMainTest'
+	mainClass = 'dev.equo.solstice.IdeMainBuildPluginTest'
 	classpath = sourceSets.test.runtimeClasspath
 	if (com.diffplug.common.swt.os.OS.getNative().isMac()) {
 		jvmArgs = ['-XstartOnFirstThread']

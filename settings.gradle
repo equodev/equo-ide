@@ -2,11 +2,9 @@ pluginManagement {
 	plugins {
 		// https://github.com/radarsh/gradle-test-logger-plugin/blob/develop/CHANGELOG.md
 		id 'com.adarshr.test-logger'                    version '3.2.0'
-		// https://github.com/diffplug/blowdryer/tags
+		// https://github.com/diffplug/blowdryer/blob/main/CHANGELOG.md
 		id 'com.diffplug.blowdryer'                     version '1.6.0'
 		id 'com.diffplug.blowdryerSetup'                version '1.6.0'
-		// https://github.com/diffplug/goomph/blob/main/CHANGES.md
-		id 'com.diffplug.eclipse.mavencentral'          version '3.40.0'
 		// https://github.com/diffplug/spotless/blob/main/plugin-gradle/CHANGES.md
 		id 'com.diffplug.spotless'                      version '6.12.0'
 		// https://github.com/diffplug/spotless-changelog/blob/main/CHANGELOG.md
@@ -15,6 +13,8 @@ pluginManagement {
 		id 'com.gradle.plugin-publish'                  version '1.1.0'
 		// https://www.benediktritter.de/maven-plugin-development/#release-history
 		id 'de.benediktritter.maven-plugin-development' version '0.4.0'
+		// https://github.com/equodev/equo-ide/blob/main/plugin-gradle/CHANGELOG.md
+		id 'dev.equo.p2deps'                            version '0.10.0'
 		// https://github.com/gradle-nexus/publish-plugin/releases
 		id 'io.github.gradle-nexus.publish-plugin'      version '1.1.0'
 	}
@@ -22,11 +22,11 @@ pluginManagement {
 plugins {
 	id 'com.diffplug.blowdryerSetup'
 	id 'com.adarshr.test-logger'                    apply false
-	id 'com.diffplug.eclipse.mavencentral'          apply false
 	id 'com.diffplug.spotless'                      apply false
 	id 'com.diffplug.spotless-changelog'            apply false
 	id 'com.gradle.plugin-publish'                  apply false
 	id 'de.benediktritter.maven-plugin-development' apply false
+	id 'dev.equo.p2deps'                            apply false
 	id 'io.github.gradle-nexus.publish-plugin'      apply false
 }
 blowdryerSetup {
