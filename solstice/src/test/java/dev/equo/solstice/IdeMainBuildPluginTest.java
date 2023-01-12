@@ -21,7 +21,7 @@ import org.slf4j.simple.SimpleLogger;
 public class IdeMainBuildPluginTest {
 	public static void main(String[] args)
 			throws InvalidSyntaxException, BundleException, IOException {
-		boolean useAtomos = true;
+		boolean useAtomos = false;
 
 		System.setProperty(SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "INFO");
 		System.setProperty(SimpleLogger.LOG_FILE_KEY, "System.out");
@@ -35,7 +35,7 @@ public class IdeMainBuildPluginTest {
 					"-initOnly",
 					"false",
 					"-debugClasspath",
-					BuildPluginIdeMain.DebugClasspath.names.name()
+					BuildPluginIdeMain.DebugClasspath.disabled.name()
 				});
 	}
 }
