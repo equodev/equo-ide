@@ -3,6 +3,9 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+### Changed
+- We are now dogfooding `dev.equo.p2deps` to get the dependencies we need for Solstice. ([#55](https://github.com/equodev/equo-ide/pull/55))
+  - Way simpler than our previous elaborate build, no more `NestedJars` though, but we're still able to launch IDE without atomos. 
 
 ## [0.10.0] - 2023-01-11
 ### Added
