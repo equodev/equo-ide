@@ -2,6 +2,7 @@
 
 - [Active projects](#active-projects)
   - [Eclipse Java Development Tools (JDT) and Equinox](#eclipse-jdt)
+  - [Kotlin for Eclipse](#kotlin-eclipse)
   - [Eclipse C/C++ Development Tooling (CDT)](#eclipse-cdt)
   - [Eclipse Corrosion (Rust)](#eclipse-rust)
   - [Eclipse Groovy Development Tools](#eclipse-groovy)
@@ -29,6 +30,12 @@ A listing of:
   - https://github.com/eclipse-jdt (Java tooling)
   - https://github.com/eclipse-platform (IDE platform)
   - https://github.com/eclipse-equinox (OSGi runtime)
+
+<a name="kotlin-eclipse"></a>
+### Kotlin for Eclipse
+
+- Latest release https://files.pkg.jetbrains.space/kotlin/p/kotlin-eclipse/main/0.8.24/
+- Code & issues https://github.com/Kotlin/kotlin-eclipse 
 
 <a name="eclipse-cdt"></a>
 ### Eclipse C/C++ Development Tooling (CDT)
