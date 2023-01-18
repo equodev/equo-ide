@@ -108,8 +108,18 @@ public class BuildPluginIdeMain {
 		boolean initOnly = parseArg(args, "-initOnly", Boolean::parseBoolean, false);
 		DebugClasspath debugClasspath =
 				parseArg(args, "-debugClasspath", DebugClasspath::valueOf, DebugClasspath.disabled);
+		File hookListFile = parseArg(args, "-ideHooks", File::new, null);
+		IdeHook.List ideHooks;
+		if (hookListFile == null) {
+			ideHooks = new IdeHook.List();
+		} else {
+			ideHooks = SerializableMisc.fromFile(IdeHook.List.class, hookListFile);
+		}
 		debugClasspath.printAndExitIfEnabled();
 
+		if (!initOnly) {
+			ideHooks.callEach(IdeHook::beforeOsgi);
+		}
 		BundleContext context;
 		if (useAtomos) {
 			// the spelled-out package is on purpose so that Atomos can remain an optional component
@@ -119,6 +129,10 @@ public class BuildPluginIdeMain {
 		} else {
 			context = Solstice.initialize(new SolsticeInit(installDir));
 		}
+		if (!initOnly) {
+			ideHooks.callEach(IdeHook::afterOsgi, context);
+		}
+
 		if (initOnly) {
 			System.out.println(
 					"Loaded "
@@ -129,7 +143,7 @@ public class BuildPluginIdeMain {
 			return;
 		}
 
-		int exitCode = IdeMainUi.main(context);
+		int exitCode = IdeMainUi.main(context, ideHooks);
 		if (exitCode == 0) {
 			System.exit(0);
 		} else {

@@ -27,7 +27,7 @@ import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.service.application.ApplicationException;
 
 class IdeMainUi {
-	static int main(BundleContext osgiShim) throws InvalidSyntaxException {
+	static int main(BundleContext osgiShim, IdeHook.List ideHooks) throws InvalidSyntaxException {
 		var appServices =
 				osgiShim.getServiceReferences(
 						org.osgi.service.application.ApplicationDescriptor.class,
@@ -49,7 +49,10 @@ class IdeMainUi {
 			throw new RuntimeException(e);
 		}
 
+		ideHooks.callEach(IdeHook::beforeDisplay);
 		var display = PlatformUI.createDisplay();
+		ideHooks.callEach(IdeHook::afterDisplay, display);
+
 		// processor must be created before we start event loop
 		var processor = new DelayedEventsProcessor(display);
 		return PlatformUI.createAndRunWorkbench(
@@ -61,6 +64,35 @@ class IdeMainUi {
 							((Solstice) osgiShim).activateWorkbenchBundles();
 						}
 						super.initialize(configurer);
+						ideHooks.callEach(IdeHook::initialize);
+					}
+
+					@Override
+					public void preStartup() {
+						super.preStartup();
+						ideHooks.callEach(IdeHook::preStartup);
+					}
+
+					@Override
+					public void postStartup() {
+						super.postStartup();
+						ideHooks.callEach(IdeHook::postStartup);
+					}
+
+					@Override
+					public boolean preShutdown() {
+						boolean shutdownAllowed = super.preShutdown();
+						var iter = ideHooks.iterator();
+						while (shutdownAllowed && iter.hasNext()) {
+							shutdownAllowed = iter.next().preShutdown();
+						}
+						return shutdownAllowed;
+					}
+
+					@Override
+					public void postShutdown() {
+						super.postShutdown();
+						ideHooks.callEach(IdeHook::postShutdown);
 					}
 				});
 	}
