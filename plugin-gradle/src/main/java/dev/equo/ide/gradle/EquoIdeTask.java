@@ -14,8 +14,10 @@
 package dev.equo.ide.gradle;
 
 import dev.equo.solstice.BuildPluginIdeMain;
+import dev.equo.solstice.IdeHook;
 import dev.equo.solstice.Launcher;
 import dev.equo.solstice.NestedJars;
+import dev.equo.solstice.SerializableMisc;
 import dev.equo.solstice.p2.P2Client;
 import dev.equo.solstice.p2.P2Query;
 import dev.equo.solstice.p2.WorkspaceRegistry;
@@ -47,6 +49,12 @@ public abstract class EquoIdeTask extends DefaultTask {
 
 	@Internal
 	public abstract Property<Boolean> getUseAtomos();
+
+	@Internal IdeHook.List ideHooks;
+
+	public IdeHook.List getIdeHooks() {
+		return ideHooks;
+	}
 
 	private boolean initOnly = false;
 
@@ -125,6 +133,9 @@ public abstract class EquoIdeTask extends DefaultTask {
 
 		boolean useAtomos = dontUseAtomosOverride ? false : getUseAtomos().get();
 
+		var ideHooksFile = new File(workspaceDir, "ide-hooks");
+		SerializableMisc.toFile(ideHooks, ideHooksFile);
+
 		var classpath = Launcher.copyAndSortClasspath(p2AndMavenDeps.plus(nestedDefs));
 		debugClasspath.printWithHead(
 				"jars about to be launched", classpath.stream().map(File::getAbsolutePath));
@@ -143,6 +154,8 @@ public abstract class EquoIdeTask extends DefaultTask {
 						Boolean.toString(initOnly),
 						"-debugClasspath",
 						debugClasspath.name(),
+						"-ideHooks",
+						ideHooksFile.getAbsolutePath(),
 						"-Dorg.slf4j.simpleLogger.defaultLogLevel=INFO");
 		if (!isBlocking) {
 			System.out.println("NEED HELP? If the IDE doesn't appear, try adding --show-console");

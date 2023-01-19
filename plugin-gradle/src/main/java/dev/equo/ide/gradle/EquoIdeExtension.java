@@ -13,23 +13,34 @@
  *******************************************************************************/
 package dev.equo.ide.gradle;
 
+import dev.equo.solstice.BrandingIdeHook;
+import dev.equo.solstice.IdeHook;
 import dev.equo.solstice.p2.P2Client;
 import dev.equo.solstice.p2.P2Model;
 import dev.equo.solstice.p2.P2Query;
+import org.gradle.api.Project;
 
 /** The DSL inside the equoIde block. */
 public class EquoIdeExtension extends P2ModelDsl {
+	private final Project project;
 	public boolean useAtomos = true;
+	private final IdeHook.List ideHooks = new IdeHook.List();
+	private final BrandingIdeHook branding = new BrandingIdeHook();
 
-	public EquoIdeExtension() {
-		super(new P2Model());
+	public EquoIdeExtension(Project project) {
+		this.project = project;
 		useAtomos = true;
+		ideHooks.add(branding);
 	}
 
 	private static void setToDefault(P2Model model) {
 		model.addP2Repo("https://download.eclipse.org/eclipse/updates/4.26/");
 		model.getInstall().add("org.eclipse.releng.java.languages.categoryIU");
 		model.getInstall().add("org.eclipse.platform.ide.categoryIU");
+	}
+
+	IdeHook.List getIdeHooks() {
+		return ideHooks;
 	}
 
 	P2Query performQuery(P2Client.Caching caching) throws Exception {

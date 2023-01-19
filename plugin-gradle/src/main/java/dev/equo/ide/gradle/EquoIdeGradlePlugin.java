@@ -40,7 +40,8 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 		}
 		setCacheLocations(project);
 
-		EquoIdeExtension extension = project.getExtensions().create(EQUO_IDE, EquoIdeExtension.class);
+		EquoIdeExtension extension =
+				project.getExtensions().create(EQUO_IDE, EquoIdeExtension.class, project);
 		Configuration equoIde = createConfigurationWithTransitives(project, EQUO_IDE);
 
 		project.getRepositories().mavenCentral();
@@ -69,10 +70,6 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 								task -> {
 									task.setGroup(TASK_GROUP);
 									task.setDescription("Launches an Eclipse-based IDE for this project");
-
-									task.getCaching().set(caching);
-									task.getMavenDeps().set(equoIde);
-									task.getProjectDir().set(project.getProjectDir());
 								});
 		project.afterEvaluate(
 				unused -> {
@@ -88,8 +85,12 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 										});
 						equoIdeTask.configure(
 								task -> {
+									task.getCaching().set(caching);
 									task.getQuery().set(query);
+									task.getMavenDeps().set(equoIde);
+									task.getProjectDir().set(project.getProjectDir());
 									task.getUseAtomos().set(extension.useAtomos);
+									task.ideHooks = extension.getIdeHooks();
 								});
 					} catch (Exception e) {
 						throw new RuntimeException(e);

@@ -17,8 +17,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-import org.eclipse.swt.widgets.Display;
-import org.osgi.framework.BundleContext;
 
 public interface IdeHook extends Serializable {
 	class List extends ArrayList<IdeHook> {
@@ -37,11 +35,11 @@ public interface IdeHook extends Serializable {
 
 	default void beforeOsgi() {}
 
-	default void afterOsgi(BundleContext context) {}
+	default void afterOsgi(org.osgi.framework.BundleContext context) {}
 
 	default void beforeDisplay() {}
 
-	default void afterDisplay(Display display) {}
+	default void afterDisplay(org.eclipse.swt.widgets.Display display) {}
 
 	/**
 	 * This method is called during workbench initialization prior to any windows being opened.
