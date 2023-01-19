@@ -27,7 +27,8 @@ import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.service.application.ApplicationException;
 
 class IdeMainUi {
-	static int main(BundleContext osgiShim, IdeHook.List ideHooks) throws InvalidSyntaxException {
+	static int main(BundleContext osgiShim, IdeHookState.Instantiated ideHooks)
+			throws InvalidSyntaxException {
 		var appServices =
 				osgiShim.getServiceReferences(
 						org.osgi.service.application.ApplicationDescriptor.class,

@@ -14,7 +14,7 @@
 package dev.equo.ide.gradle;
 
 import dev.equo.solstice.BuildPluginIdeMain;
-import dev.equo.solstice.IdeHook;
+import dev.equo.solstice.IdeHookState;
 import dev.equo.solstice.Launcher;
 import dev.equo.solstice.NestedJars;
 import dev.equo.solstice.SerializableMisc;
@@ -50,9 +50,9 @@ public abstract class EquoIdeTask extends DefaultTask {
 	@Internal
 	public abstract Property<Boolean> getUseAtomos();
 
-	@Internal IdeHook.List ideHooks;
+	@Internal IdeHookState.List ideHooks;
 
-	public IdeHook.List getIdeHooks() {
+	public IdeHookState.List getIdeHooks() {
 		return ideHooks;
 	}
 
@@ -155,8 +155,7 @@ public abstract class EquoIdeTask extends DefaultTask {
 						"-debugClasspath",
 						debugClasspath.name(),
 						"-ideHooks",
-						ideHooksFile.getAbsolutePath(),
-						"-Dorg.slf4j.simpleLogger.defaultLogLevel=INFO");
+						ideHooksFile.getAbsolutePath());
 		if (!isBlocking) {
 			System.out.println("NEED HELP? If the IDE doesn't appear, try adding --show-console");
 		}

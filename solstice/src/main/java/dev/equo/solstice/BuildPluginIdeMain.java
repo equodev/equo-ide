@@ -109,14 +109,15 @@ public class BuildPluginIdeMain {
 		DebugClasspath debugClasspath =
 				parseArg(args, "-debugClasspath", DebugClasspath::valueOf, DebugClasspath.disabled);
 		File hookListFile = parseArg(args, "-ideHooks", File::new, null);
-		IdeHook.List ideHooks;
+		IdeHookState.List ideHooksParsed;
 		if (hookListFile == null) {
-			ideHooks = new IdeHook.List();
+			ideHooksParsed = new IdeHookState.List();
 		} else {
-			ideHooks = SerializableMisc.fromFile(IdeHook.List.class, hookListFile);
+			ideHooksParsed = SerializableMisc.fromFile(IdeHookState.List.class, hookListFile);
 		}
 		debugClasspath.printAndExitIfEnabled();
 
+		IdeHookState.Instantiated ideHooks = new IdeHookState.Instantiated(ideHooksParsed);
 		if (!initOnly) {
 			ideHooks.callEach(IdeHook::beforeOsgi);
 		}

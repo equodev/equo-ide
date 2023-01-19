@@ -13,26 +13,7 @@
  *******************************************************************************/
 package dev.equo.solstice;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-
-public interface IdeHook extends Serializable {
-	class List extends ArrayList<IdeHook> {
-		void callEach(Consumer<IdeHook> method) {
-			for (IdeHook hook : this) {
-				method.accept(hook);
-			}
-		}
-
-		<T> void callEach(BiConsumer<IdeHook, T> method, T arg) {
-			for (IdeHook hook : this) {
-				method.accept(hook, arg);
-			}
-		}
-	}
-
+public interface IdeHook {
 	default void beforeOsgi() {}
 
 	default void afterOsgi(org.osgi.framework.BundleContext context) {}
