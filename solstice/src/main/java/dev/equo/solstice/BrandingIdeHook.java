@@ -13,6 +13,11 @@
  *******************************************************************************/
 package dev.equo.solstice;
 
+import java.util.Arrays;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
+
 public class BrandingIdeHook implements IdeHook {
 	@Override
 	public IdeHookInstantiated instantiate() {
@@ -20,56 +25,46 @@ public class BrandingIdeHook implements IdeHook {
 	}
 
 	class Instantiated implements IdeHookInstantiated {
-		private transient long epoch;
-
-		@Override
-		public void beforeDisplay() {
-			epoch = System.currentTimeMillis();
-		}
-
-		private void printMs(String label) {
-			System.out.println("%%% " + label + " " + (System.currentTimeMillis() - epoch) + "ms");
-		}
+		private Shell splash;
 
 		@Override
 		public void afterDisplay(org.eclipse.swt.widgets.Display display) {
-			printMs("afterDisplay");
-		}
+			var cursor = display.getCursorLocation();
+			var monitors = display.getMonitors();
+			var bestMonitor =
+					Arrays.stream(monitors)
+							.filter(monitor -> monitor.getBounds().contains(cursor))
+							.findAny()
+							.orElse(monitors[0])
+							.getBounds();
 
-		@Override
-		public void beforeOsgi() {
-			printMs("beforeOsgi");
-		}
+			int imgX = 1000;
+			int imgY = 1000;
+			splash = new Shell(display, SWT.NO_TRIM);
+			splash.setText("Branding");
+			splash.setBounds(
+					bestMonitor.x + (bestMonitor.width - imgX) / 2,
+					bestMonitor.y + (bestMonitor.height - imgY) / 2,
+					imgX,
+					imgY);
+			splash.setBackground(display.getSystemColor(SWT.COLOR_GREEN));
+			splash.open();
 
-		@Override
-		public void afterOsgi(org.osgi.framework.BundleContext context) {
-			printMs("afterOsgi");
-		}
-
-		@Override
-		public void initialize() {
-			printMs("initialize");
-		}
-
-		@Override
-		public void preStartup() {
-			printMs("preStartup");
+			Display.setAppName("Branding");
+			while (display.readAndDispatch())
+				// pump the event loop enough to show the branding
+				;
 		}
 
 		@Override
 		public void postStartup() {
-			printMs("postStartup");
-		}
+			splash.dispose();
+			splash = null;
 
-		@Override
-		public boolean preShutdown() {
-			printMs("preShutdown");
-			return true;
-		}
-
-		@Override
-		public void postShutdown() {
-			printMs("postShutdown");
+			Shell[] shells = Display.getCurrent().getShells();
+			for (var shell : shells) {
+				shell.setText("Branding");
+			}
 		}
 	}
 }
