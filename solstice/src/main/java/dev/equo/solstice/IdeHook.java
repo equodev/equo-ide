@@ -13,56 +13,33 @@
  *******************************************************************************/
 package dev.equo.solstice;
 
-public interface IdeHook {
-	default void beforeOsgi() {}
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
-	default void afterOsgi(org.osgi.framework.BundleContext context) {}
+public interface IdeHook extends Serializable {
+	class List extends ArrayList<IdeHook> {}
 
-	default void beforeDisplay() {}
+	class InstantiatedList extends ArrayList<IdeHookInstantiated> {
+		InstantiatedList(List list) {
+			for (int i = 0; i < list.size(); ++i) {
+				add(list.get(i).instantiate());
+			}
+		}
 
-	default void afterDisplay(org.eclipse.swt.widgets.Display display) {}
+		void callEach(Consumer<IdeHookInstantiated> method) {
+			for (IdeHookInstantiated hook : this) {
+				method.accept(hook);
+			}
+		}
 
-	/**
-	 * This method is called during workbench initialization prior to any windows being opened.
-	 *
-	 * <p>{@link org.eclipse.ui.application.WorkbenchAdvisor#initialize}
-	 */
-	default void initialize() {}
-
-	/**
-	 * Performs arbitrary actions just before the first workbench window is opened (or restored).
-	 *
-	 * <p>This method is called after the workbench has been initialized and just before the first
-	 * window is about to be opened.
-	 *
-	 * <p>{@link org.eclipse.ui.application.WorkbenchAdvisor#preStartup}
-	 */
-	default void preStartup() {}
-
-	/**
-	 * Performs arbitrary actions after the workbench windows have been opened (or restored), but
-	 * before the main event loop is run.
-	 *
-	 * <p>{@link org.eclipse.ui.application.WorkbenchAdvisor#postStartup}
-	 */
-	default void postStartup() {}
-
-	/**
-	 * Performs arbitrary finalization before the workbench is about to shut down.
-	 *
-	 * <p>{@link org.eclipse.ui.application.WorkbenchAdvisor#preShutdown}
-	 *
-	 * @return <code>true</code> to allow the workbench to proceed with shutdown, <code>false</code>
-	 *     to veto a non-forced shutdown
-	 */
-	default boolean preShutdown() {
-		return true;
+		<T> void callEach(BiConsumer<IdeHookInstantiated, T> method, T arg) {
+			for (IdeHookInstantiated hook : this) {
+				method.accept(hook, arg);
+			}
+		}
 	}
 
-	/**
-	 * Performs arbitrary finalization after the workbench stops running.
-	 *
-	 * <p>{@link org.eclipse.ui.application.WorkbenchAdvisor#postShutdown}
-	 */
-	default void postShutdown() {}
+	IdeHookInstantiated instantiate();
 }

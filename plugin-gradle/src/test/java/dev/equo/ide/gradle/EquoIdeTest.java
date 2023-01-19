@@ -16,7 +16,6 @@ package dev.equo.ide.gradle;
 import au.com.origin.snapshots.Expect;
 import au.com.origin.snapshots.junit5.SnapshotExtension;
 import java.io.IOException;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -99,7 +98,7 @@ public class EquoIdeTest extends GradleHarness {
 	}
 
 	@Test
-	@Disabled
+	// @Disabled
 	public void equoIde() throws IOException {
 		setFile("build.gradle")
 				.toLines(

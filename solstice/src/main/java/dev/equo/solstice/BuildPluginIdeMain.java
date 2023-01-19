@@ -109,17 +109,17 @@ public class BuildPluginIdeMain {
 		DebugClasspath debugClasspath =
 				parseArg(args, "-debugClasspath", DebugClasspath::valueOf, DebugClasspath.disabled);
 		File hookListFile = parseArg(args, "-ideHooks", File::new, null);
-		IdeHookState.List ideHooksParsed;
+		IdeHook.List ideHooksParsed;
 		if (hookListFile == null) {
-			ideHooksParsed = new IdeHookState.List();
+			ideHooksParsed = new IdeHook.List();
 		} else {
-			ideHooksParsed = SerializableMisc.fromFile(IdeHookState.List.class, hookListFile);
+			ideHooksParsed = SerializableMisc.fromFile(IdeHook.List.class, hookListFile);
 		}
 		debugClasspath.printAndExitIfEnabled();
 
-		IdeHookState.Instantiated ideHooks = new IdeHookState.Instantiated(ideHooksParsed);
+		IdeHook.InstantiatedList ideHooks = new IdeHook.InstantiatedList(ideHooksParsed);
 		if (!initOnly) {
-			ideHooks.callEach(IdeHook::beforeOsgi);
+			ideHooks.callEach(IdeHookInstantiated::beforeOsgi);
 		}
 		BundleContext context;
 		if (useAtomos) {
@@ -131,7 +131,7 @@ public class BuildPluginIdeMain {
 			context = Solstice.initialize(new SolsticeInit(installDir));
 		}
 		if (!initOnly) {
-			ideHooks.callEach(IdeHook::afterOsgi, context);
+			ideHooks.callEach(IdeHookInstantiated::afterOsgi, context);
 		}
 
 		if (initOnly) {

@@ -13,7 +13,7 @@
  *******************************************************************************/
 package dev.equo.ide.buildship;
 
-import dev.equo.solstice.IdeHook;
+import dev.equo.solstice.IdeHookInstantiated;
 import java.io.File;
 import org.eclipse.buildship.core.GradleBuild;
 import org.eclipse.buildship.core.GradleCore;
@@ -21,7 +21,7 @@ import org.eclipse.buildship.core.GradleDistribution;
 import org.eclipse.buildship.ui.internal.util.gradle.GradleDistributionViewModel;
 import org.eclipse.buildship.ui.internal.wizard.project.ProjectImportConfiguration;
 
-public class BuildshipIdeHook implements IdeHook {
+public class BuildshipIdeHook implements IdeHookInstantiated {
 	File rootDir;
 	boolean isOffline;
 

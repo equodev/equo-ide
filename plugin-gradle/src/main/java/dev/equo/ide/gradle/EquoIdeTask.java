@@ -14,7 +14,7 @@
 package dev.equo.ide.gradle;
 
 import dev.equo.solstice.BuildPluginIdeMain;
-import dev.equo.solstice.IdeHookState;
+import dev.equo.solstice.IdeHook;
 import dev.equo.solstice.Launcher;
 import dev.equo.solstice.NestedJars;
 import dev.equo.solstice.SerializableMisc;
@@ -50,9 +50,9 @@ public abstract class EquoIdeTask extends DefaultTask {
 	@Internal
 	public abstract Property<Boolean> getUseAtomos();
 
-	@Internal IdeHookState.List ideHooks;
+	@Internal IdeHook.List ideHooks;
 
-	public IdeHookState.List getIdeHooks() {
+	public IdeHook.List getIdeHooks() {
 		return ideHooks;
 	}
 

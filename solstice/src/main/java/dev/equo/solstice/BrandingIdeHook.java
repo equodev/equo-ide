@@ -13,9 +13,63 @@
  *******************************************************************************/
 package dev.equo.solstice;
 
-public class BrandingIdeHook implements IdeHookState {
+public class BrandingIdeHook implements IdeHook {
 	@Override
-	public IdeHook instantiate() {
-		return new BrandingIdeHookBehavior();
+	public IdeHookInstantiated instantiate() {
+		return new Instantiated();
+	}
+
+	class Instantiated implements IdeHookInstantiated {
+		private transient long epoch;
+
+		@Override
+		public void beforeOsgi() {
+			epoch = System.currentTimeMillis();
+		}
+
+		private void printMs(String label) {
+			System.out.println("%%% " + label + " " + (System.currentTimeMillis() - epoch) + "ms");
+		}
+
+		@Override
+		public void afterOsgi(org.osgi.framework.BundleContext context) {
+			printMs("afterOsgi");
+		}
+
+		@Override
+		public void beforeDisplay() {
+			printMs("beforeDisplay");
+		}
+
+		@Override
+		public void afterDisplay(org.eclipse.swt.widgets.Display display) {
+			printMs("afterDisplay");
+		}
+
+		@Override
+		public void initialize() {
+			printMs("initialize");
+		}
+
+		@Override
+		public void preStartup() {
+			printMs("preStartup");
+		}
+
+		@Override
+		public void postStartup() {
+			printMs("postStartup");
+		}
+
+		@Override
+		public boolean preShutdown() {
+			printMs("preShutdown");
+			return true;
+		}
+
+		@Override
+		public void postShutdown() {
+			printMs("postShutdown");
+		}
 	}
 }

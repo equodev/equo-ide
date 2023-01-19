@@ -14,7 +14,7 @@
 package dev.equo.ide.gradle;
 
 import dev.equo.solstice.BrandingIdeHook;
-import dev.equo.solstice.IdeHookState;
+import dev.equo.solstice.IdeHook;
 import dev.equo.solstice.p2.P2Client;
 import dev.equo.solstice.p2.P2Model;
 import dev.equo.solstice.p2.P2Query;
@@ -24,7 +24,7 @@ import org.gradle.api.Project;
 public class EquoIdeExtension extends P2ModelDsl {
 	private final Project project;
 	public boolean useAtomos = true;
-	private final IdeHookState.List ideHooks = new IdeHookState.List();
+	private final IdeHook.List ideHooks = new IdeHook.List();
 	private final BrandingIdeHook branding = new BrandingIdeHook();
 
 	public EquoIdeExtension(Project project) {
@@ -39,7 +39,7 @@ public class EquoIdeExtension extends P2ModelDsl {
 		model.getInstall().add("org.eclipse.platform.ide.categoryIU");
 	}
 
-	IdeHookState.List getIdeHooks() {
+	IdeHook.List getIdeHooks() {
 		return ideHooks;
 	}
 
