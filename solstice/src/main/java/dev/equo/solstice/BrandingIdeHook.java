@@ -23,7 +23,7 @@ public class BrandingIdeHook implements IdeHook {
 		private transient long epoch;
 
 		@Override
-		public void beforeOsgi() {
+		public void beforeDisplay() {
 			epoch = System.currentTimeMillis();
 		}
 
@@ -32,18 +32,18 @@ public class BrandingIdeHook implements IdeHook {
 		}
 
 		@Override
-		public void afterOsgi(org.osgi.framework.BundleContext context) {
-			printMs("afterOsgi");
-		}
-
-		@Override
-		public void beforeDisplay() {
-			printMs("beforeDisplay");
-		}
-
-		@Override
 		public void afterDisplay(org.eclipse.swt.widgets.Display display) {
 			printMs("afterDisplay");
+		}
+
+		@Override
+		public void beforeOsgi() {
+			printMs("beforeOsgi");
+		}
+
+		@Override
+		public void afterOsgi(org.osgi.framework.BundleContext context) {
+			printMs("afterOsgi");
 		}
 
 		@Override

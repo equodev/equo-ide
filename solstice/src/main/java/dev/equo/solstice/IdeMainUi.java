@@ -49,10 +49,7 @@ class IdeMainUi {
 		} catch (ApplicationException e) {
 			throw new RuntimeException(e);
 		}
-
-		ideHooks.callEach(IdeHookInstantiated::beforeDisplay);
 		var display = PlatformUI.createDisplay();
-		ideHooks.callEach(IdeHookInstantiated::afterDisplay, display);
 
 		// processor must be created before we start event loop
 		var processor = new DelayedEventsProcessor(display);

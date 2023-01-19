@@ -21,6 +21,7 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Stream;
+import org.eclipse.swt.widgets.Display;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.InvalidSyntaxException;
@@ -118,7 +119,11 @@ public class BuildPluginIdeMain {
 		debugClasspath.printAndExitIfEnabled();
 
 		IdeHook.InstantiatedList ideHooks = new IdeHook.InstantiatedList(ideHooksParsed);
+
 		if (!initOnly) {
+			ideHooks.callEach(IdeHookInstantiated::beforeDisplay);
+			var display = Display.getDefault();
+			ideHooks.callEach(IdeHookInstantiated::afterDisplay, display);
 			ideHooks.callEach(IdeHookInstantiated::beforeOsgi);
 		}
 		BundleContext context;
