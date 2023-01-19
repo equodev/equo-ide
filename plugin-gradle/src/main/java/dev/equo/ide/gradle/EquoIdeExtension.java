@@ -26,29 +26,19 @@ public class EquoIdeExtension extends P2ModelDsl {
 		useAtomos = true;
 	}
 
-	private EquoIdeExtension(EquoIdeExtension existing) {
-		super(existing.model.deepCopy());
-		useAtomos = existing.useAtomos;
-	}
-
-	private EquoIdeExtension deepCopy() {
-		return new EquoIdeExtension(this);
-	}
-
-	private void setToDefault() {
-		p2repo("https://download.eclipse.org/eclipse/updates/4.26/");
-		install("org.eclipse.releng.java.languages.categoryIU");
-		install("org.eclipse.platform.ide.categoryIU");
+	private static void setToDefault(P2Model model) {
+		model.addP2Repo("https://download.eclipse.org/eclipse/updates/4.26/");
+		model.getInstall().add("org.eclipse.releng.java.languages.categoryIU");
+		model.getInstall().add("org.eclipse.platform.ide.categoryIU");
 	}
 
 	P2Query performQuery(P2Client.Caching caching) throws Exception {
-		var extension = this;
-		if (model.isEmpty()) {
-			extension = deepCopy();
-			extension.setToDefault();
+		var modelToQuery = model;
+		if (modelToQuery.isEmpty()) {
+			modelToQuery = modelToQuery.deepCopy();
+			setToDefault(modelToQuery);
 		}
-		P2Model model = extension.model.deepCopy();
-		model.applyNativeFilterIfNoPlatformFilter();
-		return model.query(caching);
+		modelToQuery.applyNativeFilterIfNoPlatformFilter();
+		return modelToQuery.query(caching);
 	}
 }
