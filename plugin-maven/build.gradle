@@ -38,3 +38,7 @@ test {
 	dependsOn 'publishToMavenLocal'
 	dependsOn ':solstice:publishToMavenLocal'
 }
+
+tasks.named('generateMavenPluginHelpMojoSources') {
+	notCompatibleWithConfigurationCache('https://github.com/britter/maven-plugin-development/issues/8')
+}
