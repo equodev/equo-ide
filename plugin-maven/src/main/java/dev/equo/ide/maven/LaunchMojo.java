@@ -13,7 +13,7 @@
  *******************************************************************************/
 package dev.equo.ide.maven;
 
-import dev.equo.solstice.BuildPluginIdeMain;
+import dev.equo.ide.BuildPluginIdeMain;
 import dev.equo.solstice.Launcher;
 import dev.equo.solstice.NestedJars;
 import dev.equo.solstice.p2.P2Client;

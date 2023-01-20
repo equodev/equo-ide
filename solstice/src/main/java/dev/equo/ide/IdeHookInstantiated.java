@@ -11,7 +11,7 @@
  * Contributors:
  *     EquoTech, Inc. - initial API and implementation
  *******************************************************************************/
-package dev.equo.solstice;
+package dev.equo.ide;
 
 public interface IdeHookInstantiated {
 	/**

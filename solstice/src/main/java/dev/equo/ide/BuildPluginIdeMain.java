@@ -11,8 +11,12 @@
  * Contributors:
  *     EquoTech, Inc. - initial API and implementation
  *******************************************************************************/
-package dev.equo.solstice;
+package dev.equo.ide;
 
+import dev.equo.solstice.SerializableMisc;
+import dev.equo.solstice.Solstice;
+import dev.equo.solstice.SolsticeInit;
+import dev.equo.solstice.SolsticeManifest;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;

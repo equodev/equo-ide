@@ -13,7 +13,7 @@
  *******************************************************************************/
 package dev.equo.ide.buildship;
 
-import dev.equo.solstice.IdeHookInstantiated;
+import dev.equo.ide.IdeHookInstantiated;
 import java.io.File;
 import org.eclipse.buildship.core.GradleBuild;
 import org.eclipse.buildship.core.GradleCore;

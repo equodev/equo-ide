@@ -134,7 +134,7 @@ public class Solstice extends ServiceRegistry {
 	private final Set<ShimBundle> workbenchQueue = new LinkedHashSet<>();
 
 	@Override
-	protected Bundle systemBundle() {
+	public Bundle systemBundle() {
 		return systemBundle;
 	}
 

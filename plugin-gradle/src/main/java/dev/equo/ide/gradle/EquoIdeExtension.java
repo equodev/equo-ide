@@ -13,8 +13,8 @@
  *******************************************************************************/
 package dev.equo.ide.gradle;
 
-import dev.equo.solstice.BrandingIdeHook;
-import dev.equo.solstice.IdeHook;
+import dev.equo.ide.BrandingIdeHook;
+import dev.equo.ide.IdeHook;
 import dev.equo.solstice.p2.P2Client;
 import dev.equo.solstice.p2.P2Model;
 import dev.equo.solstice.p2.P2Query;

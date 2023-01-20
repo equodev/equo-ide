@@ -13,8 +13,8 @@
  *******************************************************************************/
 package dev.equo.ide.gradle;
 
-import dev.equo.solstice.BuildPluginIdeMain;
-import dev.equo.solstice.IdeHook;
+import dev.equo.ide.BuildPluginIdeMain;
+import dev.equo.ide.IdeHook;
 import dev.equo.solstice.Launcher;
 import dev.equo.solstice.NestedJars;
 import dev.equo.solstice.SerializableMisc;
