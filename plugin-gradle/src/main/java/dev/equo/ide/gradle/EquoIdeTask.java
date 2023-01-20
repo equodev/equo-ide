@@ -116,8 +116,7 @@ public abstract class EquoIdeTask extends DefaultTask {
 
 		var lockfile = IdeLockFile.forWorkspaceDir(workspaceDir);
 		var alreadyRunning = lockfile.ideAlreadyRunning();
-		if (alreadyRunning != null) {
-			System.out.println("There is already an IDE running with PID " + alreadyRunning.pid());
+		if (IdeLockFile.alreadyRunningAndUserRequestsAbort(alreadyRunning)) {
 			return;
 		}
 

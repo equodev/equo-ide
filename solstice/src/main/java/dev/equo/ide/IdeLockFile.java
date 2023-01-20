@@ -14,6 +14,7 @@
 package dev.equo.ide;
 
 import java.io.File;
+import java.io.IOException;
 import javax.annotation.Nullable;
 
 public class IdeLockFile {
@@ -63,5 +64,28 @@ public class IdeLockFile {
 			return null;
 		}
 		return alreadyRunning;
+	}
+
+	public static boolean alreadyRunningAndUserRequestsAbort(ProcessHandle running)
+			throws IOException, InterruptedException {
+		System.out.println("There is already an IDE running with PID " + running.pid());
+		System.out.println("Shut it down yourself or press");
+		System.out.println("  (k + enter) to kill it");
+		System.out.println("  (a + enter) to abort");
+		while (running.isAlive()) {
+			Thread.sleep(10);
+			if (System.in.available() > 0) {
+				char c = Character.toLowerCase((char) System.in.read());
+				if (c == 'k') {
+					System.out.println();
+					System.out.println("Attempting to kill " + running.pid() + "...");
+					running.destroyForcibly();
+				} else if (c == 'a') {
+					return true;
+				}
+			}
+		}
+		System.out.println("The duplicate IDE has closed. Starting a new one...");
+		return false;
 	}
 }
