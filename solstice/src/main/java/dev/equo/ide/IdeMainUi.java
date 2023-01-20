@@ -65,19 +65,19 @@ class IdeMainUi {
 							((Solstice) osgiShim).activateWorkbenchBundles();
 						}
 						super.initialize(configurer);
-						ideHooks.callEach(IdeHookInstantiated::initialize);
+						ideHooks.forEach(IdeHookInstantiated::initialize);
 					}
 
 					@Override
 					public void preStartup() {
 						super.preStartup();
-						ideHooks.callEach(IdeHookInstantiated::preStartup);
+						ideHooks.forEach(IdeHookInstantiated::preStartup);
 					}
 
 					@Override
 					public void postStartup() {
 						super.postStartup();
-						ideHooks.callEach(IdeHookInstantiated::postStartup);
+						ideHooks.forEach(IdeHookInstantiated::postStartup);
 					}
 
 					@Override
@@ -93,7 +93,7 @@ class IdeMainUi {
 					@Override
 					public void postShutdown() {
 						super.postShutdown();
-						ideHooks.callEach(IdeHookInstantiated::postShutdown);
+						ideHooks.forEach(IdeHookInstantiated::postShutdown);
 					}
 				});
 	}

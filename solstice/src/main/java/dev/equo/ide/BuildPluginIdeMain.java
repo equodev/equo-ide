@@ -122,13 +122,12 @@ public class BuildPluginIdeMain {
 		}
 		debugClasspath.printAndExitIfEnabled();
 
-		IdeHook.InstantiatedList ideHooks = new IdeHook.InstantiatedList(ideHooksParsed);
-
+		IdeHook.InstantiatedList ideHooks = ideHooksParsed.instantiate();
 		if (!initOnly) {
-			ideHooks.callEach(IdeHookInstantiated::beforeDisplay);
+			ideHooks.forEach(IdeHookInstantiated::beforeDisplay);
 			var display = Display.getDefault();
-			ideHooks.callEach(IdeHookInstantiated::afterDisplay, display);
-			ideHooks.callEach(IdeHookInstantiated::beforeOsgi);
+			ideHooks.forEach(IdeHookInstantiated::afterDisplay, display);
+			ideHooks.forEach(IdeHookInstantiated::beforeOsgi);
 		}
 		BundleContext context;
 		if (useAtomos) {
@@ -140,7 +139,7 @@ public class BuildPluginIdeMain {
 			context = Solstice.initialize(new SolsticeInit(installDir));
 		}
 		if (!initOnly) {
-			ideHooks.callEach(IdeHookInstantiated::afterOsgi, context);
+			ideHooks.forEach(IdeHookInstantiated::afterOsgi, context);
 		}
 
 		if (initOnly) {

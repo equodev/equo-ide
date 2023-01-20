@@ -15,29 +15,42 @@ package dev.equo.ide;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public interface IdeHook extends Serializable {
-	class List extends ArrayList<IdeHook> {}
-
-	class InstantiatedList extends ArrayList<IdeHookInstantiated> {
-		InstantiatedList(List list) {
-			for (int i = 0; i < list.size(); ++i) {
-				add(list.get(i).instantiate());
+	class List extends ArrayList<IdeHook> {
+		InstantiatedList instantiate() {
+			var copy = new ArrayList<IdeHookInstantiated>();
+			for (int i = 0; i < size(); ++i) {
+				copy.add(get(i).instantiate());
 			}
+			return new InstantiatedList(copy);
+		}
+	}
+
+	class InstantiatedList {
+		private final ArrayList<IdeHookInstantiated> list;
+
+		private InstantiatedList(ArrayList<IdeHookInstantiated> list) {
+			this.list = list;
 		}
 
-		void callEach(Consumer<IdeHookInstantiated> method) {
-			for (IdeHookInstantiated hook : this) {
+		void forEach(Consumer<IdeHookInstantiated> method) {
+			for (IdeHookInstantiated hook : list) {
 				method.accept(hook);
 			}
 		}
 
-		<T> void callEach(BiConsumer<IdeHookInstantiated, T> method, T arg) {
-			for (IdeHookInstantiated hook : this) {
+		<T> void forEach(BiConsumer<IdeHookInstantiated, T> method, T arg) {
+			for (IdeHookInstantiated hook : list) {
 				method.accept(hook, arg);
 			}
+		}
+
+		Iterator<IdeHookInstantiated> iterator() {
+			return list.iterator();
 		}
 	}
 
