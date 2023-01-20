@@ -13,12 +13,20 @@
  *******************************************************************************/
 package dev.equo.ide;
 
+import java.io.File;
 import java.util.Arrays;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
 public class BrandingIdeHook implements IdeHook {
+
+	private File workspaceDir;
+
+	public void setWorkspaceDir(File workspaceDir) {
+		this.workspaceDir = workspaceDir;
+	}
+
 	@Override
 	public IdeHookInstantiated instantiate() {
 		return new Instantiated();
@@ -54,6 +62,10 @@ public class BrandingIdeHook implements IdeHook {
 			while (display.readAndDispatch())
 				// pump the event loop enough to show the branding
 				;
+
+			if (workspaceDir != null) {
+				IdeLockFile.forWorkspaceDir(workspaceDir).savePid();
+			}
 		}
 
 		@Override

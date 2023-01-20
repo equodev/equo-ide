@@ -13,8 +13,10 @@
  *******************************************************************************/
 package dev.equo.ide.gradle;
 
+import dev.equo.ide.BrandingIdeHook;
 import dev.equo.ide.BuildPluginIdeMain;
 import dev.equo.ide.IdeHook;
+import dev.equo.ide.IdeLockFile;
 import dev.equo.solstice.Launcher;
 import dev.equo.solstice.NestedJars;
 import dev.equo.solstice.SerializableMisc;
@@ -109,7 +111,15 @@ public abstract class EquoIdeTask extends DefaultTask {
 	public void launch() throws IOException, InterruptedException {
 		var workspaceRegistry = WorkspaceRegistry.instance();
 		var workspaceDir = workspaceRegistry.workspaceDir(getProjectDir().get(), clean);
+		ideHooks.get(BrandingIdeHook.class).setWorkspaceDir(workspaceDir);
 		workspaceRegistry.removeAbandoned();
+
+		var lockfile = IdeLockFile.forWorkspaceDir(workspaceDir);
+		var alreadyRunning = lockfile.ideAlreadyRunning();
+		if (alreadyRunning != null) {
+			System.out.println("There is already an IDE running with PID " + alreadyRunning.pid());
+			return;
+		}
 
 		var mavenDeps = getMavenDeps().get();
 
