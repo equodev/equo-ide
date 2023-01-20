@@ -13,9 +13,13 @@
  *******************************************************************************/
 package dev.equo.ide.maven;
 
+import dev.equo.ide.BrandingIdeHook;
 import dev.equo.ide.BuildPluginIdeMain;
+import dev.equo.ide.IdeHook;
+import dev.equo.ide.IdeLockFile;
 import dev.equo.solstice.Launcher;
 import dev.equo.solstice.NestedJars;
+import dev.equo.solstice.SerializableMisc;
 import dev.equo.solstice.p2.P2Client;
 import dev.equo.solstice.p2.P2Unit;
 import dev.equo.solstice.p2.WorkspaceRegistry;
@@ -74,6 +78,9 @@ public class LaunchMojo extends AbstractP2Mojo {
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		try {
+			var ideHooks = new IdeHook.List();
+			ideHooks.add(new BrandingIdeHook());
+
 			List<Dependency> deps = new ArrayList<>();
 			deps.add(
 					new Dependency(
@@ -93,7 +100,14 @@ public class LaunchMojo extends AbstractP2Mojo {
 
 			var workspaceRegistry = WorkspaceRegistry.instance();
 			var workspaceDir = workspaceRegistry.workspaceDir(baseDir, clean);
+			ideHooks.get(BrandingIdeHook.class).setWorkspaceDir(workspaceDir);
 			workspaceRegistry.removeAbandoned();
+
+			var lockfile = IdeLockFile.forWorkspaceDir(workspaceDir);
+			var alreadyRunning = lockfile.ideAlreadyRunning();
+			if (IdeLockFile.alreadyRunningAndUserRequestsAbort(alreadyRunning)) {
+				return;
+			}
 
 			var query = super.query();
 			for (var coordinate : query.getJarsOnMavenCentral()) {
@@ -120,6 +134,9 @@ public class LaunchMojo extends AbstractP2Mojo {
 				files.add(nested.getValue());
 			}
 
+			var ideHooksFile = new File(workspaceDir, "ide-hooks");
+			SerializableMisc.toFile(ideHooks, ideHooksFile);
+
 			var classpath = Launcher.copyAndSortClasspath(files);
 			debugClasspath.printWithHead(
 					"jars about to be launched", classpath.stream().map(File::getAbsolutePath));
@@ -138,7 +155,8 @@ public class LaunchMojo extends AbstractP2Mojo {
 							Boolean.toString(initOnly),
 							"-debugClasspath",
 							debugClasspath.name(),
-							"-Dorg.slf4j.simpleLogger.defaultLogLevel=INFO");
+							"-ideHooks",
+							ideHooksFile.getAbsolutePath());
 			if (!isBlocking) {
 				System.out.println("NEED HELP? If the IDE doesn't appear, try adding -DshowConsole=true");
 			}

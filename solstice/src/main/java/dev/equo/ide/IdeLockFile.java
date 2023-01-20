@@ -68,6 +68,9 @@ public class IdeLockFile {
 
 	public static boolean alreadyRunningAndUserRequestsAbort(ProcessHandle running)
 			throws IOException, InterruptedException {
+		if (running == null) {
+			return false;
+		}
 		System.out.println("There is already an IDE running with PID " + running.pid());
 		System.out.println("Shut it down yourself or press");
 		System.out.println("  (k + enter) to kill it");
