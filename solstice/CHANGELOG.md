@@ -3,9 +3,13 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+### Added
+- `IdeHook` system for defining extremely simple plugins. ([#56](https://github.com/equodev/equo-ide/pull/56))
+  - Moved IDE-related classes into `dev.equo.ide` package.
+  - `DepsResolve` now works for `-SNAPSHOT` versions published to maven local, aiding integration testing.
 ### Changed
 - We are now dogfooding `dev.equo.p2deps` to get the dependencies we need for Solstice. ([#55](https://github.com/equodev/equo-ide/pull/55))
-  - Way simpler than our previous elaborate build, no more `NestedJars` though, but we're still able to launch IDE without atomos. 
+  - Way simpler than our previous elaborate build, no more `NestedJars` in our test classpath, but they aren't needed to launch IDE without atomos. 
 
 ## [0.10.0] - 2023-01-11
 ### Added

@@ -13,16 +13,15 @@
  *******************************************************************************/
 package dev.equo.ide.gradle;
 
-import dev.equo.solstice.BuildPluginIdeMain;
-import dev.equo.solstice.Launcher;
-import dev.equo.solstice.NestedJars;
+import dev.equo.ide.BuildPluginIdeMain;
+import dev.equo.ide.IdeHook;
+import dev.equo.ide.IdeLockFile;
 import dev.equo.solstice.p2.P2Client;
 import dev.equo.solstice.p2.P2Query;
 import dev.equo.solstice.p2.WorkspaceRegistry;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.stream.Collectors;
 import javax.inject.Inject;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.file.FileCollection;
@@ -47,6 +46,12 @@ public abstract class EquoIdeTask extends DefaultTask {
 
 	@Internal
 	public abstract Property<Boolean> getUseAtomos();
+
+	@Internal IdeHook.List ideHooks;
+
+	public IdeHook.List getIdeHooks() {
+		return ideHooks;
+	}
 
 	private boolean initOnly = false;
 
@@ -103,6 +108,12 @@ public abstract class EquoIdeTask extends DefaultTask {
 		var workspaceDir = workspaceRegistry.workspaceDir(getProjectDir().get(), clean);
 		workspaceRegistry.removeAbandoned();
 
+		var lockfile = IdeLockFile.forWorkspaceDir(workspaceDir);
+		var alreadyRunning = lockfile.ideAlreadyRunning();
+		if (IdeLockFile.alreadyRunningAndUserRequestsAbort(alreadyRunning)) {
+			return;
+		}
+
 		var mavenDeps = getMavenDeps().get();
 
 		var p2files = new ArrayList<File>();
@@ -115,40 +126,19 @@ public abstract class EquoIdeTask extends DefaultTask {
 
 		var p2deps = getObjectFactory().fileCollection().from(p2files);
 		var p2AndMavenDeps = p2deps.plus(mavenDeps);
+		var classpath = new ArrayList<File>();
+		p2AndMavenDeps.forEach(classpath::add);
 
-		var nestedJarFolder = new File(workspaceDir, NestedJars.DIR);
-		var nestedJars =
-				NestedJars.inFiles(p2AndMavenDeps).extractAllNestedJars(nestedJarFolder).stream()
-						.map(e -> e.getValue())
-						.collect(Collectors.toList());
-		var nestedDefs = getObjectFactory().fileCollection().from(nestedJars);
-
-		boolean useAtomos = dontUseAtomosOverride ? false : getUseAtomos().get();
-
-		var classpath = Launcher.copyAndSortClasspath(p2AndMavenDeps.plus(nestedDefs));
-		debugClasspath.printWithHead(
-				"jars about to be launched", classpath.stream().map(File::getAbsolutePath));
-		boolean isBlocking =
-				initOnly || showConsole || debugClasspath != BuildPluginIdeMain.DebugClasspath.disabled;
-		var exitCode =
-				Launcher.launchJavaBlocking(
-						isBlocking,
-						BuildPluginIdeMain.class.getName(),
-						classpath,
-						"-installDir",
-						workspaceDir.getAbsolutePath(),
-						"-useAtomos",
-						Boolean.toString(useAtomos),
-						"-initOnly",
-						Boolean.toString(initOnly),
-						"-debugClasspath",
-						debugClasspath.name(),
-						"-Dorg.slf4j.simpleLogger.defaultLogLevel=INFO");
-		if (!isBlocking) {
-			System.out.println("NEED HELP? If the IDE doesn't appear, try adding --show-console");
-		}
-		if (exitCode != 0) {
-			System.out.println("WARNING! Exit code: " + exitCode);
-		}
+		BuildPluginIdeMain.Caller caller = new BuildPluginIdeMain.Caller();
+		caller.lockFile = lockfile;
+		caller.ideHooks = ideHooks;
+		caller.workspaceDir = workspaceDir;
+		caller.classpath = classpath;
+		caller.debugClasspath = debugClasspath;
+		caller.initOnly = initOnly;
+		caller.showConsole = showConsole;
+		caller.useAtomos = dontUseAtomosOverride ? false : getUseAtomos().get();
+		caller.showConsoleFlag = "--show-console";
+		caller.launch();
 	}
 }

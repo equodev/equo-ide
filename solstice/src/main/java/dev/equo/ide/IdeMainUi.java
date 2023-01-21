@@ -11,9 +11,11 @@
  * Contributors:
  *     EquoTech, Inc. - initial API and implementation
  *******************************************************************************/
-package dev.equo.solstice;
+package dev.equo.ide;
 
+import dev.equo.solstice.Solstice;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Map;
 import org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher;
 import org.eclipse.equinox.app.IApplicationContext;
@@ -27,7 +29,8 @@ import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.service.application.ApplicationException;
 
 class IdeMainUi {
-	static int main(BundleContext osgiShim) throws InvalidSyntaxException {
+	static int main(BundleContext osgiShim, IdeHook.InstantiatedList ideHooks)
+			throws InvalidSyntaxException {
 		var appServices =
 				osgiShim.getServiceReferences(
 						org.osgi.service.application.ApplicationDescriptor.class,
@@ -39,7 +42,8 @@ class IdeMainUi {
 		var appDescriptor = osgiShim.getService(appServices.iterator().next());
 
 		var appLauncher = new EclipseAppLauncher(osgiShim, false, false, null, null);
-		osgiShim.registerService(ApplicationLauncher.class, appLauncher, Dictionaries.empty());
+		var emptyDict = new Hashtable<String, Object>();
+		osgiShim.registerService(ApplicationLauncher.class, appLauncher, emptyDict);
 
 		Map<String, Object> appProps = new HashMap<>();
 		appProps.put(IApplicationContext.APPLICATION_ARGS, new String[] {});
@@ -48,8 +52,8 @@ class IdeMainUi {
 		} catch (ApplicationException e) {
 			throw new RuntimeException(e);
 		}
-
 		var display = PlatformUI.createDisplay();
+
 		// processor must be created before we start event loop
 		var processor = new DelayedEventsProcessor(display);
 		return PlatformUI.createAndRunWorkbench(
@@ -61,6 +65,35 @@ class IdeMainUi {
 							((Solstice) osgiShim).activateWorkbenchBundles();
 						}
 						super.initialize(configurer);
+						ideHooks.forEach(IdeHookInstantiated::initialize);
+					}
+
+					@Override
+					public void preStartup() {
+						super.preStartup();
+						ideHooks.forEach(IdeHookInstantiated::preStartup);
+					}
+
+					@Override
+					public void postStartup() {
+						super.postStartup();
+						ideHooks.forEach(IdeHookInstantiated::postStartup);
+					}
+
+					@Override
+					public boolean preShutdown() {
+						boolean shutdownAllowed = super.preShutdown();
+						var iter = ideHooks.iterator();
+						while (shutdownAllowed && iter.hasNext()) {
+							shutdownAllowed = iter.next().preShutdown();
+						}
+						return shutdownAllowed;
+					}
+
+					@Override
+					public void postShutdown() {
+						super.postShutdown();
+						ideHooks.forEach(IdeHookInstantiated::postShutdown);
 					}
 				});
 	}

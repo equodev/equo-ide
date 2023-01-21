@@ -18,6 +18,7 @@ import dev.equo.ide.ResourceHarness;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.regex.Pattern;
 import org.assertj.core.api.AbstractStringAssert;
 import org.assertj.core.api.Assertions;
@@ -72,10 +73,13 @@ public class GradleHarness extends ResourceHarness {
 	}
 
 	protected GradleRunner gradleRunner() throws IOException {
+		var env = new HashMap<>(System.getenv());
+		env.put("EQUO_GRADLE_HARNESS", "true");
 		return GradleRunner.create()
 				.withGradleVersion(oldestGradleForJre())
 				.withProjectDir(rootFolder())
-				.withPluginClasspath();
+				.withPluginClasspath()
+				.withEnvironment(env);
 	}
 
 	private static String oldestGradleForJre() {

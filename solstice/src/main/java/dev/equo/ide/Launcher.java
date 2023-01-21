@@ -11,9 +11,8 @@
  * Contributors:
  *     EquoTech, Inc. - initial API and implementation
  *******************************************************************************/
-package dev.equo.solstice;
+package dev.equo.ide;
 
-import com.diffplug.common.swt.os.OS;
 import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -28,8 +27,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
+import javax.annotation.Nullable;
 
 /**
  * Thanks to Thipor Kong for his workaround for Gradle's windows problems.
@@ -38,7 +39,12 @@ import java.util.zip.ZipOutputStream;
  */
 public class Launcher {
 	public static int launchJavaBlocking(
-			boolean blocking, String mainClass, List<File> cp, String... args)
+			boolean blocking,
+			List<File> cp,
+			List<String> vmArgs,
+			String mainClass,
+			@Nullable Consumer<Process> monitorProcess,
+			String... args)
 			throws IOException, InterruptedException {
 		String javaHome = System.getProperty("java.home");
 		String javaBin = javaHome + File.separator + "bin" + File.separator + "java";
@@ -54,23 +60,27 @@ public class Launcher {
 
 		List<String> command = new ArrayList<>();
 		command.add(javaCmd);
-		if (OS.getRunning().isMac()) {
-			command.add("-XstartOnFirstThread");
-		}
+		command.addAll(vmArgs);
 		command.add("-classpath");
 		command.add(classpathJar.getAbsolutePath());
 		command.add(mainClass);
 		command.addAll(Arrays.asList(args));
 
 		if (blocking) {
-			return launchAndInheritIO(null, command);
+			return launchAndInheritIO(null, command, monitorProcess);
 		} else {
-			ScriptExec.script(ScriptExec.quoteAll(command)).execSeparate();
+			ScriptExec.script(ScriptExec.quoteAll(command)).execSeparate(monitorProcess);
 			return 0;
 		}
 	}
 
 	public static int launchAndInheritIO(File cwd, List<String> args)
+			throws IOException, InterruptedException {
+		return launchAndInheritIO(cwd, args, null);
+	}
+
+	public static int launchAndInheritIO(
+			File cwd, List<String> args, @Nullable Consumer<Process> monitorProcess)
 			throws IOException, InterruptedException {
 		var builder = new ProcessBuilder(args);
 		if (cwd != null) {
@@ -79,6 +89,13 @@ public class Launcher {
 		var process = builder.start();
 		var outPumper = new StreamPumper(process.getInputStream(), System.out);
 		var errPumper = new StreamPumper(process.getErrorStream(), System.err);
+		if (monitorProcess != null) {
+			new Thread(
+							() -> {
+								monitorProcess.accept(process);
+							})
+					.start();
+		}
 		int exitCode = process.waitFor();
 		process.getOutputStream().flush();
 		outPumper.join();
@@ -106,7 +123,7 @@ public class Launcher {
 					out.flush();
 				}
 			} catch (IOException e) {
-				throw Unchecked.wrap(e);
+				throw new RuntimeException(e);
 			}
 		}
 	}

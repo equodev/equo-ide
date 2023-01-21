@@ -19,6 +19,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.function.Consumer;
 
 public class P2Model {
 	private final TreeSet<String> p2repo = new TreeSet<>();
@@ -127,6 +128,12 @@ public class P2Model {
 				}
 			}
 		}
+	}
+
+	public void addFilterAndValidate(String filterName, Consumer<Filter> filterSetup) {
+		var filter = new Filter();
+		filterSetup.accept(filter);
+		addFilterAndValidate(filterName, filter);
 	}
 
 	public void addFilterAndValidate(String filterName, Filter filter) {

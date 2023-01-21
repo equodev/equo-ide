@@ -61,6 +61,15 @@ tasks.named('test') {
 	}
 }
 
+def PLUGIN_SHIMS = ['buildship']
+for (glue in PLUGIN_SHIMS) {
+	sourceSets.register(glue) {
+		compileClasspath += sourceSets.main.output
+		runtimeClasspath += sourceSets.main.output
+		java {}
+	}
+}
+
 apply plugin: 'dev.equo.p2deps'
 p2deps {
 	into 'api', {
@@ -79,6 +88,15 @@ p2deps {
 		p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'
 		install 'org.eclipse.ui.ide.application'
 		install 'org.eclipse.equinox.event'
+	}
+
+	// shims for actual build plugins
+	into 'buildshipCompileOnly', {
+		p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'
+		install 'org.eclipse.platform.ide.categoryIU'
+		install 'org.eclipse.releng.java.languages.categoryIU'
+		p2repo 'https://download.eclipse.org/buildship/updates/e423/releases/3.x/3.1.6.v20220511-1359/'
+		install 'org.eclipse.buildship.feature.group'
 	}
 }
 

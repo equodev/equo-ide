@@ -13,7 +13,7 @@
  *******************************************************************************/
 package dev.equo.ide.maven;
 
-import dev.equo.solstice.Launcher;
+import dev.equo.ide.Launcher;
 import java.io.IOException;
 import java.util.Arrays;
 import org.assertj.core.api.Assertions;

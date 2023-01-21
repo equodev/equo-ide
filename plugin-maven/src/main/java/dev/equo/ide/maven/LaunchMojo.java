@@ -13,8 +13,9 @@
  *******************************************************************************/
 package dev.equo.ide.maven;
 
-import dev.equo.solstice.BuildPluginIdeMain;
-import dev.equo.solstice.Launcher;
+import dev.equo.ide.BuildPluginIdeMain;
+import dev.equo.ide.IdeHook;
+import dev.equo.ide.IdeLockFile;
 import dev.equo.solstice.NestedJars;
 import dev.equo.solstice.p2.P2Client;
 import dev.equo.solstice.p2.P2Unit;
@@ -95,6 +96,12 @@ public class LaunchMojo extends AbstractP2Mojo {
 			var workspaceDir = workspaceRegistry.workspaceDir(baseDir, clean);
 			workspaceRegistry.removeAbandoned();
 
+			var lockfile = IdeLockFile.forWorkspaceDir(workspaceDir);
+			var alreadyRunning = lockfile.ideAlreadyRunning();
+			if (IdeLockFile.alreadyRunningAndUserRequestsAbort(alreadyRunning)) {
+				return;
+			}
+
 			var query = super.query();
 			for (var coordinate : query.getJarsOnMavenCentral()) {
 				deps.add(
@@ -105,7 +112,7 @@ public class LaunchMojo extends AbstractP2Mojo {
 			DependencyResult dependencyResult =
 					repositorySystem.resolveDependencies(repositorySystemSession, dependencyRequest);
 
-			List<File> files = new ArrayList<>();
+			var files = new ArrayList<File>();
 			for (var artifact : dependencyResult.getArtifactResults()) {
 				files.add(artifact.getArtifact().getFile());
 			}
@@ -115,36 +122,17 @@ public class LaunchMojo extends AbstractP2Mojo {
 				}
 			}
 
-			var nestedJarFolder = new File(workspaceDir, NestedJars.DIR);
-			for (var nested : NestedJars.inFiles(files).extractAllNestedJars(nestedJarFolder)) {
-				files.add(nested.getValue());
-			}
-
-			var classpath = Launcher.copyAndSortClasspath(files);
-			debugClasspath.printWithHead(
-					"jars about to be launched", classpath.stream().map(File::getAbsolutePath));
-			boolean isBlocking =
-					initOnly || showConsole || debugClasspath != BuildPluginIdeMain.DebugClasspath.disabled;
-			var exitCode =
-					Launcher.launchJavaBlocking(
-							isBlocking,
-							BuildPluginIdeMain.class.getName(),
-							classpath,
-							"-installDir",
-							workspaceDir.getAbsolutePath(),
-							"-useAtomos",
-							Boolean.toString(useAtomos),
-							"-initOnly",
-							Boolean.toString(initOnly),
-							"-debugClasspath",
-							debugClasspath.name(),
-							"-Dorg.slf4j.simpleLogger.defaultLogLevel=INFO");
-			if (!isBlocking) {
-				System.out.println("NEED HELP? If the IDE doesn't appear, try adding -DshowConsole=true");
-			}
-			if (exitCode != 0) {
-				System.out.println("WARNING! Exit code: " + exitCode);
-			}
+			BuildPluginIdeMain.Caller caller = new BuildPluginIdeMain.Caller();
+			caller.lockFile = lockfile;
+			caller.ideHooks = new IdeHook.List();
+			caller.workspaceDir = workspaceDir;
+			caller.classpath = files;
+			caller.debugClasspath = debugClasspath;
+			caller.initOnly = initOnly;
+			caller.showConsole = showConsole;
+			caller.useAtomos = useAtomos;
+			caller.showConsoleFlag = "-DshowConsole=true";
+			caller.launch();
 		} catch (DependencyResolutionException | IOException | InterruptedException e) {
 			throw new RuntimeException(e);
 		}

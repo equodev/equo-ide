@@ -189,8 +189,8 @@ public class SolsticeManifest {
 		return new BundleSet(manifests);
 	}
 
-	static final String MANIFEST_PATH = "META-INF/MANIFEST.MF";
-	static final String SLASH_MANIFEST_PATH = "/" + MANIFEST_PATH;
+	public static final String MANIFEST_PATH = "META-INF/MANIFEST.MF";
+	public static final String SLASH_MANIFEST_PATH = "/" + MANIFEST_PATH;
 
 	private final String jarUrl;
 	private final int classpathOrder;

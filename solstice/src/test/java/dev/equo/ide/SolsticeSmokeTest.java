@@ -11,8 +11,10 @@
  * Contributors:
  *     EquoTech, Inc. - initial API and implementation
  *******************************************************************************/
-package dev.equo.solstice;
+package dev.equo.ide;
 
+import dev.equo.solstice.Solstice;
+import dev.equo.solstice.SolsticeInit;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.osgi.framework.Bundle;

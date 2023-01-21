@@ -13,6 +13,7 @@
  *******************************************************************************/
 package dev.equo.ide.gradle;
 
+import dev.equo.ide.IdeHook;
 import dev.equo.solstice.p2.P2Client;
 import dev.equo.solstice.p2.P2Model;
 import dev.equo.solstice.p2.P2Query;
@@ -20,35 +21,32 @@ import dev.equo.solstice.p2.P2Query;
 /** The DSL inside the equoIde block. */
 public class EquoIdeExtension extends P2ModelDsl {
 	public boolean useAtomos = true;
+	private final IdeHook.List ideHooks = new IdeHook.List();
 
-	public EquoIdeExtension() {
-		super(new P2Model());
-		useAtomos = true;
+	public EquoIdeExtension() {}
+
+	private static void setToDefault(P2Model model) {
+		model.addP2Repo("https://download.eclipse.org/eclipse/updates/4.26/");
+		model.getInstall().add("org.eclipse.releng.java.languages.categoryIU");
+		model.getInstall().add("org.eclipse.platform.ide.categoryIU");
+		model.addFilterAndValidate(
+				"no-slf4j-nop",
+				filter -> {
+					filter.exclude("slf4j.nop");
+				});
 	}
 
-	private EquoIdeExtension(EquoIdeExtension existing) {
-		super(existing.model.deepCopy());
-		useAtomos = existing.useAtomos;
-	}
-
-	private EquoIdeExtension deepCopy() {
-		return new EquoIdeExtension(this);
-	}
-
-	private void setToDefault() {
-		p2repo("https://download.eclipse.org/eclipse/updates/4.26/");
-		install("org.eclipse.releng.java.languages.categoryIU");
-		install("org.eclipse.platform.ide.categoryIU");
+	IdeHook.List getIdeHooks() {
+		return ideHooks;
 	}
 
 	P2Query performQuery(P2Client.Caching caching) throws Exception {
-		var extension = this;
-		if (model.isEmpty()) {
-			extension = deepCopy();
-			extension.setToDefault();
+		var modelToQuery = model;
+		if (modelToQuery.isEmpty()) {
+			modelToQuery = modelToQuery.deepCopy();
+			setToDefault(modelToQuery);
 		}
-		P2Model model = extension.model.deepCopy();
-		model.applyNativeFilterIfNoPlatformFilter();
-		return model.query(caching);
+		modelToQuery.applyNativeFilterIfNoPlatformFilter();
+		return modelToQuery.query(caching);
 	}
 }

@@ -11,7 +11,7 @@
  * Contributors:
  *     EquoTech, Inc. - initial API and implementation
  *******************************************************************************/
-package dev.equo.solstice;
+package dev.equo.ide;
 
 import com.diffplug.common.swt.os.OS;
 import java.io.File;
@@ -22,6 +22,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import javax.annotation.Nullable;
 
 /**
  * Facility for creating and executing scripts. All scripts are invisible to the user (in a gui
@@ -48,16 +50,19 @@ class ScriptExec {
 	}
 
 	/** Spawns the script as a separate task. */
-	public void execSeparate() throws IOException, InterruptedException {
-		exec(true);
+	public void execSeparate(@Nullable Consumer<Process> monitorProcess)
+			throws IOException, InterruptedException {
+		exec(true, monitorProcess);
 	}
 
 	/** Spawns the script as a child task. */
-	public void execBlocking() throws IOException, InterruptedException {
-		exec(false);
+	public void execBlocking(@Nullable Consumer<Process> monitorProcess)
+			throws IOException, InterruptedException {
+		exec(false, monitorProcess);
 	}
 
-	private void exec(boolean isSeparate) throws IOException, InterruptedException {
+	private void exec(boolean isSeparate, @Nullable Consumer<Process> monitorProcess)
+			throws IOException, InterruptedException {
 		// create the self-deleting script file
 		File scriptFile = createSelfDeletingScript(script);
 
@@ -65,7 +70,7 @@ class ScriptExec {
 		List<String> fullArgs = getPlatformCmds(scriptFile, isSeparate);
 
 		// set the cmds
-		int exitValue = Launcher.launchAndInheritIO(directory.orElse(null), fullArgs);
+		int exitValue = Launcher.launchAndInheritIO(directory.orElse(null), fullArgs, monitorProcess);
 		if (exitValue != EXIT_VALUE_SUCCESS) {
 			throw new RuntimeException("'" + script + "' exited with " + exitValue);
 		}

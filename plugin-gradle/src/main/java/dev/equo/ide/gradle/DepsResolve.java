@@ -29,7 +29,8 @@ class DepsResolve {
 
 	static List<Object> resolveSolsticeAndTransitives() throws IOException {
 		var implVersion = NestedJars.solsticeVersion();
-		if (!implVersion.endsWith("-SNAPSHOT")) {
+		if (!implVersion.endsWith("-SNAPSHOT")
+				|| !"true".equals(System.getenv("EQUO_GRADLE_HARNESS"))) {
 			return Collections.singletonList("dev.equo.ide:solstice:" + implVersion);
 		} else {
 			var file = new File(METADATA_PATH);

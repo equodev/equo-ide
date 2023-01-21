@@ -105,9 +105,11 @@ public class EquoIdeTest extends GradleHarness {
 				.toLines(
 						"plugins { id 'dev.equo.ide' }",
 						"equoIde {",
-						"  release '4.26'",
 						"}",
 						"// (placeholder so GPJ formats this nicely)");
-		gradleRunner().withArguments("equoIde", "--debug-classpath=names").forwardOutput().build();
+		gradleRunner()
+				.withArguments("equoIde", "--show-console", "--stacktrace")
+				.forwardOutput()
+				.build();
 	}
 }
