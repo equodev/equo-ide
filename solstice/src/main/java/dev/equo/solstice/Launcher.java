@@ -13,7 +13,6 @@
  *******************************************************************************/
 package dev.equo.solstice;
 
-import com.diffplug.common.swt.os.OS;
 import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -38,7 +37,7 @@ import java.util.zip.ZipOutputStream;
  */
 public class Launcher {
 	public static int launchJavaBlocking(
-			boolean blocking, String mainClass, List<File> cp, String... args)
+			boolean blocking, List<File> cp, List<String> vmArgs, String mainClass, String... args)
 			throws IOException, InterruptedException {
 		String javaHome = System.getProperty("java.home");
 		String javaBin = javaHome + File.separator + "bin" + File.separator + "java";
@@ -54,15 +53,11 @@ public class Launcher {
 
 		List<String> command = new ArrayList<>();
 		command.add(javaCmd);
-		if (OS.getRunning().isMac()) {
-			command.add("-XstartOnFirstThread");
-		}
+		command.addAll(vmArgs);
 		command.add("-classpath");
 		command.add(classpathJar.getAbsolutePath());
-
-		Arrays.stream(args).filter(arg -> arg.startsWith("-D")).forEach(command::add);
 		command.add(mainClass);
-		Arrays.stream(args).filter(arg -> !arg.startsWith("-D")).forEach(command::add);
+		command.addAll(Arrays.asList(args));
 
 		if (blocking) {
 			return launchAndInheritIO(null, command);

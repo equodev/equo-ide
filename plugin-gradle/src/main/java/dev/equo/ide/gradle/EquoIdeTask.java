@@ -13,6 +13,7 @@
  *******************************************************************************/
 package dev.equo.ide.gradle;
 
+import com.diffplug.common.swt.os.OS;
 import dev.equo.ide.BrandingIdeHook;
 import dev.equo.ide.BuildPluginIdeMain;
 import dev.equo.ide.IdeHook;
@@ -150,12 +151,17 @@ public abstract class EquoIdeTask extends DefaultTask {
 				"jars about to be launched", classpath.stream().map(File::getAbsolutePath));
 		boolean isBlocking =
 				initOnly || showConsole || debugClasspath != BuildPluginIdeMain.DebugClasspath.disabled;
-		String logLevel = isBlocking ? "info" : "error";
+		var vmArgs = new ArrayList<String>();
+		if (OS.getRunning().isMac()) {
+			vmArgs.add("-XstartOnFirstThread");
+		}
+		vmArgs.add("-Dorg.slf4j.simpleLogger.defaultLogLevel=" + (isBlocking ? "info" : "error"));
 		var exitCode =
 				Launcher.launchJavaBlocking(
 						isBlocking,
-						BuildPluginIdeMain.class.getName(),
 						classpath,
+						vmArgs,
+						BuildPluginIdeMain.class.getName(),
 						"-installDir",
 						workspaceDir.getAbsolutePath(),
 						"-useAtomos",
@@ -165,8 +171,7 @@ public abstract class EquoIdeTask extends DefaultTask {
 						"-debugClasspath",
 						debugClasspath.name(),
 						"-ideHooks",
-						ideHooksFile.getAbsolutePath(),
-						"-Dorg.slf4j.simpleLogger.defaultLogLevel=" + logLevel);
+						ideHooksFile.getAbsolutePath());
 		if (!isBlocking) {
 			System.out.println("NEED HELP? If the IDE doesn't appear, try adding --show-console");
 		}
