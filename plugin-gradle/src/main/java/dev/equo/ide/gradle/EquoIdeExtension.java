@@ -37,6 +37,11 @@ public class EquoIdeExtension extends P2ModelDsl {
 		model.addP2Repo("https://download.eclipse.org/eclipse/updates/4.26/");
 		model.getInstall().add("org.eclipse.releng.java.languages.categoryIU");
 		model.getInstall().add("org.eclipse.platform.ide.categoryIU");
+		model.addFilterAndValidate(
+				"no-slf4j-nop",
+				filter -> {
+					filter.exclude("slf4j.nop");
+				});
 	}
 
 	IdeHook.List getIdeHooks() {
