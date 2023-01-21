@@ -13,7 +13,6 @@
  *******************************************************************************/
 package dev.equo.ide.maven;
 
-import dev.equo.ide.BrandingIdeHook;
 import dev.equo.ide.BuildPluginIdeMain;
 import dev.equo.ide.IdeHook;
 import dev.equo.ide.IdeLockFile;
@@ -76,9 +75,6 @@ public class LaunchMojo extends AbstractP2Mojo {
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		try {
-			var ideHooks = new IdeHook.List();
-			ideHooks.add(new BrandingIdeHook());
-
 			List<Dependency> deps = new ArrayList<>();
 			deps.add(
 					new Dependency(
@@ -98,7 +94,6 @@ public class LaunchMojo extends AbstractP2Mojo {
 
 			var workspaceRegistry = WorkspaceRegistry.instance();
 			var workspaceDir = workspaceRegistry.workspaceDir(baseDir, clean);
-			ideHooks.get(BrandingIdeHook.class).setWorkspaceDir(workspaceDir);
 			workspaceRegistry.removeAbandoned();
 
 			var lockfile = IdeLockFile.forWorkspaceDir(workspaceDir);
@@ -129,7 +124,7 @@ public class LaunchMojo extends AbstractP2Mojo {
 
 			BuildPluginIdeMain.Caller caller = new BuildPluginIdeMain.Caller();
 			caller.lockFile = lockfile;
-			caller.ideHooks = ideHooks;
+			caller.ideHooks = new IdeHook.List();
 			caller.workspaceDir = workspaceDir;
 			caller.classpath = files;
 			caller.debugClasspath = debugClasspath;

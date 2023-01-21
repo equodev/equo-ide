@@ -21,13 +21,10 @@ import java.util.function.Consumer;
 
 public interface IdeHook extends Serializable {
 	class List extends ArrayList<IdeHook> {
-		public <T> T get(Class<T> clazz) {
-			for (int i = 0; i < size(); ++i) {
-				if (clazz.isInstance(get(i))) {
-					return (T) get(i);
-				}
-			}
-			throw new IllegalArgumentException("Does not contain " + clazz);
+		public List copy() {
+			List copy = new List();
+			copy.addAll(this);
+			return copy;
 		}
 
 		InstantiatedList instantiate() {

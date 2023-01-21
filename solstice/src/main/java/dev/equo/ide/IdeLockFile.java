@@ -31,7 +31,7 @@ public class IdeLockFile {
 	private static final String TOKEN_FILENAME = "pid";
 	private static final long NO_TOKEN_FILE = -1L;
 
-	public void savePid() {
+	void savePid() {
 		writeToken(ProcessHandle.current().pid());
 	}
 

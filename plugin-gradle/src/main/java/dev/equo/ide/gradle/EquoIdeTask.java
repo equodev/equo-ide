@@ -13,7 +13,6 @@
  *******************************************************************************/
 package dev.equo.ide.gradle;
 
-import dev.equo.ide.BrandingIdeHook;
 import dev.equo.ide.BuildPluginIdeMain;
 import dev.equo.ide.IdeHook;
 import dev.equo.ide.IdeLockFile;
@@ -107,7 +106,6 @@ public abstract class EquoIdeTask extends DefaultTask {
 	public void launch() throws IOException, InterruptedException {
 		var workspaceRegistry = WorkspaceRegistry.instance();
 		var workspaceDir = workspaceRegistry.workspaceDir(getProjectDir().get(), clean);
-		ideHooks.get(BrandingIdeHook.class).setWorkspaceDir(workspaceDir);
 		workspaceRegistry.removeAbandoned();
 
 		var lockfile = IdeLockFile.forWorkspaceDir(workspaceDir);

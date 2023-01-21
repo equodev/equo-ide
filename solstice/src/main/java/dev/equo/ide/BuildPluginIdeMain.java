@@ -66,7 +66,9 @@ public class BuildPluginIdeMain {
 			}
 
 			var ideHooksFile = new File(workspaceDir, "ide-hooks");
-			SerializableMisc.toFile(ideHooks, ideHooksFile);
+			var ideHooksCopy = ideHooks.copy();
+			ideHooksCopy.add(IdeHookLockFile.forWorkspaceDir(workspaceDir));
+			SerializableMisc.toFile(ideHooksCopy, ideHooksFile);
 
 			var classpathSorted = Launcher.copyAndSortClasspath(classpath);
 			debugClasspath.printWithHead(
