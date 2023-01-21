@@ -43,14 +43,14 @@ public class IdeLockFile {
 		}
 	}
 
-	private long readToken() {
+	long read() {
 		return FileMisc.readToken(workspaceDir, TOKEN_FILENAME)
 				.map(Long::parseLong)
 				.orElse(NO_TOKEN_FILE);
 	}
 
 	public @Nullable ProcessHandle ideAlreadyRunning() {
-		long running = readToken();
+		long running = read();
 		if (running == NO_TOKEN_FILE) {
 			return null;
 		}
@@ -88,7 +88,7 @@ public class IdeLockFile {
 				}
 			}
 		}
-		System.out.println("The duplicate IDE has closed. Starting a new one...");
+		System.out.println("The duplicate IDE has shut down. Starting a new one...");
 		return false;
 	}
 }

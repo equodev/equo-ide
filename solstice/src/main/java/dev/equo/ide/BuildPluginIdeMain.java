@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
 import org.eclipse.swt.widgets.Display;
@@ -40,6 +41,7 @@ import org.osgi.framework.InvalidSyntaxException;
  */
 public class BuildPluginIdeMain {
 	public static class Caller {
+		public IdeLockFile lockFile;
 		public IdeHook.List ideHooks;
 		public File workspaceDir;
 		public ArrayList<File> classpath;
@@ -48,6 +50,7 @@ public class BuildPluginIdeMain {
 		public String showConsoleFlag;
 
 		public void launch() throws IOException, InterruptedException {
+			Objects.requireNonNull(lockFile);
 			Objects.requireNonNull(ideHooks);
 			Objects.requireNonNull(workspaceDir);
 			Objects.requireNonNull(classpath);
@@ -76,12 +79,34 @@ public class BuildPluginIdeMain {
 			}
 			vmArgs.add("-Dorg.slf4j.simpleLogger.defaultLogLevel=" + (isBlocking ? "info" : "error"));
 
+			Consumer<Process> monitorProcess;
+			if (isBlocking) {
+				monitorProcess = null;
+			} else {
+				// if we're spawning a new IDE, record the lockfile before it launches
+				long lockFileBeforeLaunch = lockFile.read();
+				monitorProcess =
+						process -> {
+							// sleep over and over until the lockfile changes
+							while (lockFile.read() == lockFileBeforeLaunch) {
+								try {
+									Thread.sleep(10);
+								} catch (InterruptedException e) {
+									// ignore
+								}
+							}
+							// kill the console that we've been waiting on as a solution to
+							// https://github.com/equodev/equo-ide/issues/44
+							process.destroyForcibly();
+						};
+			}
 			var exitCode =
 					Launcher.launchJavaBlocking(
 							isBlocking,
 							classpathSorted,
 							vmArgs,
 							BuildPluginIdeMain.class.getName(),
+							monitorProcess,
 							"-installDir",
 							workspaceDir.getAbsolutePath(),
 							"-useAtomos",

@@ -39,7 +39,12 @@ import javax.annotation.Nullable;
  */
 public class Launcher {
 	public static int launchJavaBlocking(
-			boolean blocking, List<File> cp, List<String> vmArgs, String mainClass, String... args)
+			boolean blocking,
+			List<File> cp,
+			List<String> vmArgs,
+			String mainClass,
+			@Nullable Consumer<Process> monitorProcess,
+			String... args)
 			throws IOException, InterruptedException {
 		String javaHome = System.getProperty("java.home");
 		String javaBin = javaHome + File.separator + "bin" + File.separator + "java";
@@ -62,9 +67,9 @@ public class Launcher {
 		command.addAll(Arrays.asList(args));
 
 		if (blocking) {
-			return launchAndInheritIO(null, command);
+			return launchAndInheritIO(null, command, monitorProcess);
 		} else {
-			ScriptExec.script(ScriptExec.quoteAll(command)).execSeparate(null);
+			ScriptExec.script(ScriptExec.quoteAll(command)).execSeparate(monitorProcess);
 			return 0;
 		}
 	}

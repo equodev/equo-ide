@@ -132,6 +132,7 @@ public abstract class EquoIdeTask extends DefaultTask {
 		p2AndMavenDeps.forEach(classpath::add);
 
 		BuildPluginIdeMain.Caller caller = new BuildPluginIdeMain.Caller();
+		caller.lockFile = lockfile;
 		caller.ideHooks = ideHooks;
 		caller.workspaceDir = workspaceDir;
 		caller.classpath = classpath;
@@ -139,7 +140,6 @@ public abstract class EquoIdeTask extends DefaultTask {
 		caller.initOnly = initOnly;
 		caller.showConsole = showConsole;
 		caller.useAtomos = dontUseAtomosOverride ? false : getUseAtomos().get();
-		;
 		caller.showConsoleFlag = "--show-console";
 		caller.launch();
 	}

@@ -23,6 +23,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import javax.annotation.Nullable;
 
 /**
  * Facility for creating and executing scripts. All scripts are invisible to the user (in a gui
@@ -49,18 +50,18 @@ class ScriptExec {
 	}
 
 	/** Spawns the script as a separate task. */
-	public void execSeparate(Consumer<Process> monitorProcess)
+	public void execSeparate(@Nullable Consumer<Process> monitorProcess)
 			throws IOException, InterruptedException {
 		exec(true, monitorProcess);
 	}
 
 	/** Spawns the script as a child task. */
-	public void execBlocking(Consumer<Process> monitorProcess)
+	public void execBlocking(@Nullable Consumer<Process> monitorProcess)
 			throws IOException, InterruptedException {
 		exec(false, monitorProcess);
 	}
 
-	private void exec(boolean isSeparate, Consumer<Process> monitorProcess)
+	private void exec(boolean isSeparate, @Nullable Consumer<Process> monitorProcess)
 			throws IOException, InterruptedException {
 		// create the self-deleting script file
 		File scriptFile = createSelfDeletingScript(script);

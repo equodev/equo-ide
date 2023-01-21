@@ -128,6 +128,7 @@ public class LaunchMojo extends AbstractP2Mojo {
 			}
 
 			BuildPluginIdeMain.Caller caller = new BuildPluginIdeMain.Caller();
+			caller.lockFile = lockfile;
 			caller.ideHooks = ideHooks;
 			caller.workspaceDir = workspaceDir;
 			caller.classpath = files;
