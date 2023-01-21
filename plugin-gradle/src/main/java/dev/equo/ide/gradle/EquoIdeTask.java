@@ -150,6 +150,7 @@ public abstract class EquoIdeTask extends DefaultTask {
 				"jars about to be launched", classpath.stream().map(File::getAbsolutePath));
 		boolean isBlocking =
 				initOnly || showConsole || debugClasspath != BuildPluginIdeMain.DebugClasspath.disabled;
+		String logLevel = isBlocking ? "info" : "error";
 		var exitCode =
 				Launcher.launchJavaBlocking(
 						isBlocking,
@@ -164,7 +165,8 @@ public abstract class EquoIdeTask extends DefaultTask {
 						"-debugClasspath",
 						debugClasspath.name(),
 						"-ideHooks",
-						ideHooksFile.getAbsolutePath());
+						ideHooksFile.getAbsolutePath(),
+						"-Dorg.slf4j.simpleLogger.defaultLogLevel=" + logLevel);
 		if (!isBlocking) {
 			System.out.println("NEED HELP? If the IDE doesn't appear, try adding --show-console");
 		}

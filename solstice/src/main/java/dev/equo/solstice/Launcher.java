@@ -59,8 +59,10 @@ public class Launcher {
 		}
 		command.add("-classpath");
 		command.add(classpathJar.getAbsolutePath());
+
+		Arrays.stream(args).filter(arg -> arg.startsWith("-D")).forEach(command::add);
 		command.add(mainClass);
-		command.addAll(Arrays.asList(args));
+		Arrays.stream(args).filter(arg -> !arg.startsWith("-D")).forEach(command::add);
 
 		if (blocking) {
 			return launchAndInheritIO(null, command);
