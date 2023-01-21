@@ -13,6 +13,8 @@
  *******************************************************************************/
 package dev.equo.ide;
 
+import com.diffplug.common.swt.os.OS;
+import dev.equo.solstice.NestedJars;
 import dev.equo.solstice.SerializableMisc;
 import dev.equo.solstice.Solstice;
 import dev.equo.solstice.SolsticeInit;
@@ -23,6 +25,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Stream;
 import org.eclipse.swt.widgets.Display;
@@ -36,6 +39,68 @@ import org.osgi.framework.InvalidSyntaxException;
  * in other contexts as well.
  */
 public class BuildPluginIdeMain {
+	public static class Caller {
+		public IdeHook.List ideHooks;
+		public File workspaceDir;
+		public ArrayList<File> classpath;
+		public BuildPluginIdeMain.DebugClasspath debugClasspath;
+		public Boolean initOnly, showConsole, useAtomos;
+		public String showConsoleFlag;
+
+		public void launch() throws IOException, InterruptedException {
+			Objects.requireNonNull(ideHooks);
+			Objects.requireNonNull(workspaceDir);
+			Objects.requireNonNull(classpath);
+			Objects.requireNonNull(debugClasspath);
+			Objects.requireNonNull(initOnly);
+			Objects.requireNonNull(showConsole);
+			Objects.requireNonNull(useAtomos);
+			Objects.requireNonNull(showConsoleFlag);
+
+			var nestedJarFolder = new File(workspaceDir, NestedJars.DIR);
+			for (var nested : NestedJars.inFiles(classpath).extractAllNestedJars(nestedJarFolder)) {
+				classpath.add(nested.getValue());
+			}
+
+			var ideHooksFile = new File(workspaceDir, "ide-hooks");
+			SerializableMisc.toFile(ideHooks, ideHooksFile);
+
+			var classpathSorted = Launcher.copyAndSortClasspath(classpath);
+			debugClasspath.printWithHead(
+					"jars about to be launched", classpathSorted.stream().map(File::getAbsolutePath));
+			boolean isBlocking =
+					initOnly || showConsole || debugClasspath != BuildPluginIdeMain.DebugClasspath.disabled;
+			var vmArgs = new ArrayList<String>();
+			if (OS.getRunning().isMac()) {
+				vmArgs.add("-XstartOnFirstThread");
+			}
+			vmArgs.add("-Dorg.slf4j.simpleLogger.defaultLogLevel=" + (isBlocking ? "info" : "error"));
+
+			var exitCode =
+					Launcher.launchJavaBlocking(
+							isBlocking,
+							classpathSorted,
+							vmArgs,
+							BuildPluginIdeMain.class.getName(),
+							"-installDir",
+							workspaceDir.getAbsolutePath(),
+							"-useAtomos",
+							Boolean.toString(useAtomos),
+							"-initOnly",
+							Boolean.toString(initOnly),
+							"-debugClasspath",
+							debugClasspath.name(),
+							"-ideHooks",
+							ideHooksFile.getAbsolutePath());
+			if (!isBlocking) {
+				System.out.println("NEED HELP? If the IDE doesn't appear, try adding " + showConsoleFlag);
+			}
+			if (exitCode != 0) {
+				System.out.println("WARNING! Exit code: " + exitCode);
+			}
+		}
+	}
+
 	public enum DebugClasspath {
 		disabled,
 		names,

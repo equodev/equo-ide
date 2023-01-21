@@ -13,14 +13,11 @@
  *******************************************************************************/
 package dev.equo.ide.maven;
 
-import com.diffplug.common.swt.os.OS;
 import dev.equo.ide.BrandingIdeHook;
 import dev.equo.ide.BuildPluginIdeMain;
 import dev.equo.ide.IdeHook;
 import dev.equo.ide.IdeLockFile;
-import dev.equo.solstice.Launcher;
 import dev.equo.solstice.NestedJars;
-import dev.equo.solstice.SerializableMisc;
 import dev.equo.solstice.p2.P2Client;
 import dev.equo.solstice.p2.P2Unit;
 import dev.equo.solstice.p2.WorkspaceRegistry;
@@ -120,7 +117,7 @@ public class LaunchMojo extends AbstractP2Mojo {
 			DependencyResult dependencyResult =
 					repositorySystem.resolveDependencies(repositorySystemSession, dependencyRequest);
 
-			List<File> files = new ArrayList<>();
+			var files = new ArrayList<File>();
 			for (var artifact : dependencyResult.getArtifactResults()) {
 				files.add(artifact.getArtifact().getFile());
 			}
@@ -130,47 +127,16 @@ public class LaunchMojo extends AbstractP2Mojo {
 				}
 			}
 
-			var nestedJarFolder = new File(workspaceDir, NestedJars.DIR);
-			for (var nested : NestedJars.inFiles(files).extractAllNestedJars(nestedJarFolder)) {
-				files.add(nested.getValue());
-			}
-
-			var ideHooksFile = new File(workspaceDir, "ide-hooks");
-			SerializableMisc.toFile(ideHooks, ideHooksFile);
-
-			var classpath = Launcher.copyAndSortClasspath(files);
-			debugClasspath.printWithHead(
-					"jars about to be launched", classpath.stream().map(File::getAbsolutePath));
-			boolean isBlocking =
-					initOnly || showConsole || debugClasspath != BuildPluginIdeMain.DebugClasspath.disabled;
-			var vmArgs = new ArrayList<String>();
-			if (OS.getRunning().isMac()) {
-				vmArgs.add("-XstartOnFirstThread");
-			}
-			vmArgs.add("-Dorg.slf4j.simpleLogger.defaultLogLevel=" + (isBlocking ? "info" : "error"));
-
-			var exitCode =
-					Launcher.launchJavaBlocking(
-							isBlocking,
-							classpath,
-							vmArgs,
-							BuildPluginIdeMain.class.getName(),
-							"-installDir",
-							workspaceDir.getAbsolutePath(),
-							"-useAtomos",
-							Boolean.toString(useAtomos),
-							"-initOnly",
-							Boolean.toString(initOnly),
-							"-debugClasspath",
-							debugClasspath.name(),
-							"-ideHooks",
-							ideHooksFile.getAbsolutePath());
-			if (!isBlocking) {
-				System.out.println("NEED HELP? If the IDE doesn't appear, try adding -DshowConsole=true");
-			}
-			if (exitCode != 0) {
-				System.out.println("WARNING! Exit code: " + exitCode);
-			}
+			BuildPluginIdeMain.Caller caller = new BuildPluginIdeMain.Caller();
+			caller.ideHooks = ideHooks;
+			caller.workspaceDir = workspaceDir;
+			caller.classpath = files;
+			caller.debugClasspath = debugClasspath;
+			caller.initOnly = initOnly;
+			caller.showConsole = showConsole;
+			caller.useAtomos = useAtomos;
+			caller.showConsoleFlag = "-DshowConsole=true";
+			caller.launch();
 		} catch (DependencyResolutionException | IOException | InterruptedException e) {
 			throw new RuntimeException(e);
 		}
