@@ -16,7 +16,6 @@ package dev.equo.ide;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Objects;
 import javax.annotation.Nullable;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
@@ -25,12 +24,13 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
 public class IdeHookBranding implements IdeHook {
-	private String title = "Equo IDE";
+	private static String DEFAULT_TITLE = "Equo IDE";
+	private String title = DEFAULT_TITLE;
 	private @Nullable File iconImg;
 	private @Nullable File splashImg;
 
 	public IdeHookBranding title(String title) {
-		this.title = Objects.requireNonNull(title);
+		this.title = title == null ? DEFAULT_TITLE : title;
 		return this;
 	}
 
