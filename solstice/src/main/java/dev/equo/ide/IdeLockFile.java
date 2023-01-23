@@ -45,7 +45,7 @@ public class IdeLockFile {
 
 	long read() {
 		return FileMisc.readToken(workspaceDir, TOKEN_FILENAME)
-				.map(Long::parseLong)
+				.map(str -> str.isEmpty() ? NO_TOKEN_FILE : Long.parseLong(str))
 				.orElse(NO_TOKEN_FILE);
 	}
 
