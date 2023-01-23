@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+
+## [0.11.0] - 2023-01-23
 ### Added
 - A lock file mechanism to prevent launching multiple IDEs operating on a single workspace. ([#56](https://github.com/equodev/equo-ide/pull/56) fixes [#44](https://github.com/equodev/equo-ide/issues/44))
 - Support for setting title, icon, and splash screen. ([#58](https://github.com/equodev/equo-ide/pull/58) implements [#49](https://github.com/equodev/equo-ide/issues/49))
