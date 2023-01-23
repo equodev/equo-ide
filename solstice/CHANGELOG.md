@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+
+## [0.11.0] - 2023-01-23
 ### Added
 - `IdeHook` system for defining extremely simple plugins. ([#56](https://github.com/equodev/equo-ide/pull/56))
   - Moved IDE-related classes into `dev.equo.ide` package.
