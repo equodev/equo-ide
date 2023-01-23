@@ -41,6 +41,7 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 		setCacheLocations(project);
 
 		EquoIdeExtension extension = project.getExtensions().create(EQUO_IDE, EquoIdeExtension.class);
+		extension.branding.title(project.getName());
 		Configuration equoIde = createConfigurationWithTransitives(project, EQUO_IDE);
 
 		project.getRepositories().mavenCentral();

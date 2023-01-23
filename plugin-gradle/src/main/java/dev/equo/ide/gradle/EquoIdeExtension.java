@@ -14,6 +14,7 @@
 package dev.equo.ide.gradle;
 
 import dev.equo.ide.IdeHook;
+import dev.equo.ide.IdeHookBranding;
 import dev.equo.solstice.p2.P2Client;
 import dev.equo.solstice.p2.P2Model;
 import dev.equo.solstice.p2.P2Query;
@@ -22,8 +23,11 @@ import dev.equo.solstice.p2.P2Query;
 public class EquoIdeExtension extends P2ModelDsl {
 	public boolean useAtomos = true;
 	private final IdeHook.List ideHooks = new IdeHook.List();
+	public final IdeHookBranding branding = new IdeHookBranding();
 
-	public EquoIdeExtension() {}
+	{
+		ideHooks.add(branding);
+	}
 
 	private static void setToDefault(P2Model model) {
 		model.addP2Repo("https://download.eclipse.org/eclipse/updates/4.26/");

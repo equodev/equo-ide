@@ -18,7 +18,11 @@ Use it like this with `mvn equo-ide:launch`
   <artifactId>equo-ide-maven-plugin</artifactId>
   <version>{{ latest version at top of page }}</version>
   <configuration>
-     <release>4.26</release>
+    <branding>
+      <title>My IDE</title>
+      <iconImg>my_icon.png</iconImg>
+      <splashImg>my_splash.png</splashImg>
+    </branding>
   </configuration>
 </plugin>
 

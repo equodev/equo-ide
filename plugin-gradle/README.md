@@ -17,7 +17,9 @@ plugins {
   id 'dev.equo.ide' version '{{ latest version at top of page }}'
 }
 equoIde { // launch with gradlew equoIde
-  release '4.26'
+  branding.title('My IDE')
+  branding.iconImg(file('my_icon.png'))
+  branding.splashImg(file('my_splash.png'))
 }
 ```
 
