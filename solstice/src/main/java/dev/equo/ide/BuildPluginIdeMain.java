@@ -47,7 +47,7 @@ public class BuildPluginIdeMain {
 		public ArrayList<File> classpath;
 		public BuildPluginIdeMain.DebugClasspath debugClasspath;
 		public Boolean initOnly, showConsole, useAtomos;
-		public String showConsoleFlag;
+		public String showConsoleFlag, cleanFlag;
 
 		public void launch() throws IOException, InterruptedException {
 			Objects.requireNonNull(lockFile);
@@ -59,18 +59,25 @@ public class BuildPluginIdeMain {
 			Objects.requireNonNull(showConsole);
 			Objects.requireNonNull(useAtomos);
 			Objects.requireNonNull(showConsoleFlag);
+			Objects.requireNonNull(cleanFlag);
 
 			var nestedJarFolder = new File(workspaceDir, NestedJars.DIR);
 			for (var nested : NestedJars.inFiles(classpath).extractAllNestedJars(nestedJarFolder)) {
 				classpath.add(nested.getValue());
 			}
+			var classpathSorted = Launcher.copyAndSortClasspath(classpath);
+
+			if (lockFile.hasClasspath() && !classpathSorted.equals(lockFile.readClasspath())) {
+				System.out.println("WARNING! The classpath has changed since this IDE was setup.");
+				System.out.println(
+						"         Recommend closing the IDE and retrying with this flag: " + cleanFlag);
+			}
 
 			var ideHooksFile = new File(workspaceDir, "ide-hooks");
 			var ideHooksCopy = ideHooks.copy();
-			ideHooksCopy.add(IdeHookLockFile.forWorkspaceDir(workspaceDir));
+			ideHooksCopy.add(IdeHookLockFile.forWorkspaceDirAndClasspath(workspaceDir, classpathSorted));
 			SerializableMisc.toFile(ideHooksCopy, ideHooksFile);
 
-			var classpathSorted = Launcher.copyAndSortClasspath(classpath);
 			debugClasspath.printWithHead(
 					"jars about to be launched", classpathSorted.stream().map(File::getAbsolutePath));
 			boolean isBlocking =
@@ -86,11 +93,11 @@ public class BuildPluginIdeMain {
 				monitorProcess = null;
 			} else {
 				// if we're spawning a new IDE, record the lockfile before it launches
-				long lockFileBeforeLaunch = lockFile.read();
+				long lockFileBeforeLaunch = lockFile.readPidToken();
 				monitorProcess =
 						process -> {
 							// sleep over and over until the lockfile changes
-							while (lockFile.read() == lockFileBeforeLaunch) {
+							while (lockFile.readPidToken() == lockFileBeforeLaunch) {
 								try {
 									Thread.sleep(10);
 								} catch (InterruptedException e) {
@@ -214,10 +221,9 @@ public class BuildPluginIdeMain {
 		}
 		debugClasspath.printAndExitIfEnabled();
 
-		// TODO: help the IDE figure out if this is the first time it's been run like this
-		boolean isClean = true;
-
 		IdeHook.InstantiatedList ideHooks = ideHooksParsed.instantiate();
+		var lockFileHook = ideHooks.find(IdeHookLockFile.Instantiated.class);
+		boolean isClean = lockFileHook == null ? false : lockFileHook.isClean();
 		if (!initOnly) {
 			ideHooks.forEach(IdeHookInstantiated::isClean, isClean);
 			var display = Display.getDefault();

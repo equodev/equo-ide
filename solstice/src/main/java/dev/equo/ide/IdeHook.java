@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import javax.annotation.Nullable;
 
 public interface IdeHook extends Serializable {
 	class List extends ArrayList<IdeHook> {
@@ -41,6 +42,15 @@ public interface IdeHook extends Serializable {
 
 		private InstantiatedList(ArrayList<IdeHookInstantiated> list) {
 			this.list = list;
+		}
+
+		<T extends IdeHookInstantiated> @Nullable T find(Class<T> clazz) {
+			for (var e : list) {
+				if (clazz.isInstance(e)) {
+					return (T) e;
+				}
+			}
+			return null;
 		}
 
 		void forEach(Consumer<IdeHookInstantiated> method) {

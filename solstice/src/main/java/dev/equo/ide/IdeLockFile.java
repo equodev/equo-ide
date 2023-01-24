@@ -13,8 +13,10 @@
  *******************************************************************************/
 package dev.equo.ide;
 
+import dev.equo.solstice.SerializableMisc;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import javax.annotation.Nullable;
 
 public class IdeLockFile {
@@ -28,29 +30,53 @@ public class IdeLockFile {
 		return new IdeLockFile(workspaceDir);
 	}
 
-	private static final String TOKEN_FILENAME = "pid";
-	private static final long NO_TOKEN_FILE = -1L;
+	/////////////////////
+	// classpath stuff //
+	/////////////////////
+	private static final String CLASSPATH_FILENAME = "classpath";
 
-	void savePid() {
-		writeToken(ProcessHandle.current().pid());
-	}
-
-	private void writeToken(long pid) {
-		if (pid == NO_TOKEN_FILE) {
-			FileMisc.delete(new File(workspaceDir, TOKEN_FILENAME));
+	void writeClasspath(@Nullable ArrayList<File> files) {
+		if (files == null) {
+			FileMisc.delete(new File(workspaceDir, CLASSPATH_FILENAME));
 		} else {
-			FileMisc.writeToken(workspaceDir, TOKEN_FILENAME, Long.toString(pid));
+			SerializableMisc.toFile(files, new File(workspaceDir, CLASSPATH_FILENAME));
 		}
 	}
 
-	long read() {
-		return FileMisc.readToken(workspaceDir, TOKEN_FILENAME)
+	public boolean hasClasspath() {
+		return new File(workspaceDir, CLASSPATH_FILENAME).exists();
+	}
+
+	public ArrayList<File> readClasspath() {
+		return SerializableMisc.fromFile(ArrayList.class, new File(workspaceDir, CLASSPATH_FILENAME));
+	}
+
+	///////////////
+	// PID stuff //
+	///////////////
+	private static final String PID_FILENAME = "pid";
+	private static final long NO_TOKEN_FILE = -1L;
+
+	void savePid() {
+		writePidToken(ProcessHandle.current().pid());
+	}
+
+	private void writePidToken(long pid) {
+		if (pid == NO_TOKEN_FILE) {
+			FileMisc.delete(new File(workspaceDir, PID_FILENAME));
+		} else {
+			FileMisc.writeToken(workspaceDir, PID_FILENAME, Long.toString(pid));
+		}
+	}
+
+	long readPidToken() {
+		return FileMisc.readToken(workspaceDir, PID_FILENAME)
 				.map(str -> str.isEmpty() ? NO_TOKEN_FILE : Long.parseLong(str))
 				.orElse(NO_TOKEN_FILE);
 	}
 
 	public @Nullable ProcessHandle ideAlreadyRunning() {
-		long running = read();
+		long running = readPidToken();
 		if (running == NO_TOKEN_FILE) {
 			return null;
 		}
@@ -60,7 +86,7 @@ public class IdeLockFile {
 						.findAny()
 						.orElse(null);
 		if (alreadyRunning == null) {
-			writeToken(NO_TOKEN_FILE);
+			writePidToken(NO_TOKEN_FILE);
 			return null;
 		}
 		return alreadyRunning;
