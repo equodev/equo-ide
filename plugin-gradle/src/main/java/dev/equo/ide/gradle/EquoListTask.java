@@ -15,12 +15,9 @@ package dev.equo.ide.gradle;
 
 import dev.equo.solstice.p2.ConsoleTable;
 import dev.equo.solstice.p2.P2Client;
-import dev.equo.solstice.p2.P2Query;
-import dev.equo.solstice.p2.P2Unit;
+import dev.equo.solstice.p2.P2Multitool;
 import java.util.Collection;
 import java.util.EnumSet;
-import java.util.List;
-import javax.xml.transform.TransformerException;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Internal;
@@ -35,13 +32,13 @@ public abstract class EquoListTask extends DefaultTask {
 	@Internal
 	public abstract Property<EquoIdeExtension> getExtension();
 
-	private ConsoleTable.Format format = ConsoleTable.Format.ASCII;
+	P2Multitool tool = new P2Multitool();
 
 	@Option(
 			option = "format",
 			description = "Determines output format (can be combined with all other commands)")
 	void setFormat(ConsoleTable.Format format) {
-		this.format = format;
+		tool.format = format;
 	}
 
 	@OptionValues("format")
@@ -72,25 +69,19 @@ public abstract class EquoListTask extends DefaultTask {
 		this.optional = optional;
 	}
 
-	private All all;
-
-	public enum All {
-		CATEGORIES,
-		FEATURES,
-		JARS
-	}
+	private P2Multitool.All all;
 
 	@Option(
 			option = "all",
 			description =
 					"Lists the id and name of all [categories|features|jars] which meet the filter criteria")
-	void setAll(All all) {
+	void setAll(P2Multitool.All all) {
 		this.all = all;
 	}
 
 	@OptionValues("all")
-	Collection<All> getSupportedAll() {
-		return EnumSet.allOf(All.class);
+	Collection<P2Multitool.All> getSupportedAll() {
+		return EnumSet.allOf(P2Multitool.All.class);
 	}
 
 	private String detail;
@@ -129,107 +120,19 @@ public abstract class EquoListTask extends DefaultTask {
 		var extension = getExtension().get();
 		var query = extension.performQuery(getCaching().get());
 		if (all != null) {
-			all(query, all, format);
+			tool.all(query, all);
 		} else if (detail != null) {
-			detail(query, detail, format);
+			tool.detail(query, detail);
 		} else if (raw != null) {
-			raw(query, raw);
+			tool.raw(query, raw);
 		} else if (installed) {
-			installed(query, format);
+			tool.installed(query);
 		} else if (problems) {
-			problems(query, format);
+			tool.problems(query);
 		} else if (optional) {
-			optional(query, format);
+			tool.optional(query);
 		} else {
 			throw new UnsupportedOperationException("Programming error");
 		}
-	}
-
-	private static void all(P2Query query, All all, ConsoleTable.Format format) {
-		query.addAllUnits();
-		List<P2Unit> unitsToList;
-		switch (all) {
-			case CATEGORIES:
-				unitsToList = query.getCategories();
-				break;
-			case FEATURES:
-				unitsToList = query.getFeatures();
-				break;
-			case JARS:
-				unitsToList = query.getJars();
-				break;
-			default:
-				throw new IllegalArgumentException("Unknown " + all);
-		}
-		System.out.println(ConsoleTable.nameAndDescription(unitsToList, format));
-	}
-
-	private static void detail(P2Query query, String detail, ConsoleTable.Format format) {
-		var resolved = query.getInstalledUnitById(detail);
-		var allAvailable = query.getAllAvailableUnitsById(detail);
-		if (allAvailable.size() == 1) {
-			System.out.println("1 unit available with id " + detail);
-		} else {
-			System.out.println(allAvailable.size() + " units available with id " + detail);
-		}
-		for (var v : allAvailable) {
-			System.out.print("  " + v.getVersion());
-			if (v == resolved) {
-				System.out.println("  [x] included by install");
-			} else {
-				System.out.println("  [ ] not included by install");
-			}
-		}
-		System.out.println(ConsoleTable.detail(allAvailable, format));
-	}
-
-	private static void raw(P2Query query, String raw) throws TransformerException {
-		var allAvailable = query.getAllAvailableUnitsById(raw);
-		for (var unit : allAvailable) {
-			System.out.println(unit.getRawXml());
-		}
-	}
-
-	private static void installed(P2Query query, ConsoleTable.Format format) {
-		if (query.getJars().isEmpty()) {
-			System.out.println(ConsoleTable.mavenStatus(query.getJars(), format));
-			return;
-		}
-		int numUnmet = query.getUnmetRequirements().size();
-		int numAmbiguous = query.getAmbiguousRequirements().size();
-		if (numUnmet > 0) {
-			System.out.println(
-					"WARNING!!! "
-							+ numUnmet
-							+ " unmet requirement(s), "
-							+ numAmbiguous
-							+ " ambigous requirement(s).");
-			System.out.println("WARNING!!!  For more info: `gradlew equoList --problems`");
-		} else {
-			System.out.println(
-					numUnmet
-							+ " unmet requirement(s), "
-							+ numAmbiguous
-							+ " ambigous requirement(s). For more info: `gradlew equoList --problems`");
-		}
-		int numOptional = query.getOptionalRequirementsNotInstalled().size();
-		if (numOptional > 0) {
-			System.out.println(
-					numOptional
-							+ " optional requirement(s) were not installed. For more info: `gradlew equoList --optional`");
-		} else {
-			System.out.println(
-					"Every optional requirement was installed. For more info: `gradlew equoList --optional`");
-		}
-		System.out.println(ConsoleTable.mavenStatus(query.getJars(), format));
-	}
-
-	private static void problems(P2Query query, ConsoleTable.Format format) {
-		System.out.println(ConsoleTable.unmetRequirements(query, format));
-		System.out.println(ConsoleTable.ambiguousRequirements(query, format));
-	}
-
-	private static void optional(P2Query query, ConsoleTable.Format format) {
-		System.out.println(ConsoleTable.optionalRequirementsNotInstalled(query, format));
 	}
 }
