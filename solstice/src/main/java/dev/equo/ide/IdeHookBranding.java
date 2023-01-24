@@ -26,21 +26,21 @@ import org.eclipse.swt.widgets.Shell;
 public class IdeHookBranding implements IdeHook {
 	private static String DEFAULT_TITLE = "Equo IDE";
 	private String title = DEFAULT_TITLE;
-	private @Nullable File iconImg;
-	private @Nullable File splashImg;
+	private @Nullable File icon;
+	private @Nullable File splash;
 
 	public IdeHookBranding title(String title) {
 		this.title = title == null ? DEFAULT_TITLE : title;
 		return this;
 	}
 
-	public IdeHookBranding iconImg(File iconImg) {
-		this.iconImg = iconImg;
+	public IdeHookBranding icon(File iconImg) {
+		this.icon = iconImg;
 		return this;
 	}
 
-	public IdeHookBranding splashImg(File splashImg) {
-		this.splashImg = splashImg;
+	public IdeHookBranding splash(File splashImg) {
+		this.splash = splashImg;
 		return this;
 	}
 
@@ -83,7 +83,7 @@ public class IdeHookBranding implements IdeHook {
 							.orElse(monitors[0])
 							.getBounds();
 
-			Image image = loadImage(display, splashImg, "dev/equo/ide/equo_splash.png");
+			Image image = loadImage(display, IdeHookBranding.this.splash, "dev/equo/ide/equo_splash.png");
 			int imgX = image.getBounds().width;
 			int imgY = image.getBounds().height;
 			splash = new Shell(display, SWT.NO_TRIM);
@@ -114,7 +114,8 @@ public class IdeHookBranding implements IdeHook {
 			splash.dispose();
 			splash = null;
 
-			Image icon = loadImage(Display.getDefault(), iconImg, "dev/equo/ide/equo_icon.png");
+			Image icon =
+					loadImage(Display.getDefault(), IdeHookBranding.this.icon, "dev/equo/ide/equo_icon.png");
 			Shell[] shells = Display.getCurrent().getShells();
 			for (var shell : shells) {
 				shell.setText(title);

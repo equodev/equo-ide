@@ -38,6 +38,8 @@ test {
 	dependsOn 'publishToMavenLocal'
 	dependsOn ':solstice:publishToMavenLocal'
 }
+apply from: 干.file('snapshot-testing.gradle')
+
 
 tasks.named('generateMavenPluginHelpMojoSources') {
 	notCompatibleWithConfigurationCache('https://github.com/britter/maven-plugin-development/issues/8')

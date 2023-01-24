@@ -24,9 +24,9 @@ public class Branding {
 
 	@Parameter(required = false)
 	@Nullable
-	File iconImg;
+	File icon;
 
 	@Parameter(required = false)
 	@Nullable
-	File splashImg;
+	File splash;
 }

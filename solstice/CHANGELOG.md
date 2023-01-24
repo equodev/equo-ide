@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+### Fixed
+- Minor bug in `IdeLockFile`. ([`394ff8`](https://github.com/equodev/equo-ide/commit/394ff81f4b2c876416fc07ff12d4a33b5ae41164))
 
 ## [0.11.0] - 2023-01-23
 ### Added

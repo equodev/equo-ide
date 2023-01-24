@@ -1,0 +1,8 @@
+dependencies {
+	testImplementation "io.github.origin-energy:java-snapshot-testing-junit5:$VER_SNAPSHOT_TESTING"
+}
+test {
+	if (System.env['CI'] == null) {
+		systemProperty "updateSnapshot", ""
+	}
+}

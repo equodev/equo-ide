@@ -48,18 +48,15 @@ dependencies {
 	testImplementation "org.slf4j:slf4j-simple:$VER_SLF4J"
 	testImplementation "org.junit.jupiter:junit-jupiter:$VER_JUNIT"
 	testImplementation "org.assertj:assertj-core:$VER_ASSERTJ"
-	testImplementation "io.github.origin-energy:java-snapshot-testing-junit5:$VER_SNAPSHOT_TESTING"
 }
 
 tasks.named('test') {
-	useJUnitPlatform {}
-	if (System.env['CI'] == null) {
-		systemProperty "updateSnapshot", ""
-	}
+	useJUnitPlatform()
 	if (com.diffplug.common.swt.os.OS.getNative().isMac()) {
 		jvmArgs = ['-XstartOnFirstThread']
 	}
 }
+apply from: 干.file('snapshot-testing.gradle')
 
 def PLUGIN_SHIMS = ['buildship']
 for (glue in PLUGIN_SHIMS) {
