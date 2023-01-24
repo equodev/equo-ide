@@ -42,25 +42,31 @@ import org.eclipse.aether.resolution.DependencyRequest;
 import org.eclipse.aether.resolution.DependencyResolutionException;
 import org.eclipse.aether.resolution.DependencyResult;
 
+/** Launches an Eclipse-based IDE for this project. */
 @Mojo(name = "launch")
 public class LaunchMojo extends AbstractP2Mojo {
 	@Parameter(required = false)
 	private Branding branding = new Branding();
 
+	/** Wipes all IDE settings and state before rebuilding and launching. */
 	@Parameter(property = "clean", defaultValue = "false")
 	private boolean clean;
 
+	/** Initializes the runtime to check for errors then exits. */
 	@Parameter(property = "initOnly", defaultValue = "false")
 	private boolean initOnly;
 
-	@Parameter(property = "useAtomos", defaultValue = "true")
-	private boolean useAtomos;
-
+	/** Adds a visible console to the launched application. */
 	@Parameter(property = "showConsole", defaultValue = "false")
 	private boolean showConsole;
 
+	/** Dumps the classpath (in order) without starting the application. */
 	@Parameter(property = "debugClasspath", defaultValue = "disabled")
 	private BuildPluginIdeMain.DebugClasspath debugClasspath;
+
+	/** Determines whether to use Solstice's built-in OSGi runtime or instead Atomos+Equinox. */
+	@Parameter(property = "useAtomos", defaultValue = "true")
+	private boolean useAtomos;
 
 	@Parameter(defaultValue = "${project.basedir}", required = true, readonly = true)
 	protected File baseDir;
@@ -139,7 +145,7 @@ public class LaunchMojo extends AbstractP2Mojo {
 			caller.initOnly = initOnly;
 			caller.showConsole = showConsole;
 			caller.useAtomos = useAtomos;
-			caller.showConsoleFlag = "-DshowConsole=true";
+			caller.showConsoleFlag = "-DshowConsole";
 			caller.launch();
 		} catch (DependencyResolutionException | IOException | InterruptedException e) {
 			throw new RuntimeException(e);

@@ -50,7 +50,7 @@ public class LaunchTest extends MavenHarness {
 						+ "<installs>\n"
 						+ "  <install>org.eclipse.swt</install>\n"
 						+ "</installs>");
-		var output = mvnw("equo-ide:launch -DinitOnly=true -DuseAtomos=" + useAtomos);
+		var output = mvnw("equo-ide:launch -DinitOnly -DuseAtomos=" + useAtomos);
 		output.raw().matches("(?s)(.*)Loaded (\\d+) bundles(.*)");
 		output.raw().contains(useAtomos ? "using Atomos" : "not using Atomos");
 	}
