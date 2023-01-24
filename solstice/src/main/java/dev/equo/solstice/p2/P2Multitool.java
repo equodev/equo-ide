@@ -18,8 +18,43 @@ import javax.xml.transform.TransformerException;
 
 public class P2Multitool {
 	public ConsoleTable.Format format = ConsoleTable.Format.ASCII;
+	public boolean installed = false;
+	public boolean problems = false;
+	public boolean optional = false;
+	public P2Multitool.All all;
+	public String detail;
+	public String raw;
 
-	public void detail(P2Query query, String detail) {
+	public boolean argsAreValid() {
+		int numArgs = 0;
+		if (installed) ++numArgs;
+		if (problems) ++numArgs;
+		if (optional) ++numArgs;
+		if (all != null) ++numArgs;
+		if (detail != null) ++numArgs;
+		if (raw != null) ++numArgs;
+		return numArgs == 1;
+	}
+
+	public void dump(P2Query query) throws TransformerException {
+		if (all != null) {
+			all(query, all);
+		} else if (detail != null) {
+			detail(query, detail);
+		} else if (raw != null) {
+			raw(query, raw);
+		} else if (installed) {
+			installed(query);
+		} else if (problems) {
+			problems(query);
+		} else if (optional) {
+			optional(query);
+		} else {
+			throw new UnsupportedOperationException("Programming error");
+		}
+	}
+
+	private void detail(P2Query query, String detail) {
 		var resolved = query.getInstalledUnitById(detail);
 		var allAvailable = query.getAllAvailableUnitsById(detail);
 		if (allAvailable.size() == 1) {
@@ -38,16 +73,16 @@ public class P2Multitool {
 		System.out.println(ConsoleTable.detail(allAvailable, format));
 	}
 
-	public void optional(P2Query query) {
+	private void optional(P2Query query) {
 		System.out.println(ConsoleTable.optionalRequirementsNotInstalled(query, format));
 	}
 
-	public void problems(P2Query query) {
+	private void problems(P2Query query) {
 		System.out.println(ConsoleTable.unmetRequirements(query, format));
 		System.out.println(ConsoleTable.ambiguousRequirements(query, format));
 	}
 
-	public void installed(P2Query query) {
+	private void installed(P2Query query) {
 		if (query.getJars().isEmpty()) {
 			System.out.println(ConsoleTable.mavenStatus(query.getJars(), format));
 			return;
@@ -81,14 +116,14 @@ public class P2Multitool {
 		System.out.println(ConsoleTable.mavenStatus(query.getJars(), format));
 	}
 
-	public void raw(P2Query query, String raw) throws TransformerException {
+	private void raw(P2Query query, String raw) throws TransformerException {
 		var allAvailable = query.getAllAvailableUnitsById(raw);
 		for (var unit : allAvailable) {
 			System.out.println(unit.getRawXml());
 		}
 	}
 
-	public void all(P2Query query, All all) {
+	private void all(P2Query query, All all) {
 		query.addAllUnits();
 		List<P2Unit> unitsToList;
 		switch (all) {
