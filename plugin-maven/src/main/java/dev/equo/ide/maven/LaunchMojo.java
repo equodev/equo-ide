@@ -128,10 +128,7 @@ public class LaunchMojo extends AbstractP2Mojo {
 
 			var ideHooks = new IdeHook.List();
 			ideHooks.add(
-					new IdeHookBranding()
-							.title(branding.title)
-							.iconImg(branding.iconImg)
-							.splashImg(branding.splashImg));
+					new IdeHookBranding().title(branding.title).icon(branding.icon).splash(branding.splash));
 
 			BuildPluginIdeMain.Caller caller = new BuildPluginIdeMain.Caller();
 			caller.lockFile = lockfile;

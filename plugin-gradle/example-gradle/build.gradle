@@ -39,8 +39,8 @@ equoIde {
 // ADD BRANDING
 //equoIde {
 //  branding.title('My IDE')
-//          .iconImg(file('imgs/my_icon.png'))
-//          .splashImg(file('imgs/my_splash.png'))
+//          .icon(file('imgs/my_icon.png'))
+//          .splash(file('imgs/my_splash.png'))
 //  p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'
 //  install 'org.eclipse.platform.ide.categoryIU'
 //}

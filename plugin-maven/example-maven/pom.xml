@@ -36,8 +36,8 @@
         <configuration>
           <branding>
             <title>My IDE</title>
-            <iconImg>${project.basedir}/imgs/my_icon.png</iconImg>
-            <splashImg>${project.basedir}/imgs/my_splash.png</splashImg>
+            <icon>${project.basedir}/imgs/my_icon.png</icon>
+            <splash>${project.basedir}/imgs/my_splash.png</splash>
           </branding>
         </configuration>
       </plugin>

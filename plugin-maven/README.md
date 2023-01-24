@@ -20,8 +20,8 @@ Use it like this with `mvn equo-ide:launch`
   <configuration>
     <branding>
       <title>My IDE</title>
-      <iconImg>${project.basedir}/my_icon.png</iconImg>
-      <splashImg>${project.basedir}/my_splash.png</splashImg>
+      <icon>${project.basedir}/my_icon.png</icon>
+      <splash>${project.basedir}/my_splash.png</splash>
     </branding>
   </configuration>
 </plugin>

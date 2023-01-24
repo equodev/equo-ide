@@ -18,8 +18,8 @@ plugins {
 }
 equoIde { // launch with gradlew equoIde
   branding.title('My IDE')
-  branding.iconImg(file('my_icon.png'))
-  branding.splashImg(file('my_splash.png'))
+  branding.icon(file('my_icon.png'))
+  branding.splash(file('my_splash.png'))
 }
 ```
 
