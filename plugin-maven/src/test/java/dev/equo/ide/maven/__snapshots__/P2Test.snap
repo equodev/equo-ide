@@ -1,6 +1,6 @@
 dev.equo.ide.maven.P2Test.help=[
 equo-ide:p2
-  Description: (no description available)
+  Description: Lists the p2 dependencies of an Eclipse application.
   Implementation: dev.equo.ide.maven.P2Mojo
   Language: java
 
@@ -8,40 +8,42 @@ equo-ide:p2
 
     all
       User property: all
-      (no description available)
+      Lists the id and name of all [categories|features|jars] which meet the
+      filter criteria.
 
     detail
       User property: detail
-      (no description available)
+      Lists properties and requirements for all available versions of the given
+      unit id.
 
     filters
       (no description available)
 
     format (Default: ASCII)
       User property: format
-      (no description available)
+      Determines output format (can be combined with all other commands).
 
     installed (Default: false)
       User property: installed
-      (no description available)
+      Lists the jars which were installed.
 
     installs
       (no description available)
 
     optional (Default: false)
       User property: optional
-      (no description available)
+      Lists any optional requirements which were not installed.
 
     p2repos
       (no description available)
 
     problems (Default: false)
       User property: problems
-      (no description available)
+      Lists any problems with the installed jars.
 
     raw
       User property: raw
-      (no description available)
+      Lists the raw xml for all available versions of the given unit id.
 .
 .
 [INFO] ------------------------------------------------------------------------

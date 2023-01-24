@@ -1,6 +1,6 @@
 dev.equo.ide.maven.LaunchTest.help=[
 equo-ide:launch
-  Description: (no description available)
+  Description: Launches an Eclipse-based IDE for this project.
   Implementation: dev.equo.ide.maven.LaunchMojo
   Language: java
 
@@ -11,18 +11,18 @@ equo-ide:launch
 
     clean (Default: false)
       User property: clean
-      (no description available)
+      Wipes all IDE settings and state before rebuilding and launching.
 
     debugClasspath (Default: disabled)
       User property: debugClasspath
-      (no description available)
+      Dumps the classpath (in order) without starting the application.
 
     filters
       (no description available)
 
     initOnly (Default: false)
       User property: initOnly
-      (no description available)
+      Initializes the runtime to check for errors then exits.
 
     installs
       (no description available)
@@ -32,11 +32,12 @@ equo-ide:launch
 
     showConsole (Default: false)
       User property: showConsole
-      (no description available)
+      Adds a visible console to the launched application.
 
     useAtomos (Default: true)
       User property: useAtomos
-      (no description available)
+      Determines whether to use Solstice's built-in OSGi runtime or instead
+      Atomos+Equinox.
 .
 .
 [INFO] ------------------------------------------------------------------------
