@@ -165,10 +165,11 @@ public class P2Client implements AutoCloseable {
 				if (cachingPolicy.cacheAllowed()) {
 					var cached = offlineMetadataCache.get(url);
 					if (cached != null) {
-						if (cachingPolicy.cacheAllowed()) {
-							offlineMetadataCache.put404(url);
+						if (OfflineCache.is404(cached)) {
+							throw new NotFoundException(url);
+						} else {
+							return cached;
 						}
-						return cached;
 					}
 				}
 				throw e;
