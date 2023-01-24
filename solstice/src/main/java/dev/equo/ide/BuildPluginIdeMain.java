@@ -214,12 +214,14 @@ public class BuildPluginIdeMain {
 		}
 		debugClasspath.printAndExitIfEnabled();
 
+		// TODO: help the IDE figure out if this is the first time it's been run like this
+		boolean isClean = true;
+
 		IdeHook.InstantiatedList ideHooks = ideHooksParsed.instantiate();
 		if (!initOnly) {
-			ideHooks.forEach(IdeHookInstantiated::beforeDisplay);
+			ideHooks.forEach(IdeHookInstantiated::isClean, isClean);
 			var display = Display.getDefault();
 			ideHooks.forEach(IdeHookInstantiated::afterDisplay, display);
-			ideHooks.forEach(IdeHookInstantiated::beforeOsgi);
 		}
 		BundleContext context;
 		if (useAtomos) {
