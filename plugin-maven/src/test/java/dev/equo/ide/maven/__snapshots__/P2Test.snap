@@ -1,0 +1,48 @@
+dev.equo.ide.maven.P2Test.help=[
+equo-ide:p2
+  Description: (no description available)
+  Implementation: dev.equo.ide.maven.P2Mojo
+  Language: java
+
+  Available parameters:
+
+    all
+      User property: all
+      (no description available)
+
+    detail
+      User property: detail
+      (no description available)
+
+    filters
+      (no description available)
+
+    format (Default: ASCII)
+      User property: format
+      (no description available)
+
+    installed (Default: false)
+      User property: installed
+      (no description available)
+
+    installs
+      (no description available)
+
+    optional (Default: false)
+      User property: optional
+      (no description available)
+
+    p2repos
+      (no description available)
+
+    problems (Default: false)
+      User property: problems
+      (no description available)
+
+    raw
+      User property: raw
+      (no description available)
+.
+.
+[INFO] ------------------------------------------------------------------------
+]
