@@ -139,6 +139,7 @@ public abstract class EquoIdeTask extends DefaultTask {
 		caller.showConsole = showConsole;
 		caller.useAtomos = dontUseAtomosOverride ? false : getUseAtomos().get();
 		caller.showConsoleFlag = "--show-console";
+		caller.cleanFlag = "--clean";
 		caller.launch();
 	}
 }
