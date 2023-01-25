@@ -15,13 +15,21 @@ package dev.equo.ide.gradle;
 
 import dev.equo.ide.IdeHook;
 import dev.equo.ide.IdeHookBranding;
+import dev.equo.ide.IdeHookBuildship;
 import dev.equo.ide.IdeHookWelcome;
 import dev.equo.solstice.p2.P2Client;
 import dev.equo.solstice.p2.P2Model;
 import dev.equo.solstice.p2.P2Query;
+import org.gradle.api.Project;
 
 /** The DSL inside the equoIde block. */
 public class EquoIdeExtension extends P2ModelDsl {
+	private Project project;
+
+	public EquoIdeExtension(Project project) {
+		this.project = project;
+	}
+
 	public boolean useAtomos = true;
 	private final IdeHook.List ideHooks = new IdeHook.List();
 	public final IdeHookBranding branding = new IdeHookBranding();
@@ -44,6 +52,11 @@ public class EquoIdeExtension extends P2ModelDsl {
 		model.addP2Repo("https://download.eclipse.org/eclipse/updates/4.26/");
 		model.getInstall().add("org.eclipse.releng.java.languages.categoryIU");
 		model.getInstall().add("org.eclipse.platform.ide.categoryIU");
+
+		model.addP2Repo(
+				"https://download.eclipse.org/buildship/updates/e423/releases/3.x/3.1.6.v20220511-1359/");
+		model.getInstall().add("org.eclipse.buildship.feature.group");
+
 		model.addFilterAndValidate(
 				"no-slf4j-nop",
 				filter -> {
@@ -60,6 +73,9 @@ public class EquoIdeExtension extends P2ModelDsl {
 		if (modelToQuery.isEmpty()) {
 			modelToQuery = modelToQuery.deepCopy();
 			setToDefault(modelToQuery);
+			ideHooks.add(
+					new IdeHookBuildship(
+							project.getProjectDir(), project.getGradle().getStartParameter().isOffline()));
 		}
 		modelToQuery.applyNativeFilterIfNoPlatformFilter();
 		return modelToQuery.query(caching);
