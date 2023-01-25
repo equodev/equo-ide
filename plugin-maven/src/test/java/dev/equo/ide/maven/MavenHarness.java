@@ -57,11 +57,15 @@ public class MavenHarness extends ResourceHarness {
 			args.add("cmd");
 			args.add("/S");
 			args.add("/C");
-			args.add("mvnw.cmd " + argsAfterMvnw);
+			args.add(
+					"mvnw.cmd -Dproject.build.sourceEncoding=UTF-8 -Dproject.reporting.outputEncoding=UTF-8 "
+							+ argsAfterMvnw);
 		} else {
 			args.add("/bin/sh");
 			args.add("-c");
-			args.add("./mvnw " + argsAfterMvnw);
+			args.add(
+					"./mvnw -Dproject.build.sourceEncoding=UTF-8 -Dproject.reporting.outputEncoding=UTF-8 "
+							+ argsAfterMvnw);
 		}
 		var outputBytes = new ProcessRunner(rootFolder()).exec(args).stdOut();
 		return new Output(new String(outputBytes, StandardCharsets.UTF_8));
