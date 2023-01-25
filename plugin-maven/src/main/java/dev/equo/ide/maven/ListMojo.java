@@ -25,7 +25,7 @@ import org.apache.maven.plugins.annotations.Parameter;
 @Mojo(name = "list")
 public class ListMojo extends AbstractP2Mojo {
 	/** Determines output format (can be combined with all other commands). */
-	@Parameter(property = "format", defaultValue = "ASCII")
+	@Parameter(property = "format", defaultValue = "ascii")
 	private ConsoleTable.Format format;
 
 	/** Lists the jars which were installed. */

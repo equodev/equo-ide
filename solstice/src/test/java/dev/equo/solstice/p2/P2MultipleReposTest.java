@@ -42,7 +42,7 @@ public class P2MultipleReposTest {
 		return query;
 	}
 
-	final ConsoleTable.Format format = ConsoleTable.Format.ASCII;
+	final ConsoleTable.Format format = ConsoleTable.Format.ascii;
 
 	@Test
 	public void features(Expect expect) throws Exception {

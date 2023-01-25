@@ -43,7 +43,7 @@ public class P2Test {
 		query.exclude("org.eclipse.rcp_root");
 		query.excludePrefix("tooling");
 		query.install("org.eclipse.platform.ide.categoryIU");
-		expect.toMatchSnapshot(ConsoleTable.mavenStatus(query.getJars(), ConsoleTable.Format.ASCII));
+		expect.toMatchSnapshot(ConsoleTable.mavenStatus(query.getJars(), ConsoleTable.Format.ascii));
 	}
 
 	@Test
@@ -53,13 +53,13 @@ public class P2Test {
 		query.install("org.eclipse.swt");
 		expect
 				.scenario("all-platforms")
-				.toMatchSnapshot(ConsoleTable.mavenStatus(query.getJars(), ConsoleTable.Format.ASCII));
+				.toMatchSnapshot(ConsoleTable.mavenStatus(query.getJars(), ConsoleTable.Format.ascii));
 
 		var macQuery = session.query();
 		macQuery.platform(SwtPlatform.parseWsOsArch("cocoa.macosx.aarch64"));
 		macQuery.install("org.eclipse.swt");
 		expect
 				.scenario("mac-only")
-				.toMatchSnapshot(ConsoleTable.mavenStatus(macQuery.getJars(), ConsoleTable.Format.ASCII));
+				.toMatchSnapshot(ConsoleTable.mavenStatus(macQuery.getJars(), ConsoleTable.Format.ascii));
 	}
 }

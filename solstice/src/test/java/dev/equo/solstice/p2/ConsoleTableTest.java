@@ -37,6 +37,6 @@ public class ConsoleTableTest {
 				ConsoleTable.detail(
 						query.getAllAvailableUnitsById(
 								"org.eclipse.ecf.filetransfer.httpclient5.feature.feature.jar"),
-						ConsoleTable.Format.ASCII));
+						ConsoleTable.Format.ascii));
 	}
 }
