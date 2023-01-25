@@ -58,7 +58,7 @@ tasks.named('test') {
 }
 apply from: 干.file('snapshot-testing.gradle')
 
-def PLUGIN_SHIMS = ['welcome']
+def PLUGIN_SHIMS = ['welcome', 'buildship']
 for (shim in PLUGIN_SHIMS) {
 	sourceSets.register(shim) {
 		compileClasspath += sourceSets.main.output
@@ -94,6 +94,13 @@ p2deps {
 	into 'welcomeCompileOnly', {
 		p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'
 		install 'org.eclipse.platform.ide.categoryIU'
+	}
+	into 'buildshipCompileOnly', {
+		p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'
+		install 'org.eclipse.platform.ide.categoryIU'
+		install 'org.eclipse.releng.java.languages.categoryIU'
+		p2repo 'https://download.eclipse.org/buildship/updates/e423/releases/3.x/3.1.6.v20220511-1359/'
+		install 'org.eclipse.buildship.feature.group'
 	}
 }
 
