@@ -43,6 +43,19 @@ public class ListTest extends MavenHarness {
 	public void defaultP2(Expect expect) throws IOException, InterruptedException {
 		setPom("");
 		mvnw("equo-ide:list -Dinstalled")
-				.snapshot(expect.scenario("installed"));
+				.snapshotBetween(
+						"(default-cli) @ equo-maven-test-harness ---",
+						"[INFO] BUILD SUCCESS",
+						expect.scenario("installed"));
+		mvnw("equo-ide:list -Dproblems")
+				.snapshotBetween(
+						"(default-cli) @ equo-maven-test-harness ---",
+						"[INFO] BUILD SUCCESS",
+						expect.scenario("problems"));
+		mvnw("equo-ide:list -Doptional")
+				.snapshotBetween(
+						"(default-cli) @ equo-maven-test-harness ---",
+						"[INFO] BUILD SUCCESS",
+						expect.scenario("optional"));
 	}
 }
