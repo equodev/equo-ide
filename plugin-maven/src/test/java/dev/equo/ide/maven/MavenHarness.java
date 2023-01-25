@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.net.JarURLConnection;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.jar.Attributes;
@@ -57,14 +56,14 @@ public class MavenHarness extends ResourceHarness {
 			args.add("cmd");
 			args.add("/S");
 			args.add("/C");
-			args.add("mvnw.cmd -Dfile.encoding=UTF-8 " + argsAfterMvnw);
+			args.add("mvnw.cmd " + argsAfterMvnw);
 		} else {
 			args.add("/bin/sh");
 			args.add("-c");
 			args.add("./mvnw " + argsAfterMvnw);
 		}
 		var outputBytes = new ProcessRunner(rootFolder()).exec(args).stdOut();
-		return new Output(new String(outputBytes, StandardCharsets.UTF_8));
+		return new Output(new String(outputBytes));
 	}
 
 	public static class Output {
