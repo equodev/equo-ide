@@ -24,8 +24,8 @@ import org.apache.maven.plugins.annotations.Parameter;
 /** Lists the p2 dependencies of an Eclipse application. */
 @Mojo(name = "list")
 public class ListMojo extends AbstractP2Mojo {
-	/** Determines output format (can be combined with all other commands). */
-	@Parameter(property = "format", defaultValue = "ASCII")
+	/** Determines output format [ascii|csv] (can be combined with all other commands). */
+	@Parameter(property = "format", defaultValue = "ascii")
 	private ConsoleTable.Format format;
 
 	/** Lists the jars which were installed. */

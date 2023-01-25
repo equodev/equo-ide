@@ -85,7 +85,7 @@ class ScriptExec {
 	 */
 	private static File createSelfDeletingScript(String script) throws IOException {
 		String extension = OS.getRunning().isWindows() ? ".bat" : ".sh";
-		String header = OS.getRunning().isWindows() ? "" : "#!/bin/sh";
+		String header = OS.getRunning().isWindows() ? "" : "#!/bin/bash";
 		String callRobust = OS.getRunning().isWindows() ? "call " : "";
 
 		// put the script that we're going to run in its own file
@@ -170,7 +170,7 @@ class ScriptExec {
 						createSelfDeletingScript("nohup " + quote(scriptFile) + " &" + "\n" + "disown");
 				return List.of("/bin/bash", spawningScript.getAbsolutePath());
 			} else {
-				return List.of("/bin/sh", scriptFile.getAbsolutePath());
+				return List.of("/bin/bash", scriptFile.getAbsolutePath());
 			}
 		}
 	}

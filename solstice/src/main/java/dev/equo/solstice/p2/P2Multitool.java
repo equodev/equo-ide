@@ -17,7 +17,7 @@ import java.util.List;
 import javax.xml.transform.TransformerException;
 
 public class P2Multitool {
-	public ConsoleTable.Format format = ConsoleTable.Format.ASCII;
+	public ConsoleTable.Format format = ConsoleTable.Format.ascii;
 	public boolean installed = false;
 	public boolean problems = false;
 	public boolean optional = false;
@@ -127,13 +127,13 @@ public class P2Multitool {
 		query.addAllUnits();
 		List<P2Unit> unitsToList;
 		switch (all) {
-			case CATEGORIES:
+			case categories:
 				unitsToList = query.getCategories();
 				break;
-			case FEATURES:
+			case features:
 				unitsToList = query.getFeatures();
 				break;
-			case JARS:
+			case jars:
 				unitsToList = query.getJars();
 				break;
 			default:
@@ -143,8 +143,8 @@ public class P2Multitool {
 	}
 
 	public enum All {
-		CATEGORIES,
-		FEATURES,
-		JARS
+		categories,
+		features,
+		jars
 	}
 }

@@ -42,7 +42,7 @@ class Table {
 
 	public static <T> String getTable(
 			ConsoleTable.Format kind, Collection<T> objects, TableColumn.Data<T>... columns) {
-		if (kind == ConsoleTable.Format.CSV) {
+		if (kind == ConsoleTable.Format.csv) {
 			var rawColumns = Arrays.stream(columns).map(c -> c.column).toArray(TableColumn[]::new);
 			var iter = objects.iterator();
 			var rows = new String[objects.size()][];
@@ -55,7 +55,7 @@ class Table {
 				}
 			}
 			return getTable(kind, rawColumns, rows);
-		} else if (kind == ConsoleTable.Format.ASCII) {
+		} else if (kind == ConsoleTable.Format.ascii) {
 			return getTable(objects, Arrays.asList(columns));
 		} else {
 			throw new IllegalArgumentException("Unknown kind " + kind);
@@ -64,7 +64,7 @@ class Table {
 
 	public static String getTable(
 			ConsoleTable.Format format, TableColumn[] columns, String[][] data) {
-		if (format == ConsoleTable.Format.CSV) {
+		if (format == ConsoleTable.Format.csv) {
 			var builder = new StringBuilder();
 			for (var column : columns) {
 				builder.append(column.header);
@@ -84,7 +84,7 @@ class Table {
 				builder.setCharAt(builder.length() - 1, '\n');
 			}
 			return builder.toString();
-		} else if (format == ConsoleTable.Format.ASCII) {
+		} else if (format == ConsoleTable.Format.ascii) {
 			return getTable(columns, data);
 		} else {
 			throw new IllegalArgumentException("Unknown format " + format);

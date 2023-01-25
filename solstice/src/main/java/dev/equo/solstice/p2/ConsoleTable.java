@@ -23,8 +23,8 @@ import java.util.List;
 public class ConsoleTable {
 	/** Determines which format to print the table in. */
 	public enum Format {
-		ASCII,
-		CSV
+		ascii,
+		csv
 	}
 
 	/** Returns a table with the {@link RepoStatus} of all its units. */
@@ -219,7 +219,7 @@ public class ConsoleTable {
 		}
 
 		public String toString(Format format) {
-			if (format == Format.ASCII && widestWidth > MAX_WIDTH) {
+			if (format == Format.ascii && widestWidth > MAX_WIDTH) {
 				compress();
 			}
 			String result = Table.getTable(format, headers, rows.toArray(new String[0][]));
