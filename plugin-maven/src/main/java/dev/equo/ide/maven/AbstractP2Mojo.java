@@ -31,17 +31,16 @@ public abstract class AbstractP2Mojo extends AbstractMojo {
 
 		@Parameter private List<String> excludeSuffixes = Collections.emptyList();
 
-		@Parameter(defaultValue = "false")
-		boolean platformNone;
+		@Parameter private boolean platformNone = false;
 
 		private P2Model.Filter toFilter() {
 			var filter = new P2Model.Filter();
-			excludes.forEach(filter::exclude);
-			excludePrefixes.forEach(filter::excludePrefix);
-			excludeSuffixes.forEach(filter::excludeSuffix);
 			if (platformNone) {
 				filter.platformNone();
 			}
+			excludes.forEach(filter::exclude);
+			excludePrefixes.forEach(filter::excludePrefix);
+			excludeSuffixes.forEach(filter::excludeSuffix);
 			return filter;
 		}
 	}

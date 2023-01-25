@@ -41,7 +41,18 @@ public class ListTest extends MavenHarness {
 
 	@Test
 	public void defaultP2(Expect expect) throws IOException, InterruptedException {
-		setPom("");
+		setPom(
+				""
+						+ "<p2repos>\n"
+						+ "  <p2repo>https://download.eclipse.org/eclipse/updates/4.26/</p2repo>\n"
+						+ "</p2repos>\n"
+						+ "<installs>\n"
+						+ "  <install>org.eclipse.platform.ide.categoryIU</install>\n"
+						+ "</installs>\n"
+						+ "<filters>\n"
+						+ "  <filter><platformNone>true</platformNone></filter>\n"
+						+ "</filters>\n"
+						+ "");
 		mvnw("equo-ide:list -Dinstalled")
 				.snapshotBetween(
 						"(default-cli) @ equo-maven-test-harness ---",
