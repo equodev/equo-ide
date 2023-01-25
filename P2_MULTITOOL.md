@@ -5,9 +5,9 @@
 [//]: <> ($ rm *.tar)
 [//]: <> ($ ./gradlew p2multitool)
 [//]: <> ($ cp p2multi<tab> p2multitool-latest.tar)
-[//]: <> (find-replace existing '0.8.0' with '$NEW' in this document)
+[//]: <> (find-replace existing '0.12.0' with '$NEW' in this document)
 
-The EquoIDE gradle plugin can help you browse and debug p2 repositories. The maven plugin will get these features someday ([#25](https://github.com/equodev/equo-ide/issues/25)), but in the meantime this quickstart assumes that you have zero knowledge of gradle and p2. If you'd like to follow along and modify the examples to suit your problem, just download [`p2multitool-0.8.0.tar`](https://github.com/equodev/equo-ide/raw/main/p2multitool-0.8.0.tar) and extract it to a directory of your choice - you don't need to install anything else (besides a JDK on your system path).
+The EquoIDE maven and gradle plugins can help you browse and debug p2 repositories. If you'd like to follow along and modify the examples to suit your problem, just download [`p2multitool-0.12.0.tar`](https://github.com/equodev/equo-ide/raw/main/p2multitool-0.12.0.tar) and extract it to a directory of your choice - you don't need to install anything else (besides a JDK on your system path).
 
 ## Command reference
 
@@ -22,6 +22,49 @@ The EquoIDE gradle plugin can help you browse and debug p2 repositories. The mav
 - (any command) `--format=csv` to output diff-friendly CSV instead of the default `ascii` table
 - [`equoIde --init-only`](#equoide-init-only)
 
+## Maven vs Gradle
+
+The examples below are all in Gradle syntax because it is more compact, but it is trivial to map from the Gradle to Maven. The examples in [`p2multitool-0.12.0.tar`](https://github.com/equodev/equo-ide/raw/main/p2multitool-0.12.0.tar) include both `pom.xml` and `build.gradle`, as well as `gradlew` and `mvnw`, so you can use whatever is most convenient. 
+
+Here is a rosetta stone to help map:
+
+```console
+user@machine p2-multitool % ./gradlew equoList --all=categories
+user@machine p2-multitool % ./mvnw equo-ide:list -Dall=categories
+
+user@machine p2-multitool % ./gradlew equoList --installed
+user@machine p2-multitool % ./mvnw equo-ide:list -Dinstalled
+
+user@machine p2-multitool % ./gradlew equoIde
+user@machine p2-multitool % ./mvnw equo-ide:launch
+```
+
+```gradle
+// build.gradle
+plugins { id 'dev.equo.ide' version '0.12.0' }
+equoIde {
+  p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'
+  install 'org.eclipse.platform.ide.categoryIU'
+}
+```
+
+```xml
+<!--pom.xml-->
+<build><plugins><plugin>
+  <groupId>dev.equo.ide</groupId> <artifactId>equo-ide-maven-plugin</artifactId> <version>0.12.0</version>
+   <configuration>
+     <p2repos>
+       <p2repo>https://download.eclipse.org/eclipse/updates/4.26/</p2repo>
+     </p2repos>
+     <installs>
+       <install>org.eclipse.platform.ide.categoryIU</install>
+     </installs>
+  </configuration>
+</plugin></plugins></build>
+```
+
+We're hoping to make the maven DSL more compact in the future ([#57](https://github.com/equodev/equo-ide/issues/57)).
+
 ## Quickstart
 
 In this tutorial we're going to start with nothing, then get a stripped-down Eclipse IDE, then get a full [Corrosion Rust IDE](https://github.com/eclipse/corrosion) running.
@@ -31,7 +74,7 @@ In this tutorial we're going to start with nothing, then get a stripped-down Ecl
 
 ```gradle
 // build.gradle
-plugins { id 'dev.equo.ide' version '0.8.0' }
+plugins { id 'dev.equo.ide' version '0.12.0' }
 equoIde {
   p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'
 }
@@ -128,7 +171,7 @@ user@machine p2-multitool % ./gradlew equoList --installed
 ...
 ```
 
-It says `0 unmet requirements`, let's see if that's really true with `./gradlew equoIde`.
+It says `0 unmet requirements`, let's see if that's really true with `./gradlew equoIde` (or `./mvnw equo-ide:launch`).
 
 ![screenshot of a running minimal Eclipse](p2multitool_screenshot.png)
 
