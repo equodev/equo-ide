@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+### Added
+- If the classpath changes, `equoIde` now suggests adding the `--clean` flag. ([#62](https://github.com/equodev/equo-ide/pull/62))
 
 ## [0.11.0] - 2023-01-23
 ### Added
