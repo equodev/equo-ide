@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+
+## [0.12.0] - 2023-01-25
 ### Added
 - `mvn equo-ide:list` now has the p2 multitool from [`P2_MULTITOOL.md`](../P2_MULTITOOL.md). ([#61](https://github.com/equodev/equo-ide/pull/61))
 - If the classpath changes, `equo-ide:launch` now suggests adding the `-Dclean` flag. ([#62](https://github.com/equodev/equo-ide/pull/62))
