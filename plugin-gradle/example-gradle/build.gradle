@@ -1,5 +1,5 @@
 plugins {
-  id 'dev.equo.ide' version '0.12.0'
+  id 'dev.equo.ide' version '0.12.1'
 }
 // More info at https://github.com/equodev/equo-ide/blob/main/P2_MULTITOOL.md
 //
