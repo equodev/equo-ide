@@ -20,11 +20,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 @ExtendWith({SnapshotExtension.class})
-public class P2Test extends MavenHarness {
+public class ListTest extends MavenHarness {
 	@Test
 	public void help(Expect expect) throws IOException, InterruptedException {
 		setPom("");
-		mvnw("help:describe -Dcmd=equo-ide:p2 -Ddetail")
-				.snapshotBetween("Mojo: 'equo-ide:p2'", "[INFO] BUILD SUCCESS", expect);
+		mvnw("help:describe -Dcmd=equo-ide:list -Ddetail")
+				.snapshotBetween("Mojo: 'equo-ide:list'", "[INFO] BUILD SUCCESS", expect);
 	}
 }

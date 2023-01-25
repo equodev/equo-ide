@@ -1,7 +1,7 @@
-dev.equo.ide.maven.P2Test.help=[
-equo-ide:p2
+dev.equo.ide.maven.ListTest.help=[
+equo-ide:list
   Description: Lists the p2 dependencies of an Eclipse application.
-  Implementation: dev.equo.ide.maven.P2Mojo
+  Implementation: dev.equo.ide.maven.ListMojo
   Language: java
 
   Available parameters:
