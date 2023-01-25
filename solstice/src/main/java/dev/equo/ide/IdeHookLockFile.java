@@ -53,7 +53,7 @@ class IdeHookLockFile implements IdeHook {
 		}
 
 		@Override
-		public void afterDisplay(org.eclipse.swt.widgets.Display display) {
+		public void postStartup() {
 			if (workspaceDir != null) {
 				IdeLockFile.forWorkspaceDir(workspaceDir).savePid();
 			}
