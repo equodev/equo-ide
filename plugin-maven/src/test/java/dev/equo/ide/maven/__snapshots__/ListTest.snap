@@ -350,7 +350,7 @@ equo-ide:list
     filters
       (no description available)
 
-    format (Default: ASCII)
+    format (Default: ascii)
       User property: format
       Determines output format (can be combined with all other commands).
 

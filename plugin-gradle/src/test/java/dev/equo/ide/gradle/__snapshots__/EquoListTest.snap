@@ -1300,16 +1300,16 @@ Type
 Options
      --all     Lists the id and name of all [categories|features|jars] which meet the filter criteria
                Available values are:
-                    CATEGORIES
-                    FEATURES
-                    JARS
+                    categories
+                    features
+                    jars
 
      --detail     Lists properties and requirements for all available versions of the given unit id
 
      --format     Determines output format (can be combined with all other commands)
                   Available values are:
-                       ASCII
-                       CSV
+                       ascii
+                       csv
 
      --installed     Lists the jars which were installed
 
