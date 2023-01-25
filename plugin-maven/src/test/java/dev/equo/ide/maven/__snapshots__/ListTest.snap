@@ -352,7 +352,8 @@ equo-ide:list
 
     format (Default: ascii)
       User property: format
-      Determines output format (can be combined with all other commands).
+      Determines output format [ascii|csv] (can be combined with all other
+      commands).
 
     installed (Default: false)
       User property: installed
