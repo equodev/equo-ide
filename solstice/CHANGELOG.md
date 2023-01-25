@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+
+## [0.12.0] - 2023-01-25
 ### Added
 - P2Multitool now lives inside Solstice so it can be used from any build plugin. ([#61](https://github.com/equodev/equo-ide/pull/61))
 - `IdeLockFile` can now store and recall the classpath, to help prompt the user to clean when necessary. ([#62](https://github.com/equodev/equo-ide/pull/62))
