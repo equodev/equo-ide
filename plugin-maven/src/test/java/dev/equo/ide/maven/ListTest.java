@@ -27,4 +27,15 @@ public class ListTest extends MavenHarness {
 		mvnw("help:describe -Dcmd=equo-ide:list -Ddetail")
 				.snapshotBetween("Mojo: 'equo-ide:list'", "[INFO] BUILD SUCCESS", expect);
 	}
+
+	@Test
+	public void argErrorCheck(Expect expect) throws IOException, InterruptedException {
+		setPom("");
+		mvnw("equo-ide:list")
+				.snapshotBetween(
+						" on project equo-maven-test-harness: ", "-> [Help 1]", expect.scenario("no args"));
+		mvnw("equo-ide:list -Dinstalled -Dproblems")
+				.snapshotBetween(
+						" on project equo-maven-test-harness: ", "-> [Help 1]", expect.scenario("multi args"));
+	}
 }

@@ -1,3 +1,17 @@
+dev.equo.ide.maven.ListTest.argErrorCheck[multi args]=[
+Exactly one of -Dinstalled, -Dproblems, -Doptional, -Dall=[categories|features|jars], -Ddetail=id, or -Draw=id must be set.
+[ERROR] `mvn help:describe -Dcmd=equo-ide:list -Ddetail` for more info or visit https://github.com/equodev/equo-ide/blob/main/P2_MULTITOOL.md
+[ERROR]
+]
+
+
+dev.equo.ide.maven.ListTest.argErrorCheck[no args]=[
+Exactly one of -Dinstalled, -Dproblems, -Doptional, -Dall=[categories|features|jars], -Ddetail=id, or -Draw=id must be set.
+[ERROR] `mvn help:describe -Dcmd=equo-ide:list -Ddetail` for more info or visit https://github.com/equodev/equo-ide/blob/main/P2_MULTITOOL.md
+[ERROR]
+]
+
+
 dev.equo.ide.maven.ListTest.help=[
 equo-ide:list
   Description: Lists the p2 dependencies of an Eclipse application.

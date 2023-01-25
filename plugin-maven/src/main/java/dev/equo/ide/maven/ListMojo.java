@@ -65,7 +65,7 @@ public class ListMojo extends AbstractP2Mojo {
 		if (!tool.argsAreValid()) {
 			throw new MojoExecutionException(
 					"Exactly one of -Dinstalled, -Dproblems, -Doptional, -Dall=[categories|features|jars], -Ddetail=id, or -Draw=id must be set.\n"
-							+ "`gradlew help --task equoList` for more info or visit https://github.com/equodev/equo-ide/blob/main/P2_MULTITOOL.md");
+							+ "`mvn help:describe -Dcmd=equo-ide:list -Ddetail` for more info or visit https://github.com/equodev/equo-ide/blob/main/P2_MULTITOOL.md");
 		}
 		try {
 			tool.dump(query());
