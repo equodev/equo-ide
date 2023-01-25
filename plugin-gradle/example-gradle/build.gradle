@@ -1,22 +1,32 @@
 plugins {
-  id 'dev.equo.ide' version '0.11.0'
+  id 'dev.equo.ide' version '0.12.0'
 }
+// More info at https://github.com/equodev/equo-ide/blob/main/P2_MULTITOOL.md
+//
 // MINIMAL EXAMPLE
 // launch an ide
 //   gradlew equoIde
 // show everything available
-//   gradlew --all=categories
-//   gradlew --all=features
-//   gradlew --all=jars
+//   gradlew equoList --all=categories
+//   gradlew equoList --all=features
+//   gradlew equoList --all=jars
 // show the jars we are installing
 //   gradlew equoList --installed
 equoIde {
   p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'
   install 'org.eclipse.platform.ide.categoryIU'
+
+    // OPTIONAL BRANDING
+    //  branding.title('My IDE')
+    //          .icon(file('imgs/my_icon.png'))
+    //          .splash(file('imgs/my_splash.png'))
 }
 
 // PROBLEM EXAMPLE
-//   gradlew --problems
+//   gradlew equoIde --problems
+// IF TOO LONG
+//   unix:  ./gradlew equoList --problems | less
+//   windows: gradlew equoList --problems | more
 // equoIde {
 //   p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'
 //   install 'org.eclipse.platform.ide.categoryIU'
@@ -26,6 +36,7 @@ equoIde {
 // }
 
 // ADDED CDT
+//   gradlew equoIde
 // equoIde {
 //   p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'
 //   install 'org.eclipse.platform.ide.categoryIU'
@@ -35,12 +46,3 @@ equoIde {
 //   // cdt transitives for corrosion
 //   p2repo 'https://download.eclipse.org/tools/cdt/releases/11.0/cdt-11.0.0/'
 // }
-
-// ADD BRANDING
-//equoIde {
-//  branding.title('My IDE')
-//          .icon(file('imgs/my_icon.png'))
-//          .splash(file('imgs/my_splash.png'))
-//  p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'
-//  install 'org.eclipse.platform.ide.categoryIU'
-//}

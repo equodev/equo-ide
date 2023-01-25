@@ -11,3 +11,28 @@ spotless {
 }
 group = 干.proj('maven_group', 'the maven group')
 apply from: 干.file('sonatype.gradle')
+
+// see the top of P2_MULTITOOL.md for a checklist
+tasks.register('p2multitool', Tar) {
+	archiveBaseName = 'p2multitool'
+	archiveVersion = project(':plugin-gradle').spotlessChangelog.versionLast
+	from 'plugin-gradle/example-gradle', {
+		include 'gradle/**'
+		include 'gradlew'
+		include 'gradlew.bat'
+		include '*.gradle'
+		include 'imgs/**'
+	}
+	from 'plugin-maven/example-maven', {
+		include 'mvnw'
+		include 'mvnw.cmd'
+		include '.mvn/**'
+		include '*.xml'
+	}
+	from '.', {
+		include 'P2_MULTITOOL.md'
+		include 'p2*.png'
+	}
+	destinationDirectory = file(".")
+	compression = Compression.NONE
+}

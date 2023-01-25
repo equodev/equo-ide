@@ -31,21 +31,3 @@ spotless {
 		target '*.gradle', 'example/*.gradle'
 	}
 }
-
-// see the top of <project root>/P2_MULTITOOL.md for a checklist
-tasks.register('p2multitool', Tar) {
-	archiveBaseName = 'p2multitool'
-	archiveVersion = spotlessChangelog.versionLast
-	from 'example-gradle', {
-		include 'gradle/**'
-		include 'gradlew'
-		include 'gradlew.bat'
-		include '*.gradle'
-	}
-	from '../', {
-		include 'P2_MULTITOOL.md'
-		include 'p2*.png'
-	}
-	destinationDirectory = file("../")
-	compression = Compression.NONE
-}
