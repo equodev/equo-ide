@@ -13,6 +13,7 @@
  *******************************************************************************/
 package dev.equo.ide.maven;
 
+import au.com.origin.snapshots.Expect;
 import com.diffplug.common.swt.os.OS;
 import dev.equo.ide.ResourceHarness;
 import java.io.File;
@@ -21,11 +22,13 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.net.JarURLConnection;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
+import java.util.regex.Pattern;
+import org.assertj.core.api.AbstractStringAssert;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 
 public class MavenHarness extends ResourceHarness {
@@ -47,7 +50,7 @@ public class MavenHarness extends ResourceHarness {
 						});
 	}
 
-	protected String mvnw(String argsAfterMvnw) throws IOException, InterruptedException {
+	protected Output mvnw(String argsAfterMvnw) throws IOException, InterruptedException {
 		List<String> args = new ArrayList<>();
 		if (OS.getRunning().isWindows()) {
 			args.add("cmd");
@@ -60,7 +63,32 @@ public class MavenHarness extends ResourceHarness {
 			args.add("./mvnw " + argsAfterMvnw);
 		}
 		var outputBytes = new ProcessRunner(rootFolder()).exec(args).stdOut();
-		return new String(outputBytes, StandardCharsets.UTF_8);
+		return new Output(new String(outputBytes));
+	}
+
+	public static class Output {
+		private final String output;
+
+		Output(String output) {
+			this.output = output.replace("\r", "");
+		}
+
+		public void snapshotBetween(String before, String after, Expect expect) {
+			var pattern =
+					Pattern.compile(Pattern.quote(before) + "(.*)" + Pattern.quote(after), Pattern.DOTALL);
+			var matcher = pattern.matcher(output);
+			matcher.find();
+			var toMatch = matcher.group(1).trim();
+			expect.toMatchSnapshot(toMatch);
+		}
+
+		public void snapshot(Expect expect) {
+			expect.toMatchSnapshot(output.trim());
+		}
+
+		public AbstractStringAssert<?> raw() {
+			return Assertions.assertThat(output);
+		}
 	}
 
 	private static String pluginVersion() {

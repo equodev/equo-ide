@@ -13,14 +13,24 @@
  *******************************************************************************/
 package dev.equo.ide.maven;
 
+import au.com.origin.snapshots.Expect;
+import au.com.origin.snapshots.junit5.SnapshotExtension;
 import dev.equo.ide.Launcher;
 import java.io.IOException;
 import java.util.Arrays;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
+@ExtendWith({SnapshotExtension.class})
 public class LaunchTest extends MavenHarness {
+	@Test
+	public void help(Expect expect) throws IOException, InterruptedException {
+		setPom("");
+		mvnw("help:describe -Dcmd=equo-ide:launch -Ddetail")
+				.snapshotBetween("Mojo: 'equo-ide:launch'", "[INFO] BUILD SUCCESS", expect);
+	}
+
 	@Test
 	public void integrationTestAtomos() throws IOException, InterruptedException {
 		integrationTestUseAtomos(true);
@@ -40,9 +50,9 @@ public class LaunchTest extends MavenHarness {
 						+ "<installs>\n"
 						+ "  <install>org.eclipse.swt</install>\n"
 						+ "</installs>");
-		var output = mvnw("equo-ide:launch -DinitOnly=true -DuseAtomos=" + useAtomos);
-		Assertions.assertThat(output).matches("(?s)(.*)Loaded (\\d+) bundles(.*)");
-		Assertions.assertThat(output).contains(useAtomos ? "using Atomos" : "not using Atomos");
+		var output = mvnw("equo-ide:launch -DinitOnly -DuseAtomos=" + useAtomos);
+		output.raw().matches("(?s)(.*)Loaded (\\d+) bundles(.*)");
+		output.raw().contains(useAtomos ? "using Atomos" : "not using Atomos");
 	}
 
 	@Disabled

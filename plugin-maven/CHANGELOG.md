@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+### Added
+- `mvn equo-ide:list` now has the p2 multitool from [`P2_MULTITOOL.md`](../P2_MULTITOOL.md). ([#61](https://github.com/equodev/equo-ide/pull/61))
 
 ## [0.11.0] - 2023-01-23
 ### Added

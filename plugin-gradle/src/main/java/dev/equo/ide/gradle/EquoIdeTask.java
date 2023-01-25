@@ -53,6 +53,15 @@ public abstract class EquoIdeTask extends DefaultTask {
 		return ideHooks;
 	}
 
+	private boolean clean = false;
+
+	@Option(
+			option = "clean",
+			description = "Wipes all IDE settings and state before rebuilding and launching.")
+	void clean(boolean clean) {
+		this.clean = clean;
+	}
+
 	private boolean initOnly = false;
 
 	@Option(
@@ -88,15 +97,6 @@ public abstract class EquoIdeTask extends DefaultTask {
 			description = "Uses Solstice's built-in OSGi runtime instead of Atomos+Equinox.")
 	void dontUseAtomos(boolean dontUseAtomos) {
 		this.dontUseAtomosOverride = dontUseAtomos;
-	}
-
-	private boolean clean = false;
-
-	@Option(
-			option = "clean",
-			description = "Wipes all IDE settings and state before rebuilding and launching.")
-	void clean(boolean clean) {
-		this.clean = clean;
 	}
 
 	@Inject
