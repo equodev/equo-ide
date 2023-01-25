@@ -146,6 +146,7 @@ public class LaunchMojo extends AbstractP2Mojo {
 			caller.showConsole = showConsole;
 			caller.useAtomos = useAtomos;
 			caller.showConsoleFlag = "-DshowConsole";
+			caller.cleanFlag = "-Dclean";
 			caller.launch();
 		} catch (DependencyResolutionException | IOException | InterruptedException e) {
 			throw new RuntimeException(e);

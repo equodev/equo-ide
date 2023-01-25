@@ -18,20 +18,17 @@ public interface IdeHookInstantiated {
 	 * The very first method to be called, called as soon as the command line arguments have been
 	 * parsed.
 	 */
-	default void beforeDisplay() {}
+	default void isClean(boolean isClean) {}
 
-	/** Called after display is created, ~310ms after beforeDisplay. */
+	/** Called after display is created, ~310ms after isClean. */
 	default void afterDisplay(org.eclipse.swt.widgets.Display display) {}
 
-	/** Called before the OSGi container is created, ~320ms after beforeDisplay. */
-	default void beforeOsgi() {}
-
-	/** Called after the OSGi container is created and populated, ~5850ms after beforeDisplay. */
+	/** Called after the OSGi container is created and populated, ~5850ms after isClean. */
 	default void afterOsgi(org.osgi.framework.BundleContext context) {}
 
 	/**
 	 * This method is called during workbench initialization prior to any windows being opened,
-	 * ~6720ms after beforeDisplay.
+	 * ~6720ms after isClean.
 	 *
 	 * <p>{@link org.eclipse.ui.application.WorkbenchAdvisor#initialize}
 	 */
@@ -39,7 +36,7 @@ public interface IdeHookInstantiated {
 
 	/**
 	 * Performs arbitrary actions just before the first workbench window is opened (or restored),
-	 * ~6740ms after beforeDisplay.
+	 * ~6740ms after isClean.
 	 *
 	 * <p>This method is called after the workbench has been initialized and just before the first
 	 * window is about to be opened.
@@ -50,7 +47,7 @@ public interface IdeHookInstantiated {
 
 	/**
 	 * Performs arbitrary actions after the workbench windows have been opened (or restored), but
-	 * before the main event loop is run, ~8400ms after beforeDisplay.
+	 * before the main event loop is run, ~8400ms after isClean.
 	 *
 	 * <p>{@link org.eclipse.ui.application.WorkbenchAdvisor#postStartup}
 	 */

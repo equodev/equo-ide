@@ -5,6 +5,9 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 ## [Unreleased]
 ### Added
 - P2Multitool now lives inside Solstice so it can be used from any build plugin. ([#61](https://github.com/equodev/equo-ide/pull/61))
+- `IdeLockFile` can now store and recall the classpath, to help prompt the user to clean when necessary. ([#62](https://github.com/equodev/equo-ide/pull/62))
+  - Improvements to the launch experience by calling `forceActive()` on the splash and initial IDE windows.
+  - Delayed PID lockfile instantiation until the workbench has opened, should be more reliable to improve ([#44](https://github.com/equodev/equo-ide/issues/44))
 ### Fixed
 - Minor bug in `IdeLockFile`. ([`394ff8`](https://github.com/equodev/equo-ide/commit/394ff81f4b2c876416fc07ff12d4a33b5ae41164))
 - Offline caching of p2 dependencies and metadata now works again. ([`7e3f03`](https://github.com/equodev/equo-ide/pull/61/commits/7e3f036714d08635f03853bf27588f0ebd187319))

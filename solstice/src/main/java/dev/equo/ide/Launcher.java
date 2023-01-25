@@ -154,8 +154,8 @@ public class Launcher {
 		return jarFile;
 	}
 
-	public static List<File> copyAndSortClasspath(Iterable<File> files) {
-		List<File> copy = new ArrayList<>();
+	public static ArrayList<File> copyAndSortClasspath(Iterable<File> files) {
+		var copy = new ArrayList<File>();
 		files.forEach(copy::add);
 		copy.sort(
 				Comparator.comparing(File::getName).reversed()); // TODO: reversed() fixes a signing problem

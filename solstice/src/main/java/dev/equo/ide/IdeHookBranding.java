@@ -86,7 +86,7 @@ public class IdeHookBranding implements IdeHook {
 			Image image = loadImage(display, IdeHookBranding.this.splash, "dev/equo/ide/equo_splash.png");
 			int imgX = image.getBounds().width;
 			int imgY = image.getBounds().height;
-			splash = new Shell(display, SWT.NO_TRIM);
+			splash = new Shell(display, SWT.NO_TRIM | SWT.ON_TOP);
 			splash.setText("Branding");
 			splash.setBounds(
 					bestMonitor.x + (bestMonitor.width - imgX / 2) / 2,
@@ -102,6 +102,7 @@ public class IdeHookBranding implements IdeHook {
 						e.gc.drawImage(image, 0, 0, imgX, imgY, 0, 0, imgX / 2, imgY / 2);
 					});
 			splash.open();
+			splash.forceActive();
 
 			Display.setAppName(title);
 			while (display.readAndDispatch())
@@ -120,6 +121,7 @@ public class IdeHookBranding implements IdeHook {
 			for (var shell : shells) {
 				shell.setText(title);
 				shell.setImage(icon);
+				shell.forceActive();
 			}
 		}
 	}
