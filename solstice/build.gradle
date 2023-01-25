@@ -58,12 +58,17 @@ tasks.named('test') {
 }
 apply from: 干.file('snapshot-testing.gradle')
 
-def PLUGIN_SHIMS = []
-for (glue in PLUGIN_SHIMS) {
-	sourceSets.register(glue) {
+def PLUGIN_SHIMS = ['welcome']
+for (shim in PLUGIN_SHIMS) {
+	sourceSets.register(shim) {
 		compileClasspath += sourceSets.main.output
 		runtimeClasspath += sourceSets.main.output
 		java {}
+	}
+}
+jar {
+	for (shim in PLUGIN_SHIMS) {
+		from sourceSets.getByName(shim).output.classesDirs
 	}
 }
 
@@ -85,6 +90,10 @@ p2deps {
 		p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'
 		install 'org.eclipse.ui.ide.application'
 		install 'org.eclipse.equinox.event'
+	}
+	into 'welcomeCompileOnly', {
+		p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'
+		install 'org.eclipse.platform.ide.categoryIU'
 	}
 }
 
