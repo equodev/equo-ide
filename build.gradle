@@ -29,6 +29,10 @@ tasks.register('p2multitool', Tar) {
 		include '.mvn/**'
 		include '*.xml'
 	}
+	from '.', {
+		include 'P2_MULTITOOL.md'
+		include 'p2*.png'
+	}
 	destinationDirectory = file(".")
 	compression = Compression.NONE
 }
