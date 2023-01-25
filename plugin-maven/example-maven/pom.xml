@@ -10,7 +10,7 @@
     - https://github.com/equodev/equo-ide/issues/18 use m2e to import "this" project
     - https://github.com/equodev/equo-ide/issues/54 add support for compiling against p2 dependencies
 
-  EXAMPLE HOW-TO use P2 multitool see below inside configuration block
+  EXAMPLE HOW-TO USE P2 MULTITOOL see inside configuration block below
   -->
   <modelVersion>4.0.0</modelVersion>
  
@@ -27,12 +27,7 @@
         <artifactId>equo-ide-maven-plugin</artifactId>
         <version>0.12.0</version>
         <configuration>
-<!--          <branding>-->
-<!--            <title>My IDE</title>-->
-<!--            <icon>${project.basedir}/imgs/my_icon.png</icon>-->
-<!--            <splash>${project.basedir}/imgs/my_splash.png</splash>-->
-<!--          </branding>-->
-
+<!--More info at https://github.com/equodev/equo-ide/blob/main/P2_MULTITOOL.md -->
 <!--MINIMAL EXAMPLE-->
 <!--launch an ide                         -->
 <!--  mvnw equo-ide:launch                -->
@@ -49,7 +44,38 @@
             <install>org.eclipse.platform.ide.categoryIU</install>
           </installs>
 
+<!--OPTIONAL BRANDING-->
+<!--          <branding>-->
+<!--            <title>My IDE</title>-->
+<!--            <icon>${project.basedir}/imgs/my_icon.png</icon>-->
+<!--            <splash>${project.basedir}/imgs/my_splash.png</splash>-->
+<!--          </branding>-->
 
+            <!--PROBLEM EXAMPLE-->
+<!--  mvnw equo-ide:list -Dproblems-->
+<!--IF TOO LONG-->
+<!--  unix:  ./mvnw equo-ide:list -Dproblems | less -->
+<!--  windows: mvnw equo-ide:list -Dproblems | more -->
+<!--          <p2repos>-->
+<!--            <p2repo>https://download.eclipse.org/eclipse/updates/4.26/</p2repo>-->
+<!--            <p2repo>https://download.eclipse.org/corrosion/releases/1.2.4/</p2repo>-->
+<!--          </p2repos>-->
+<!--          <installs>-->
+<!--            <install>org.eclipse.platform.ide.categoryIU</install>-->
+<!--            <install>202206282034.org.eclipse.corrosion.category</install>-->
+<!--          </installs>-->
+
+<!--ADDED CDT-->
+<!--  mvn equo-ide:launch-->
+<!--          <p2repos>-->
+<!--            <p2repo>https://download.eclipse.org/eclipse/updates/4.26/</p2repo>-->
+<!--            <p2repo>https://download.eclipse.org/corrosion/releases/1.2.4/</p2repo>-->
+<!--            <p2repo>https://download.eclipse.org/tools/cdt/releases/11.0/cdt-11.0.0/</p2repo>-->
+<!--          </p2repos>-->
+<!--          <installs>-->
+<!--            <install>org.eclipse.platform.ide.categoryIU</install>-->
+<!--            <install>202206282034.org.eclipse.corrosion.category</install>-->
+<!--          </installs>-->
         </configuration>
       </plugin>
     </plugins>
