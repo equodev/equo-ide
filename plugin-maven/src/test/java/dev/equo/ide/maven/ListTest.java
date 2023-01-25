@@ -38,4 +38,11 @@ public class ListTest extends MavenHarness {
 				.snapshotBetween(
 						" on project equo-maven-test-harness: ", "-> [Help 1]", expect.scenario("multi args"));
 	}
+
+	@Test
+	public void defaultP2(Expect expect) throws IOException, InterruptedException {
+		setPom("");
+		mvnw("equo-ide:list -Dinstalled")
+				.snapshot(expect.scenario("installed"));
+	}
 }
