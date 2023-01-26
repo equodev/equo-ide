@@ -13,11 +13,10 @@
  *******************************************************************************/
 package dev.equo.ide;
 
+import dev.equo.ide.ui.PartDescriptor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Shell;
 
 class Welcome implements IdeHookInstantiated {
 	IdeHookWelcome data;
@@ -28,19 +27,16 @@ class Welcome implements IdeHookInstantiated {
 
 	@Override
 	public void postStartup() {
-		// terrible hack to get workbench shell
-		Shell[] shells = Display.getCurrent().getShells();
-		if (shells == null || shells.length == 0) {
+		if (data.openUrlOnStartup == null) {
 			return;
 		}
-		Shell workbenchShell = shells[0];
-		if (data.openUrlOnStartup != null) {
-			var welcomeShell = new Shell(workbenchShell, SWT.SHELL_TRIM);
-			welcomeShell.setLayout(new FillLayout());
-			var browser = new Browser(welcomeShell, SWT.NONE);
-			browser.setUrl(data.openUrlOnStartup);
-			welcomeShell.setBounds(workbenchShell.getBounds());
-			welcomeShell.open();
-		}
+		PartDescriptor.create(
+						"Welcome",
+						parentCmp -> {
+							parentCmp.setLayout(new FillLayout());
+							var browser = new Browser(parentCmp, SWT.NONE);
+							browser.setUrl(data.openUrlOnStartup);
+						})
+				.openOnActivePage();
 	}
 }
