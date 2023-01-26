@@ -38,6 +38,9 @@ equo-ide:launch
       User property: useAtomos
       Determines whether to use Solstice's built-in OSGi runtime or instead
       Atomos+Equinox.
+
+    welcome
+      (no description available)
 .
 .
 [INFO] ------------------------------------------------------------------------
