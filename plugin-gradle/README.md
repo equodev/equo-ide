@@ -17,9 +17,10 @@ plugins {
   id 'dev.equo.ide' version '{{ latest version at top of page }}'
 }
 equoIde { // launch with gradlew equoIde
-  branding.title('My IDE')
-  branding.icon(file('my_icon.png'))
-  branding.splash(file('my_splash.png'))
+  branding().title('My IDE')
+  branding().icon(file('my_icon.png'))
+  branding().splash(file('my_splash.png'))
+  welcome().openUrl('https://github.com/me/myproject/CONTRIBUTING.md')
 }
 ```
 

@@ -16,6 +16,7 @@ package dev.equo.ide.maven;
 import dev.equo.ide.BuildPluginIdeMain;
 import dev.equo.ide.IdeHook;
 import dev.equo.ide.IdeHookBranding;
+import dev.equo.ide.IdeHookWelcome;
 import dev.equo.ide.IdeLockFile;
 import dev.equo.solstice.NestedJars;
 import dev.equo.solstice.p2.P2Client;
@@ -47,6 +48,9 @@ import org.eclipse.aether.resolution.DependencyResult;
 public class LaunchMojo extends AbstractP2Mojo {
 	@Parameter(required = false)
 	private Branding branding = new Branding();
+
+	@Parameter(required = false)
+	private Welcome welcome = new Welcome();
 
 	/** Wipes all IDE settings and state before rebuilding and launching. */
 	@Parameter(property = "clean", defaultValue = "false")
@@ -135,6 +139,11 @@ public class LaunchMojo extends AbstractP2Mojo {
 			var ideHooks = new IdeHook.List();
 			ideHooks.add(
 					new IdeHookBranding().title(branding.title).icon(branding.icon).splash(branding.splash));
+			if (welcome != null) {
+				var welcomeHook = new IdeHookWelcome();
+				welcomeHook.openUrl(welcome.openUrl);
+				ideHooks.add(welcomeHook);
+			}
 
 			BuildPluginIdeMain.Caller caller = new BuildPluginIdeMain.Caller();
 			caller.lockFile = lockfile;

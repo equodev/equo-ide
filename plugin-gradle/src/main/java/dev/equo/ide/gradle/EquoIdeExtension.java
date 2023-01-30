@@ -15,6 +15,7 @@ package dev.equo.ide.gradle;
 
 import dev.equo.ide.IdeHook;
 import dev.equo.ide.IdeHookBranding;
+import dev.equo.ide.IdeHookWelcome;
 import dev.equo.solstice.p2.P2Client;
 import dev.equo.solstice.p2.P2Model;
 import dev.equo.solstice.p2.P2Query;
@@ -27,6 +28,20 @@ public class EquoIdeExtension extends P2ModelDsl {
 
 	{
 		ideHooks.add(branding);
+	}
+
+	public IdeHookBranding branding() {
+		return branding;
+	}
+
+	private IdeHookWelcome welcome = null;
+
+	public IdeHookWelcome welcome() {
+		if (welcome == null) {
+			welcome = new IdeHookWelcome();
+			ideHooks.add(welcome);
+		}
+		return welcome;
 	}
 
 	private static void setToDefault(P2Model model) {
