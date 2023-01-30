@@ -30,6 +30,10 @@ public class EquoIdeExtension extends P2ModelDsl {
 		ideHooks.add(branding);
 	}
 
+	public IdeHookBranding branding() {
+		return branding;
+	}
+
 	private IdeHookWelcome welcome = null;
 
 	public IdeHookWelcome welcome() {
