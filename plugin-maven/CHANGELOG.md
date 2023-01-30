@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+### Added
+- `<welcome><openUrl>...` for opening a browser on startup. ([#65](https://github.com/equodev/equo-ide/pull/65))
 
 ## [0.12.1] - 2023-01-25
 ### Fixed

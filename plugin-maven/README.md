@@ -23,6 +23,9 @@ Use it like this with `mvn equo-ide:launch`
       <icon>${project.basedir}/my_icon.png</icon>
       <splash>${project.basedir}/my_splash.png</splash>
     </branding>
+    <welcome>
+      <openUrl>https://github.com/me/myproject/CONTRIBUTING.md</openUrl>
+    </welcome>
   </configuration>
 </plugin>
 

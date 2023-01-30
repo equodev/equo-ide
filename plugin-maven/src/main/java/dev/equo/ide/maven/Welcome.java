@@ -17,5 +17,5 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.sonatype.inject.Nullable;
 
 public class Welcome {
-	@Parameter @Nullable String openUrlOnStartup;
+	@Parameter @Nullable String openUrl;
 }
