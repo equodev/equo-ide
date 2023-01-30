@@ -27,7 +27,7 @@ class Welcome implements IdeHookInstantiated {
 
 	@Override
 	public void postStartup() {
-		if (data.openUrlOnStartup == null) {
+		if (data.openUrl == null) {
 			return;
 		}
 		PartDescriptor.create(
@@ -35,7 +35,7 @@ class Welcome implements IdeHookInstantiated {
 						parentCmp -> {
 							parentCmp.setLayout(new FillLayout());
 							var browser = new Browser(parentCmp, SWT.NONE);
-							browser.setUrl(data.openUrlOnStartup);
+							browser.setUrl(data.openUrl);
 						})
 				.openOnActivePage();
 	}

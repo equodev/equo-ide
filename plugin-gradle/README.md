@@ -20,7 +20,7 @@ equoIde { // launch with gradlew equoIde
   branding().title('My IDE')
   branding().icon(file('my_icon.png'))
   branding().splash(file('my_splash.png'))
-  welcome().openUrlOnStartup('https://github.com/me/myproject/CONTRIBUTING.md')
+  welcome().openUrl('https://github.com/me/myproject/CONTRIBUTING.md')
 }
 ```
 

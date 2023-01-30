@@ -14,10 +14,10 @@
 package dev.equo.ide;
 
 public class IdeHookWelcome implements IdeHook {
-	String openUrlOnStartup;
+	String openUrl;
 
-	public IdeHookWelcome openUrlOnStartup(String openUrlOnStartup) {
-		this.openUrlOnStartup = openUrlOnStartup;
+	public IdeHookWelcome openUrl(String openUrl) {
+		this.openUrl = openUrl;
 		return this;
 	}
 
