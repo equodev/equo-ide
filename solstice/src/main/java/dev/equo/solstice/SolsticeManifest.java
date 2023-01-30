@@ -19,6 +19,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +28,9 @@ import java.util.TreeMap;
 import java.util.function.Function;
 import java.util.jar.Manifest;
 import javax.annotation.Nullable;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
 import org.slf4j.Logger;
 
@@ -171,6 +175,38 @@ public class SolsticeManifest {
 				bundle.pkgImports.removeAll(missingPackages.keySet());
 			}
 		}
+
+		/** Hydrates the bundle field of all manifests from the given context. */
+		public void hydrateFrom(BundleContext context) {
+			var solsticeManifests = new HashMap<String, SolsticeManifest>();
+			for (var solstice : bundles) {
+				var extra = solsticeManifests.put(solstice.getSymbolicName(), solstice);
+			}
+			for (var osgi : context.getBundles()) {
+				if ("true".equals(osgi.getHeaders().get("Atomos-GeneratedManifest"))) {
+					continue;
+				}
+				var manifest = solsticeManifests.remove(osgi.getSymbolicName());
+				if (manifest == null) {
+					throw new IllegalArgumentException("Solstice doesn't have " + osgi.getSymbolicName());
+				}
+				manifest.hydrated = osgi;
+			}
+			if (!solsticeManifests.isEmpty()) {
+				throw new IllegalArgumentException(
+						"Solstice has extra manifests: " + solsticeManifests.keySet());
+			}
+		}
+
+		/** Starts all hydrated manfiests. */
+		public void startAll() throws BundleException {
+			for (var solstice : bundles) {
+				if (solstice.hydrated != null) {
+					// null can happen when multiple jars with the same symbolic name
+					solstice.hydrated.start();
+				}
+			}
+		}
 	}
 
 	/** Finds every OSGi bundle on the classpath and returns it inside a {@link BundleSet}. */
@@ -199,6 +235,9 @@ public class SolsticeManifest {
 	private final List<String> requiredBundles;
 	private final List<String> pkgImports;
 	private final List<String> pkgExports;
+
+	/** The bundle which this manifest is representing, hydrated after initialization. */
+	private Bundle hydrated;
 
 	SolsticeManifest(URL manifestURL, int classpathOrder) {
 		this.classpathOrder = classpathOrder;
