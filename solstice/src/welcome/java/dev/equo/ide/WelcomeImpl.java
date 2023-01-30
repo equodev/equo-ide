@@ -18,10 +18,10 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.layout.FillLayout;
 
-class Welcome implements IdeHookInstantiated {
+class WelcomeImpl implements IdeHookInstantiated {
 	IdeHookWelcome data;
 
-	Welcome(IdeHookWelcome data) {
+	WelcomeImpl(IdeHookWelcome data) {
 		this.data = data;
 	}
 
