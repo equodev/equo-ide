@@ -20,13 +20,13 @@ import org.eclipse.buildship.ui.internal.util.gradle.GradleDistributionViewModel
 import org.eclipse.buildship.ui.internal.wizard.project.ProjectImportConfiguration;
 import org.osgi.framework.BundleContext;
 
-class Buildship implements IdeHookInstantiated {
+class BuildshipImpl implements IdeHookInstantiated {
 	IdeHookBuildship data;
 
 	/**
 	 * Logic comes from {@link org.eclipse.buildship.ui.internal.wizard.project.ProjectImportWizard}
 	 */
-	Buildship(IdeHookBuildship data) {
+	BuildshipImpl(IdeHookBuildship data) {
 		this.data = data;
 	}
 

@@ -30,8 +30,8 @@ public class IdeHookBuildship implements IdeHook {
 	@Override
 	public IdeHookInstantiated instantiate() {
 		try {
-			var clazz = Class.forName("dev.equo.ide.Buildship");
-			var constructor = clazz.getDeclaredConstructor(IdeHookWelcome.class);
+			var clazz = Class.forName("dev.equo.ide.BuildshipImpl");
+			var constructor = clazz.getDeclaredConstructor(IdeHookBuildship.class);
 			return (IdeHookInstantiated) constructor.newInstance(this);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
