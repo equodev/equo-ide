@@ -27,6 +27,8 @@ import java.util.TreeMap;
 import java.util.function.Function;
 import java.util.jar.Manifest;
 import javax.annotation.Nullable;
+import org.eclipse.osgi.util.ManifestElement;
+import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
 import org.slf4j.Logger;
 
@@ -274,38 +276,19 @@ public class SolsticeManifest {
 	 * resolution:=optional</code>.
 	 */
 	static List<String> parseAndStripManifestHeader(String in) {
-		String[] bundlesAndVersions = in.split(",");
-		List<String> attrs = new ArrayList<>();
-		List<String> required = new ArrayList<>(bundlesAndVersions.length);
-		for (String s : bundlesAndVersions) {
-			attrs.clear();
-			int attrDelim = s.indexOf(';');
-			if (attrDelim == -1) {
-				attrDelim = s.length();
-			} else {
-				int start = attrDelim;
-				while (start < s.length()) {
-					int next = s.indexOf(';', start + 1);
-					if (next == -1) {
-						next = s.length();
-					}
-					attrs.add(s.substring(start + 1, next).trim());
-					start = next;
+		try {
+			ManifestElement[] elements = ManifestElement.parseHeader("HEADER_STRIP", in);
+			List<String> stripped = new ArrayList<>(elements.length);
+			for (var e : elements) {
+				if ("optional".equals(e.getDirective("resolution"))) {
+					continue;
 				}
+				stripped.add(e.getValue());
 			}
-			if (attrs.contains("resolution:=optional")) {
-				// skip everything optional
-				continue;
-			}
-			String simple = s.substring(0, attrDelim);
-			if (simple.indexOf('"') == -1) {
-				var trimmed = simple.trim();
-				if (!required.contains(trimmed)) {
-					required.add(trimmed);
-				}
-			}
+			return stripped;
+		} catch (BundleException e) {
+			throw Unchecked.wrap(e);
 		}
-		return required;
 	}
 
 	public List<String> getRequiredBundles() {
