@@ -19,19 +19,14 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.jar.Manifest;
 import javax.annotation.Nullable;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
 import org.slf4j.Logger;
 
@@ -176,94 +171,6 @@ public class SolsticeManifest {
 				bundle.pkgImports.removeAll(missingPackages.keySet());
 			}
 		}
-
-		/** Hydrates the bundle field of all manifests from the given context. */
-		public void hydrateFrom(BundleContext context) {
-			var solsticeManifests = new HashMap<String, SolsticeManifest>();
-			for (var solstice : bundles) {
-				var extra = solsticeManifests.put(solstice.getSymbolicName(), solstice);
-			}
-			for (var osgi : context.getBundles()) {
-				if ("true".equals(osgi.getHeaders().get("Atomos-GeneratedManifest"))) {
-					continue;
-				}
-				var manifest = solsticeManifests.remove(osgi.getSymbolicName());
-				if (manifest == null) {
-					throw new IllegalArgumentException("Solstice doesn't have " + osgi.getSymbolicName());
-				}
-				manifest.hydrated = osgi;
-			}
-			if (!solsticeManifests.isEmpty()) {
-				throw new IllegalArgumentException(
-						"Solstice has extra manifests: " + solsticeManifests.keySet());
-			}
-		}
-
-		private final TreeSet<String> pkgs = new TreeSet<>();
-
-		/** Starts all hydrated manfiests. */
-		public void startAllWithLazy(boolean lazyValue) throws BundleException {
-			for (var solstice : bundles) {
-				if (solstice.isNotFragment() && solstice.lazy == lazyValue) {
-					// null can happen when multiple jars with the same symbolic name
-					activate(solstice);
-				}
-			}
-		}
-
-		private void activate(SolsticeManifest manifest) throws BundleException {
-			pkgs.addAll(manifest.getPkgExports());
-			String pkg;
-			while ((pkg = missingPkg(manifest)) != null) {
-				var bundle = bundleForPkg(pkg);
-				if (bundle == null) {
-					throw new IllegalArgumentException(manifest + " imports missing package " + pkg);
-				} else {
-					activate(bundle);
-				}
-			}
-			for (var required : manifest.getRequiredBundles()) {
-				var bundle = bundleByName(required);
-				if (bundle == null) {
-					throw new IllegalArgumentException(manifest + " required missing bundle " + bundle);
-				} else {
-					activate(bundle);
-				}
-			}
-			if (manifest.hydrated != null) {
-				// this happens when multiple with same version
-				manifest.hydrated.start();
-			}
-		}
-
-		private String missingPkg(SolsticeManifest manifest) {
-			for (var pkg : manifest.getPkgImports()) {
-				if (!pkgs.contains(pkg)) {
-					return pkg;
-				}
-			}
-			return null;
-		}
-
-		private SolsticeManifest bundleForPkg(String targetPkg) {
-			// TODO: when multiple bundles export the same package, only one gets activated in a timely
-			// fashion
-			for (var bundle : bundles) {
-				if (bundle.getPkgExports().contains(targetPkg)) {
-					return bundle;
-				}
-			}
-			return null;
-		}
-
-		private SolsticeManifest bundleByName(String name) {
-			for (var bundle : bundles) {
-				if (name.equals(bundle.getSymbolicName())) {
-					return bundle;
-				}
-			}
-			return null;
-		}
 	}
 
 	/** Finds every OSGi bundle on the classpath and returns it inside a {@link BundleSet}. */
@@ -292,10 +199,6 @@ public class SolsticeManifest {
 	private final List<String> requiredBundles;
 	private final List<String> pkgImports;
 	private final List<String> pkgExports;
-	private final boolean lazy;
-
-	/** The bundle which this manifest is representing, hydrated after initialization. */
-	private Bundle hydrated;
 
 	SolsticeManifest(URL manifestURL, int classpathOrder) {
 		this.classpathOrder = classpathOrder;
@@ -335,13 +238,6 @@ public class SolsticeManifest {
 		// multiple bundles define the same classes, which is a dubious feature to support
 		// https://access.redhat.com/documentation/en-us/red_hat_jboss_fuse/6.3/html/managing_osgi_dependencies/importexport
 		pkgImports.removeAll(pkgExports);
-
-		String activationPolicy = headersOriginal.get(Constants.BUNDLE_ACTIVATIONPOLICY);
-		lazy = activationPolicy == null ? false : activationPolicy.contains("lazy");
-	}
-
-	public boolean activationPolicyLazy() {
-		return lazy;
 	}
 
 	private boolean isNotFragment() {

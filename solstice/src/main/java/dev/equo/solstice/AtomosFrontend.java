@@ -105,7 +105,6 @@ public class AtomosFrontend {
 		props.put(Location.INSTANCE_AREA_TYPE, new File(installDir, "instance").getAbsolutePath());
 		props.put(Location.INSTALL_AREA_TYPE, new File(installDir, "install").getAbsolutePath());
 		props.put(Location.CONFIGURATION_AREA_TYPE, new File(installDir, "config").getAbsolutePath());
-		props.put("atomos.content.start", "false");
 
 		Framework framework = atomos.newFramework(props);
 		framework.start();
@@ -127,9 +126,6 @@ public class AtomosFrontend {
 								"EVENT " + event.getType() + " " + event.getBundle().getSymbolicName());
 					}
 				});
-
-		bundleSet.hydrateFrom(bundleContext);
-		bundleSet.startAllWithLazy(false);
 
 		urlWorkaround();
 	}
