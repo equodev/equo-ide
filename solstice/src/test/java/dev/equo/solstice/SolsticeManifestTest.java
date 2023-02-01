@@ -15,6 +15,7 @@ package dev.equo.solstice;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.osgi.framework.Constants;
 
 public class SolsticeManifestTest {
 	@Test
@@ -32,7 +33,7 @@ public class SolsticeManifestTest {
 								+ " \"1.9.1\";status=DEPRECATED;uses:=\"org.apiguardian.api,org.junit.platform\n"
 								+ " .commons,org.junit.platform.commons.function\"")
 						.replace("\n ", "");
-		var headers = SolsticeManifest.parseAndStripManifestHeader(orig);
+		var headers = SolsticeManifest.parseAndStripManifestHeader(Constants.EXPORT_PACKAGE, orig);
 		Assertions.assertThat(headers)
 				.containsExactly(
 						"org.junit.platform.commons",

@@ -170,6 +170,10 @@ public class SolsticeManifest {
 										++numSplitPkgs;
 									}
 								}
+								String uses = element.getDirective("uses");
+								if (uses != null) {
+									++numSplitPkgs;
+								}
 							}
 							if (numSplitPkgs < manifests.size() - 1) {
 								logger.warn("Multiple bundles exporting the same package: " + pkg);
