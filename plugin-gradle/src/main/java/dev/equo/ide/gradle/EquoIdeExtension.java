@@ -65,6 +65,7 @@ public class EquoIdeExtension extends P2ModelDsl {
 				"no-slf4j-nop",
 				filter -> {
 					filter.exclude("slf4j.nop");
+					filter.exclude("org.slf4j.api");
 				});
 		model.addFilterAndValidate(
 				"no-source",
