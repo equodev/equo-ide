@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.jar.Manifest;
 import javax.annotation.Nullable;
@@ -198,14 +199,70 @@ public class SolsticeManifest {
 			}
 		}
 
+		private final TreeSet<String> pkgs = new TreeSet<>();
+
 		/** Starts all hydrated manfiests. */
-		public void startAll() throws BundleException {
+		public void startAllWithLazy(boolean lazyValue) throws BundleException {
 			for (var solstice : bundles) {
-				if (solstice.hydrated != null) {
+				if (solstice.isNotFragment() && solstice.lazy == lazyValue) {
 					// null can happen when multiple jars with the same symbolic name
-					solstice.hydrated.start();
+					activate(solstice);
 				}
 			}
+		}
+
+		private void activate(SolsticeManifest manifest) throws BundleException {
+			pkgs.addAll(manifest.getPkgExports());
+			String pkg;
+			while ((pkg = missingPkg(manifest)) != null) {
+				var bundle = bundleForPkg(pkg);
+				if (bundle == null) {
+					throw new IllegalArgumentException(manifest + " imports missing package " + pkg);
+				} else {
+					activate(bundle);
+				}
+			}
+			for (var required : manifest.getRequiredBundles()) {
+				var bundle = bundleByName(required);
+				if (bundle == null) {
+					throw new IllegalArgumentException(manifest + " required missing bundle " + bundle);
+				} else {
+					activate(bundle);
+				}
+			}
+			if (manifest.hydrated != null) {
+				// this happens when multiple with same version
+				manifest.hydrated.start();
+			}
+		}
+
+		private String missingPkg(SolsticeManifest manifest) {
+			for (var pkg : manifest.getPkgImports()) {
+				if (!pkgs.contains(pkg)) {
+					return pkg;
+				}
+			}
+			return null;
+		}
+
+		private SolsticeManifest bundleForPkg(String targetPkg) {
+			// TODO: when multiple bundles export the same package, only one gets activated in a timely
+			// fashion
+			for (var bundle : bundles) {
+				if (bundle.getPkgExports().contains(targetPkg)) {
+					return bundle;
+				}
+			}
+			return null;
+		}
+
+		private SolsticeManifest bundleByName(String name) {
+			for (var bundle : bundles) {
+				if (name.equals(bundle.getSymbolicName())) {
+					return bundle;
+				}
+			}
+			return null;
 		}
 	}
 
@@ -235,6 +292,7 @@ public class SolsticeManifest {
 	private final List<String> requiredBundles;
 	private final List<String> pkgImports;
 	private final List<String> pkgExports;
+	private final boolean lazy;
 
 	/** The bundle which this manifest is representing, hydrated after initialization. */
 	private Bundle hydrated;
@@ -277,6 +335,13 @@ public class SolsticeManifest {
 		// multiple bundles define the same classes, which is a dubious feature to support
 		// https://access.redhat.com/documentation/en-us/red_hat_jboss_fuse/6.3/html/managing_osgi_dependencies/importexport
 		pkgImports.removeAll(pkgExports);
+
+		String activationPolicy = headersOriginal.get(Constants.BUNDLE_ACTIVATIONPOLICY);
+		lazy = activationPolicy == null ? false : activationPolicy.contains("lazy");
+	}
+
+	public boolean activationPolicyLazy() {
+		return lazy;
 	}
 
 	private boolean isNotFragment() {

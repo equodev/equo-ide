@@ -24,6 +24,7 @@ import org.apache.felix.atomos.Atomos;
 import org.eclipse.osgi.service.datalocation.Location;
 import org.eclipse.osgi.service.urlconversion.URLConverter;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleEvent;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
 import org.osgi.framework.InvalidSyntaxException;
@@ -108,10 +109,27 @@ public class AtomosFrontend {
 
 		Framework framework = atomos.newFramework(props);
 		framework.start();
+
 		bundleContext = framework.getBundleContext();
 
+		bundleContext.addBundleListener(
+				event -> {
+					if (event.getType() == BundleEvent.STARTING) {
+						System.out.println("starting " + event.getBundle().getSymbolicName());
+					} else if (event.getType() == BundleEvent.STARTED) {
+						System.out.println("started " + event.getBundle().getSymbolicName());
+					} else if (event.getType() == BundleEvent.RESOLVED) {
+						System.out.println("resolved " + event.getBundle().getSymbolicName());
+					} else if (event.getType() == BundleEvent.STOPPED) {
+						System.out.println("stopped " + event.getBundle().getSymbolicName());
+					} else {
+						System.out.println(
+								"EVENT " + event.getType() + " " + event.getBundle().getSymbolicName());
+					}
+				});
+
 		bundleSet.hydrateFrom(bundleContext);
-		bundleSet.startAll();
+		bundleSet.startAllWithLazy(false);
 
 		urlWorkaround();
 	}
