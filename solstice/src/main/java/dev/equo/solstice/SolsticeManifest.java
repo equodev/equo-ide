@@ -235,6 +235,7 @@ public class SolsticeManifest {
 	private final List<String> requiredBundles;
 	private final List<String> pkgImports;
 	private final List<String> pkgExports;
+	private final boolean lazy;
 
 	SolsticeManifest(URL manifestURL, int classpathOrder) {
 		this.classpathOrder = classpathOrder;
@@ -274,6 +275,9 @@ public class SolsticeManifest {
 		// multiple bundles define the same classes, which is a dubious feature to support
 		// https://access.redhat.com/documentation/en-us/red_hat_jboss_fuse/6.3/html/managing_osgi_dependencies/importexport
 		pkgImports.removeAll(pkgExports);
+
+		String activationPolicy = headersOriginal.get(Constants.BUNDLE_ACTIVATIONPOLICY);
+		lazy = activationPolicy == null ? false : activationPolicy.contains("lazy");
 	}
 
 	private List<ManifestElement> pkgExportsRaw;
