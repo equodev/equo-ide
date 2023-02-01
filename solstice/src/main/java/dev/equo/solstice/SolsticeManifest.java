@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.LinkedHashMap;
@@ -151,9 +152,29 @@ public class SolsticeManifest {
 			byExportedPackage.forEach(
 					(pkg, manifests) -> {
 						if (manifests.size() > 1) {
-							logger.warn("Multiple bundles exporting the same package: " + pkg);
+							int numSplitPkgs = 0;
 							for (SolsticeManifest manifest : manifests) {
-								logger.warn("  - " + manifest.jarUrl);
+								if (pkg.startsWith("META-INF.versions.")) {
+									// just an artifact of multijar
+									return;
+								}
+								var element =
+										manifest.pkgExportsRaw().stream()
+												.filter(e -> e.getValue().equals(pkg))
+												.findFirst()
+												.get();
+								String mandatory = element.getDirective("mandatory");
+								if (mandatory != null) {
+									if ("split".equals(element.getAttribute(mandatory))) {
+										++numSplitPkgs;
+									}
+								}
+							}
+							if (numSplitPkgs < manifests.size() - 1) {
+								logger.warn("Multiple bundles exporting the same package: " + pkg);
+								for (SolsticeManifest manifest : manifests) {
+									logger.warn("  - " + manifest.jarUrl);
+								}
 							}
 						}
 					});
@@ -165,9 +186,17 @@ public class SolsticeManifest {
 			var missingPackages = calculateMissingPackages(byExportedPackage.keySet());
 			missingPackages.forEach(
 					(missing, neededBy) -> {
+						if (missing.equals("kotlin") || missing.startsWith("kotlin.")) {
+							return;
+						}
+						if (missing.startsWith("javax.") || missing.startsWith("java.")) {
+							return;
+						}
+						if (missing.startsWith("org.xml.") || missing.startsWith("org.w3c.")) {
+							return;
+						}
 						logger.warn("Missing imported package " + missing + " imported by " + neededBy);
 					});
-
 			for (var bundle : bundles) {
 				bundle.requiredBundles.removeAll(missingBundles.keySet());
 				bundle.pkgImports.removeAll(missingPackages.keySet());
@@ -229,17 +258,32 @@ public class SolsticeManifest {
 			headersOriginal.put(entry.getKey().toString(), entry.getValue().toString());
 		}
 
-		var symbolicNameRaw = parseOriginal(Constants.BUNDLE_SYMBOLICNAME);
+		var symbolicNameRaw = parseAndStrip(Constants.BUNDLE_SYMBOLICNAME);
 		symbolicName = symbolicNameRaw.isEmpty() ? null : symbolicNameRaw.get(0);
 
-		requiredBundles = parseOriginal(Constants.REQUIRE_BUNDLE);
+		requiredBundles = parseAndStrip(Constants.REQUIRE_BUNDLE);
 
-		pkgImports = parseOriginal(Constants.IMPORT_PACKAGE);
-		pkgExports = parseOriginal(Constants.EXPORT_PACKAGE);
+		pkgExports = parseAndStrip(Constants.EXPORT_PACKAGE);
+		pkgImports = parseAndStrip(Constants.IMPORT_PACKAGE);
 		// if we export a package, we don't actually have to import it, that's just for letting
 		// multiple bundles define the same classes, which is a dubious feature to support
 		// https://access.redhat.com/documentation/en-us/red_hat_jboss_fuse/6.3/html/managing_osgi_dependencies/importexport
 		pkgImports.removeAll(pkgExports);
+	}
+
+	private List<ManifestElement> pkgExportsRaw;
+
+	private List<ManifestElement> pkgExportsRaw() {
+		if (pkgExportsRaw == null) {
+			pkgExportsRaw =
+					Arrays.asList(
+							Unchecked.get(
+									() ->
+											ManifestElement.parseHeader(
+													Constants.EXPORT_PACKAGE,
+													headersOriginal.get(Constants.EXPORT_PACKAGE))));
+		}
+		return pkgExportsRaw;
 	}
 
 	private boolean isNotFragment() {
@@ -254,12 +298,12 @@ public class SolsticeManifest {
 		return jarUrl;
 	}
 
-	private List<String> parseOriginal(String key) {
+	private List<String> parseAndStrip(String key) {
 		String attribute = headersOriginal.get(key);
 		if (attribute == null) {
 			return Collections.emptyList();
 		}
-		return parseAndStripManifestHeader(attribute);
+		return parseAndStripManifestHeader(key, attribute);
 	}
 
 	@Override
@@ -275,9 +319,9 @@ public class SolsticeManifest {
 	 * Parses a jar manifest header, ignoring versions and removing anything with <code>
 	 * resolution:=optional</code>.
 	 */
-	static List<String> parseAndStripManifestHeader(String in) {
+	static List<String> parseAndStripManifestHeader(String key, String in) {
 		try {
-			ManifestElement[] elements = ManifestElement.parseHeader("HEADER_STRIP", in);
+			ManifestElement[] elements = ManifestElement.parseHeader(key, in);
 			List<String> stripped = new ArrayList<>(elements.length);
 			for (var e : elements) {
 				if ("optional".equals(e.getDirective("resolution"))) {

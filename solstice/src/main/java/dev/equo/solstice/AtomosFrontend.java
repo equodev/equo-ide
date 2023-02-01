@@ -59,7 +59,7 @@ public class AtomosFrontend {
 			}
 			String symbolicName =
 					SolsticeManifest.parseAndStripManifestHeader(
-									existingHeaders.get(Constants.BUNDLE_SYMBOLICNAME))
+									Constants.BUNDLE_SYMBOLICNAME, existingHeaders.get(Constants.BUNDLE_SYMBOLICNAME))
 							.get(0);
 			var candidates = bySymbolicName.get(symbolicName);
 			if (candidates == null || candidates.isEmpty()) {
