@@ -66,6 +66,11 @@ public class EquoIdeExtension extends P2ModelDsl {
 				filter -> {
 					filter.exclude("slf4j.nop");
 				});
+		model.addFilterAndValidate(
+				"no-source",
+				filter -> {
+					filter.excludeSuffix(".source");
+				});
 	}
 
 	IdeHook.List getIdeHooks() {
