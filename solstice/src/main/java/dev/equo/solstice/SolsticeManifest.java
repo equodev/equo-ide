@@ -19,6 +19,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -328,6 +329,20 @@ public class SolsticeManifest {
 					continue;
 				}
 				stripped.add(e.getValue());
+			}
+			// remove duplicate entries: e.g. commons-io exports the same packages at multiple versions
+			if (stripped.size() > 1) {
+				stripped.sort(Comparator.naturalOrder());
+				var iter = stripped.iterator();
+				var prev = iter.next();
+				while (iter.hasNext()) {
+					var next = iter.next();
+					if (prev.equals(next)) {
+						iter.remove();
+					} else {
+						prev = next;
+					}
+				}
 			}
 			return stripped;
 		} catch (BundleException e) {
