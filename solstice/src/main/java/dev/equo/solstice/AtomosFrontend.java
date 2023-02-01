@@ -75,7 +75,6 @@ public class AtomosFrontend {
 
 		public Map<String, String> atomosHeaders(SolsticeManifest manifest) {
 			Map<String, String> atomos = new LinkedHashMap<>(manifest.getHeadersOriginal());
-			atomos.remove(Constants.REQUIRE_CAPABILITY);
 			setHeader(atomos, Constants.IMPORT_PACKAGE, manifest.getPkgImports());
 			setHeader(atomos, Constants.EXPORT_PACKAGE, manifest.getPkgExports());
 			setHeader(atomos, Constants.REQUIRE_BUNDLE, manifest.getRequiredBundles());
