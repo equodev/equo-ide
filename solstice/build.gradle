@@ -93,8 +93,7 @@ p2deps {
 	}
 	into 'testImplementation', {
 		p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'
-		install 'org.eclipse.ui.ide.application'
-		install 'org.eclipse.equinox.event'
+		install 'org.eclipse.platform.ide.categoryIU'
 	}
 	into 'welcomeCompileOnly', {
 		p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'
@@ -110,7 +109,7 @@ p2deps {
 }
 
 tasks.register('IdeMainTest', JavaExec) {
-	mainClass = 'dev.equo.solstice.IdeMainBuildPluginTest'
+	mainClass = 'dev.equo.ide.IdeMainBuildPluginTest'
 	classpath = sourceSets.test.runtimeClasspath
 	if (com.diffplug.common.swt.os.OS.getNative().isMac()) {
 		jvmArgs = ['-XstartOnFirstThread']
