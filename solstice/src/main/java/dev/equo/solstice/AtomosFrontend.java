@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Starts an OSGi context using Atomos. All problems related to missing bundles and missing packages
  * are resolved by modifying bundle headers with {@link
- * SolsticeManifest.BundleSet#warnAndModifyManifestsToFix(Logger)}.
+ * BundleSet#warnAndModifyManifestsToFix(Logger)}.
  */
 public class AtomosFrontend {
 	private final BundleContext bundleContext;
@@ -44,7 +44,7 @@ public class AtomosFrontend {
 		final Map<String, List<SolsticeManifest>> bySymbolicName;
 		final Logger logger;
 
-		HeaderProvider(SolsticeManifest.BundleSet bundleSet, Logger logger) {
+		HeaderProvider(BundleSet bundleSet, Logger logger) {
 			bySymbolicName = bundleSet.bySymbolicName();
 			this.logger = logger;
 		}
