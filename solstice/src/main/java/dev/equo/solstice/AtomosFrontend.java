@@ -103,11 +103,22 @@ public class AtomosFrontend {
 		props.put(Location.INSTANCE_AREA_TYPE, new File(installDir, "instance").getAbsolutePath());
 		props.put(Location.INSTALL_AREA_TYPE, new File(installDir, "install").getAbsolutePath());
 		props.put(Location.CONFIGURATION_AREA_TYPE, new File(installDir, "config").getAbsolutePath());
+		props.put("atomos.content.start", "false");
 
 		Framework framework = atomos.newFramework(props);
 		framework.start();
-
 		bundleContext = framework.getBundleContext();
+
+		bundleSet.hydrateFrom(
+				manifest -> {
+					for (var bundle : bundleContext.getBundles()) {
+						if (bundle.getSymbolicName().equals(manifest.getSymbolicName())) {
+							return bundle;
+						}
+					}
+					throw new IllegalArgumentException("No bundle for " + manifest.getSymbolicName());
+				});
+
 		urlWorkaround();
 	}
 

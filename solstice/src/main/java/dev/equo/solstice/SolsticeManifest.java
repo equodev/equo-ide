@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.jar.Manifest;
 import javax.annotation.Nullable;
 import org.eclipse.osgi.util.ManifestElement;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
 
@@ -68,6 +69,8 @@ public class SolsticeManifest {
 	final List<String> pkgImports;
 	private final List<String> pkgExports;
 	private final boolean lazy;
+
+	Bundle hydrated;
 
 	SolsticeManifest(URL manifestURL, int classpathOrder) {
 		this.classpathOrder = classpathOrder;

@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.function.Function;
+import org.osgi.framework.Bundle;
 import org.slf4j.Logger;
 
 /** Represents a closed universe of OSGi bundles. */
@@ -182,6 +183,13 @@ public class BundleSet {
 		for (var bundle : bundles) {
 			bundle.requiredBundles.removeAll(missingBundles.keySet());
 			bundle.pkgImports.removeAll(missingPackages.keySet());
+		}
+	}
+
+	/** Hydrates the bundle field of all manifests from the given context. */
+	public void hydrateFrom(Function<SolsticeManifest, Bundle> bundleCreator) {
+		for (var bundle : bundles) {
+			bundle.hydrated = bundleCreator.apply(bundle);
 		}
 	}
 }
