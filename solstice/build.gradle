@@ -108,7 +108,12 @@ p2deps {
 	}
 }
 
+tasks.register('IdeMainTestClean', Delete) {
+	delete 'build/testSetup'
+}
+
 tasks.register('IdeMainTest', JavaExec) {
+	dependsOn 'IdeMainTestClean'
 	mainClass = 'dev.equo.ide.IdeMainBuildPluginTest'
 	classpath = sourceSets.test.runtimeClasspath
 	if (com.diffplug.common.swt.os.OS.getNative().isMac()) {
