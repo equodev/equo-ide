@@ -65,18 +65,18 @@ import org.slf4j.LoggerFactory;
 public class Solstice extends ServiceRegistry {
 	private static Solstice instance;
 
-	public static Solstice initialize(SolsticeInit init) {
+	public static Solstice initialize(SolsticeInit init, BundleSet bundleSet) {
 		if (instance != null) {
 			throw new IllegalStateException("Solstice has already been initialized");
 		}
-		instance = new Solstice(init);
+		instance = new Solstice(init, bundleSet);
 		return instance;
 	}
 
 	private final Logger logger = LoggerFactory.getLogger(Solstice.class);
 	private final SolsticeInit init;
 
-	private Solstice(SolsticeInit init) {
+	private Solstice(SolsticeInit init, BundleSet bundleSet) {
 		Handler.install(this);
 
 		this.init = init;
@@ -84,13 +84,21 @@ public class Solstice extends ServiceRegistry {
 		SolsticeFrameworkUtilHelper.initialize(this);
 		init.bootstrapServices(systemBundle, this);
 		logger.info("Bootstrap services installed");
-
-		discoverAndSortBundles();
-		logger.info("Confirming that nested jars have been extracted");
-		NestedJars.onClassPath().confirmAllNestedJarsArePresentOnClasspath(init.nestedJarFolder());
-		logger.info("All bundles found and sorted.");
-		for (var b : bundles) {
-			logger.info("  {}", b);
+		bundleSet.hydrateFrom(
+				manifest -> {
+					var bundle = new ShimBundle(manifest);
+					bundles.add(bundle);
+					return bundle;
+				});
+		for (var bundle : bundles) {
+			var host = bundle.fragmentHost();
+			if (host != null) {
+				var hostBundle = bundleByName(host);
+				if (hostBundle == null) {
+					throw new IllegalArgumentException("Fragment " + bundle + " needs missing " + host);
+				}
+				hostBundle.addFragment(bundle);
+			}
 		}
 		startAllWithLazy(false);
 	}
@@ -115,27 +123,6 @@ public class Solstice extends ServiceRegistry {
 	private final List<ShimBundle> bundles = new ArrayList<>();
 	private final TreeSet<String> pkgs = new TreeSet<>();
 
-	private void discoverAndSortBundles() {
-		var bundleSet = SolsticeManifest.discoverBundles();
-		bundleSet.warnAndModifyManifestsToFix(logger);
-		bundleSet.hydrateFrom(
-				manifest -> {
-					var bundle = new ShimBundle(manifest);
-					bundles.add(bundle);
-					return bundle;
-				});
-		for (var bundle : bundles) {
-			var host = bundle.fragmentHost();
-			if (host != null) {
-				var hostBundle = bundleByName(host);
-				if (hostBundle == null) {
-					throw new IllegalArgumentException("Fragment " + bundle + " needs missing " + host);
-				}
-				hostBundle.addFragment(bundle);
-			}
-		}
-	}
-
 	public ShimBundle bundleByName(String name) {
 		for (ShimBundle bundle : bundles) {
 			if (name.equals(bundle.getSymbolicName())) {
@@ -155,13 +142,30 @@ public class Solstice extends ServiceRegistry {
 		return null;
 	}
 
-	private ShimBundle bundleForPkg(String targetPkg) {
+	private List<ShimBundle> bundlesForPkg(String targetPkg) {
+		Object bundleForPkg = null;
 		for (var bundle : bundles) {
 			if (bundle.manifest.getPkgExports().contains(targetPkg)) {
-				return bundle;
+				if (bundleForPkg == null) {
+					bundleForPkg = bundle;
+				} else {
+					if (bundleForPkg instanceof ArrayList) {
+						((ArrayList) bundleForPkg).add(bundle);
+					} else {
+						var list = new ArrayList<ShimBundle>();
+						list.add((ShimBundle) bundleForPkg);
+						list.add(bundle);
+					}
+				}
 			}
 		}
-		return null;
+		if (bundleForPkg == null) {
+			return Collections.emptyList();
+		} else if (bundleForPkg instanceof ShimBundle) {
+			return Collections.singletonList((ShimBundle) bundleForPkg);
+		} else {
+			return (List<ShimBundle>) bundleForPkg;
+		}
 	}
 
 	final Bundle systemBundle =
@@ -479,16 +483,16 @@ public class Solstice extends ServiceRegistry {
 				logger.info("  skipping because of shim implementation");
 				return;
 			}
-			String pkg = missingPkg();
-			while (pkg != null) {
-				var bundle = bundleForPkg(pkg);
-				logger.info("{} import {} package {}", this, bundle == null ? "missing" : bundle, pkg);
-				if (bundle == null) {
-					throw new IllegalArgumentException(this + " imports missing package " + pkg);
+			String pkg;
+			while ((pkg = missingPkg()) != null) {
+				var bundles = bundlesForPkg(pkg);
+				if (bundles.isEmpty()) {
+					throw new IllegalArgumentException(manifest + " imports missing package " + pkg);
 				} else {
-					bundle.activate();
+					for (var bundle : bundles) {
+						bundle.activate();
+					}
 				}
-				pkg = missingPkg();
 			}
 			var requiredBundles = new ArrayList<>(manifest.getRequiredBundles());
 			var additional = init.additionalDeps().get(getSymbolicName());
@@ -496,7 +500,6 @@ public class Solstice extends ServiceRegistry {
 				requiredBundles.addAll(additional);
 			}
 			for (var required : requiredBundles) {
-				logger.info("{} requires {}", this, required);
 				ShimBundle bundle = bundleByName(required);
 				if (bundle != null) {
 					bundle.activate();
@@ -504,14 +507,12 @@ public class Solstice extends ServiceRegistry {
 					throw new IllegalArgumentException(this + " requires missing bundle " + required);
 				}
 			}
-			logger.info("/START ACTIVATE {}", this);
 			state = RESOLVED;
 			notifyBundleListeners(BundleEvent.RESOLVED, this);
 
 			state = STARTING;
 			notifyBundleListeners(BundleEvent.STARTING, this);
 			if (activator != null) {
-				logger.info("{} Bundle-Activator {}", this, activator);
 				try {
 					var c = (Constructor<BundleActivator>) Class.forName(activator).getConstructor();
 					var bundleActivator = c.newInstance();
@@ -523,7 +524,6 @@ public class Solstice extends ServiceRegistry {
 			}
 			state = ACTIVE;
 			notifyBundleListeners(BundleEvent.STARTED, this);
-			logger.info("\\FINISH ACTIVATE {}", this);
 		}
 
 		private String missingPkg() {

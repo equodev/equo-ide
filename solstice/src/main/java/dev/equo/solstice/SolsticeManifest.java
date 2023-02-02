@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Enumeration;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,23 +40,6 @@ import org.osgi.framework.Constants;
  * </ul>
  */
 public class SolsticeManifest {
-
-	/** Finds every OSGi bundle on the classpath and returns it inside a {@link BundleSet}. */
-	public static BundleSet discoverBundles() {
-		Enumeration<URL> manifestURLs =
-				Unchecked.get(() -> SolsticeManifest.class.getClassLoader().getResources(MANIFEST_PATH));
-
-		int classpathOrder = 0;
-		List<SolsticeManifest> manifests = new ArrayList<>();
-		while (manifestURLs.hasMoreElements()) {
-			var manifest = new SolsticeManifest(manifestURLs.nextElement(), ++classpathOrder);
-			if (manifest.symbolicName != null) {
-				manifests.add(manifest);
-			}
-		}
-		return new BundleSet(manifests);
-	}
-
 	public static final String MANIFEST_PATH = "META-INF/MANIFEST.MF";
 	public static final String SLASH_MANIFEST_PATH = "/" + MANIFEST_PATH;
 

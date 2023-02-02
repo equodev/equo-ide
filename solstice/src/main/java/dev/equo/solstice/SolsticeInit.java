@@ -37,7 +37,7 @@ import org.osgi.service.packageadmin.PackageAdmin;
 
 /** Controls the initialization of the {@link Solstice} runtime. */
 public class SolsticeInit {
-	private File installDir;
+	private final File installDir;
 
 	public SolsticeInit(File installDir) {
 		this.installDir = installDir;
@@ -52,14 +52,6 @@ public class SolsticeInit {
 						"org.eclipse.e4.ui.di",
 						"org.eclipse.e4.ui.workbench.swt"));
 		return additional;
-	}
-
-	public File nestedJarFolder() {
-		return new File(installDir, NestedJars.DIR);
-	}
-
-	public List<String> requiresWorkbench() {
-		return Arrays.asList("org.eclipse.debug.ui", "org.eclipse.help.ui");
 	}
 
 	public void bootstrapServices(Bundle systemBundle, BundleContext context) {

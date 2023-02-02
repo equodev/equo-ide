@@ -14,6 +14,7 @@
 package dev.equo.ide;
 
 import com.diffplug.common.swt.os.OS;
+import dev.equo.solstice.BundleSet;
 import dev.equo.solstice.NestedJars;
 import dev.equo.solstice.SerializableMisc;
 import dev.equo.solstice.Solstice;
@@ -33,6 +34,8 @@ import org.eclipse.swt.widgets.Display;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.InvalidSyntaxException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A main method for launching an IDE using Solstice. It has a verbose command line interface which
@@ -221,6 +224,12 @@ public class BuildPluginIdeMain {
 		}
 		debugClasspath.printAndExitIfEnabled();
 
+		Logger logger = LoggerFactory.getLogger(BundleSet.class);
+		NestedJars.onClassPath()
+				.confirmAllNestedJarsArePresentOnClasspath(new File(installDir, NestedJars.DIR));
+		var bundleSet = BundleSet.discoverOnClasspath();
+		bundleSet.warnAndModifyManifestsToFix(logger);
+
 		IdeHook.InstantiatedList ideHooks = ideHooksParsed.instantiate();
 		var lockFileHook = ideHooks.find(IdeHookLockFile.Instantiated.class);
 		boolean isClean = lockFileHook == null ? false : lockFileHook.isClean();
@@ -229,14 +238,16 @@ public class BuildPluginIdeMain {
 			var display = Display.getDefault();
 			ideHooks.forEach(IdeHookInstantiated::afterDisplay, display);
 		}
+
 		BundleContext context;
 		if (useAtomos) {
 			// the spelled-out package is on purpose so that Atomos can remain an optional component
 			// works together with
 			// https://github.com/equodev/equo-ide/blob/aa7d30cba9988bc740ff4bc4b3015475d30d187c/solstice/build.gradle#L16-L22
-			context = new dev.equo.solstice.AtomosFrontend(installDir).getBundleContext();
+			var atomosFrontend = new dev.equo.solstice.AtomosFrontend(installDir, bundleSet);
+			context = atomosFrontend.getBundleContext();
 		} else {
-			context = Solstice.initialize(new SolsticeInit(installDir));
+			context = Solstice.initialize(new SolsticeInit(installDir), bundleSet);
 		}
 		if (!initOnly) {
 			ideHooks.forEach(IdeHookInstantiated::afterOsgi, context);

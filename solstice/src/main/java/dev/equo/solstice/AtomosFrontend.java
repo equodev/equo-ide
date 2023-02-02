@@ -15,6 +15,7 @@ package dev.equo.solstice;
 
 import java.io.File;
 import java.net.URL;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -77,6 +78,7 @@ public class AtomosFrontend {
 			setHeader(atomos, Constants.IMPORT_PACKAGE, manifest.getPkgImports());
 			setHeader(atomos, Constants.EXPORT_PACKAGE, manifest.getPkgExports());
 			setHeader(atomos, Constants.REQUIRE_BUNDLE, manifest.getRequiredBundles());
+			setHeader(atomos, Constants.REQUIRE_CAPABILITY, Collections.emptyList());
 			return atomos;
 		}
 
@@ -89,13 +91,9 @@ public class AtomosFrontend {
 		}
 	}
 
-	public AtomosFrontend(File installDir) throws BundleException, InvalidSyntaxException {
+	public AtomosFrontend(File installDir, BundleSet bundleSet)
+			throws BundleException, InvalidSyntaxException {
 		Logger logger = LoggerFactory.getLogger(AtomosFrontend.class);
-		NestedJars.onClassPath()
-				.confirmAllNestedJarsArePresentOnClasspath(new File(installDir, NestedJars.DIR));
-
-		var bundleSet = SolsticeManifest.discoverBundles();
-		bundleSet.warnAndModifyManifestsToFix(logger);
 		Atomos atomos = Atomos.newAtomos(new HeaderProvider(bundleSet, logger));
 		// Set atomos.content.install to false to prevent automatic bundle installation
 		var props = new LinkedHashMap<String, String>();
@@ -118,6 +116,18 @@ public class AtomosFrontend {
 					}
 					throw new IllegalArgumentException("No bundle for " + manifest.getSymbolicName());
 				});
+
+		for (var bundle : bundleContext.getBundles()) {
+			if (bundleSet.bundleByName(bundle.getSymbolicName()) == null) {
+				bundle.start();
+			}
+		}
+
+		bundleSet.activate(bundleSet.bundleByName("org.eclipse.osgi"));
+		bundleSet.activate(bundleSet.bundleByName("org.apache.felix.scr"));
+		bundleSet.activate(bundleSet.bundleByName("org.eclipse.equinox.event"));
+		bundleSet.activate(bundleSet.bundleByName("org.eclipse.ui.ide.application"));
+		bundleSet.startAllWithLazy(false);
 
 		urlWorkaround();
 	}

@@ -13,8 +13,10 @@
  *******************************************************************************/
 package dev.equo.solstice;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -25,12 +27,33 @@ import java.util.function.Function;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** Represents a closed universe of OSGi bundles. */
 public class BundleSet {
+	public static BundleSet discoverOnClasspath() {
+		Enumeration<URL> manifestURLs =
+				Unchecked.get(
+						() ->
+								SolsticeManifest.class
+										.getClassLoader()
+										.getResources(SolsticeManifest.MANIFEST_PATH));
+
+		int classpathOrder = 0;
+		List<SolsticeManifest> manifests = new ArrayList<>();
+		while (manifestURLs.hasMoreElements()) {
+			var manifest = new SolsticeManifest(manifestURLs.nextElement(), ++classpathOrder);
+			if (manifest.getSymbolicName() != null) {
+				manifests.add(manifest);
+			}
+		}
+		return new BundleSet(manifests);
+	}
+
+	private final Logger logger = LoggerFactory.getLogger(BundleSet.class);
 	private final List<SolsticeManifest> bundles;
 
-	BundleSet(List<SolsticeManifest> bundles) {
+	private BundleSet(List<SolsticeManifest> bundles) {
 		this.bundles = bundles;
 	}
 
@@ -214,7 +237,7 @@ public class BundleSet {
 		if (!newAddition) {
 			return;
 		}
-		System.out.println("activate " + manifest.getSymbolicName());
+		logger.info("Request activate {}", manifest);
 		pkgs.addAll(manifest.getPkgExports());
 		String pkg;
 		while ((pkg = missingPkg(manifest)) != null) {
