@@ -28,10 +28,8 @@ import java.util.Comparator;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Function;
@@ -95,43 +93,20 @@ public class Solstice extends ServiceRegistry {
 		for (var b : bundles) {
 			logger.info("  {}", b);
 		}
-		for (var bundle : bundles) {
-			try {
-				bundle.tryActivate();
-			} catch (ActivatorException e) {
-				throw Unchecked.wrap(e);
+		startAllWithLazy(false);
+	}
+
+	public void startAllWithLazy(boolean lazyValue) {
+		for (var solstice : bundles) {
+			if (solstice.manifest.isNotFragment() && solstice.manifest.lazy == lazyValue) {
+				try {
+					solstice.activate();
+				} catch (ActivatorException e) {
+					throw Unchecked.wrap(e);
+				}
 			}
 		}
 	}
-
-	public void activateWorkbenchBundles() {
-		if (workbenchIsActive) {
-			throw new IllegalStateException("Can only be called once!");
-		}
-		workbenchIsActive = true;
-		logger.info("Workbench has been instantiated, activating bundles which require the workbench");
-		for (var bundle : workbenchQueue) {
-			bundle.activating = false;
-		}
-		for (var bundle : workbenchQueue) {
-			try {
-				bundle.tryActivate();
-			} catch (ActivatorException e) {
-				throw Unchecked.wrap(e);
-			}
-		}
-	}
-
-	private void addToWorkbenchQueue(ShimBundle bundle) {
-		if (workbenchIsActive) {
-			throw new IllegalStateException(
-					"This should only happen before the workbench has activated.");
-		}
-		workbenchQueue.add(bundle);
-	}
-
-	private boolean workbenchIsActive = false;
-	private final Set<ShimBundle> workbenchQueue = new LinkedHashSet<>();
 
 	@Override
 	public Bundle systemBundle() {
@@ -475,7 +450,7 @@ public class Solstice extends ServiceRegistry {
 		@Override
 		public void start(int options) {
 			try {
-				tryActivate();
+				activate();
 			} catch (ActivatorException e) {
 				throw Unchecked.wrap(e);
 			}
@@ -489,16 +464,9 @@ public class Solstice extends ServiceRegistry {
 		private boolean activating = false;
 
 		/** Returns false if the bundle cannot activate yet because of "requiresWorkbench" */
-		private boolean tryActivate() throws ActivatorException {
+		private void activate() throws ActivatorException {
 			if (activating) {
-				return true;
-			}
-			if (!workbenchIsActive) {
-				if (init.requiresWorkbench().contains(manifest.getSymbolicName())) {
-					logger.info("Activating {} will wait for workbench", this);
-					addToWorkbenchQueue(this);
-					return false;
-				}
+				return;
 			}
 			activating = true;
 
@@ -508,7 +476,7 @@ public class Solstice extends ServiceRegistry {
 				state = ACTIVE;
 				// skip org.eclipse.osgi on purpose
 				logger.info("  skipping because of shim implementation");
-				return true;
+				return;
 			}
 			String pkg = missingPkg();
 			while (pkg != null) {
@@ -517,11 +485,7 @@ public class Solstice extends ServiceRegistry {
 				if (bundle == null) {
 					throw new IllegalArgumentException(this + " imports missing package " + pkg);
 				} else {
-					if (!bundle.tryActivate()) {
-						addToWorkbenchQueue(this);
-						logger.info("Activating {} delayed because an Import-Package needs workbench", this);
-						return false;
-					}
+					bundle.activate();
 				}
 				pkg = missingPkg();
 			}
@@ -534,11 +498,7 @@ public class Solstice extends ServiceRegistry {
 				logger.info("{} requires {}", this, required);
 				ShimBundle bundle = bundleByName(required);
 				if (bundle != null) {
-					if (!bundle.tryActivate()) {
-						addToWorkbenchQueue(this);
-						logger.info("Activating {} delayed because a Require-Bundle needs workbench", this);
-						return false;
-					}
+					bundle.activate();
 				} else {
 					throw new IllegalArgumentException(this + " requires missing bundle " + required);
 				}
@@ -556,13 +516,13 @@ public class Solstice extends ServiceRegistry {
 					var bundleActivator = c.newInstance();
 					bundleActivator.start(this);
 				} catch (Exception e) {
-					throw new ActivatorException(this, e);
+					e.printStackTrace();
+					//					throw new ActivatorException(this, e);
 				}
 			}
 			state = ACTIVE;
 			notifyBundleListeners(BundleEvent.STARTED, this);
 			logger.info("\\FINISH ACTIVATE {}", this);
-			return true;
 		}
 
 		private String missingPkg() {

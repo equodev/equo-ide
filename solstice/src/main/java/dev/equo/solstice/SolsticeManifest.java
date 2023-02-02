@@ -68,7 +68,7 @@ public class SolsticeManifest {
 	final List<String> requiredBundles;
 	final List<String> pkgImports;
 	private final List<String> pkgExports;
-	private final boolean lazy;
+	final boolean lazy;
 
 	Bundle hydrated;
 

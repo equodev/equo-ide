@@ -62,7 +62,7 @@ class IdeMainUi {
 					@Override
 					public void initialize(IWorkbenchConfigurer configurer) {
 						if (osgiShim instanceof Solstice) {
-							((Solstice) osgiShim).activateWorkbenchBundles();
+							((Solstice) osgiShim).startAllWithLazy(true);
 						}
 						super.initialize(configurer);
 						ideHooks.forEach(IdeHookInstantiated::initialize);
