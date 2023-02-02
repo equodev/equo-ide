@@ -263,7 +263,7 @@ public class BuildPluginIdeMain {
 			return;
 		}
 
-		int exitCode = IdeMainUi.main(context, ideHooks);
+		int exitCode = IdeMainUi.main(context, ideHooks, bundleSet);
 		if (exitCode == 0) {
 			System.exit(0);
 		} else {
