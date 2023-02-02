@@ -15,12 +15,15 @@ package dev.equo.solstice;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.function.Function;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleException;
 import org.slf4j.Logger;
 
 /** Represents a closed universe of OSGi bundles. */
@@ -191,5 +194,96 @@ public class BundleSet {
 		for (var bundle : bundles) {
 			bundle.hydrated = bundleCreator.apply(bundle);
 		}
+	}
+
+	private final TreeSet<String> pkgs = new TreeSet<>();
+
+	/** Starts all hydrated manfiests. */
+	public void startAllWithLazy(boolean lazyValue) {
+		for (var solstice : bundles) {
+			if (solstice.isNotFragment() && solstice.lazy == lazyValue) {
+				activate(solstice);
+			}
+		}
+	}
+
+	private Set<SolsticeManifest> activatingBundles = new HashSet<>();
+
+	void activate(SolsticeManifest manifest) {
+		boolean newAddition = activatingBundles.add(manifest);
+		if (!newAddition) {
+			return;
+		}
+		System.out.println("activate " + manifest.getSymbolicName());
+		pkgs.addAll(manifest.getPkgExports());
+		String pkg;
+		while ((pkg = missingPkg(manifest)) != null) {
+			var bundles = bundlesForPkg(pkg);
+			if (bundles.isEmpty()) {
+				throw new IllegalArgumentException(manifest + " imports missing package " + pkg);
+			} else {
+				for (var bundle : bundles) {
+					activate(bundle);
+				}
+			}
+		}
+		for (var required : manifest.getRequiredBundles()) {
+			var bundle = bundleByName(required);
+			if (bundle == null) {
+				throw new IllegalArgumentException(manifest + " required missing bundle " + bundle);
+			} else {
+				activate(bundle);
+			}
+		}
+		// this happens when multiple with same version
+		try {
+			manifest.hydrated.start();
+		} catch (BundleException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private String missingPkg(SolsticeManifest manifest) {
+		for (var pkg : manifest.getPkgImports()) {
+			if (!pkgs.contains(pkg)) {
+				return pkg;
+			}
+		}
+		return null;
+	}
+
+	private List<SolsticeManifest> bundlesForPkg(String targetPkg) {
+		Object bundleForPkg = null;
+		for (var bundle : bundles) {
+			if (bundle.getPkgExports().contains(targetPkg)) {
+				if (bundleForPkg == null) {
+					bundleForPkg = bundle;
+				} else {
+					if (bundleForPkg instanceof ArrayList) {
+						((ArrayList) bundleForPkg).add(bundle);
+					} else {
+						var list = new ArrayList<SolsticeManifest>();
+						list.add((SolsticeManifest) bundleForPkg);
+						list.add(bundle);
+					}
+				}
+			}
+		}
+		if (bundleForPkg == null) {
+			return Collections.emptyList();
+		} else if (bundleForPkg instanceof SolsticeManifest) {
+			return Collections.singletonList((SolsticeManifest) bundleForPkg);
+		} else {
+			return (List<SolsticeManifest>) bundleForPkg;
+		}
+	}
+
+	SolsticeManifest bundleByName(String name) {
+		for (var bundle : bundles) {
+			if (name.equals(bundle.getSymbolicName())) {
+				return bundle;
+			}
+		}
+		return null;
 	}
 }
