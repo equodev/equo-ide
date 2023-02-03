@@ -29,7 +29,7 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Objects;
-import java.util.TreeSet;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Function;
 import java.util.regex.Pattern;
@@ -40,7 +40,6 @@ import org.eclipse.core.internal.runtime.InternalPlatform;
 import org.eclipse.osgi.internal.framework.FilterImpl;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
-import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
 import org.osgi.framework.BundleListener;
 import org.osgi.framework.Constants;
@@ -48,6 +47,7 @@ import org.osgi.framework.FrameworkListener;
 import org.osgi.framework.Version;
 import org.osgi.framework.namespace.IdentityNamespace;
 import org.osgi.framework.startlevel.BundleStartLevel;
+import org.osgi.framework.startlevel.FrameworkStartLevel;
 import org.osgi.framework.wiring.BundleCapability;
 import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.framework.wiring.BundleWiring;
@@ -63,6 +63,8 @@ import org.slf4j.LoggerFactory;
  * on the classpath.
  */
 public class Solstice extends ServiceRegistry {
+	private static final Set<String> DONT_ACTIVATE = Set.of("org.eclipse.osgi");
+
 	private static Solstice instance;
 
 	public static Solstice initialize(SolsticeInit init, BundleSet bundleSet) {
@@ -90,27 +92,15 @@ public class Solstice extends ServiceRegistry {
 					bundles.add(bundle);
 					return bundle;
 				});
+		// wire fragments together
 		for (var bundle : bundles) {
 			var host = bundle.fragmentHost();
 			if (host != null) {
-				var hostBundle = bundleByName(host);
+				var hostBundle = bundleForSymbolicName(host);
 				if (hostBundle == null) {
 					throw new IllegalArgumentException("Fragment " + bundle + " needs missing " + host);
 				}
 				hostBundle.addFragment(bundle);
-			}
-		}
-		startAllWithLazy(false);
-	}
-
-	public void startAllWithLazy(boolean lazyValue) {
-		for (var solstice : bundles) {
-			if (solstice.manifest.isNotFragment() && solstice.manifest.lazy == lazyValue) {
-				try {
-					solstice.activate();
-				} catch (ActivatorException e) {
-					throw Unchecked.wrap(e);
-				}
 			}
 		}
 	}
@@ -121,9 +111,8 @@ public class Solstice extends ServiceRegistry {
 	}
 
 	private final List<ShimBundle> bundles = new ArrayList<>();
-	private final TreeSet<String> pkgs = new TreeSet<>();
 
-	public ShimBundle bundleByName(String name) {
+	public ShimBundle bundleForSymbolicName(String name) {
 		for (ShimBundle bundle : bundles) {
 			if (name.equals(bundle.getSymbolicName())) {
 				return bundle;
@@ -132,7 +121,7 @@ public class Solstice extends ServiceRegistry {
 		return null;
 	}
 
-	public Bundle bundleForURL(URL source) {
+	public Bundle bundleForUrl(URL source) {
 		String sourceString = "jar:" + source.toExternalForm() + "!";
 		for (ShimBundle bundle : bundles) {
 			if (sourceString.equals(bundle.manifest.getJarUrl())) {
@@ -140,32 +129,6 @@ public class Solstice extends ServiceRegistry {
 			}
 		}
 		return null;
-	}
-
-	private List<ShimBundle> bundlesForPkg(String targetPkg) {
-		Object bundleForPkg = null;
-		for (var bundle : bundles) {
-			if (bundle.manifest.getPkgExports().contains(targetPkg)) {
-				if (bundleForPkg == null) {
-					bundleForPkg = bundle;
-				} else {
-					if (bundleForPkg instanceof ArrayList) {
-						((ArrayList) bundleForPkg).add(bundle);
-					} else {
-						var list = new ArrayList<ShimBundle>();
-						list.add((ShimBundle) bundleForPkg);
-						list.add(bundle);
-					}
-				}
-			}
-		}
-		if (bundleForPkg == null) {
-			return Collections.emptyList();
-		} else if (bundleForPkg instanceof ShimBundle) {
-			return Collections.singletonList((ShimBundle) bundleForPkg);
-		} else {
-			return (List<ShimBundle>) bundleForPkg;
-		}
 	}
 
 	final Bundle systemBundle =
@@ -217,7 +180,7 @@ public class Solstice extends ServiceRegistry {
 				}
 
 				@Override
-				public BundleContext getBundleContext() {
+				public Solstice getBundleContext() {
 					return Solstice.this;
 				}
 
@@ -227,6 +190,11 @@ public class Solstice extends ServiceRegistry {
 						return (A) packageAdmin;
 					} else if (type.equals(FrameworkWiring.class)) {
 						return (A) frameworkWiring;
+					} else if (type.equals(BundleRevision.class)) {
+						return null;
+					} else if (type.equals(FrameworkStartLevel.class)) {
+						return (A) new Unimplemented.FrameworkStartLevel() {};
+
 					} else {
 						throw new UnsupportedOperationException(type.getName());
 					}
@@ -250,7 +218,7 @@ public class Solstice extends ServiceRegistry {
 
 				@Override
 				public Bundle[] getBundles(String symbolicName, String versionRange) {
-					var bundle = bundleByName(symbolicName);
+					var bundle = bundleForSymbolicName(symbolicName);
 					return (bundle == null) ? new Bundle[0] : new Bundle[] {bundle};
 				}
 
@@ -286,7 +254,7 @@ public class Solstice extends ServiceRegistry {
 					try {
 						var requirementFilter = FilterImpl.newInstance(filterSpec).getStandardOSGiAttributes();
 						var requiredBundle = requirementFilter.get(IdentityNamespace.IDENTITY_NAMESPACE);
-						var bundle = bundleByName(requiredBundle);
+						var bundle = bundleForSymbolicName(requiredBundle);
 						return Collections.singleton(new ShimBundleCapability(bundle));
 					} catch (Exception e) {
 						throw Unimplemented.onPurpose();
@@ -409,11 +377,7 @@ public class Solstice extends ServiceRegistry {
 
 		ShimBundle fragmentHostBundle() {
 			var host = fragmentHost();
-			return host == null ? null : bundleByName(host);
-		}
-
-		public ShimBundle bundleByName(String name) {
-			return Solstice.this.bundleByName(name);
+			return host == null ? null : bundleForSymbolicName(host);
 		}
 
 		@Override
@@ -439,11 +403,7 @@ public class Solstice extends ServiceRegistry {
 			if (this == systemBundle) {
 				return systemBundle.getBundleId();
 			} else {
-				int idx = bundles.indexOf(this);
-				if (idx == -1) {
-					throw new IllegalStateException("This bundle wasn't known at startup.");
-				}
-				return idx + 1;
+				return manifest.classpathOrder + 1;
 			}
 		}
 
@@ -454,11 +414,7 @@ public class Solstice extends ServiceRegistry {
 
 		@Override
 		public void start(int options) {
-			try {
-				activate();
-			} catch (ActivatorException e) {
-				throw Unchecked.wrap(e);
-			}
+			activate();
 		}
 
 		///////////////////
@@ -469,70 +425,32 @@ public class Solstice extends ServiceRegistry {
 		private boolean activating = false;
 
 		/** Returns false if the bundle cannot activate yet because of "requiresWorkbench" */
-		private void activate() throws ActivatorException {
+		private void activate() {
 			if (activating) {
 				return;
 			}
 			activating = true;
 
-			logger.info("Request activate {}", this);
-			pkgs.addAll(manifest.getPkgExports());
-			if ("org.eclipse.osgi".equals(getSymbolicName())) {
-				state = ACTIVE;
-				// skip org.eclipse.osgi on purpose
-				logger.info("  skipping because of shim implementation");
-				return;
-			}
-			String pkg;
-			while ((pkg = missingPkg()) != null) {
-				var bundles = bundlesForPkg(pkg);
-				if (bundles.isEmpty()) {
-					throw new IllegalArgumentException(manifest + " imports missing package " + pkg);
-				} else {
-					for (var bundle : bundles) {
-						bundle.activate();
-					}
-				}
-			}
-			var requiredBundles = new ArrayList<>(manifest.getRequiredBundles());
-			var additional = init.additionalDeps().get(getSymbolicName());
-			if (additional != null) {
-				requiredBundles.addAll(additional);
-			}
-			for (var required : requiredBundles) {
-				ShimBundle bundle = bundleByName(required);
-				if (bundle != null) {
-					bundle.activate();
-				} else {
-					throw new IllegalArgumentException(this + " requires missing bundle " + required);
-				}
-			}
 			state = RESOLVED;
 			notifyBundleListeners(BundleEvent.RESOLVED, this);
 
 			state = STARTING;
 			notifyBundleListeners(BundleEvent.STARTING, this);
-			if (activator != null) {
+			if (!DONT_ACTIVATE.contains(getSymbolicName()) && activator != null) {
 				try {
 					var c = (Constructor<BundleActivator>) Class.forName(activator).getConstructor();
 					var bundleActivator = c.newInstance();
 					bundleActivator.start(this);
 				} catch (Exception e) {
-					e.printStackTrace();
-					//					throw new ActivatorException(this, e);
+					try {
+						throw new ActivatorException(this, e);
+					} catch (ActivatorException ae) {
+						ae.printStackTrace();
+					}
 				}
 			}
 			state = ACTIVE;
 			notifyBundleListeners(BundleEvent.STARTED, this);
-		}
-
-		private String missingPkg() {
-			for (var pkg : manifest.getPkgImports()) {
-				if (!pkgs.contains(pkg)) {
-					return pkg;
-				}
-			}
-			return null;
 		}
 
 		@Override
@@ -546,8 +464,8 @@ public class Solstice extends ServiceRegistry {
 		}
 
 		@Override
-		public BundleContext getBundleContext() {
-			return this;
+		public Solstice getBundleContext() {
+			return Solstice.this;
 		}
 
 		@Override
@@ -703,45 +621,12 @@ public class Solstice extends ServiceRegistry {
 		}
 	}
 
-	static class ActivatorException extends Exception {
+	static class ActivatorException extends RuntimeException {
 		final ShimBundle bundle;
 
 		ActivatorException(ShimBundle bundle, Exception cause) {
 			super(cause);
 			this.bundle = bundle;
 		}
-	}
-
-	/** Parse out a manifest header, and ignore the versions */
-	static List<String> parseManifestHeaderSimple(String in) {
-		String[] bundlesAndVersions = in.split(",");
-		List<String> attrs = new ArrayList<>();
-		List<String> required = new ArrayList<>(bundlesAndVersions.length);
-		for (String s : bundlesAndVersions) {
-			attrs.clear();
-			int attrDelim = s.indexOf(';');
-			if (attrDelim == -1) {
-				attrDelim = s.length();
-			} else {
-				int start = attrDelim;
-				while (start < s.length()) {
-					int next = s.indexOf(';', start + 1);
-					if (next == -1) {
-						next = s.length();
-					}
-					attrs.add(s.substring(start + 1, next).trim());
-					start = next;
-				}
-			}
-			if (attrs.contains("resolution:=optional")) {
-				// skip everything optional
-				continue;
-			}
-			String simple = s.substring(0, attrDelim);
-			if (simple.indexOf('"') == -1) {
-				required.add(simple.trim());
-			}
-		}
-		return required;
 	}
 }

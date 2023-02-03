@@ -72,7 +72,12 @@ class ShimBundleWiring extends Unimplemented.BundleWiring {
 		}
 		for (var required : bundle.manifest.getRequiredBundles()) {
 			// TODO: this should respect whether a required bundle is re-exported or not
-			listResourcesHelper(asStrings, bundle.bundleByName(required), path, filePattern, recurse);
+			listResourcesHelper(
+					asStrings,
+					bundle.getBundleContext().bundleForSymbolicName(required),
+					path,
+					filePattern,
+					recurse);
 		}
 	}
 

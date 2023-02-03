@@ -44,7 +44,7 @@ public class SolsticeManifest {
 	public static final String SLASH_MANIFEST_PATH = "/" + MANIFEST_PATH;
 
 	private final String jarUrl;
-	private final int classpathOrder;
+	final int classpathOrder;
 	private final @Nullable String symbolicName;
 	private final LinkedHashMap<String, String> headersOriginal = new LinkedHashMap<>();
 	final List<String> requiredBundles;
