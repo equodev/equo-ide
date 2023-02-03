@@ -22,7 +22,7 @@ import org.slf4j.simple.SimpleLogger;
 public class IdeMainBuildPluginTest {
 	public static void main(String[] args)
 			throws InvalidSyntaxException, BundleException, IOException {
-		boolean useAtomos = false;
+		boolean useAtomos = true;
 
 		System.setProperty(SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "INFO");
 		System.setProperty(SimpleLogger.LOG_FILE_KEY, "System.out");

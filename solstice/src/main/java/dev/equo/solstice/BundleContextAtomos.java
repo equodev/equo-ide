@@ -13,7 +13,6 @@
  *******************************************************************************/
 package dev.equo.solstice;
 
-import java.io.File;
 import java.net.URL;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -22,7 +21,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.apache.felix.atomos.Atomos;
-import org.eclipse.osgi.service.datalocation.Location;
 import org.eclipse.osgi.service.urlconversion.URLConverter;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
@@ -82,21 +80,13 @@ public class BundleContextAtomos implements Atomos.HeaderProvider {
 		}
 	}
 
-	public static BundleContext open(File installDir, BundleSet bundleSet) throws BundleException {
+	public static BundleContext hydrate(BundleSet bundleSet, Map<String, String> props)
+			throws BundleException {
 		Logger logger = LoggerFactory.getLogger(BundleContextAtomos.class);
 		Atomos atomos = Atomos.newAtomos(new BundleContextAtomos(bundleSet, logger));
-		// Set atomos.content.install to false to prevent automatic bundle installation
-		var props = new LinkedHashMap<String, String>();
-		props.put(Constants.FRAMEWORK_STORAGE_CLEAN, Constants.FRAMEWORK_STORAGE_CLEAN_ONFIRSTINIT);
-		props.put(Location.INSTANCE_AREA_TYPE, new File(installDir, "instance").getAbsolutePath());
-		props.put(Location.INSTALL_AREA_TYPE, new File(installDir, "install").getAbsolutePath());
-		props.put(Location.CONFIGURATION_AREA_TYPE, new File(installDir, "config").getAbsolutePath());
-		props.put("atomos.content.start", "false");
-
 		Framework framework = atomos.newFramework(props);
 		framework.start();
 		var bundleContext = framework.getBundleContext();
-
 		bundleSet.hydrateFrom(
 				manifest -> {
 					for (var bundle : bundleContext.getBundles()) {
@@ -106,13 +96,6 @@ public class BundleContextAtomos implements Atomos.HeaderProvider {
 					}
 					throw new IllegalArgumentException("No bundle for " + manifest.getSymbolicName());
 				});
-
-		// start all the bundles that don't have jars (e.g. java.base -> jdk.zipfs)
-		for (var bundle : bundleContext.getBundles()) {
-			if (bundleSet.bundleByName(bundle.getSymbolicName()) == null) {
-				bundle.start();
-			}
-		}
 		return bundleContext;
 	}
 

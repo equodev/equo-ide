@@ -55,8 +55,6 @@ import org.osgi.framework.wiring.FrameworkWiring;
 import org.osgi.resource.Namespace;
 import org.osgi.resource.Requirement;
 import org.osgi.service.packageadmin.PackageAdmin;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * A single-classloader implementation of OSGi which eagerly loads all the OSGi plugins it can find
@@ -67,25 +65,18 @@ public class BundleContextSolstice extends ServiceRegistry {
 
 	private static BundleContextSolstice instance;
 
-	public static BundleContextSolstice open(SolsticeInit init, BundleSet bundleSet) {
+	public static BundleContextSolstice hydrate(BundleSet bundleSet) {
 		if (instance != null) {
 			throw new IllegalStateException("Solstice has already been initialized");
 		}
-		instance = new BundleContextSolstice(init, bundleSet);
+		instance = new BundleContextSolstice(bundleSet);
 		return instance;
 	}
 
-	private final Logger logger = LoggerFactory.getLogger(BundleContextSolstice.class);
-	private final SolsticeInit init;
-
-	private BundleContextSolstice(SolsticeInit init, BundleSet bundleSet) {
+	private BundleContextSolstice(BundleSet bundleSet) {
 		Handler.install(this);
 
-		this.init = init;
-
 		SolsticeFrameworkUtilHelper.initialize(this);
-		init.bootstrapServices(systemBundle, this);
-		logger.info("Bootstrap services installed");
 		bundleSet.hydrateFrom(
 				manifest -> {
 					var bundle = new ShimBundle(manifest);

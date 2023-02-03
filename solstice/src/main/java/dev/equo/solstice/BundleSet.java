@@ -25,6 +25,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.function.Function;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -227,8 +228,15 @@ public class BundleSet {
 		}
 	}
 
+	public BundleContext openAtomos(Map<String, String> props) throws BundleException {
+		// the spelled-out package is on purpose so that Atomos can remain an optional component
+		// works together with
+		// https://github.com/equodev/equo-ide/blob/aa7d30cba9988bc740ff4bc4b3015475d30d187c/solstice/build.gradle#L16-L22
+		return dev.equo.solstice.BundleContextAtomos.hydrate(this, props);
+	}
+
 	/** Hydrates the bundle field of all manifests from the given context. */
-	public void hydrateFrom(Function<SolsticeManifest, Bundle> bundleCreator) {
+	void hydrateFrom(Function<SolsticeManifest, Bundle> bundleCreator) {
 		for (var bundle : bundles) {
 			bundle.hydrated = bundleCreator.apply(bundle);
 		}

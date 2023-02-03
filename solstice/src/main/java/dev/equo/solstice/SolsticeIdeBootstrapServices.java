@@ -33,14 +33,9 @@ import org.osgi.service.log.LogLevel;
 import org.osgi.service.packageadmin.PackageAdmin;
 
 /** Controls the initialization of the {@link BundleContextSolstice} runtime. */
-public class SolsticeInit {
-	private final File installDir;
-
-	public SolsticeInit(File installDir) {
-		this.installDir = installDir;
-	}
-
-	public void bootstrapServices(Bundle systemBundle, BundleContext context) {
+public class SolsticeIdeBootstrapServices {
+	public static void apply(File installDir, BundleContext context) {
+		Bundle systemBundle = context.getBundle(Constants.SYSTEM_BUNDLE_LOCATION);
 		// in particular, we need services normally provided by
 		// org.eclipse.osgi.internal.framework.SystemBundleActivator::start
 		context.registerService(
