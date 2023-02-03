@@ -341,14 +341,13 @@ public class Solstice extends ServiceRegistry {
 		return id == -1 ? systemBundle : bundles.get((int) id);
 	}
 
-	public class ShimBundle extends BundleContextDelegate implements Unimplemented.Bundle {
+	public class ShimBundle implements Unimplemented.Bundle {
 		final SolsticeManifest manifest;
 		final @Nullable String activator;
 		final List<ShimBundle> fragments = new ArrayList<>();
 		final Hashtable<String, String> headers = new Hashtable<>();
 
 		ShimBundle(SolsticeManifest manifest) {
-			super(Solstice.this);
 			this.manifest = manifest;
 			activator = manifest.getHeadersOriginal().get(Constants.BUNDLE_ACTIVATOR);
 			manifest
@@ -394,11 +393,6 @@ public class Solstice extends ServiceRegistry {
 		// BundleContext overrides
 		//////////////////////////
 		@Override
-		public org.osgi.framework.Bundle getBundle() {
-			return this;
-		}
-
-		@Override
 		public long getBundleId() {
 			if (this == systemBundle) {
 				return systemBundle.getBundleId();
@@ -440,7 +434,7 @@ public class Solstice extends ServiceRegistry {
 				try {
 					var c = (Constructor<BundleActivator>) Class.forName(activator).getConstructor();
 					var bundleActivator = c.newInstance();
-					bundleActivator.start(this);
+					bundleActivator.start(Solstice.this);
 				} catch (Exception e) {
 					try {
 						throw new ActivatorException(this, e);
