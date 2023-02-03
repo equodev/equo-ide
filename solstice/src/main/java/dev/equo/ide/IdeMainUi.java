@@ -60,6 +60,12 @@ class IdeMainUi {
 				display,
 				new IDEWorkbenchAdvisor(processor) {
 					@Override
+					public void eventLoopException(Throwable exception) {
+						exception.printStackTrace();
+						super.eventLoopException(exception);
+					}
+
+					@Override
 					public void initialize(IWorkbenchConfigurer configurer) {
 						bundleSet.startAllWithLazy(true);
 						super.initialize(configurer);
