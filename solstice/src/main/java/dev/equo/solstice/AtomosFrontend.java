@@ -33,68 +33,58 @@ import org.osgi.framework.launch.Framework;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * Starts an OSGi context using Atomos. All problems related to missing bundles and missing packages
- * are resolved by modifying bundle headers with {@link
- * BundleSet#warnAndModifyManifestsToFix(Logger)}.
- */
-public class AtomosFrontend {
-	private final BundleContext bundleContext;
+/** Starts an OSGi context using Atomos. */
+public class AtomosFrontend implements Atomos.HeaderProvider {
+	final Map<String, List<SolsticeManifest>> bySymbolicName;
+	final Logger logger;
 
-	static class HeaderProvider implements Atomos.HeaderProvider {
-		final Map<String, List<SolsticeManifest>> bySymbolicName;
-		final Logger logger;
+	AtomosFrontend(BundleSet bundleSet, Logger logger) {
+		bySymbolicName = bundleSet.bySymbolicName();
+		this.logger = logger;
+	}
 
-		HeaderProvider(BundleSet bundleSet, Logger logger) {
-			bySymbolicName = bundleSet.bySymbolicName();
-			this.logger = logger;
+	@Override
+	public Optional<Map<String, String>> apply(String location, Map<String, String> existingHeaders) {
+		var symbolicNameHeader = existingHeaders.get(Constants.BUNDLE_SYMBOLICNAME);
+		if (symbolicNameHeader == null) {
+			// represents a jar that didn't have OSGi metadata. no problem!
+			return Optional.empty();
 		}
-
-		@Override
-		public Optional<Map<String, String>> apply(
-				String location, Map<String, String> existingHeaders) {
-			var symbolicNameHeader = existingHeaders.get(Constants.BUNDLE_SYMBOLICNAME);
-			if (symbolicNameHeader == null) {
-				// represents a jar that didn't have OSGi metadata. no problem!
-				return Optional.empty();
+		String symbolicName =
+				SolsticeManifest.parseAndStripManifestHeader(
+								Constants.BUNDLE_SYMBOLICNAME, existingHeaders.get(Constants.BUNDLE_SYMBOLICNAME))
+						.get(0);
+		var candidates = bySymbolicName.get(symbolicName);
+		if (candidates == null || candidates.isEmpty()) {
+			if (!symbolicName.startsWith("java.") && !symbolicName.startsWith("jdk.")) {
+				logger.warn("No manifest for bundle " + symbolicName + " at " + location);
 			}
-			String symbolicName =
-					SolsticeManifest.parseAndStripManifestHeader(
-									Constants.BUNDLE_SYMBOLICNAME, existingHeaders.get(Constants.BUNDLE_SYMBOLICNAME))
-							.get(0);
-			var candidates = bySymbolicName.get(symbolicName);
-			if (candidates == null || candidates.isEmpty()) {
-				if (!symbolicName.startsWith("java.") && !symbolicName.startsWith("jdk.")) {
-					logger.warn("No manifest for bundle " + symbolicName + " at " + location);
-				}
-				return Optional.empty();
-			}
-			var manifest = bySymbolicName.get(symbolicName).get(0);
-			return Optional.of(atomosHeaders(manifest));
+			return Optional.empty();
 		}
+		var manifest = bySymbolicName.get(symbolicName).get(0);
+		return Optional.of(atomosHeaders(manifest));
+	}
 
-		public Map<String, String> atomosHeaders(SolsticeManifest manifest) {
-			Map<String, String> atomos = new LinkedHashMap<>(manifest.getHeadersOriginal());
-			setHeader(atomos, Constants.IMPORT_PACKAGE, manifest.getPkgImports());
-			setHeader(atomos, Constants.EXPORT_PACKAGE, manifest.getPkgExports());
-			setHeader(atomos, Constants.REQUIRE_BUNDLE, manifest.getRequiredBundles());
-			setHeader(atomos, Constants.REQUIRE_CAPABILITY, Collections.emptyList());
-			return atomos;
-		}
+	public Map<String, String> atomosHeaders(SolsticeManifest manifest) {
+		Map<String, String> atomos = new LinkedHashMap<>(manifest.getHeadersOriginal());
+		setHeader(atomos, Constants.IMPORT_PACKAGE, manifest.getPkgImports());
+		setHeader(atomos, Constants.EXPORT_PACKAGE, manifest.getPkgExports());
+		setHeader(atomos, Constants.REQUIRE_BUNDLE, manifest.getRequiredBundles());
+		setHeader(atomos, Constants.REQUIRE_CAPABILITY, Collections.emptyList());
+		return atomos;
+	}
 
-		private static void setHeader(Map<String, String> map, String key, List<String> values) {
-			if (values.isEmpty()) {
-				map.remove(key);
-			} else {
-				map.put(key, values.stream().collect(Collectors.joining(",")));
-			}
+	private static void setHeader(Map<String, String> map, String key, List<String> values) {
+		if (values.isEmpty()) {
+			map.remove(key);
+		} else {
+			map.put(key, values.stream().collect(Collectors.joining(",")));
 		}
 	}
 
-	public AtomosFrontend(File installDir, BundleSet bundleSet)
-			throws BundleException, InvalidSyntaxException {
+	public static BundleContext open(File installDir, BundleSet bundleSet) throws BundleException {
 		Logger logger = LoggerFactory.getLogger(AtomosFrontend.class);
-		Atomos atomos = Atomos.newAtomos(new HeaderProvider(bundleSet, logger));
+		Atomos atomos = Atomos.newAtomos(new AtomosFrontend(bundleSet, logger));
 		// Set atomos.content.install to false to prevent automatic bundle installation
 		var props = new LinkedHashMap<String, String>();
 		props.put(Constants.FRAMEWORK_STORAGE_CLEAN, Constants.FRAMEWORK_STORAGE_CLEAN_ONFIRSTINIT);
@@ -105,7 +95,7 @@ public class AtomosFrontend {
 
 		Framework framework = atomos.newFramework(props);
 		framework.start();
-		bundleContext = framework.getBundleContext();
+		var bundleContext = framework.getBundleContext();
 
 		bundleSet.hydrateFrom(
 				manifest -> {
@@ -117,23 +107,17 @@ public class AtomosFrontend {
 					throw new IllegalArgumentException("No bundle for " + manifest.getSymbolicName());
 				});
 
+		// start all the bundles that don't have jars (e.g. java.base -> jdk.zipfs)
 		for (var bundle : bundleContext.getBundles()) {
 			if (bundleSet.bundleByName(bundle.getSymbolicName()) == null) {
 				bundle.start();
 			}
 		}
-
-		bundleSet.activate(bundleSet.bundleByName("org.eclipse.osgi"));
-		bundleSet.activate(bundleSet.bundleByName("org.apache.felix.scr"));
-		bundleSet.activate(bundleSet.bundleByName("org.eclipse.equinox.event"));
-		bundleSet.activate(bundleSet.bundleByName("org.eclipse.ui.ide.application"));
-		bundleSet.startAllWithLazy(false);
-
-		urlWorkaround();
+		return bundleContext;
 	}
 
 	/** https://github.com/eclipse-equinox/equinox/issues/179 */
-	private void urlWorkaround() throws InvalidSyntaxException {
+	public static void urlWorkaround(BundleContext bundleContext) throws InvalidSyntaxException {
 		var converters = bundleContext.getServiceReferences(URLConverter.class, "(protocol=platform)");
 		for (ServiceReference<URLConverter> toRemove : converters) {
 			((org.eclipse.osgi.internal.serviceregistry.ServiceReferenceImpl) toRemove)
@@ -154,9 +138,5 @@ public class AtomosFrontend {
 					}
 				},
 				Dictionaries.of("protocol", "platform"));
-	}
-
-	public BundleContext getBundleContext() {
-		return bundleContext;
 	}
 }

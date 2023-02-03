@@ -70,7 +70,6 @@ public class Solstice extends ServiceRegistry {
 			throw new IllegalStateException("Solstice has already been initialized");
 		}
 		instance = new Solstice(init, bundleSet);
-		instance.bundleByName("org.eclipse.ui.ide.application").start();
 		return instance;
 	}
 

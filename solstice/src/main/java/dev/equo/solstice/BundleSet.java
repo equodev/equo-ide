@@ -142,7 +142,8 @@ public class BundleSet {
 	 *       SolsticeManifest)
 	 * </ul>
 	 */
-	public void warnAndModifyManifestsToFix(Logger logger) {
+	public void warnAndModifyManifestsToFix() {
+		Logger logger = LoggerFactory.getLogger(BundleSet.class);
 		var bySymbolicName = bySymbolicName();
 		var byExportedPackage = byExportedPackage();
 		bySymbolicName.forEach(
@@ -225,14 +226,22 @@ public class BundleSet {
 	public void startAllWithLazy(boolean lazyValue) {
 		for (var solstice : bundles) {
 			if (solstice.isNotFragment() && solstice.lazy == lazyValue) {
-				activate(solstice);
+				start(solstice);
 			}
 		}
 	}
 
 	private Set<SolsticeManifest> activatingBundles = new HashSet<>();
 
-	void activate(SolsticeManifest manifest) {
+	public void start(String symbolicName) {
+		for (var bundle : bundles) {
+			if (bundle.getSymbolicName().equals(symbolicName)) {
+				start(bundle);
+			}
+		}
+	}
+
+	public void start(SolsticeManifest manifest) {
 		boolean newAddition = activatingBundles.add(manifest);
 		if (!newAddition) {
 			return;
@@ -246,7 +255,7 @@ public class BundleSet {
 				throw new IllegalArgumentException(manifest + " imports missing package " + pkg);
 			} else {
 				for (var bundle : bundles) {
-					activate(bundle);
+					start(bundle);
 				}
 			}
 		}
@@ -255,7 +264,7 @@ public class BundleSet {
 			if (bundle == null) {
 				throw new IllegalArgumentException(manifest + " required missing bundle " + bundle);
 			} else {
-				activate(bundle);
+				start(bundle);
 			}
 		}
 		// this happens when multiple with same version
