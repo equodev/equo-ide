@@ -24,26 +24,27 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.application.IWorkbenchConfigurer;
 import org.eclipse.ui.internal.ide.application.DelayedEventsProcessor;
 import org.eclipse.ui.internal.ide.application.IDEWorkbenchAdvisor;
-import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.service.application.ApplicationException;
 
 class IdeMainUi {
-	static int main(BundleContext osgiShim, IdeHook.InstantiatedList ideHooks, Solstice bundleSet)
+	static int main(Solstice solstice, IdeHook.InstantiatedList ideHooks)
 			throws InvalidSyntaxException {
 		var appServices =
-				osgiShim.getServiceReferences(
-						org.osgi.service.application.ApplicationDescriptor.class,
-						"(service.pid=org.eclipse.ui.ide.workbench)");
+				solstice
+						.getContext()
+						.getServiceReferences(
+								org.osgi.service.application.ApplicationDescriptor.class,
+								"(service.pid=org.eclipse.ui.ide.workbench)");
 		if (appServices.size() != 1) {
 			throw new IllegalArgumentException("Expected exactly one application, got " + appServices);
 		}
 
-		var appDescriptor = osgiShim.getService(appServices.iterator().next());
+		var appDescriptor = solstice.getContext().getService(appServices.iterator().next());
 
-		var appLauncher = new EclipseAppLauncher(osgiShim, false, false, null, null);
+		var appLauncher = new EclipseAppLauncher(solstice.getContext(), false, false, null, null);
 		var emptyDict = new Hashtable<String, Object>();
-		osgiShim.registerService(ApplicationLauncher.class, appLauncher, emptyDict);
+		solstice.getContext().registerService(ApplicationLauncher.class, appLauncher, emptyDict);
 
 		Map<String, Object> appProps = new HashMap<>();
 		appProps.put(IApplicationContext.APPLICATION_ARGS, new String[] {});
@@ -67,7 +68,7 @@ class IdeMainUi {
 
 					@Override
 					public void initialize(IWorkbenchConfigurer configurer) {
-						bundleSet.startAllWithLazy(true);
+						solstice.startAllWithLazy(true);
 						super.initialize(configurer);
 						ideHooks.forEach(IdeHookInstantiated::initialize);
 					}

@@ -54,6 +54,9 @@ public class Solstice {
 	private final Logger logger = LoggerFactory.getLogger(Solstice.class);
 	private final List<SolsticeManifest> bundles;
 
+	private final TreeSet<String> pkgs = new TreeSet<>();
+	private BundleContext context;
+
 	private Solstice(List<SolsticeManifest> bundles) {
 		this.bundles = bundles;
 		var glassfish = bundleByName(GLASSFISH);
@@ -224,15 +227,34 @@ public class Solstice {
 		}
 	}
 
-	public BundleContext openAtomos(Map<String, String> props) throws BundleException {
+	private void assertContextInitialized(boolean isInitialized) {
+		if (isInitialized) {
+			if (context == null) {
+				throw new IllegalStateException("Call `openAtomos` or `openSolstice` first");
+			}
+		} else {
+			if (context != null) {
+				throw new IllegalStateException("`openAtomos` or `openSolstice` can only be called once");
+			}
+		}
+	}
+
+	public void openAtomos(Map<String, String> props) throws BundleException {
+		assertContextInitialized(false);
 		// the spelled-out package is on purpose so that Atomos can remain an optional component
 		// works together with
 		// https://github.com/equodev/equo-ide/blob/aa7d30cba9988bc740ff4bc4b3015475d30d187c/solstice/build.gradle#L16-L22
-		return dev.equo.solstice.BundleContextAtomos.hydrate(this, props);
+		context = dev.equo.solstice.BundleContextAtomos.hydrate(this, props);
 	}
 
-	public BundleContext openSolstice() throws BundleException {
-		return BundleContextSolstice.hydrate(this);
+	public void openSolstice() {
+		assertContextInitialized(false);
+		context = BundleContextSolstice.hydrate(this);
+	}
+
+	public BundleContext getContext() {
+		assertContextInitialized(true);
+		return context;
 	}
 
 	/** Hydrates the bundle field of all manifests from the given context. */
@@ -241,8 +263,6 @@ public class Solstice {
 			bundle.hydrated = bundleCreator.apply(bundle);
 		}
 	}
-
-	private final TreeSet<String> pkgs = new TreeSet<>();
 
 	/** Starts all hydrated manfiests. */
 	public void startAllWithLazy(boolean lazyValue) {

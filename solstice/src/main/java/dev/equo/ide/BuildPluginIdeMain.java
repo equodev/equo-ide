@@ -32,7 +32,6 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 import org.eclipse.osgi.service.datalocation.Location;
 import org.eclipse.swt.widgets.Display;
-import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
 import org.osgi.framework.InvalidSyntaxException;
@@ -238,7 +237,6 @@ public class BuildPluginIdeMain {
 			ideHooks.forEach(IdeHookInstantiated::afterDisplay, display);
 		}
 
-		BundleContext context;
 		if (useAtomos) {
 			var props = new LinkedHashMap<String, String>();
 			props.put(Constants.FRAMEWORK_STORAGE_CLEAN, Constants.FRAMEWORK_STORAGE_CLEAN_ONFIRSTINIT);
@@ -246,10 +244,10 @@ public class BuildPluginIdeMain {
 			props.put(Location.INSTALL_AREA_TYPE, new File(installDir, "install").getAbsolutePath());
 			props.put(Location.CONFIGURATION_AREA_TYPE, new File(installDir, "config").getAbsolutePath());
 			props.put("atomos.content.start", "false");
-			context = solstice.openAtomos(props);
+			solstice.openAtomos(props);
 		} else {
-			context = solstice.openSolstice();
-			SolsticeIdeBootstrapServices.apply(installDir, context);
+			solstice.openSolstice();
+			SolsticeIdeBootstrapServices.apply(installDir, solstice.getContext());
 		}
 		solstice.startAllWithLazy(false);
 		solstice.start("org.eclipse.ui.ide.application");
@@ -257,23 +255,23 @@ public class BuildPluginIdeMain {
 			// the spelled-out package is on purpose so that Atomos can remain an optional component
 			// works together with
 			// https://github.com/equodev/equo-ide/blob/aa7d30cba9988bc740ff4bc4b3015475d30d187c/solstice/build.gradle#L16-L22
-			dev.equo.solstice.BundleContextAtomos.urlWorkaround(context);
+			dev.equo.solstice.BundleContextAtomos.urlWorkaround(solstice.getContext());
 		}
 		if (!initOnly) {
-			ideHooks.forEach(IdeHookInstantiated::afterOsgi, context);
+			ideHooks.forEach(IdeHookInstantiated::afterOsgi, solstice.getContext());
 		}
 
 		if (initOnly) {
 			System.out.println(
 					"Loaded "
-							+ context.getBundles().length
+							+ solstice.getContext().getBundles().length
 							+ " bundles "
 							+ (useAtomos ? "using Atomos" : "not using Atomos"));
 			System.exit(0);
 			return;
 		}
 
-		int exitCode = IdeMainUi.main(context, ideHooks, solstice);
+		int exitCode = IdeMainUi.main(solstice, ideHooks);
 		if (exitCode == 0) {
 			System.exit(0);
 		} else {
