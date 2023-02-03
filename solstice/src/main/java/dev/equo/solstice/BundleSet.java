@@ -55,7 +55,21 @@ public class BundleSet {
 
 	private BundleSet(List<SolsticeManifest> bundles) {
 		this.bundles = bundles;
+		var glassfish = bundleByName(GLASSFISH);
+		var jdtCore = bundleByName(JDT_CORE);
+		if (glassfish != null && jdtCore != null) {
+			if (glassfish.classpathOrder < jdtCore.classpathOrder) {
+				throw new IllegalArgumentException(
+						"Eclipse has multiple jars which define `ICompilationUnit`, and it is important for the classpath order to put "
+								+ JDT_CORE
+								+ " before "
+								+ GLASSFISH);
+			}
+		}
 	}
+
+	private static final String GLASSFISH = "org.apache.jasper.glassfish";
+	private static final String JDT_CORE = "org.eclipse.jdt.core";
 
 	public List<SolsticeManifest> getBundles() {
 		return Collections.unmodifiableList(bundles);

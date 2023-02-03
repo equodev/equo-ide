@@ -94,6 +94,9 @@ p2deps {
 	into 'testImplementation', {
 		p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'
 		install 'org.eclipse.platform.ide.categoryIU'
+		addFilter 'multiple-ICompilationUnit', {
+			it.exclude 'org.apache.jasper.glassfish'
+		}
 	}
 	into 'welcomeCompileOnly', {
 		p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'
