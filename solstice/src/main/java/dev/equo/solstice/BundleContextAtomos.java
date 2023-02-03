@@ -36,7 +36,7 @@ public class BundleContextAtomos implements Atomos.HeaderProvider {
 	final Map<String, List<SolsticeManifest>> bySymbolicName;
 	final Logger logger;
 
-	BundleContextAtomos(BundleSet bundleSet, Logger logger) {
+	BundleContextAtomos(Solstice bundleSet, Logger logger) {
 		bySymbolicName = bundleSet.bySymbolicName();
 		this.logger = logger;
 	}
@@ -80,7 +80,7 @@ public class BundleContextAtomos implements Atomos.HeaderProvider {
 		}
 	}
 
-	public static BundleContext hydrate(BundleSet bundleSet, Map<String, String> props)
+	public static BundleContext hydrate(Solstice bundleSet, Map<String, String> props)
 			throws BundleException {
 		Logger logger = LoggerFactory.getLogger(BundleContextAtomos.class);
 		Atomos atomos = Atomos.newAtomos(new BundleContextAtomos(bundleSet, logger));

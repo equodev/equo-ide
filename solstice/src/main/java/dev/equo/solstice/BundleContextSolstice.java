@@ -65,7 +65,7 @@ public class BundleContextSolstice extends ServiceRegistry {
 
 	private static BundleContextSolstice instance;
 
-	public static BundleContextSolstice hydrate(BundleSet bundleSet) {
+	public static BundleContextSolstice hydrate(Solstice bundleSet) {
 		if (instance != null) {
 			throw new IllegalStateException("Solstice has already been initialized");
 		}
@@ -73,7 +73,7 @@ public class BundleContextSolstice extends ServiceRegistry {
 		return instance;
 	}
 
-	private BundleContextSolstice(BundleSet bundleSet) {
+	private BundleContextSolstice(Solstice bundleSet) {
 		Handler.install(this);
 
 		SolsticeFrameworkUtilHelper.initialize(this);

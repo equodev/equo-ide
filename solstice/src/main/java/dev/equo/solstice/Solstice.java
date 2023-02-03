@@ -31,8 +31,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /** Represents a closed universe of OSGi bundles. */
-public class BundleSet {
-	public static BundleSet discoverOnClasspath() {
+public class Solstice {
+	public static Solstice findBundlesOnClasspath() {
 		Enumeration<URL> manifestURLs =
 				Unchecked.get(
 						() ->
@@ -48,13 +48,13 @@ public class BundleSet {
 				manifests.add(manifest);
 			}
 		}
-		return new BundleSet(manifests);
+		return new Solstice(manifests);
 	}
 
-	private final Logger logger = LoggerFactory.getLogger(BundleSet.class);
+	private final Logger logger = LoggerFactory.getLogger(Solstice.class);
 	private final List<SolsticeManifest> bundles;
 
-	private BundleSet(List<SolsticeManifest> bundles) {
+	private Solstice(List<SolsticeManifest> bundles) {
 		this.bundles = bundles;
 		var glassfish = bundleByName(GLASSFISH);
 		var jdtCore = bundleByName(JDT_CORE);
@@ -71,10 +71,6 @@ public class BundleSet {
 
 	private static final String GLASSFISH = "org.apache.jasper.glassfish";
 	private static final String JDT_CORE = "org.eclipse.jdt.core";
-
-	public List<SolsticeManifest> getBundles() {
-		return Collections.unmodifiableList(bundles);
-	}
 
 	public Map<String, List<SolsticeManifest>> bySymbolicName() {
 		return groupBundles(manifest -> Collections.singletonList(manifest.getSymbolicName()));
@@ -158,7 +154,7 @@ public class BundleSet {
 	 * </ul>
 	 */
 	public void warnAndModifyManifestsToFix() {
-		Logger logger = LoggerFactory.getLogger(BundleSet.class);
+		Logger logger = LoggerFactory.getLogger(Solstice.class);
 		var bySymbolicName = bySymbolicName();
 		var byExportedPackage = byExportedPackage();
 		bySymbolicName.forEach(
@@ -233,6 +229,10 @@ public class BundleSet {
 		// works together with
 		// https://github.com/equodev/equo-ide/blob/aa7d30cba9988bc740ff4bc4b3015475d30d187c/solstice/build.gradle#L16-L22
 		return dev.equo.solstice.BundleContextAtomos.hydrate(this, props);
+	}
+
+	public BundleContext openSolstice() throws BundleException {
+		return BundleContextSolstice.hydrate(this);
 	}
 
 	/** Hydrates the bundle field of all manifests from the given context. */

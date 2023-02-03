@@ -13,7 +13,7 @@
  *******************************************************************************/
 package dev.equo.ide;
 
-import dev.equo.solstice.BundleSet;
+import dev.equo.solstice.Solstice;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
@@ -29,7 +29,7 @@ import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.service.application.ApplicationException;
 
 class IdeMainUi {
-	static int main(BundleContext osgiShim, IdeHook.InstantiatedList ideHooks, BundleSet bundleSet)
+	static int main(BundleContext osgiShim, IdeHook.InstantiatedList ideHooks, Solstice bundleSet)
 			throws InvalidSyntaxException {
 		var appServices =
 				osgiShim.getServiceReferences(

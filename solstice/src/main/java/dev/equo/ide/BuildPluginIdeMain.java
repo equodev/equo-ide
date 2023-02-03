@@ -14,10 +14,9 @@
 package dev.equo.ide;
 
 import com.diffplug.common.swt.os.OS;
-import dev.equo.solstice.BundleContextSolstice;
-import dev.equo.solstice.BundleSet;
 import dev.equo.solstice.NestedJars;
 import dev.equo.solstice.SerializableMisc;
+import dev.equo.solstice.Solstice;
 import dev.equo.solstice.SolsticeIdeBootstrapServices;
 import dev.equo.solstice.SolsticeManifest;
 import java.io.File;
@@ -227,8 +226,8 @@ public class BuildPluginIdeMain {
 
 		NestedJars.onClassPath()
 				.confirmAllNestedJarsArePresentOnClasspath(new File(installDir, NestedJars.DIR));
-		var bundleSet = BundleSet.discoverOnClasspath();
-		bundleSet.warnAndModifyManifestsToFix();
+		var solstice = Solstice.findBundlesOnClasspath();
+		solstice.warnAndModifyManifestsToFix();
 
 		IdeHook.InstantiatedList ideHooks = ideHooksParsed.instantiate();
 		var lockFileHook = ideHooks.find(IdeHookLockFile.Instantiated.class);
@@ -247,13 +246,13 @@ public class BuildPluginIdeMain {
 			props.put(Location.INSTALL_AREA_TYPE, new File(installDir, "install").getAbsolutePath());
 			props.put(Location.CONFIGURATION_AREA_TYPE, new File(installDir, "config").getAbsolutePath());
 			props.put("atomos.content.start", "false");
-			context = bundleSet.openAtomos(props);
+			context = solstice.openAtomos(props);
 		} else {
-			context = BundleContextSolstice.hydrate(bundleSet);
+			context = solstice.openSolstice();
 			SolsticeIdeBootstrapServices.apply(installDir, context);
 		}
-		bundleSet.startAllWithLazy(false);
-		bundleSet.start("org.eclipse.ui.ide.application");
+		solstice.startAllWithLazy(false);
+		solstice.start("org.eclipse.ui.ide.application");
 		if (useAtomos) {
 			// the spelled-out package is on purpose so that Atomos can remain an optional component
 			// works together with
@@ -274,7 +273,7 @@ public class BuildPluginIdeMain {
 			return;
 		}
 
-		int exitCode = IdeMainUi.main(context, ideHooks, bundleSet);
+		int exitCode = IdeMainUi.main(context, ideHooks, solstice);
 		if (exitCode == 0) {
 			System.exit(0);
 		} else {
