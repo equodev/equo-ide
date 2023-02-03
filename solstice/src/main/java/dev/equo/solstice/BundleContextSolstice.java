@@ -62,23 +62,23 @@ import org.slf4j.LoggerFactory;
  * A single-classloader implementation of OSGi which eagerly loads all the OSGi plugins it can find
  * on the classpath.
  */
-public class Solstice extends ServiceRegistry {
+public class BundleContextSolstice extends ServiceRegistry {
 	private static final Set<String> DONT_ACTIVATE = Set.of("org.eclipse.osgi");
 
-	private static Solstice instance;
+	private static BundleContextSolstice instance;
 
-	public static Solstice initialize(SolsticeInit init, BundleSet bundleSet) {
+	public static BundleContextSolstice open(SolsticeInit init, BundleSet bundleSet) {
 		if (instance != null) {
 			throw new IllegalStateException("Solstice has already been initialized");
 		}
-		instance = new Solstice(init, bundleSet);
+		instance = new BundleContextSolstice(init, bundleSet);
 		return instance;
 	}
 
-	private final Logger logger = LoggerFactory.getLogger(Solstice.class);
+	private final Logger logger = LoggerFactory.getLogger(BundleContextSolstice.class);
 	private final SolsticeInit init;
 
-	private Solstice(SolsticeInit init, BundleSet bundleSet) {
+	private BundleContextSolstice(SolsticeInit init, BundleSet bundleSet) {
 		Handler.install(this);
 
 		this.init = init;
@@ -180,8 +180,8 @@ public class Solstice extends ServiceRegistry {
 				}
 
 				@Override
-				public Solstice getBundleContext() {
-					return Solstice.this;
+				public BundleContextSolstice getBundleContext() {
+					return BundleContextSolstice.this;
 				}
 
 				@Override
@@ -434,7 +434,7 @@ public class Solstice extends ServiceRegistry {
 				try {
 					var c = (Constructor<BundleActivator>) Class.forName(activator).getConstructor();
 					var bundleActivator = c.newInstance();
-					bundleActivator.start(Solstice.this);
+					bundleActivator.start(BundleContextSolstice.this);
 				} catch (Exception e) {
 					try {
 						throw new ActivatorException(this, e);
@@ -458,8 +458,8 @@ public class Solstice extends ServiceRegistry {
 		}
 
 		@Override
-		public Solstice getBundleContext() {
-			return Solstice.this;
+		public BundleContextSolstice getBundleContext() {
+			return BundleContextSolstice.this;
 		}
 
 		@Override
@@ -517,13 +517,13 @@ public class Solstice extends ServiceRegistry {
 			if (entry != null) {
 				return getEntry(name);
 			} else {
-				return Solstice.class.getClassLoader().getResource(name);
+				return BundleContextSolstice.class.getClassLoader().getResource(name);
 			}
 		}
 
 		@Override
 		public Enumeration<URL> getResources(String name) throws IOException {
-			return Solstice.class.getClassLoader().getResources(name);
+			return BundleContextSolstice.class.getClassLoader().getResources(name);
 		}
 
 		@Override

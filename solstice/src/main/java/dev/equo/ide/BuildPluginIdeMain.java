@@ -14,10 +14,10 @@
 package dev.equo.ide;
 
 import com.diffplug.common.swt.os.OS;
+import dev.equo.solstice.BundleContextSolstice;
 import dev.equo.solstice.BundleSet;
 import dev.equo.solstice.NestedJars;
 import dev.equo.solstice.SerializableMisc;
-import dev.equo.solstice.Solstice;
 import dev.equo.solstice.SolsticeInit;
 import dev.equo.solstice.SolsticeManifest;
 import java.io.File;
@@ -241,14 +241,14 @@ public class BuildPluginIdeMain {
 			// the spelled-out package is on purpose so that Atomos can remain an optional component
 			// works together with
 			// https://github.com/equodev/equo-ide/blob/aa7d30cba9988bc740ff4bc4b3015475d30d187c/solstice/build.gradle#L16-L22
-			context = dev.equo.solstice.AtomosFrontend.open(installDir, bundleSet);
+			context = dev.equo.solstice.BundleContextAtomos.open(installDir, bundleSet);
 		} else {
-			context = Solstice.initialize(new SolsticeInit(installDir), bundleSet);
+			context = BundleContextSolstice.open(new SolsticeInit(installDir), bundleSet);
 		}
 		bundleSet.startAllWithLazy(false);
 		bundleSet.start("org.eclipse.ui.ide.application");
 		if (useAtomos) {
-			dev.equo.solstice.AtomosFrontend.urlWorkaround(context);
+			dev.equo.solstice.BundleContextAtomos.urlWorkaround(context);
 		}
 		if (!initOnly) {
 			ideHooks.forEach(IdeHookInstantiated::afterOsgi, context);

@@ -23,8 +23,8 @@ jar.manifest.attributes(
 spotless {
 	java {
 		custom 'AtomosFrontend', { text ->
-			if (text.contains('import org.apache.felix.atomos.') && !text.contains('class AtomosFrontend ')) {
-				throw new AssertionError("Atomos imports are only allowed within `AtomosFrontend.java`")
+			if (text.contains('import org.apache.felix.atomos.') && !text.contains('class BundleContextAtomos ')) {
+				throw new AssertionError("Atomos imports are only allowed within `BundleContextAtomos.java`")
 			}
 		}
 	}

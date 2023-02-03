@@ -19,9 +19,9 @@ import org.osgi.framework.connect.FrameworkUtilHelper;
 
 /** Equinox will sometimes use this to determine what bundle a class comes from. */
 public class SolsticeFrameworkUtilHelper implements FrameworkUtilHelper {
-	private static Solstice owner;
+	private static BundleContextSolstice owner;
 
-	public static void initialize(Solstice owner) {
+	public static void initialize(BundleContextSolstice owner) {
 		SolsticeFrameworkUtilHelper.owner = owner;
 	}
 

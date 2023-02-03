@@ -13,8 +13,8 @@
  *******************************************************************************/
 package dev.equo.ide;
 
+import dev.equo.solstice.BundleContextSolstice;
 import dev.equo.solstice.BundleSet;
-import dev.equo.solstice.Solstice;
 import dev.equo.solstice.SolsticeInit;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -27,7 +27,7 @@ public class SolsticeSmokeTest {
 		System.setProperty(SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "WARN");
 		var bundleSet = BundleSet.discoverOnClasspath();
 		var solstice =
-				Solstice.initialize(new SolsticeInit(BuildPluginIdeMain.defaultDir()), bundleSet);
+				BundleContextSolstice.open(new SolsticeInit(BuildPluginIdeMain.defaultDir()), bundleSet);
 		Assertions.assertThat(solstice.systemBundle().getBundleId()).isEqualTo(0);
 		int count = 0;
 		for (Bundle bundle : solstice.getBundles()) {

@@ -34,11 +34,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /** Starts an OSGi context using Atomos. */
-public class AtomosFrontend implements Atomos.HeaderProvider {
+public class BundleContextAtomos implements Atomos.HeaderProvider {
 	final Map<String, List<SolsticeManifest>> bySymbolicName;
 	final Logger logger;
 
-	AtomosFrontend(BundleSet bundleSet, Logger logger) {
+	BundleContextAtomos(BundleSet bundleSet, Logger logger) {
 		bySymbolicName = bundleSet.bySymbolicName();
 		this.logger = logger;
 	}
@@ -83,8 +83,8 @@ public class AtomosFrontend implements Atomos.HeaderProvider {
 	}
 
 	public static BundleContext open(File installDir, BundleSet bundleSet) throws BundleException {
-		Logger logger = LoggerFactory.getLogger(AtomosFrontend.class);
-		Atomos atomos = Atomos.newAtomos(new AtomosFrontend(bundleSet, logger));
+		Logger logger = LoggerFactory.getLogger(BundleContextAtomos.class);
+		Atomos atomos = Atomos.newAtomos(new BundleContextAtomos(bundleSet, logger));
 		// Set atomos.content.install to false to prevent automatic bundle installation
 		var props = new LinkedHashMap<String, String>();
 		props.put(Constants.FRAMEWORK_STORAGE_CLEAN, Constants.FRAMEWORK_STORAGE_CLEAN_ONFIRSTINIT);
