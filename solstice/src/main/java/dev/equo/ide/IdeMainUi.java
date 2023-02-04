@@ -61,12 +61,6 @@ class IdeMainUi {
 				display,
 				new IDEWorkbenchAdvisor(processor) {
 					@Override
-					public void eventLoopException(Throwable exception) {
-						exception.printStackTrace();
-						super.eventLoopException(exception);
-					}
-
-					@Override
 					public void initialize(IWorkbenchConfigurer configurer) {
 						solstice.startAllWithLazy(true);
 						super.initialize(configurer);
@@ -99,6 +93,12 @@ class IdeMainUi {
 					public void postShutdown() {
 						super.postShutdown();
 						ideHooks.forEach(IdeHookInstantiated::postShutdown);
+					}
+
+					@Override
+					public void eventLoopException(Throwable exception) {
+						exception.printStackTrace();
+						super.eventLoopException(exception);
 					}
 				});
 	}
