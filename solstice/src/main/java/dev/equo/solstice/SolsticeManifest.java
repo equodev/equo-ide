@@ -18,11 +18,13 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.jar.Manifest;
 import javax.annotation.Nullable;
 import org.eclipse.osgi.util.ManifestElement;
@@ -47,10 +49,12 @@ public class SolsticeManifest {
 	final int classpathOrder;
 	private final @Nullable String symbolicName;
 	private final LinkedHashMap<String, String> headersOriginal = new LinkedHashMap<>();
-	final List<String> requiredBundles;
-	final List<String> pkgImports;
+	private final List<String> requiredBundles;
+	private final List<String> pkgImports;
 	private final List<String> pkgExports;
 	final boolean lazy;
+
+	final List<SolsticeManifest> fragments = new ArrayList<>();
 
 	Bundle hydrated;
 
@@ -185,19 +189,40 @@ public class SolsticeManifest {
 	}
 
 	public List<String> getRequiredBundles() {
-		return Collections.unmodifiableList(requiredBundles);
+		return total(m -> m.requiredBundles);
 	}
 
 	public List<String> getPkgImports() {
-		return Collections.unmodifiableList(pkgImports);
+		return total(m -> m.pkgImports);
 	}
 
 	public List<String> getPkgExports() {
-		return Collections.unmodifiableList(pkgExports);
+		return total(m -> m.pkgExports);
+	}
+
+	private List<String> total(Function<SolsticeManifest, List<String>> getter) {
+		if (fragments.isEmpty()) {
+			return Collections.unmodifiableList(getter.apply(this));
+		} else {
+			var total = new ArrayList<String>();
+			total.addAll(getter.apply(this));
+			for (var fragment : fragments) {
+				total.addAll(getter.apply(fragment));
+			}
+			return total;
+		}
 	}
 
 	/** Returns the original headers, unmodified by our parsing. */
 	public Map<String, String> getHeadersOriginal() {
 		return Collections.unmodifiableMap(headersOriginal);
+	}
+
+	void removeFromRequiredBundles(Collection<String> toRemove) {
+		requiredBundles.removeAll(toRemove);
+	}
+
+	void removeFromPkgImports(Collection<String> toRemove) {
+		pkgImports.removeAll(toRemove);
 	}
 }

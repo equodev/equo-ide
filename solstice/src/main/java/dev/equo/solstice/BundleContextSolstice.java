@@ -83,17 +83,6 @@ public class BundleContextSolstice extends ServiceRegistry {
 					bundles.add(bundle);
 					return bundle;
 				});
-		// wire fragments together
-		for (var bundle : bundles) {
-			var host = bundle.manifest.fragmentHost();
-			if (host != null) {
-				var hostBundle = bundleForSymbolicName(host);
-				if (hostBundle == null) {
-					throw new IllegalArgumentException("Fragment " + bundle + " needs missing " + host);
-				}
-				hostBundle.addFragment(bundle);
-			}
-		}
 	}
 
 	@Override
@@ -336,7 +325,6 @@ public class BundleContextSolstice extends ServiceRegistry {
 	public class ShimBundle implements Unimplemented.Bundle {
 		final SolsticeManifest manifest;
 		final @Nullable String activator;
-		final List<ShimBundle> fragments = new ArrayList<>();
 		final Hashtable<String, String> headers = new Hashtable<>();
 
 		ShimBundle(SolsticeManifest manifest) {
@@ -351,10 +339,6 @@ public class BundleContextSolstice extends ServiceRegistry {
 									headers.put(key, value);
 								}
 							});
-		}
-
-		private void addFragment(ShimBundle bundle) {
-			fragments.add(bundle);
 		}
 
 		@Override
@@ -529,8 +513,8 @@ public class BundleContextSolstice extends ServiceRegistry {
 		}
 
 		private void findEntries(List<URL> urls, String path, String filePattern, boolean recurse) {
-			for (var fragment : fragments) {
-				fragment.findEntries(urls, path, filePattern, recurse);
+			for (var fragments : manifest.fragments) {
+				((ShimBundle) fragments.hydrated).findEntries(urls, path, filePattern, recurse);
 			}
 			var pathFinal = stripLeadingAddTrailingSlash(path);
 			var pattern = Pattern.compile(filePattern.replace(".", "\\.").replace("*", ".*"));

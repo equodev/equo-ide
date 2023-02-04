@@ -59,6 +59,17 @@ public class Solstice {
 
 	private Solstice(List<SolsticeManifest> bundles) {
 		this.bundles = bundles;
+		for (var fragment : bundles) {
+			var host = fragment.fragmentHost();
+			if (host != null) {
+				var hostBundle = bundleByName(host);
+				if (hostBundle == null) {
+					throw new IllegalArgumentException("Fragment " + fragment + " needs missing " + host);
+				}
+				hostBundle.fragments.add(fragment);
+			}
+		}
+
 		var glassfish = bundleByName(GLASSFISH);
 		var jdtCore = bundleByName(JDT_CORE);
 		if (glassfish != null && jdtCore != null) {
@@ -222,8 +233,8 @@ public class Solstice {
 					logger.warn("Missing imported package " + missing + " imported by " + neededBy);
 				});
 		for (var bundle : bundles) {
-			bundle.requiredBundles.removeAll(missingBundles.keySet());
-			bundle.pkgImports.removeAll(missingPackages.keySet());
+			bundle.removeFromRequiredBundles(missingBundles.keySet());
+			bundle.removeFromPkgImports(missingPackages.keySet());
 		}
 	}
 
