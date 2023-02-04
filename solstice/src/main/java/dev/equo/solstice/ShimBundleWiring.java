@@ -31,17 +31,15 @@ class ShimBundleWiring extends Unimplemented.BundleWiring {
 
 	@Override
 	public List<BundleWire> getRequiredWires(String namespace) {
-		if (namespace.equals(HostNamespace.HOST_NAMESPACE)) {
-			var host = bundle.fragmentHostBundle();
-			if (host != null) {
-				return Collections.singletonList(
-						new Unimplemented.BundleWire() {
-							@Override
-							public BundleWiring getProviderWiring() {
-								return host.adapt(BundleWiring.class);
-							}
-						});
-			}
+		if (namespace.equals(HostNamespace.HOST_NAMESPACE) && !bundle.manifest.isNotFragment()) {
+			var host = bundle.getBundleContext().bundleForSymbolicName(bundle.manifest.fragmentHost());
+			return Collections.singletonList(
+					new Unimplemented.BundleWire() {
+						@Override
+						public BundleWiring getProviderWiring() {
+							return host.adapt(BundleWiring.class);
+						}
+					});
 		}
 		return Collections.emptyList();
 	}

@@ -43,6 +43,6 @@ class ShimBundleRevision extends Unimplemented.BundleRevision {
 
 	@Override
 	public int getTypes() {
-		return bundle.fragmentHost() != null ? TYPE_FRAGMENT : 0;
+		return bundle.manifest.fragmentHost() != null ? TYPE_FRAGMENT : 0;
 	}
 }

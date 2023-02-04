@@ -297,7 +297,12 @@ public class Solstice {
 				throw new IllegalArgumentException(manifest + " imports missing package " + pkg);
 			} else {
 				for (var bundle : bundles) {
-					start(bundle);
+					if (bundle.isNotFragment()) {
+						start(bundle);
+					} else {
+						// if a fragment exports a package we need, start the fragment's host
+						start(bundleByName(bundle.fragmentHost()));
+					}
 				}
 			}
 		}

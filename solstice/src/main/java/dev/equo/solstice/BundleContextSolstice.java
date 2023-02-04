@@ -85,7 +85,7 @@ public class BundleContextSolstice extends ServiceRegistry {
 				});
 		// wire fragments together
 		for (var bundle : bundles) {
-			var host = bundle.fragmentHost();
+			var host = bundle.manifest.fragmentHost();
 			if (host != null) {
 				var hostBundle = bundleForSymbolicName(host);
 				if (hostBundle == null) {
@@ -201,7 +201,8 @@ public class BundleContextSolstice extends ServiceRegistry {
 			new Unimplemented.PackageAdmin() {
 				@Override
 				public int getBundleType(org.osgi.framework.Bundle bundle) {
-					if (bundle instanceof ShimBundle && ((ShimBundle) bundle).fragmentHost() != null) {
+					if (bundle instanceof ShimBundle
+							&& ((ShimBundle) bundle).manifest.fragmentHost() != null) {
 						return BUNDLE_TYPE_FRAGMENT;
 					}
 					return 0;
@@ -216,7 +217,7 @@ public class BundleContextSolstice extends ServiceRegistry {
 				@Override
 				public Bundle[] getHosts(Bundle bundle) {
 					if (bundle instanceof ShimBundle) {
-						var fragmentHost = ((ShimBundle) bundle).fragmentHost();
+						var fragmentHost = ((ShimBundle) bundle).manifest.fragmentHost();
 						if (fragmentHost != null) {
 							return getBundles(fragmentHost, null);
 						}
@@ -228,7 +229,7 @@ public class BundleContextSolstice extends ServiceRegistry {
 				public Bundle[] getFragments(Bundle bundle) {
 					List<Bundle> fragments = new ArrayList<>();
 					for (var candidate : bundles) {
-						if (Objects.equals(candidate.fragmentHost(), bundle.getSymbolicName())) {
+						if (Objects.equals(candidate.manifest.fragmentHost(), bundle.getSymbolicName())) {
 							fragments.add(candidate);
 						}
 					}
@@ -354,20 +355,6 @@ public class BundleContextSolstice extends ServiceRegistry {
 
 		private void addFragment(ShimBundle bundle) {
 			fragments.add(bundle);
-		}
-
-		String fragmentHost() {
-			var host = manifest.getHeadersOriginal().get(Constants.FRAGMENT_HOST);
-			if (host == null) {
-				return null;
-			}
-			var idx = host.indexOf(';');
-			return idx == -1 ? host : host.substring(0, idx);
-		}
-
-		ShimBundle fragmentHostBundle() {
-			var host = fragmentHost();
-			return host == null ? null : bundleForSymbolicName(host);
 		}
 
 		@Override

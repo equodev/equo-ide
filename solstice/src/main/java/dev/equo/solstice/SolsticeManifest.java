@@ -116,6 +116,15 @@ public class SolsticeManifest {
 		return !headersOriginal.containsKey(Constants.FRAGMENT_HOST);
 	}
 
+	String fragmentHost() {
+		var host = headersOriginal.get(Constants.FRAGMENT_HOST);
+		if (host == null) {
+			return null;
+		}
+		var idx = host.indexOf(';');
+		return idx == -1 ? host : host.substring(0, idx);
+	}
+
 	public String getSymbolicName() {
 		return symbolicName;
 	}
