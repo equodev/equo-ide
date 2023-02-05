@@ -72,6 +72,10 @@ public class LaunchMojo extends AbstractP2Mojo {
 	@Parameter(property = "useAtomos", defaultValue = "true")
 	private boolean useAtomos;
 
+	/** Blocks IDE startup to help you attach a debugger. */
+	@Parameter(property = "debugIde", defaultValue = "false")
+	private boolean debugIde;
+
 	@Parameter(defaultValue = "${project.basedir}", required = true, readonly = true)
 	protected File baseDir;
 
@@ -154,6 +158,7 @@ public class LaunchMojo extends AbstractP2Mojo {
 			caller.initOnly = initOnly;
 			caller.showConsole = showConsole;
 			caller.useAtomos = useAtomos;
+			caller.debugIde = debugIde;
 			caller.showConsoleFlag = "-DshowConsole";
 			caller.cleanFlag = "-Dclean";
 			caller.launch();

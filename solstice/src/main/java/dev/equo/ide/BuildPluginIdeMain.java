@@ -48,7 +48,7 @@ public class BuildPluginIdeMain {
 		public File workspaceDir;
 		public ArrayList<File> classpath;
 		public BuildPluginIdeMain.DebugClasspath debugClasspath;
-		public Boolean initOnly, showConsole, useAtomos;
+		public Boolean initOnly, showConsole, useAtomos, debugIde;
 		public String showConsoleFlag, cleanFlag;
 
 		public void launch() throws IOException, InterruptedException {
@@ -60,6 +60,7 @@ public class BuildPluginIdeMain {
 			Objects.requireNonNull(initOnly);
 			Objects.requireNonNull(showConsole);
 			Objects.requireNonNull(useAtomos);
+			Objects.requireNonNull(debugIde);
 			Objects.requireNonNull(showConsoleFlag);
 			Objects.requireNonNull(cleanFlag);
 
@@ -83,12 +84,22 @@ public class BuildPluginIdeMain {
 			debugClasspath.printWithHead(
 					"jars about to be launched", classpathSorted.stream().map(File::getAbsolutePath));
 			boolean isBlocking =
-					initOnly || showConsole || debugClasspath != BuildPluginIdeMain.DebugClasspath.disabled;
+					initOnly
+							|| showConsole
+							|| debugClasspath != BuildPluginIdeMain.DebugClasspath.disabled
+							|| debugIde;
 			var vmArgs = new ArrayList<String>();
 			if (OS.getRunning().isMac()) {
 				vmArgs.add("-XstartOnFirstThread");
 			}
 			vmArgs.add("-Dorg.slf4j.simpleLogger.defaultLogLevel=" + (isBlocking ? "info" : "error"));
+
+			if (debugIde) {
+				vmArgs.add("-Xdebug");
+				vmArgs.add("-Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=y");
+				System.out.println("IDE will block until you attach a jdb debugger to port 8000");
+				System.out.println("  e.g. jdb -attach localhost:8000");
+			}
 
 			Consumer<Process> monitorProcess;
 			if (isBlocking) {
@@ -111,6 +122,7 @@ public class BuildPluginIdeMain {
 							process.destroyForcibly();
 						};
 			}
+
 			var exitCode =
 					Launcher.launchJavaBlocking(
 							isBlocking,
