@@ -32,6 +32,7 @@ equoIde { // launch with gradlew equoIde
   - `equoIde --show-console` pipes console output of the launched IDE to the build console.
   - `equoIde --init-only` initializes the runtime to check for errors then exits.
   - `equoIde --debug-classpath=[names|paths]` dumps the classpath (in order) without starting the application.
+  - `equoIde --debug-ide` blocks IDE startup and prints instructions to help you attach a remote debugger.
 
 ## User plugins
 
