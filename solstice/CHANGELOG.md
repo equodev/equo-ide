@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+
+## [0.13.0] - 2023-02-05
 ### Added
 - `IdeHookWelcome` for opening a browser on welcome, and `PartDescriptor` for creating IDE parts without any `plugin.xml` metadata. ([#65](https://github.com/equodev/equo-ide/pull/65))
 - `BuildPluginIdeMain` now has a field `debugIde` which launches the IDE with vmargs setup for remote debugging. ([#69](https://github.com/equodev/equo-ide/pull/69))
