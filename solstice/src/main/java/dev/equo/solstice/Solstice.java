@@ -13,774 +13,367 @@
  *******************************************************************************/
 package dev.equo.solstice;
 
-import com.diffplug.common.swt.os.SwtPlatform;
-import dev.equo.solstice.platform.Handler;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.Constructor;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
-import java.util.Dictionary;
 import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.LinkedHashSet;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
+import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Function;
-import java.util.regex.Pattern;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
-import javax.annotation.Nullable;
-import org.eclipse.core.internal.runtime.InternalPlatform;
-import org.eclipse.osgi.internal.framework.FilterImpl;
 import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.BundleEvent;
-import org.osgi.framework.BundleListener;
-import org.osgi.framework.Constants;
-import org.osgi.framework.FrameworkListener;
-import org.osgi.framework.Version;
-import org.osgi.framework.namespace.IdentityNamespace;
-import org.osgi.framework.startlevel.BundleStartLevel;
-import org.osgi.framework.wiring.BundleCapability;
-import org.osgi.framework.wiring.BundleRevision;
-import org.osgi.framework.wiring.BundleWiring;
-import org.osgi.framework.wiring.FrameworkWiring;
-import org.osgi.resource.Namespace;
-import org.osgi.resource.Requirement;
-import org.osgi.service.packageadmin.PackageAdmin;
+import org.osgi.framework.BundleException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * A single-classloader implementation of OSGi which eagerly loads all the OSGi plugins it can find
- * on the classpath.
- */
-public class Solstice extends ServiceRegistry {
-	private static Solstice instance;
+/** Represents a closed universe of OSGi bundles. */
+public class Solstice {
+	public static Solstice findBundlesOnClasspath() {
+		Enumeration<URL> manifestURLs =
+				Unchecked.get(
+						() ->
+								SolsticeManifest.class
+										.getClassLoader()
+										.getResources(SolsticeManifest.MANIFEST_PATH));
 
-	public static Solstice initialize(SolsticeInit init) {
-		if (instance != null) {
-			throw new IllegalStateException("Solstice has already been initialized");
+		int classpathOrder = 0;
+		List<SolsticeManifest> manifests = new ArrayList<>();
+		while (manifestURLs.hasMoreElements()) {
+			var manifest = new SolsticeManifest(manifestURLs.nextElement(), ++classpathOrder);
+			if (manifest.getSymbolicName() != null) {
+				manifests.add(manifest);
+			}
 		}
-		instance = new Solstice(init);
-		return instance;
+		return new Solstice(manifests);
 	}
 
 	private final Logger logger = LoggerFactory.getLogger(Solstice.class);
-	private final SolsticeInit init;
+	private final List<SolsticeManifest> bundles;
 
-	private Solstice(SolsticeInit init) {
-		Handler.install(this);
-
-		this.init = init;
-
-		SolsticeFrameworkUtilHelper.initialize(this);
-		init.bootstrapServices(systemBundle, this);
-		logger.info("Bootstrap services installed");
-
-		discoverAndSortBundles();
-		logger.info("Confirming that nested jars have been extracted");
-		NestedJars.onClassPath().confirmAllNestedJarsArePresentOnClasspath(init.nestedJarFolder());
-		logger.info("All bundles found and sorted.");
-		for (var b : bundles) {
-			logger.info("  {}", b);
-		}
-		for (var bundle : bundles) {
-			try {
-				bundle.tryActivate();
-			} catch (ActivatorException e) {
-				throw Unchecked.wrap(e);
-			}
-		}
-	}
-
-	public void activateWorkbenchBundles() {
-		if (workbenchIsActive) {
-			throw new IllegalStateException("Can only be called once!");
-		}
-		workbenchIsActive = true;
-		logger.info("Workbench has been instantiated, activating bundles which require the workbench");
-		for (var bundle : workbenchQueue) {
-			bundle.activating = false;
-		}
-		for (var bundle : workbenchQueue) {
-			try {
-				bundle.tryActivate();
-			} catch (ActivatorException e) {
-				throw Unchecked.wrap(e);
-			}
-		}
-	}
-
-	private void addToWorkbenchQueue(ShimBundle bundle) {
-		if (workbenchIsActive) {
-			throw new IllegalStateException(
-					"This should only happen before the workbench has activated.");
-		}
-		workbenchQueue.add(bundle);
-	}
-
-	private boolean workbenchIsActive = false;
-	private final Set<ShimBundle> workbenchQueue = new LinkedHashSet<>();
-
-	@Override
-	public Bundle systemBundle() {
-		return systemBundle;
-	}
-
-	private final List<ShimBundle> bundles = new ArrayList<>();
 	private final TreeSet<String> pkgs = new TreeSet<>();
+	private BundleContext context;
 
-	private void discoverAndSortBundles() {
-		var bundleSet = SolsticeManifest.discoverBundles();
-		bundleSet.warnAndModifyManifestsToFix(logger);
-		for (var manifest : bundleSet.getBundles()) {
-			bundles.add(new ShimBundle(manifest));
-		}
-		bundles.sort(Comparator.comparing(ShimBundle::getSymbolicName));
-		for (var bundle : bundles) {
-			var host = bundle.fragmentHost();
+	private Solstice(List<SolsticeManifest> bundles) {
+		this.bundles = bundles;
+		for (var fragment : bundles) {
+			var host = fragment.fragmentHost();
 			if (host != null) {
 				var hostBundle = bundleByName(host);
 				if (hostBundle == null) {
-					throw new IllegalArgumentException("Fragment " + bundle + " needs missing " + host);
+					throw new IllegalArgumentException("Fragment " + fragment + " needs missing " + host);
 				}
-				hostBundle.addFragment(bundle);
+				hostBundle.fragments.add(fragment);
+			}
+		}
+
+		var glassfish = bundleByName(GLASSFISH);
+		var jdtCore = bundleByName(JDT_CORE);
+		if (glassfish != null && jdtCore != null) {
+			if (glassfish.classpathOrder < jdtCore.classpathOrder) {
+				throw new IllegalArgumentException(
+						"Eclipse has multiple jars which define `ICompilationUnit`, and it is important for the classpath order to put "
+								+ JDT_CORE
+								+ " before "
+								+ GLASSFISH);
 			}
 		}
 	}
 
-	public ShimBundle bundleByName(String name) {
-		for (ShimBundle bundle : bundles) {
+	private static final String GLASSFISH = "org.apache.jasper.glassfish";
+	private static final String JDT_CORE = "org.eclipse.jdt.core";
+
+	public Map<String, List<SolsticeManifest>> bySymbolicName() {
+		return groupBundles(manifest -> Collections.singletonList(manifest.getSymbolicName()));
+	}
+
+	public Map<String, List<SolsticeManifest>> byExportedPackage() {
+		Map<String, List<SolsticeManifest>> manifests = groupBundles(SolsticeManifest::getPkgExports);
+		// fragments export the same packages as their parent, no need to report those conflicts
+		manifests.replaceAll(
+				(pkg, bundles) -> {
+					if (bundles.size() > 1) {
+						long numNonFragments = bundles.stream().filter(SolsticeManifest::isNotFragment).count();
+						if (numNonFragments == 1) {
+							return Collections.singletonList(
+									bundles.stream().filter(SolsticeManifest::isNotFragment).findFirst().get());
+						}
+					}
+					return bundles;
+				});
+		return manifests;
+	}
+
+	public Map<String, List<SolsticeManifest>> calculateMissingBundles(Set<String> available) {
+		return calculateMissing(available, SolsticeManifest::getRequiredBundles);
+	}
+
+	public Map<String, List<SolsticeManifest>> calculateMissingPackages(Set<String> available) {
+		return calculateMissing(available, SolsticeManifest::getPkgImports);
+	}
+
+	private Map<String, List<SolsticeManifest>> calculateMissing(
+			Set<String> available, Function<SolsticeManifest, List<String>> neededFunc) {
+		TreeMap<String, List<SolsticeManifest>> map = new TreeMap<>();
+		for (SolsticeManifest bundle : bundles) {
+			for (var needed : neededFunc.apply(bundle)) {
+				if (!available.contains(needed)) {
+					mapAdd(map, needed, bundle);
+				}
+			}
+		}
+		return map;
+	}
+
+	private Map<String, List<SolsticeManifest>> groupBundles(
+			Function<SolsticeManifest, List<String>> groupBy) {
+		TreeMap<String, List<SolsticeManifest>> map = new TreeMap<>();
+		for (SolsticeManifest bundle : bundles) {
+			for (String extracted : groupBy.apply(bundle)) {
+				mapAdd(map, extracted, bundle);
+			}
+		}
+		return map;
+	}
+
+	private static <K> void mapAdd(
+			Map<K, List<SolsticeManifest>> map, K key, SolsticeManifest value) {
+		var oldValue = map.putIfAbsent(key, Collections.singletonList(value));
+		if (oldValue != null) {
+			if (oldValue.size() == 1) {
+				var newList = new ArrayList<SolsticeManifest>(2);
+				newList.addAll(oldValue);
+				oldValue = newList;
+				map.put(key, newList);
+			}
+			oldValue.add(value);
+		}
+	}
+
+	/**
+	 * Sends warnings to logger, then modifies every manifest to resolve all these warnings.
+	 *
+	 * <ul>
+	 *   <li>multiple bundles with same symbolic name (resolved by first one on the classpath, since
+	 *       that's what <code>Class.forName</code> will do)
+	 *   <li>multiple bundles which export the same package (resolved by first one on the classpath,
+	 *       since that's what <code>Class.forName</code> will do)
+	 *   <li>required bundle which is not present (resolved by removing requirement from the
+	 *       SolsticeManifest)
+	 *   <li>imported package which is not present (resolved by removing import from the
+	 *       SolsticeManifest)
+	 * </ul>
+	 */
+	public void warnAndModifyManifestsToFix() {
+		Logger logger = LoggerFactory.getLogger(Solstice.class);
+		var bySymbolicName = bySymbolicName();
+		var byExportedPackage = byExportedPackage();
+		bySymbolicName.forEach(
+				(symbolicName, manifests) -> {
+					if (manifests.size() > 1) {
+						logger.warn("Multiple bundles with same symbolic name: " + symbolicName);
+						for (SolsticeManifest manifest : manifests) {
+							logger.warn("  - " + manifest.getJarUrl());
+						}
+					}
+				});
+		byExportedPackage.forEach(
+				(pkg, manifests) -> {
+					if (manifests.size() > 1) {
+						int numSplitPkgs = 0;
+						for (SolsticeManifest manifest : manifests) {
+							if (pkg.startsWith("META-INF.versions.")) {
+								// just an artifact of multijar
+								return;
+							}
+							var element =
+									manifest.pkgExportsRaw().stream()
+											.filter(e -> e.getValue().equals(pkg))
+											.findFirst()
+											.get();
+							String mandatory = element.getDirective("mandatory");
+							if (mandatory != null) {
+								if ("split".equals(element.getAttribute(mandatory))) {
+									++numSplitPkgs;
+								}
+							}
+							String uses = element.getDirective("uses");
+							if (uses != null) {
+								++numSplitPkgs;
+							}
+						}
+						if (numSplitPkgs < manifests.size() - 1) {
+							logger.warn("Multiple bundles exporting the same package: " + pkg);
+							for (SolsticeManifest manifest : manifests) {
+								logger.warn("  - " + manifest.getJarUrl());
+							}
+						}
+					}
+				});
+		var missingBundles = calculateMissingBundles(bySymbolicName.keySet());
+		missingBundles.forEach(
+				(missing, neededBy) -> {
+					logger.warn("Missing required bundle " + missing + " needed by " + neededBy);
+				});
+		var missingPackages = calculateMissingPackages(byExportedPackage.keySet());
+		missingPackages.forEach(
+				(missing, neededBy) -> {
+					if (missing.equals("kotlin") || missing.startsWith("kotlin.")) {
+						return;
+					}
+					if (missing.startsWith("javax.") || missing.startsWith("java.")) {
+						return;
+					}
+					if (missing.startsWith("org.xml.") || missing.startsWith("org.w3c.")) {
+						return;
+					}
+					logger.warn("Missing imported package " + missing + " imported by " + neededBy);
+				});
+		for (var bundle : bundles) {
+			bundle.removeFromRequiredBundles(missingBundles.keySet());
+			bundle.removeFromPkgImports(missingPackages.keySet());
+		}
+	}
+
+	private void assertContextInitialized(boolean isInitialized) {
+		if (isInitialized) {
+			if (context == null) {
+				throw new IllegalStateException("Call `openAtomos` or `openSolstice` first");
+			}
+		} else {
+			if (context != null) {
+				throw new IllegalStateException("`openAtomos` or `openSolstice` can only be called once");
+			}
+		}
+	}
+
+	public void openAtomos(Map<String, String> props) throws BundleException {
+		assertContextInitialized(false);
+		// the spelled-out package is on purpose so that Atomos can remain an optional component
+		// works together with
+		// https://github.com/equodev/equo-ide/blob/aa7d30cba9988bc740ff4bc4b3015475d30d187c/solstice/build.gradle#L16-L22
+		context = dev.equo.solstice.BundleContextAtomos.hydrate(this, props);
+	}
+
+	public void openSolstice() {
+		assertContextInitialized(false);
+		context = BundleContextSolstice.hydrate(this);
+	}
+
+	public BundleContext getContext() {
+		assertContextInitialized(true);
+		return context;
+	}
+
+	/** Hydrates the bundle field of all manifests from the given context. */
+	void hydrateFrom(Function<SolsticeManifest, Bundle> bundleCreator) {
+		for (var bundle : bundles) {
+			bundle.hydrated = bundleCreator.apply(bundle);
+		}
+	}
+
+	/** Starts all hydrated manfiests. */
+	public void startAllWithLazy(boolean lazyValue) {
+		for (var solstice : bundles) {
+			if (solstice.isNotFragment() && solstice.lazy == lazyValue) {
+				start(solstice);
+			}
+		}
+	}
+
+	private Set<SolsticeManifest> activatingBundles = new HashSet<>();
+
+	public void start(String symbolicName) {
+		for (var bundle : bundles) {
+			if (bundle.getSymbolicName().equals(symbolicName)) {
+				start(bundle);
+			}
+		}
+	}
+
+	public void start(SolsticeManifest manifest) {
+		boolean newAddition = activatingBundles.add(manifest);
+		if (!newAddition) {
+			return;
+		}
+		logger.info("Request activate {}", manifest);
+		pkgs.addAll(manifest.getPkgExports());
+		String pkg;
+		while ((pkg = missingPkg(manifest)) != null) {
+			var bundles = bundlesForPkg(pkg);
+			if (bundles.isEmpty()) {
+				throw new IllegalArgumentException(manifest + " imports missing package " + pkg);
+			} else {
+				for (var bundle : bundles) {
+					if (bundle.isNotFragment()) {
+						start(bundle);
+					} else {
+						// if a fragment exports a package we need, start the fragment's host
+						start(bundleByName(bundle.fragmentHost()));
+					}
+				}
+			}
+		}
+		for (var required : manifest.getRequiredBundles()) {
+			var bundle = bundleByName(required);
+			if (bundle == null) {
+				throw new IllegalArgumentException(manifest + " required missing bundle " + bundle);
+			} else {
+				start(bundle);
+			}
+		}
+		// this happens when multiple with same version
+		try {
+			manifest.hydrated.start();
+		} catch (BundleException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private String missingPkg(SolsticeManifest manifest) {
+		for (var pkg : manifest.getPkgImports()) {
+			if (!pkgs.contains(pkg)) {
+				return pkg;
+			}
+		}
+		return null;
+	}
+
+	private List<SolsticeManifest> bundlesForPkg(String targetPkg) {
+		Object bundleForPkg = null;
+		for (var bundle : bundles) {
+			if (bundle.getPkgExports().contains(targetPkg)) {
+				if (bundleForPkg == null) {
+					bundleForPkg = bundle;
+				} else {
+					if (bundleForPkg instanceof ArrayList) {
+						((ArrayList) bundleForPkg).add(bundle);
+					} else {
+						var list = new ArrayList<SolsticeManifest>();
+						list.add((SolsticeManifest) bundleForPkg);
+						list.add(bundle);
+					}
+				}
+			}
+		}
+		if (bundleForPkg == null) {
+			return Collections.emptyList();
+		} else if (bundleForPkg instanceof SolsticeManifest) {
+			return Collections.singletonList((SolsticeManifest) bundleForPkg);
+		} else {
+			return (List<SolsticeManifest>) bundleForPkg;
+		}
+	}
+
+	SolsticeManifest bundleByName(String name) {
+		for (var bundle : bundles) {
 			if (name.equals(bundle.getSymbolicName())) {
 				return bundle;
 			}
 		}
 		return null;
-	}
-
-	public Bundle bundleForURL(URL source) {
-		String sourceString = "jar:" + source.toExternalForm() + "!";
-		for (ShimBundle bundle : bundles) {
-			if (sourceString.equals(bundle.manifest.getJarUrl())) {
-				return bundle;
-			}
-		}
-		return null;
-	}
-
-	private ShimBundle bundleForPkg(String targetPkg) {
-		for (var bundle : bundles) {
-			if (bundle.manifest.getPkgExports().contains(targetPkg)) {
-				return bundle;
-			}
-		}
-		return null;
-	}
-
-	final Bundle systemBundle =
-			new Unimplemented.Bundle() {
-				@Override
-				public long getBundleId() {
-					return 0;
-				}
-
-				@Override
-				public int getState() {
-					// this signals InternalPlatform.isRunning() to be true
-					return ACTIVE;
-				}
-
-				@Override
-				public String getSymbolicName() {
-					return "solstice-system-bundle";
-				}
-
-				@Override
-				public URL getResource(String name) {
-					return bundles.get(0).getResource(name);
-				}
-
-				@Override
-				public Enumeration<URL> getResources(String name) throws IOException {
-					return bundles.get(0).getResources(name);
-				}
-
-				@Override
-				public Enumeration<String> getEntryPaths(String path) {
-					return Dictionaries.enumeration();
-				}
-
-				@Override
-				public Enumeration<URL> findEntries(String path, String filePattern, boolean recurse) {
-					return Dictionaries.enumeration();
-				}
-
-				@Override
-				public Version getVersion() {
-					return null;
-				}
-
-				@Override
-				public String getLocation() {
-					return null;
-				}
-
-				@Override
-				public BundleContext getBundleContext() {
-					return Solstice.this;
-				}
-
-				@Override
-				public <A> A adapt(Class<A> type) {
-					if (type.equals(PackageAdmin.class)) {
-						return (A) packageAdmin;
-					} else if (type.equals(FrameworkWiring.class)) {
-						return (A) frameworkWiring;
-					} else {
-						throw new UnsupportedOperationException(type.getName());
-					}
-				}
-
-				@Override
-				public String toString() {
-					return "SystemBundle";
-				}
-			};
-
-	final PackageAdmin packageAdmin =
-			new Unimplemented.PackageAdmin() {
-				@Override
-				public int getBundleType(org.osgi.framework.Bundle bundle) {
-					if (bundle instanceof ShimBundle && ((ShimBundle) bundle).fragmentHost() != null) {
-						return BUNDLE_TYPE_FRAGMENT;
-					}
-					return 0;
-				}
-
-				@Override
-				public Bundle[] getBundles(String symbolicName, String versionRange) {
-					var bundle = bundleByName(symbolicName);
-					return (bundle == null) ? new Bundle[0] : new Bundle[] {bundle};
-				}
-
-				@Override
-				public Bundle[] getHosts(Bundle bundle) {
-					if (bundle instanceof ShimBundle) {
-						var fragmentHost = ((ShimBundle) bundle).fragmentHost();
-						if (fragmentHost != null) {
-							return getBundles(fragmentHost, null);
-						}
-					}
-					return new Bundle[0];
-				}
-
-				@Override
-				public Bundle[] getFragments(Bundle bundle) {
-					List<Bundle> fragments = new ArrayList<>();
-					for (var candidate : bundles) {
-						if (Objects.equals(candidate.fragmentHost(), bundle.getSymbolicName())) {
-							fragments.add(candidate);
-						}
-					}
-					return fragments.toArray(new Bundle[0]);
-				}
-			};
-
-	final FrameworkWiring frameworkWiring =
-			new Unimplemented.FrameworkWiring() {
-				@Override
-				public Collection<BundleCapability> findProviders(Requirement requirement) {
-					String filterSpec =
-							requirement.getDirectives().get(Namespace.REQUIREMENT_FILTER_DIRECTIVE);
-					try {
-						var requirementFilter = FilterImpl.newInstance(filterSpec).getStandardOSGiAttributes();
-						var requiredBundle = requirementFilter.get(IdentityNamespace.IDENTITY_NAMESPACE);
-						var bundle = bundleByName(requiredBundle);
-						return Collections.singleton(new ShimBundleCapability(bundle));
-					} catch (Exception e) {
-						throw Unimplemented.onPurpose();
-					}
-				}
-			};
-
-	@Override
-	public org.osgi.framework.Bundle getBundle() {
-		return systemBundle;
-	}
-
-	@Override
-	public Bundle installBundle(String location, InputStream input) {
-		throw Unimplemented.onPurpose();
-	}
-
-	@Override
-	public Bundle installBundle(String location) {
-		throw Unimplemented.onPurpose();
-	}
-
-	@Override
-	public org.osgi.framework.Bundle getBundle(String location) {
-		if (Constants.SYSTEM_BUNDLE_LOCATION.equals(location)) {
-			return systemBundle;
-		} else {
-			throw Unimplemented.onPurpose();
-		}
-	}
-
-	@Override
-	public Bundle[] getBundles() {
-		return bundles.toArray(new Bundle[0]);
-	}
-
-	@Override
-	public String getProperty(String key) {
-		if (InternalPlatform.PROP_OS.equals(key)) {
-			return SwtPlatform.getRunning().getOs();
-		} else if (InternalPlatform.PROP_WS.equals(key)) {
-			return SwtPlatform.getRunning().getWs();
-		} else {
-			return null;
-		}
-	}
-
-	@Override
-	public File getDataFile(String filename) {
-		return null;
-	}
-
-	private final CopyOnWriteArrayList<BundleListener> bundleListeners = new CopyOnWriteArrayList<>();
-
-	@Override
-	public synchronized void addBundleListener(BundleListener listener) {
-		bundleListeners.add(listener);
-	}
-
-	@Override
-	public synchronized void removeBundleListener(BundleListener listener) {
-		bundleListeners.remove(listener);
-	}
-
-	@Override
-	public void addFrameworkListener(FrameworkListener listener) {
-		// TODO: not sure if we can survive without FrameworkEvents
-	}
-
-	@Override
-	public void removeFrameworkListener(FrameworkListener listener) {
-		// TODO: not sure if we can survive without FrameworkEvents
-	}
-
-	private synchronized void notifyBundleListeners(int type, ShimBundle bundle) {
-		var event = new BundleEvent(type, bundle);
-		for (BundleListener listener : bundleListeners) {
-			listener.bundleChanged(event);
-		}
-	}
-
-	@Override
-	public Bundle getBundle(long id) {
-		return id == -1 ? systemBundle : bundles.get((int) id);
-	}
-
-	public class ShimBundle extends BundleContextDelegate implements Unimplemented.Bundle {
-		final SolsticeManifest manifest;
-		final @Nullable String activator;
-		final List<ShimBundle> fragments = new ArrayList<>();
-		final Hashtable<String, String> headers = new Hashtable<>();
-
-		ShimBundle(SolsticeManifest manifest) {
-			super(Solstice.this);
-			this.manifest = manifest;
-			activator = manifest.getHeadersOriginal().get(Constants.BUNDLE_ACTIVATOR);
-			manifest
-					.getHeadersOriginal()
-					.forEach(
-							(key, value) -> {
-								if (!Constants.IMPORT_PACKAGE.equals(key)
-										&& !Constants.EXPORT_PACKAGE.equals(key)) {
-									headers.put(key, value);
-								}
-							});
-		}
-
-		private void addFragment(ShimBundle bundle) {
-			fragments.add(bundle);
-		}
-
-		String fragmentHost() {
-			var host = manifest.getHeadersOriginal().get(Constants.FRAGMENT_HOST);
-			if (host == null) {
-				return null;
-			}
-			var idx = host.indexOf(';');
-			return idx == -1 ? host : host.substring(0, idx);
-		}
-
-		ShimBundle fragmentHostBundle() {
-			var host = fragmentHost();
-			return host == null ? null : bundleByName(host);
-		}
-
-		public ShimBundle bundleByName(String name) {
-			return Solstice.this.bundleByName(name);
-		}
-
-		@Override
-		public String toString() {
-			return manifest.toString();
-		}
-
-		@Override
-		public Class<?> loadClass(String name) throws ClassNotFoundException {
-			return Class.forName(name);
-		}
-
-		//////////////////////////
-		// BundleContext overrides
-		//////////////////////////
-		@Override
-		public org.osgi.framework.Bundle getBundle() {
-			return this;
-		}
-
-		@Override
-		public long getBundleId() {
-			if (this == systemBundle) {
-				return systemBundle.getBundleId();
-			} else {
-				int idx = bundles.indexOf(this);
-				if (idx == -1) {
-					throw new IllegalStateException("This bundle wasn't known at startup.");
-				}
-				return idx + 1;
-			}
-		}
-
-		@Override
-		public Version getVersion() {
-			return Version.emptyVersion;
-		}
-
-		@Override
-		public void start(int options) {
-			try {
-				tryActivate();
-			} catch (ActivatorException e) {
-				throw Unchecked.wrap(e);
-			}
-		}
-
-		///////////////////
-		// Bundle overrides
-		///////////////////
-		private int state = INSTALLED;
-
-		private boolean activating = false;
-
-		/** Returns false if the bundle cannot activate yet because of "requiresWorkbench" */
-		private boolean tryActivate() throws ActivatorException {
-			if (activating) {
-				return true;
-			}
-			if (!workbenchIsActive) {
-				if (init.requiresWorkbench().contains(manifest.getSymbolicName())) {
-					logger.info("Activating {} will wait for workbench", this);
-					addToWorkbenchQueue(this);
-					return false;
-				}
-			}
-			activating = true;
-
-			logger.info("Request activate {}", this);
-			pkgs.addAll(manifest.getPkgExports());
-			if ("org.eclipse.osgi".equals(getSymbolicName())) {
-				state = ACTIVE;
-				// skip org.eclipse.osgi on purpose
-				logger.info("  skipping because of shim implementation");
-				return true;
-			}
-			String pkg = missingPkg();
-			while (pkg != null) {
-				var bundle = bundleForPkg(pkg);
-				logger.info("{} import {} package {}", this, bundle == null ? "missing" : bundle, pkg);
-				if (bundle == null) {
-					throw new IllegalArgumentException(this + " imports missing package " + pkg);
-				} else {
-					if (!bundle.tryActivate()) {
-						addToWorkbenchQueue(this);
-						logger.info("Activating {} delayed because an Import-Package needs workbench", this);
-						return false;
-					}
-				}
-				pkg = missingPkg();
-			}
-			var requiredBundles = new ArrayList<>(manifest.getRequiredBundles());
-			var additional = init.additionalDeps().get(getSymbolicName());
-			if (additional != null) {
-				requiredBundles.addAll(additional);
-			}
-			for (var required : requiredBundles) {
-				logger.info("{} requires {}", this, required);
-				ShimBundle bundle = bundleByName(required);
-				if (bundle != null) {
-					if (!bundle.tryActivate()) {
-						addToWorkbenchQueue(this);
-						logger.info("Activating {} delayed because a Require-Bundle needs workbench", this);
-						return false;
-					}
-				} else {
-					throw new IllegalArgumentException(this + " requires missing bundle " + required);
-				}
-			}
-			logger.info("/START ACTIVATE {}", this);
-			state = RESOLVED;
-			notifyBundleListeners(BundleEvent.RESOLVED, this);
-
-			state = STARTING;
-			notifyBundleListeners(BundleEvent.STARTING, this);
-			if (activator != null) {
-				logger.info("{} Bundle-Activator {}", this, activator);
-				try {
-					var c = (Constructor<BundleActivator>) Class.forName(activator).getConstructor();
-					var bundleActivator = c.newInstance();
-					bundleActivator.start(this);
-				} catch (Exception e) {
-					throw new ActivatorException(this, e);
-				}
-			}
-			state = ACTIVE;
-			notifyBundleListeners(BundleEvent.STARTED, this);
-			logger.info("\\FINISH ACTIVATE {}", this);
-			return true;
-		}
-
-		private String missingPkg() {
-			for (var pkg : manifest.getPkgImports()) {
-				if (!pkgs.contains(pkg)) {
-					return pkg;
-				}
-			}
-			return null;
-		}
-
-		@Override
-		public int getState() {
-			return state;
-		}
-
-		@Override
-		public Dictionary<String, String> getHeaders(String locale) {
-			return headers;
-		}
-
-		@Override
-		public BundleContext getBundleContext() {
-			return this;
-		}
-
-		@Override
-		public String getSymbolicName() {
-			return manifest.getSymbolicName();
-		}
-
-		private String stripLeadingSlash(String path) {
-			if (path.startsWith("/")) {
-				return path.substring(1);
-			} else {
-				return path;
-			}
-		}
-
-		private String stripLeadingAddTrailingSlash(String path) {
-			path = stripLeadingSlash(path);
-			if (path.isEmpty() || path.equals("/")) {
-				return "";
-			} else {
-				return path.endsWith("/") ? path : (path + "/");
-			}
-		}
-
-		@Override
-		public URL getEntry(String path) {
-			try {
-				return new URL(manifest.getJarUrl() + "/" + stripLeadingSlash(path));
-			} catch (MalformedURLException e) {
-				throw Unchecked.wrap(e);
-			}
-		}
-
-		private <T> T parseFromZip(Function<ZipFile, T> function) {
-			String prefix = "jar:file:";
-			if (!manifest.getJarUrl().startsWith(prefix)) {
-				throw new IllegalArgumentException(
-						"Must start with " + prefix + " was " + manifest.getJarUrl());
-			}
-			if (!manifest.getJarUrl().endsWith("!")) {
-				throw new IllegalArgumentException("Must end with ! was " + manifest.getJarUrl());
-			}
-			try (var zipFile =
-					new ZipFile(
-							manifest.getJarUrl().substring(prefix.length(), manifest.getJarUrl().length() - 1))) {
-				return function.apply(zipFile);
-			} catch (IOException e) {
-				throw Unchecked.wrap(e);
-			}
-		}
-
-		@Override
-		public URL getResource(String name) {
-			ZipEntry entry = parseFromZip(zip -> zip.getEntry(stripLeadingSlash(name)));
-			if (entry != null) {
-				return getEntry(name);
-			} else {
-				return Solstice.class.getClassLoader().getResource(name);
-			}
-		}
-
-		@Override
-		public Enumeration<URL> getResources(String name) throws IOException {
-			return Solstice.class.getClassLoader().getResources(name);
-		}
-
-		@Override
-		public Enumeration<String> getEntryPaths(String path) {
-			var pathFinal = stripLeadingAddTrailingSlash(path);
-			return parseFromZip(
-					zipFile -> {
-						List<String> zipPaths = new ArrayList<>();
-						var entries = zipFile.entries();
-						while (entries.hasMoreElements()) {
-							var entry = entries.nextElement();
-							if (entry.getName().startsWith(pathFinal)) {
-								zipPaths.add(entry.getName());
-							}
-						}
-						return Collections.enumeration(zipPaths);
-					});
-		}
-
-		@Override
-		public Enumeration<URL> findEntries(String path, String filePattern, boolean recurse) {
-			var urls = new ArrayList<URL>();
-			findEntries(urls, path, filePattern, recurse);
-			return Collections.enumeration(urls);
-		}
-
-		private void findEntries(List<URL> urls, String path, String filePattern, boolean recurse) {
-			for (var fragment : fragments) {
-				fragment.findEntries(urls, path, filePattern, recurse);
-			}
-			var pathFinal = stripLeadingAddTrailingSlash(path);
-			var pattern = Pattern.compile(filePattern.replace(".", "\\.").replace("*", ".*"));
-			var pathsWithinZip =
-					parseFromZip(
-							zipFile -> {
-								List<String> zipPaths = new ArrayList<>();
-								var entries = zipFile.entries();
-								while (entries.hasMoreElements()) {
-									var entry = entries.nextElement();
-									if (entry.getName().startsWith(pathFinal)) {
-										var after = entry.getName().substring(pathFinal.length());
-										int lastSlash = after.lastIndexOf('/');
-										if (lastSlash == -1) {
-											if (pattern.matcher(after).matches()) {
-												zipPaths.add(entry.getName());
-											}
-										} else if (recurse) {
-											var name = after.substring(lastSlash + 1);
-											if (pattern.matcher(name).matches()) {
-												zipPaths.add(entry.getName());
-											}
-										}
-									}
-								}
-								return zipPaths;
-							});
-			try {
-				for (var withinZip : pathsWithinZip) {
-					urls.add(new URL(manifest.getJarUrl() + "/" + withinZip));
-				}
-			} catch (MalformedURLException e) {
-				throw Unchecked.wrap(e);
-			}
-		}
-
-		@Override
-		public String getLocation() {
-			return manifest.getJarUrl();
-		}
-
-		// implemented for OSGi DS
-		@Override
-		public <A> A adapt(Class<A> type) {
-			if (BundleWiring.class.equals(type)) {
-				return state == Bundle.INSTALLED ? null : (A) new ShimBundleWiring(this);
-			} else if (BundleStartLevel.class.equals(type)) {
-				return (A)
-						new Unimplemented.BundleStartLevel() {
-							@Override
-							public boolean isActivationPolicyUsed() {
-								return true;
-							}
-						};
-			} else if (BundleRevision.class.equals(type)) {
-				return (A) new ShimBundleRevision(this);
-			} else {
-				return null;
-			}
-		}
-	}
-
-	static class ActivatorException extends Exception {
-		final ShimBundle bundle;
-
-		ActivatorException(ShimBundle bundle, Exception cause) {
-			super(cause);
-			this.bundle = bundle;
-		}
-	}
-
-	/** Parse out a manifest header, and ignore the versions */
-	static List<String> parseManifestHeaderSimple(String in) {
-		String[] bundlesAndVersions = in.split(",");
-		List<String> attrs = new ArrayList<>();
-		List<String> required = new ArrayList<>(bundlesAndVersions.length);
-		for (String s : bundlesAndVersions) {
-			attrs.clear();
-			int attrDelim = s.indexOf(';');
-			if (attrDelim == -1) {
-				attrDelim = s.length();
-			} else {
-				int start = attrDelim;
-				while (start < s.length()) {
-					int next = s.indexOf(';', start + 1);
-					if (next == -1) {
-						next = s.length();
-					}
-					attrs.add(s.substring(start + 1, next).trim());
-					start = next;
-				}
-			}
-			if (attrs.contains("resolution:=optional")) {
-				// skip everything optional
-				continue;
-			}
-			String simple = s.substring(0, attrDelim);
-			if (simple.indexOf('"') == -1) {
-				required.add(simple.trim());
-			}
-		}
-		return required;
 	}
 }

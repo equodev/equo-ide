@@ -17,21 +17,23 @@ import com.diffplug.common.swt.os.OS;
 import dev.equo.solstice.NestedJars;
 import dev.equo.solstice.SerializableMisc;
 import dev.equo.solstice.Solstice;
-import dev.equo.solstice.SolsticeInit;
+import dev.equo.solstice.SolsticeIdeBootstrapServices;
 import dev.equo.solstice.SolsticeManifest;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
+import org.eclipse.osgi.service.datalocation.Location;
 import org.eclipse.swt.widgets.Display;
-import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
+import org.osgi.framework.Constants;
 import org.osgi.framework.InvalidSyntaxException;
 
 /**
@@ -221,6 +223,11 @@ public class BuildPluginIdeMain {
 		}
 		debugClasspath.printAndExitIfEnabled();
 
+		NestedJars.onClassPath()
+				.confirmAllNestedJarsArePresentOnClasspath(new File(installDir, NestedJars.DIR));
+		var solstice = Solstice.findBundlesOnClasspath();
+		solstice.warnAndModifyManifestsToFix();
+
 		IdeHook.InstantiatedList ideHooks = ideHooksParsed.instantiate();
 		var lockFileHook = ideHooks.find(IdeHookLockFile.Instantiated.class);
 		boolean isClean = lockFileHook == null ? false : lockFileHook.isClean();
@@ -229,30 +236,42 @@ public class BuildPluginIdeMain {
 			var display = Display.getDefault();
 			ideHooks.forEach(IdeHookInstantiated::afterDisplay, display);
 		}
-		BundleContext context;
+
+		if (useAtomos) {
+			var props = new LinkedHashMap<String, String>();
+			props.put(Constants.FRAMEWORK_STORAGE_CLEAN, Constants.FRAMEWORK_STORAGE_CLEAN_ONFIRSTINIT);
+			props.put(Location.INSTANCE_AREA_TYPE, new File(installDir, "instance").getAbsolutePath());
+			props.put(Location.INSTALL_AREA_TYPE, new File(installDir, "install").getAbsolutePath());
+			props.put(Location.CONFIGURATION_AREA_TYPE, new File(installDir, "config").getAbsolutePath());
+			props.put("atomos.content.start", "false");
+			solstice.openAtomos(props);
+		} else {
+			solstice.openSolstice();
+			SolsticeIdeBootstrapServices.apply(installDir, solstice.getContext());
+		}
+		solstice.startAllWithLazy(false);
+		solstice.start("org.eclipse.ui.ide.application");
 		if (useAtomos) {
 			// the spelled-out package is on purpose so that Atomos can remain an optional component
 			// works together with
 			// https://github.com/equodev/equo-ide/blob/aa7d30cba9988bc740ff4bc4b3015475d30d187c/solstice/build.gradle#L16-L22
-			context = new dev.equo.solstice.AtomosFrontend(installDir).getBundleContext();
-		} else {
-			context = Solstice.initialize(new SolsticeInit(installDir));
+			dev.equo.solstice.BundleContextAtomos.urlWorkaround(solstice.getContext());
 		}
 		if (!initOnly) {
-			ideHooks.forEach(IdeHookInstantiated::afterOsgi, context);
+			ideHooks.forEach(IdeHookInstantiated::afterOsgi, solstice.getContext());
 		}
 
 		if (initOnly) {
 			System.out.println(
 					"Loaded "
-							+ context.getBundles().length
+							+ solstice.getContext().getBundles().length
 							+ " bundles "
 							+ (useAtomos ? "using Atomos" : "not using Atomos"));
 			System.exit(0);
 			return;
 		}
 
-		int exitCode = IdeMainUi.main(context, ideHooks);
+		int exitCode = IdeMainUi.main(solstice, ideHooks);
 		if (exitCode == 0) {
 			System.exit(0);
 		} else {

@@ -23,8 +23,8 @@ jar.manifest.attributes(
 spotless {
 	java {
 		custom 'AtomosFrontend', { text ->
-			if (text.contains('import org.apache.felix.atomos.') && !text.contains('class AtomosFrontend ')) {
-				throw new AssertionError("Atomos imports are only allowed within `AtomosFrontend.java`")
+			if (text.contains('import org.apache.felix.atomos.') && !text.contains('class BundleContextAtomos ')) {
+				throw new AssertionError("Atomos imports are only allowed within `BundleContextAtomos.java`")
 			}
 		}
 	}
@@ -94,6 +94,9 @@ p2deps {
 	into 'testImplementation', {
 		p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'
 		install 'org.eclipse.platform.ide.categoryIU'
+		addFilter 'multiple-ICompilationUnit', {
+			it.exclude 'org.apache.jasper.glassfish'
+		}
 	}
 	into 'welcomeCompileOnly', {
 		p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'
