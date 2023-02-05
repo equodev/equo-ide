@@ -99,6 +99,13 @@ public abstract class EquoIdeTask extends DefaultTask {
 		this.dontUseAtomosOverride = dontUseAtomos;
 	}
 
+	private boolean debugIde = false;
+
+	@Option(option = "debug-ide", description = "The IDE will suspend until you attach a debugger.")
+	void debugIde(boolean debugIde) {
+		this.debugIde = debugIde;
+	}
+
 	@Inject
 	public abstract ObjectFactory getObjectFactory();
 
@@ -138,6 +145,7 @@ public abstract class EquoIdeTask extends DefaultTask {
 		caller.initOnly = initOnly;
 		caller.showConsole = showConsole;
 		caller.useAtomos = dontUseAtomosOverride ? false : getUseAtomos().get();
+		caller.debugIde = debugIde;
 		caller.showConsoleFlag = "--show-console";
 		caller.cleanFlag = "--clean";
 		caller.launch();

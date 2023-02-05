@@ -49,6 +49,7 @@ Use it like this with `mvn equo-ide:launch`
   - `equoIde -DshowConsole=true` pipes console output of launched IDE to the build console.
   - `equoIde -DinitOnly=true` initializes the runtime to check for errors then exits.
   - `equoIde -DdebugClasspath=[names|paths]` dumps the classpath (in order) without starting the application.
+  - `equoIde -DdebugIde` blocks IDE startup and prints instructions to help you attach a remote debugger.
 
 ## Limitations
 
