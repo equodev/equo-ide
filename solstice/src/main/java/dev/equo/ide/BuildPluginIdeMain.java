@@ -261,6 +261,7 @@ public class BuildPluginIdeMain {
 			solstice.openSolstice();
 			SolsticeIdeBootstrapServices.apply(installDir, solstice.getContext());
 		}
+		solstice.start("org.apache.felix.scr");
 		solstice.startAllWithLazy(false);
 		solstice.start("org.eclipse.ui.ide.application");
 		if (useAtomos) {
