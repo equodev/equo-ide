@@ -17,6 +17,10 @@ equo-ide:launch
       User property: debugClasspath
       Dumps the classpath (in order) without starting the application.
 
+    debugIde (Default: false)
+      User property: debugIde
+      Blocks IDE startup to help you attach a debugger.
+
     filters
       (no description available)
 
