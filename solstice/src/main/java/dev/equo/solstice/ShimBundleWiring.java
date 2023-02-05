@@ -23,25 +23,23 @@ import org.osgi.framework.wiring.BundleWire;
 import org.osgi.framework.wiring.BundleWiring;
 
 class ShimBundleWiring extends Unimplemented.BundleWiring {
-	private final Solstice.ShimBundle bundle;
+	private final BundleContextSolstice.ShimBundle bundle;
 
-	ShimBundleWiring(Solstice.ShimBundle bundle) {
+	ShimBundleWiring(BundleContextSolstice.ShimBundle bundle) {
 		this.bundle = Objects.requireNonNull(bundle);
 	}
 
 	@Override
 	public List<BundleWire> getRequiredWires(String namespace) {
-		if (namespace.equals(HostNamespace.HOST_NAMESPACE)) {
-			var host = bundle.fragmentHostBundle();
-			if (host != null) {
-				return Collections.singletonList(
-						new Unimplemented.BundleWire() {
-							@Override
-							public BundleWiring getProviderWiring() {
-								return host.adapt(BundleWiring.class);
-							}
-						});
-			}
+		if (namespace.equals(HostNamespace.HOST_NAMESPACE) && !bundle.manifest.isNotFragment()) {
+			var host = bundle.getBundleContext().bundleForSymbolicName(bundle.manifest.fragmentHost());
+			return Collections.singletonList(
+					new Unimplemented.BundleWire() {
+						@Override
+						public BundleWiring getProviderWiring() {
+							return host.adapt(BundleWiring.class);
+						}
+					});
 		}
 		return Collections.emptyList();
 	}
@@ -61,7 +59,7 @@ class ShimBundleWiring extends Unimplemented.BundleWiring {
 
 	private static void listResourcesHelper(
 			List<String> asStrings,
-			Solstice.ShimBundle bundle,
+			BundleContextSolstice.ShimBundle bundle,
 			String path,
 			String filePattern,
 			boolean recurse) {
@@ -72,7 +70,12 @@ class ShimBundleWiring extends Unimplemented.BundleWiring {
 		}
 		for (var required : bundle.manifest.getRequiredBundles()) {
 			// TODO: this should respect whether a required bundle is re-exported or not
-			listResourcesHelper(asStrings, bundle.bundleByName(required), path, filePattern, recurse);
+			listResourcesHelper(
+					asStrings,
+					bundle.getBundleContext().bundleForSymbolicName(required),
+					path,
+					filePattern,
+					recurse);
 		}
 	}
 

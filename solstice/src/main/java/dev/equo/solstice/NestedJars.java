@@ -165,8 +165,18 @@ public abstract class NestedJars {
 				msg.append(entry.getKey().toExternalForm());
 				msg.append('\n');
 			}
-			throw new IllegalStateException(msg.toString());
+			if (warnOnly) {
+				System.err.println(msg);
+			} else {
+				throw new IllegalStateException(msg.toString());
+			}
 		}
+	}
+
+	private static boolean warnOnly = false;
+
+	public static void setToWarnOnly() {
+		warnOnly = true;
 	}
 
 	private static Map.Entry<URL, File> extractNestedJar(

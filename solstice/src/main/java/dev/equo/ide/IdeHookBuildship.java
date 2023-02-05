@@ -13,19 +13,25 @@
  *******************************************************************************/
 package dev.equo.ide;
 
-public class IdeHookWelcome implements IdeHook {
-	String openUrl;
+import java.io.File;
 
-	public IdeHookWelcome openUrl(String openUrl) {
-		this.openUrl = openUrl;
-		return this;
+public class IdeHookBuildship implements IdeHook {
+	File rootDir;
+	boolean isOffline;
+
+	/**
+	 * Logic comes from {@link org.eclipse.buildship.ui.internal.wizard.project.ProjectImportWizard}
+	 */
+	public IdeHookBuildship(File rootDir, boolean isOffline) {
+		this.rootDir = rootDir;
+		this.isOffline = isOffline;
 	}
 
 	@Override
 	public IdeHookInstantiated instantiate() {
 		try {
-			var clazz = Class.forName("dev.equo.ide.WelcomeImpl");
-			var constructor = clazz.getDeclaredConstructor(IdeHookWelcome.class);
+			var clazz = Class.forName("dev.equo.ide.BuildshipImpl");
+			var constructor = clazz.getDeclaredConstructor(IdeHookBuildship.class);
 			return (IdeHookInstantiated) constructor.newInstance(this);
 		} catch (Exception e) {
 			throw new RuntimeException(e);

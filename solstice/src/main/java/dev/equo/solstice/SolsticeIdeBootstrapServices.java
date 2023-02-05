@@ -17,11 +17,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 import java.util.PropertyResourceBundle;
-import java.util.TreeMap;
 import javax.xml.parsers.SAXParserFactory;
 import org.eclipse.osgi.framework.log.FrameworkLog;
 import org.eclipse.osgi.service.datalocation.Location;
@@ -35,34 +32,10 @@ import org.osgi.framework.Constants;
 import org.osgi.service.log.LogLevel;
 import org.osgi.service.packageadmin.PackageAdmin;
 
-/** Controls the initialization of the {@link Solstice} runtime. */
-public class SolsticeInit {
-	private File installDir;
-
-	public SolsticeInit(File installDir) {
-		this.installDir = installDir;
-	}
-
-	public Map<String, List<String>> additionalDeps() {
-		var additional = new TreeMap<String, List<String>>();
-		additional.put(
-				"org.eclipse.e4.ui.services",
-				Arrays.asList(
-						"org.eclipse.equinox.event",
-						"org.eclipse.e4.ui.di",
-						"org.eclipse.e4.ui.workbench.swt"));
-		return additional;
-	}
-
-	public File nestedJarFolder() {
-		return new File(installDir, NestedJars.DIR);
-	}
-
-	public List<String> requiresWorkbench() {
-		return Arrays.asList("org.eclipse.debug.ui", "org.eclipse.help.ui");
-	}
-
-	public void bootstrapServices(Bundle systemBundle, BundleContext context) {
+/** Controls the initialization of the {@link BundleContextSolstice} runtime. */
+public class SolsticeIdeBootstrapServices {
+	public static void apply(File installDir, BundleContext context) {
+		Bundle systemBundle = context.getBundle(Constants.SYSTEM_BUNDLE_LOCATION);
 		// in particular, we need services normally provided by
 		// org.eclipse.osgi.internal.framework.SystemBundleActivator::start
 		context.registerService(

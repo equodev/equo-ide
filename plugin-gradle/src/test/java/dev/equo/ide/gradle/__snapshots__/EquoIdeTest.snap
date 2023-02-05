@@ -16,6 +16,8 @@ Options
                                 names
                                 paths
 
+     --debug-ide     The IDE will suspend until you attach a debugger.
+
      --dont-use-atomos     Uses Solstice's built-in OSGi runtime instead of Atomos+Equinox.
 
      --init-only     Initializes the runtime to check for errors then exits.
