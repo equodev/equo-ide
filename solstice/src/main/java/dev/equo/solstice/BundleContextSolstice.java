@@ -37,7 +37,10 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import javax.annotation.Nullable;
 import org.eclipse.core.internal.runtime.InternalPlatform;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.osgi.internal.framework.FilterImpl;
+import org.eclipse.ui.statushandlers.StatusManager;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleEvent;
@@ -313,7 +316,17 @@ public class BundleContextSolstice extends ServiceRegistry {
 	private synchronized void notifyBundleListeners(int type, ShimBundle bundle) {
 		var event = new BundleEvent(type, bundle);
 		for (BundleListener listener : bundleListeners) {
-			listener.bundleChanged(event);
+			try {
+				listener.bundleChanged(event);
+			} catch (Exception e) {
+				StatusManager.getManager()
+						.handle(
+								new Status(
+										IStatus.ERROR,
+										listener.getClass(),
+										"Error notifying bundle listener of type " + type,
+										e));
+			}
 		}
 	}
 
