@@ -179,7 +179,7 @@ public class Solstice {
 					if (manifests.size() > 1) {
 						int okayToExport = 1;
 						for (SolsticeManifest manifest : manifests) {
-							if (pkgExportIsNotDuplicate(pkg, manifest)) {
+							if (pkgExportIsNotDuplicate(pkg, manifest, manifests)) {
 								++okayToExport;
 							}
 						}
@@ -216,12 +216,16 @@ public class Solstice {
 		}
 	}
 
-	private boolean pkgExportIsNotDuplicate(String pkg, SolsticeManifest manifest) {
-		if (manifest.getPkgImports().contains(pkg)) {
+	private boolean pkgExportIsNotDuplicate(
+			String pkg, SolsticeManifest thisManifest, List<SolsticeManifest> allManifestsForPkg) {
+		if (thisManifest.getPkgImports().contains(pkg)) {
 			return true;
 		}
 		var element =
-				manifest.pkgExportsRaw().stream().filter(e -> e.getValue().equals(pkg)).findFirst().get();
+				thisManifest.pkgExportsRaw().stream()
+						.filter(e -> e.getValue().equals(pkg))
+						.findFirst()
+						.get();
 		String mandatory = element.getDirective("mandatory");
 		if (mandatory != null) {
 			if ("split".equals(element.getAttribute(mandatory))) {
@@ -231,6 +235,16 @@ public class Solstice {
 		String uses = element.getDirective("uses");
 		if (uses != null) {
 			return true;
+		}
+		String friends = element.getDirective("x-friends");
+		if (friends != null) {
+			for (String friend : friends.split(",")) {
+				for (SolsticeManifest otherManifest : allManifestsForPkg) {
+					if (otherManifest != thisManifest && otherManifest.getSymbolicName().equals(friend)) {
+						return true;
+					}
+				}
+			}
 		}
 		return false;
 	}
