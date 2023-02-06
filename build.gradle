@@ -1,6 +1,14 @@
 plugins {
 	id 'com.diffplug.blowdryer'
 }
+
+// dogfood
+apply plugin: 'dev.equo.ide'
+equoIde {
+	branding().title('Equo IDE')
+	welcome().openUrl('https://github.com/equodev/equo-ide')
+}
+
 allprojects {
 	apply from: 干.file('spotless.gradle')
 }
