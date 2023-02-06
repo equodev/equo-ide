@@ -3,18 +3,18 @@ pluginManagement {
 		// https://github.com/radarsh/gradle-test-logger-plugin/blob/develop/CHANGELOG.md
 		id 'com.adarshr.test-logger'                    version '3.2.0'
 		// https://github.com/diffplug/blowdryer/blob/main/CHANGELOG.md
-		id 'com.diffplug.blowdryer'                     version '1.6.0'
-		id 'com.diffplug.blowdryerSetup'                version '1.6.0'
+		id 'com.diffplug.blowdryer'                     version '1.7.0'
+		id 'com.diffplug.blowdryerSetup'                version '1.7.0'
 		// https://github.com/diffplug/spotless/blob/main/plugin-gradle/CHANGES.md
-		id 'com.diffplug.spotless'                      version '6.12.0'
+		id 'com.diffplug.spotless'                      version '6.14.1'
 		// https://github.com/diffplug/spotless-changelog/blob/main/CHANGELOG.md
-		id 'com.diffplug.spotless-changelog'            version '2.4.1'
+		id 'com.diffplug.spotless-changelog'            version '3.0.1'
 		// https://plugins.gradle.org/plugin/com.gradle.plugin-publish
 		id 'com.gradle.plugin-publish'                  version '1.1.0'
 		// https://www.benediktritter.de/maven-plugin-development/#release-history
-		id 'de.benediktritter.maven-plugin-development' version '0.4.0'
+		id 'de.benediktritter.maven-plugin-development' version '0.4.1'
 		// https://github.com/equodev/equo-ide/blob/main/plugin-gradle/CHANGELOG.md
-		id 'dev.equo.p2deps'                            version '0.10.0'
+		id 'dev.equo.p2deps'                            version '0.13.0'
 		// https://github.com/gradle-nexus/publish-plugin/releases
 		id 'io.github.gradle-nexus.publish-plugin'      version '1.1.0'
 	}
