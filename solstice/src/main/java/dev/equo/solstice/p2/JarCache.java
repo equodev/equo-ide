@@ -16,7 +16,6 @@ package dev.equo.solstice.p2;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okio.Okio;
@@ -53,7 +52,7 @@ class JarCache {
 					throw new IllegalArgumentException(response.code() + " at " + unit.getJarUrl());
 				}
 			}
-			Files.move(tempFile.toPath(), jar.toPath(), StandardCopyOption.ATOMIC_MOVE);
+			Files.move(tempFile.toPath(), jar.toPath());
 			return jar;
 		} else {
 			throw new IllegalStateException(
