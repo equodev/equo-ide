@@ -329,7 +329,7 @@ public class BundleContextSolstice extends ServiceRegistry {
 								new Status(
 										IStatus.ERROR,
 										listener.getClass(),
-										"Error notifying bundle listener of type " + type,
+										"Error notifying bundle listener of event type " + type,
 										e));
 			}
 		}

@@ -24,7 +24,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicLong;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.osgi.internal.framework.FilterImpl;
+import org.eclipse.ui.statushandlers.StatusManager;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
@@ -131,7 +134,17 @@ abstract class ServiceRegistry implements BundleContext {
 		var event = new ServiceEvent(type, serviceReference);
 		for (var listener : serviceListeners) {
 			if (listener.filter == null || listener.filter.match(serviceReference)) {
-				listener.listener.serviceChanged(event);
+				try {
+					listener.listener.serviceChanged(event);
+				} catch (Exception e) {
+					StatusManager.getManager()
+							.handle(
+									new Status(
+											IStatus.ERROR,
+											listener.getClass(),
+											"Error notifying service listener of event type " + type,
+											e));
+				}
 			}
 		}
 	}
