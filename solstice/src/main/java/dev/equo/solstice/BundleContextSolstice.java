@@ -138,6 +138,11 @@ public class BundleContextSolstice extends ServiceRegistry {
 				}
 
 				@Override
+				public Class<?> loadClass(String name) throws ClassNotFoundException {
+					return Class.forName(name);
+				}
+
+				@Override
 				public Enumeration<URL> getResources(String name) throws IOException {
 					return bundles.get(0).getResources(name);
 				}
