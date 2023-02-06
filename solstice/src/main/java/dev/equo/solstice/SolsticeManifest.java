@@ -24,6 +24,8 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 import java.util.function.Function;
 import java.util.jar.Manifest;
 import javax.annotation.Nullable;
@@ -52,6 +54,8 @@ public class SolsticeManifest {
 	private final List<String> requiredBundles;
 	private final List<String> pkgImports;
 	private final List<String> pkgExports;
+	private final List<Capability> capProvides;
+	private final List<Capability> capRequires;
 	final boolean lazy;
 
 	final List<SolsticeManifest> fragments = new ArrayList<>();
@@ -97,8 +101,76 @@ public class SolsticeManifest {
 		// https://access.redhat.com/documentation/en-us/red_hat_jboss_fuse/6.3/html/managing_osgi_dependencies/importexport
 		pkgImports.removeAll(pkgExports);
 
+		capProvides = parseAndStripCapability(Constants.PROVIDE_CAPABILITY);
+		capRequires = parseAndStripCapability(Constants.REQUIRE_CAPABILITY);
+
+		if (headersOriginal.containsKey(Constants.FRAGMENT_HOST)
+				&& (!capRequires.isEmpty() || !capProvides.isEmpty())) {
+			throw Unimplemented.onPurpose(
+					"Solstice does not currently support OSGi capabilities in fragment bundles.");
+		}
+
 		String activationPolicy = headersOriginal.get(Constants.BUNDLE_ACTIVATIONPOLICY);
 		lazy = activationPolicy == null ? false : activationPolicy.contains("lazy");
+	}
+
+	private List<Capability> parseAndStripCapability(String header) {
+		try {
+			String capability = headersOriginal.get(Constants.REQUIRE_CAPABILITY);
+			if (capability == null) {
+				return Collections.emptyList();
+			}
+			ManifestElement[] elements =
+					ManifestElement.parseHeader(Constants.REQUIRE_CAPABILITY, capability);
+			List<Capability> capabilities = new ArrayList<>(elements.length);
+			for (ManifestElement element : elements) {
+				if (Capability.IGNORED_NAMESPACES.contains(element.getValue())) {
+					continue;
+				}
+				capabilities.add(new Capability(element));
+			}
+			if (capabilities.isEmpty()) {
+				return Collections.emptyList();
+			} else {
+				return capabilities;
+			}
+		} catch (BundleException e) {
+			throw Unchecked.wrap(e);
+		}
+	}
+
+	static class Capability {
+		private static Set<String> IGNORED_NAMESPACES = Set.of("osgi.ee");
+		private static Set<String> IGNORED_ATTRIBUTES = Set.of("version:Version");
+
+		String namespace;
+		Map<String, String> attributes = new TreeMap<>();
+		Map<String, String> directives = new TreeMap<>();
+
+		public Capability(ManifestElement element) {
+			namespace = element.getValue();
+			var keys = element.getKeys();
+			if (keys != null) {
+				while (keys.hasMoreElements()) {
+					String key = keys.nextElement();
+					if (!IGNORED_ATTRIBUTES.contains(key)) {
+						this.attributes.put(key, element.getAttribute(key));
+					}
+				}
+			}
+			var directives = element.getDirectiveKeys();
+			if (directives != null) {
+				while (directives.hasMoreElements()) {
+					String key = directives.nextElement();
+					this.directives.put(key, element.getDirective(key));
+				}
+			}
+		}
+
+		@Override
+		public String toString() {
+			return namespace + ": " + attributes + " " + directives;
+		}
 	}
 
 	private List<ManifestElement> pkgExportsRaw;
