@@ -96,10 +96,6 @@ public class SolsticeManifest {
 
 		pkgExports = parseAndStrip(Constants.EXPORT_PACKAGE);
 		pkgImports = parseAndStrip(Constants.IMPORT_PACKAGE);
-		// if we export a package, we don't actually have to import it, that's just for letting
-		// multiple bundles define the same classes, which is a dubious feature to support
-		// https://access.redhat.com/documentation/en-us/red_hat_jboss_fuse/6.3/html/managing_osgi_dependencies/importexport
-		pkgImports.removeAll(pkgExports);
 
 		capProvides = parseAndStripCapability(Constants.PROVIDE_CAPABILITY);
 		capRequires = parseAndStripCapability(Constants.REQUIRE_CAPABILITY);

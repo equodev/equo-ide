@@ -172,30 +172,18 @@ public class Solstice {
 				});
 		byExportedPackage.forEach(
 				(pkg, manifests) -> {
+					if (pkg.startsWith("META-INF.versions.")) {
+						// just an artifact of multijar
+						return;
+					}
 					if (manifests.size() > 1) {
-						int numSplitPkgs = 0;
+						int okayToExport = 1;
 						for (SolsticeManifest manifest : manifests) {
-							if (pkg.startsWith("META-INF.versions.")) {
-								// just an artifact of multijar
-								return;
-							}
-							var element =
-									manifest.pkgExportsRaw().stream()
-											.filter(e -> e.getValue().equals(pkg))
-											.findFirst()
-											.get();
-							String mandatory = element.getDirective("mandatory");
-							if (mandatory != null) {
-								if ("split".equals(element.getAttribute(mandatory))) {
-									++numSplitPkgs;
-								}
-							}
-							String uses = element.getDirective("uses");
-							if (uses != null) {
-								++numSplitPkgs;
+							if (pkgExportIsNotDuplicate(pkg, manifest)) {
+								++okayToExport;
 							}
 						}
-						if (numSplitPkgs < manifests.size() - 1) {
+						if (manifests.size() > okayToExport) {
 							logger.warn("Multiple bundles exporting the same package: " + pkg);
 							for (SolsticeManifest manifest : manifests) {
 								logger.warn("  - " + manifest.getJarUrl());
@@ -226,6 +214,25 @@ public class Solstice {
 			bundle.removeFromRequiredBundles(missingBundles.keySet());
 			bundle.removeFromPkgImports(missingPackages.keySet());
 		}
+	}
+
+	private boolean pkgExportIsNotDuplicate(String pkg, SolsticeManifest manifest) {
+		if (manifest.getPkgImports().contains(pkg)) {
+			return true;
+		}
+		var element =
+				manifest.pkgExportsRaw().stream().filter(e -> e.getValue().equals(pkg)).findFirst().get();
+		String mandatory = element.getDirective("mandatory");
+		if (mandatory != null) {
+			if ("split".equals(element.getAttribute(mandatory))) {
+				return true;
+			}
+		}
+		String uses = element.getDirective("uses");
+		if (uses != null) {
+			return true;
+		}
+		return false;
 	}
 
 	private void assertContextInitialized(boolean isInitialized) {
