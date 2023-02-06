@@ -92,21 +92,7 @@ public class Solstice {
 	}
 
 	public Map<String, List<SolsticeManifest>> byExportedPackage() {
-		Map<String, List<SolsticeManifest>> manifests =
-				groupBundlesIncludeFragments(false, SolsticeManifest::getPkgExports);
-		// fragments export the same packages as their parent, no need to report those conflicts
-		manifests.replaceAll(
-				(pkg, bundles) -> {
-					if (bundles.size() > 1) {
-						long numNonFragments = bundles.stream().filter(SolsticeManifest::isNotFragment).count();
-						if (numNonFragments == 1) {
-							return Collections.singletonList(
-									bundles.stream().filter(SolsticeManifest::isNotFragment).findFirst().get());
-						}
-					}
-					return bundles;
-				});
-		return manifests;
+		return groupBundlesIncludeFragments(false, SolsticeManifest::getPkgExports);
 	}
 
 	public Map<String, List<SolsticeManifest>> calculateMissingBundles(Set<String> available) {

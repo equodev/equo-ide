@@ -279,7 +279,12 @@ public class SolsticeManifest {
 			var total = new ArrayList<String>();
 			total.addAll(getter.apply(this));
 			for (var fragment : fragments) {
-				total.addAll(getter.apply(fragment));
+				List<String> toAdd = getter.apply(fragment);
+				for (String e : toAdd) {
+					if (!total.contains(e)) {
+						total.add(e);
+					}
+				}
 			}
 			return total;
 		}
