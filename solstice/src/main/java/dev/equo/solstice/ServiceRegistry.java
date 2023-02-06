@@ -61,7 +61,7 @@ abstract class ServiceRegistry implements BundleContext {
 	@Override
 	public synchronized ServiceRegistration<?> registerService(
 			String[] clazzes, Object service, Dictionary<String, ?> properties) {
-		logger.info(
+		logger.debug(
 				"{} implemented by service {} with {}",
 				Arrays.asList(clazzes),
 				service.getClass(),
@@ -115,14 +115,14 @@ abstract class ServiceRegistry implements BundleContext {
 
 	@Override
 	public final synchronized void addServiceListener(ServiceListener listener, String filter) {
-		logger.info("add listener {} with {}", listener.getClass(), filter);
+		logger.debug("add listener {} with {}", listener.getClass(), filter);
 		serviceListeners.add(
 				new ListenerEntry(listener, Unchecked.get(() -> FilterImpl.newInstance(filter))));
 	}
 
 	@Override
 	public final synchronized void addServiceListener(ServiceListener listener) {
-		logger.info("add listener {} with no filter", listener);
+		logger.debug("add listener {} with no filter", listener);
 		serviceListeners.add(new ListenerEntry(listener, null));
 	}
 
