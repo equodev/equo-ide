@@ -87,11 +87,13 @@ public class Solstice {
 	private static final String JDT_CORE = "org.eclipse.jdt.core";
 
 	public Map<String, List<SolsticeManifest>> bySymbolicName() {
-		return groupBundles(manifest -> Collections.singletonList(manifest.getSymbolicName()));
+		return groupBundlesIncludeFragments(
+				true, manifest -> Collections.singletonList(manifest.getSymbolicName()));
 	}
 
 	public Map<String, List<SolsticeManifest>> byExportedPackage() {
-		Map<String, List<SolsticeManifest>> manifests = groupBundles(SolsticeManifest::getPkgExports);
+		Map<String, List<SolsticeManifest>> manifests =
+				groupBundlesIncludeFragments(false, SolsticeManifest::getPkgExports);
 		// fragments export the same packages as their parent, no need to report those conflicts
 		manifests.replaceAll(
 				(pkg, bundles) -> {
@@ -128,12 +130,14 @@ public class Solstice {
 		return map;
 	}
 
-	private Map<String, List<SolsticeManifest>> groupBundles(
-			Function<SolsticeManifest, List<String>> groupBy) {
+	private Map<String, List<SolsticeManifest>> groupBundlesIncludeFragments(
+			boolean includeFragments, Function<SolsticeManifest, List<String>> groupBy) {
 		TreeMap<String, List<SolsticeManifest>> map = new TreeMap<>();
 		for (SolsticeManifest bundle : bundles) {
-			for (String extracted : groupBy.apply(bundle)) {
-				mapAdd(map, extracted, bundle);
+			if (includeFragments || bundle.isNotFragment()) {
+				for (String extracted : groupBy.apply(bundle)) {
+					mapAdd(map, extracted, bundle);
+				}
 			}
 		}
 		return map;
