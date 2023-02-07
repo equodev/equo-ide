@@ -100,6 +100,20 @@ public class SolsticeManifest {
 		capProvides = parseAndStripCapability(Constants.PROVIDE_CAPABILITY);
 		capRequires = parseAndStripCapability(Constants.REQUIRE_CAPABILITY);
 
+		if (!capProvides.isEmpty()) {
+			System.out.println("++ " + symbolicName + " provides");
+			for (var cap : capProvides) {
+				System.out.println(cap.toString());
+			}
+		}
+		if (!capRequires.isEmpty()) {
+			System.out.println("-- " + symbolicName + " requires");
+			for (var cap : capRequires) {
+				System.out.println(
+						cap.namespace + " filter = " + cap.directives.get(Constants.FILTER_DIRECTIVE));
+			}
+		}
+
 		if (headersOriginal.containsKey(Constants.FRAGMENT_HOST)
 				&& (!capRequires.isEmpty() || !capProvides.isEmpty())) {
 			throw Unimplemented.onPurpose(
@@ -112,12 +126,11 @@ public class SolsticeManifest {
 
 	private List<Capability> parseAndStripCapability(String header) {
 		try {
-			String capability = headersOriginal.get(Constants.REQUIRE_CAPABILITY);
+			String capability = headersOriginal.get(header);
 			if (capability == null) {
 				return Collections.emptyList();
 			}
-			ManifestElement[] elements =
-					ManifestElement.parseHeader(Constants.REQUIRE_CAPABILITY, capability);
+			ManifestElement[] elements = ManifestElement.parseHeader(header, capability);
 			List<Capability> capabilities = new ArrayList<>(elements.length);
 			for (ManifestElement element : elements) {
 				if (Capability.IGNORED_NAMESPACES.contains(element.getValue())) {
@@ -158,8 +171,24 @@ public class SolsticeManifest {
 			if (directives != null) {
 				while (directives.hasMoreElements()) {
 					String key = directives.nextElement();
-					this.directives.put(key, element.getDirective(key));
+					if (key.equals(Constants.FILTER_DIRECTIVE)) {
+						this.directives.put(
+								Constants.FILTER_DIRECTIVE,
+								stripVersionsFromFilter(element.getDirective(Constants.FILTER_DIRECTIVE)));
+					} else {
+						this.directives.put(key, element.getDirective(key));
+					}
 				}
+			}
+		}
+
+		private String stripVersionsFromFilter(String filter) {
+			var removeVersionGt = filter.replaceAll("\\(version>=(.*?)\\)", "");
+			var removeEmptyNots = removeVersionGt.replace("(!)", "");
+			if (removeEmptyNots.startsWith("(&(") && removeEmptyNots.endsWith("))")) {
+				return removeEmptyNots.substring(2, removeEmptyNots.length() - 1);
+			} else {
+				return removeEmptyNots;
 			}
 		}
 
