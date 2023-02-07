@@ -17,7 +17,7 @@ import dev.equo.solstice.BundleContextSolstice;
 import dev.equo.solstice.Solstice;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.slf4j.simple.SimpleLogger;
+import org.slf4j.impl.SimpleLogger;
 
 public class SolsticeSmokeTest {
 	@Test
