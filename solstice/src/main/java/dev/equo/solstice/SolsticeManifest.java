@@ -127,7 +127,8 @@ public class SolsticeManifest {
 	}
 
 	private static void parseProvideCapability(CapabilityParsed parsed, ArrayList<Capability> total) {
-		for (var attr : parsed.attributes.entrySet()) {
+		if (parsed.attributes.size() == 1) {
+			var attr = parsed.attributes.entrySet().iterator().next();
 			var key = attr.getKey();
 			if (key.endsWith(Capability.LIST_STR)) {
 				key = key.substring(0, key.length() - Capability.LIST_STR.length());
@@ -138,6 +139,23 @@ public class SolsticeManifest {
 			} else {
 				total.add(new Capability(parsed.namespace, key, attr.getValue()));
 			}
+		} else {
+			Capability cap = new Capability(parsed.namespace);
+			for (var attr : parsed.attributes.entrySet()) {
+				String key = attr.getKey();
+				if (key.endsWith(Capability.LIST_STR)) {
+					key = key.substring(0, key.length() - Capability.LIST_STR.length());
+					if (attr.getValue().indexOf(',') != -1) {
+						throw Unimplemented.onPurpose(
+								"Solstice does not support "
+										+ Capability.LIST_STR
+										+ " unless that is the only property, this had "
+										+ parsed);
+					}
+				}
+				cap.add(key, attr.getValue());
+			}
+			total.add(cap);
 		}
 	}
 
@@ -202,13 +220,20 @@ public class SolsticeManifest {
 		private static final Set<String> IGNORED_ATTRIBUTES = Set.of("version:Version");
 
 		final String namespace;
-		final String key;
-		final String value;
+		final ArrayList<String> keyValue = new ArrayList<>(2);
 
-		public Capability(String namespace, String key, String value) {
+		private Capability(String namespace, String key, String value) {
+			this(namespace);
+			add(key, value);
+		}
+
+		private Capability(String namespace) {
 			this.namespace = namespace;
-			this.key = key;
-			this.value = value;
+		}
+
+		void add(String key, String value) {
+			keyValue.add(key);
+			keyValue.add(value);
 		}
 
 		@Override
@@ -217,11 +242,13 @@ public class SolsticeManifest {
 			if (result != 0) {
 				return result;
 			}
-			result = key.compareTo(o.key);
-			if (result != 0) {
-				return result;
+			for (int i = 0; i < Math.max(keyValue.size(), o.keyValue.size()); ++i) {
+				result = keyValue.get(i).compareTo(o.keyValue.get(i));
+				if (result != 0) {
+					return result;
+				}
 			}
-			return value.compareTo(value);
+			return keyValue.size() - o.keyValue.size();
 		}
 
 		@Override
@@ -232,12 +259,22 @@ public class SolsticeManifest {
 
 		@Override
 		public int hashCode() {
-			return Objects.hash(namespace, key, value);
+			return Objects.hash(namespace, keyValue);
 		}
 
 		@Override
 		public String toString() {
-			return namespace + ":" + key + "=" + value;
+			StringBuilder builder = new StringBuilder();
+			builder.append(namespace);
+			builder.append(':');
+			for (int i = 0; i < keyValue.size() / 2; ++i) {
+				builder.append(keyValue.get(2 * i));
+				builder.append('=');
+				builder.append(keyValue.get(2 * i + 1));
+				builder.append(',');
+			}
+			builder.setLength(builder.length() - 1); // remove the trailing comma
+			return builder.toString();
 		}
 	}
 
