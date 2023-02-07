@@ -24,14 +24,12 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeMap;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.jar.Manifest;
 import javax.annotation.Nullable;
 import org.eclipse.osgi.util.ManifestElement;
-import org.jetbrains.annotations.NotNull;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
@@ -140,24 +138,7 @@ public class SolsticeManifest {
 				}
 				cap.add(key, attr.getValue());
 			}
-			if (cap.size() == 1) {
-				total.add(cap);
-			} else if (cap.size() == 2) {
-				total.add(cap);
-				// total.add(cap.swap(0, 1)); // same as just cap
-				total.add(cap.swap(1, 0));
-			} else if (cap.size() == 3) {
-				total.add(cap);
-				// total.add(cap.swap(0, 1, 2)); // same as just cap
-				total.add(cap.swap(0, 2, 1));
-				total.add(cap.swap(1, 0, 2));
-				total.add(cap.swap(1, 2, 0));
-				total.add(cap.swap(2, 0, 1));
-				total.add(cap.swap(2, 1, 0));
-			} else {
-				throw Unimplemented.onPurpose(
-						"Solstice only supports Capabilities with at most 3 properties, see Capabilities javadoc for how to remove this limitation");
-			}
+			total.add(cap);
 		}
 	}
 
@@ -217,145 +198,6 @@ public class SolsticeManifest {
 			}
 		} catch (BundleException e) {
 			throw Unchecked.wrap(e);
-		}
-	}
-
-	/**
-	 * Represents an OSGi capability. `hashCode()` always throws an error, and two capabilities are
-	 * equal (by both {@link #equals(Object)} and {@link #compareTo(Capability)}) is one is an exact
-	 * subset of the other.
-	 *
-	 * <p>This design is quite fragile, we should probably not keep it. The problem with allowing
-	 * subset matching is this:
-	 *
-	 * <pre>
-	 * var set = new TreeSet<Capability>();
-	 * set.add(Capability.parse("namespace:name=foo,class=bar"))
-	 * set.contains(Capability.parse("Capability.parse("namespace:name=foo)) // subset matching says this should be true, and it is, huzzah!
-	 * set.contains(Capability.parse("Capability.parse("namespace:class=bar))) // subset matching says this should be true, but key ordering says it is not (class=bar is less name name=foo)
-	 * </pre>
-	 *
-	 * The design works perfect for capabilities with only one property. For capabilities with two
-	 * properties, we can workaround the problem by adding it in both orders
-	 *
-	 * <pre>
-	 * set.add(Capability.parse("namespace:name=foo,class=bar"))
-	 * set.add(Capability.parse("namespace:class=bar,name=foo"))
-	 * </pre>
-	 *
-	 * But this workaround is combinatoric. For a capability with three properties, we have to add it
-	 * in 3! = 6 different orders. We implemented this combinatoric adding in <a
-	 * href="https://github.com/equodev/equo-ide/pull/71/commits/976447fa56a1d20a31cf9caf52991f0303ef3a1c">this
-	 * commit</a> by hardcoding the cases for 1, 2, 3 and we error out on 4 or higher.
-	 */
-	public static class Capability implements Comparable<Capability> {
-		private static final String LIST_STR = ":List<String>";
-		private static final Set<String> IGNORED_NAMESPACES = Set.of("osgi.ee");
-		private static final Set<String> IGNORED_ATTRIBUTES = Set.of("version:Version");
-
-		final String namespace;
-		final ArrayList<String> keyValue = new ArrayList<>(2);
-
-		Capability(String namespace, String key, String value) {
-			this(namespace);
-			add(key, value);
-		}
-
-		private Capability(String namespace) {
-			this.namespace = namespace;
-		}
-
-		private void add(String key, String value) {
-			keyValue.add(key);
-			keyValue.add(value);
-		}
-
-		public int size() {
-			return keyValue.size() / 2;
-		}
-
-		@Override
-		public int compareTo(@NotNull Capability o) {
-			int result = namespace.compareTo(o.namespace);
-			if (result != 0) {
-				return result;
-			}
-			if (isSubsetMatch(this, o)) {
-				// if one is exactly the same as the other but with extras, we allow that to count
-				return 0;
-			}
-			for (int i = 0; i < Math.min(keyValue.size(), o.keyValue.size()); ++i) {
-				result = keyValue.get(i).compareTo(o.keyValue.get(i));
-				if (result != 0) {
-					return result;
-				}
-			}
-			return keyValue.size() - o.keyValue.size();
-		}
-
-		private static boolean isSubsetMatch(Capability a, Capability b) {
-			Capability shorter, longer;
-			if (a.keyValue.size() > b.keyValue.size()) {
-				shorter = b;
-				longer = a;
-			} else {
-				shorter = a;
-				longer = b;
-			}
-			for (int i = 0; i < shorter.keyValue.size() / 2; ++i) {
-				var key = shorter.keyValue.get(2 * i);
-				var value = shorter.keyValue.get(2 * i + 1);
-
-				var longerKeyIdx = longer.keyValue.indexOf(key);
-				if (longerKeyIdx == -1) {
-					// missing key
-					return false;
-				}
-				if (longerKeyIdx % 2 == 1) {
-					throw Unimplemented.onPurpose(
-							"Key has the same content as a value, unlikely to ever happen, straight-forward to fix if it does, please file an issue at https://github.com/equodev/equo-ide");
-				}
-				var longerValue = longer.keyValue.get(longerKeyIdx + 1);
-				if (!value.equals(longerValue)) {
-					return false;
-				}
-			}
-			return true;
-		}
-
-		@Override
-		public boolean equals(Object o) {
-			if (this == o) return true;
-			return o instanceof Capability ? compareTo((Capability) o) == 0 : false;
-		}
-
-		@Override
-		public int hashCode() {
-			throw Unimplemented.onPurpose(
-					"For use in TreeSet/TreeMap only, only compareTo and equals are allowed");
-		}
-
-		@Override
-		public String toString() {
-			StringBuilder builder = new StringBuilder();
-			builder.append(namespace);
-			builder.append(':');
-			for (int i = 0; i < keyValue.size() / 2; ++i) {
-				builder.append(keyValue.get(2 * i));
-				builder.append('=');
-				builder.append(keyValue.get(2 * i + 1));
-				builder.append(',');
-			}
-			builder.setLength(builder.length() - 1); // remove the trailing comma
-			return builder.toString();
-		}
-
-		private Capability swap(int... indices) {
-			Capability copy = new Capability(namespace);
-			for (int i = 0; i < indices.length; ++i) {
-				copy.add(keyValue.get(2 * indices[i]), keyValue.get(2 * indices[i] + 1));
-			}
-			return copy;
 		}
 	}
 

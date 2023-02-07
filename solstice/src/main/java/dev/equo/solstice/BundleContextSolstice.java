@@ -31,7 +31,6 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Function;
 import java.util.regex.Pattern;
@@ -233,37 +232,32 @@ public class BundleContextSolstice extends ServiceRegistry {
 				}
 			};
 
-	private TreeMap<SolsticeManifest.Capability, ShimBundle> capabilities = new TreeMap<>();
+	private Capability.SupersetMap<ShimBundle> capabilities = new Capability.SupersetMap<>();
 
 	final FrameworkWiring frameworkWiring =
 			new Unimplemented.FrameworkWiring() {
 				@Override
-				public Collection<BundleCapability> findProviders(Requirement requirement) {
-					if (!Set.of(Constants.FILTER_DIRECTIVE).equals(requirement.getDirectives().keySet())) {
+				public Collection<BundleCapability> findProviders(Requirement req) {
+					if (!Set.of(Constants.FILTER_DIRECTIVE).equals(req.getDirectives().keySet())) {
 						throw Unimplemented.onPurpose(
-								"Solstice supports only filter, this was " + requirement.getDirectives());
+								"Solstice supports only filter, this was " + req.getDirectives());
 					}
-					String filterRaw = requirement.getDirectives().get(Constants.FILTER_DIRECTIVE);
+					String filterRaw = req.getDirectives().get(Constants.FILTER_DIRECTIVE);
 					var filter = SolsticeManifest.parseSingleFilter(filterRaw);
 
-					if (requirement.getNamespace().equals(IdentityNamespace.IDENTITY_NAMESPACE)) {
+					if (req.getNamespace().equals(IdentityNamespace.IDENTITY_NAMESPACE)) {
 						if (!filter.getKey().equals(IdentityNamespace.IDENTITY_NAMESPACE)) {
 							throw Unimplemented.onPurpose(
 									"Solstice expected " + IdentityNamespace.IDENTITY_NAMESPACE + ", was " + filter);
 						}
-						var bundle =
-								Objects.requireNonNull(bundleForSymbolicName(filter.getValue()), filter.getValue());
+						var bundle = bundleForSymbolicName(filter.getValue());
+						Objects.requireNonNull(bundle, filter.getValue());
 						return Collections.singleton(new ShimBundleCapability(bundle));
 					} else {
-						var capability =
-								new SolsticeManifest.Capability(
-										requirement.getNamespace(), filter.getKey(), filter.getValue());
-						var result = capabilities.get(capability);
+						var cap = new Capability(req.getNamespace(), filter.getKey(), filter.getValue());
+						var result = capabilities.getAnySupersetOf(cap);
 						if (result == null) {
-							var floor = capabilities.floorKey(capability);
-							var ceiling = capabilities.ceilingKey(capability);
-							throw new NoSuchElementException(
-									"No element " + capability + " but we do have " + floor + " and " + ceiling);
+							throw new NoSuchElementException("No capability matching " + cap);
 						}
 						return Collections.singleton(new ShimBundleCapability(result));
 					}

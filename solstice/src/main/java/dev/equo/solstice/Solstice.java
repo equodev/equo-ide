@@ -55,7 +55,7 @@ public class Solstice {
 	private final List<SolsticeManifest> bundles;
 
 	private final TreeSet<String> pkgs = new TreeSet<>();
-	private final TreeSet<SolsticeManifest.Capability> caps = new TreeSet<>();
+	private final Capability.SupersetSet caps = new Capability.SupersetSet();
 	private BundleContext context;
 
 	private Solstice(List<SolsticeManifest> bundles) {
@@ -219,13 +219,13 @@ public class Solstice {
 		}
 
 		// warn about missing requirements. TODO: remove missing requirements and set them in Atomos
-		var allCapabilities = new TreeSet<SolsticeManifest.Capability>();
+		var allCapabilities = new Capability.SupersetSet();
 		for (var bundle : bundles) {
 			allCapabilities.addAll(bundle.capProvides);
 		}
 		for (var bundle : bundles) {
 			for (var cap : bundle.capRequires) {
-				if (!allCapabilities.contains(cap)) {
+				if (!allCapabilities.containsAnySupersetOf(cap)) {
 					logger.warn("Missing capability " + cap + " required by " + bundle);
 				}
 			}
@@ -340,12 +340,11 @@ public class Solstice {
 				}
 			}
 		}
-		SolsticeManifest.Capability cap;
+		Capability cap;
 		while ((cap = missingCap(manifest)) != null) {
 			var bundles = unactivatedBundlesForCap(cap);
 			if (bundles.isEmpty()) {
-				unactivatedBundlesForCap(cap);
-				System.err.println(manifest + " requires missing capability " + cap);
+				logger.warn("{} requires missing capability {}", manifest, cap);
 				caps.add(cap);
 				// throw new IllegalArgumentException(manifest + " requires missing capability " + cap);
 			} else {
@@ -371,16 +370,16 @@ public class Solstice {
 		}
 	}
 
-	private SolsticeManifest.Capability missingCap(SolsticeManifest manifest) {
+	private Capability missingCap(SolsticeManifest manifest) {
 		for (var cap : manifest.capRequires) {
-			if (!caps.contains(cap)) {
+			if (!caps.containsAnySupersetOf(cap)) {
 				return cap;
 			}
 		}
 		return null;
 	}
 
-	private List<SolsticeManifest> unactivatedBundlesForCap(SolsticeManifest.Capability targetCap) {
+	private List<SolsticeManifest> unactivatedBundlesForCap(Capability targetCap) {
 		var target = targetCap.toString();
 		Object bundlesForCap = null;
 		for (var bundle : bundles) {
