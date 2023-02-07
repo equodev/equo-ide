@@ -354,32 +354,40 @@ public class Solstice {
 	}
 
 	private List<SolsticeManifest> unactivatedBundlesForPkg(String targetPkg) {
-		Object bundleForPkg = null;
+		Object bundlesForPkg = null;
 		for (var bundle : bundles) {
 			if (activatingBundles.contains(bundle)) {
 				// targetPkg wouldn't be missing if this bundle had it
 				continue;
 			}
 			if (bundle.getPkgExports().contains(targetPkg)) {
-				if (bundleForPkg == null) {
-					bundleForPkg = bundle;
-				} else {
-					if (bundleForPkg instanceof ArrayList) {
-						((ArrayList) bundleForPkg).add(bundle);
-					} else {
-						var list = new ArrayList<SolsticeManifest>();
-						list.add((SolsticeManifest) bundleForPkg);
-						list.add(bundle);
-					}
-				}
+				bundlesForPkg = fastAdd(bundlesForPkg, bundle);
 			}
 		}
-		if (bundleForPkg == null) {
-			return Collections.emptyList();
-		} else if (bundleForPkg instanceof SolsticeManifest) {
-			return Collections.singletonList((SolsticeManifest) bundleForPkg);
+		return fastAddGet(bundlesForPkg);
+	}
+
+	private Object fastAdd(Object currentValue, SolsticeManifest toAdd) {
+		if (currentValue == null) {
+			return toAdd;
+		} else if (currentValue instanceof List) {
+			((List<SolsticeManifest>) currentValue).add(toAdd);
+			return currentValue;
 		} else {
-			return (List<SolsticeManifest>) bundleForPkg;
+			var list = new ArrayList<SolsticeManifest>();
+			list.add((SolsticeManifest) currentValue);
+			list.add(toAdd);
+			return list;
+		}
+	}
+
+	private List<SolsticeManifest> fastAddGet(Object currentValue) {
+		if (currentValue == null) {
+			return Collections.emptyList();
+		} else if (currentValue instanceof List) {
+			return (List<SolsticeManifest>) currentValue;
+		} else {
+			return Collections.singletonList((SolsticeManifest) currentValue);
 		}
 	}
 
