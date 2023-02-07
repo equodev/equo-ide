@@ -77,7 +77,18 @@ public class SolsticeIdeBootstrapServices {
 				org.osgi.service.condition.Condition.class,
 				new org.osgi.service.condition.Condition() {},
 				Dictionaries.of("osgi.condition.id", "true"));
-		context.registerService(FrameworkLog.class, new ShimFrameworkLog(), Dictionaries.empty());
+		context.registerService(
+				FrameworkLog.class,
+				Unchecked.get(
+						() -> {
+							var frameworkLog = new ShimFrameworkLog();
+							boolean append = false;
+							File logFile = new File(installDir, "instance/log");
+							logFile.getParentFile().mkdirs();
+							frameworkLog.setFile(logFile, append);
+							return frameworkLog;
+						}),
+				Dictionaries.empty());
 
 		context.registerService(
 				DebugOptions.class,
