@@ -311,7 +311,7 @@ public class Solstice {
 		if (!newAddition) {
 			return;
 		}
-		logger.info("Request activate {}", manifest);
+		logger.info("prepare {}", manifest);
 		pkgs.addAll(manifest.getPkgExports());
 		caps.addAll(manifest.capProvides);
 		String pkg;
@@ -329,10 +329,12 @@ public class Solstice {
 		while ((cap = missingCap(manifest)) != null) {
 			var bundles = unactivatedBundlesForCap(cap);
 			if (bundles.isEmpty()) {
-				throw new IllegalArgumentException(manifest + " requires missing capability " + cap);
+				System.err.println(manifest + " requires missing capability " + cap);
+				caps.add(cap);
+				// throw new IllegalArgumentException(manifest + " requires missing capability " + cap);
 			} else {
 				for (var bundle : bundles) {
-					start(bundleByName(bundle.fragmentHost()));
+					start(bundle);
 				}
 			}
 		}
@@ -346,6 +348,7 @@ public class Solstice {
 		}
 		// this happens when multiple with same version
 		try {
+			logger.info("activate {}", manifest);
 			manifest.hydrated.start();
 		} catch (BundleException e) {
 			e.printStackTrace();
