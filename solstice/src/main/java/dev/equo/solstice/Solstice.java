@@ -108,7 +108,7 @@ public class Solstice {
 			Set<String> available, Function<SolsticeManifest, List<String>> neededFunc) {
 		TreeMap<String, List<SolsticeManifest>> map = new TreeMap<>();
 		for (SolsticeManifest bundle : bundles) {
-			if (bundle.isNotFragment()) {
+			if (!bundle.isFragment()) {
 				for (var needed : neededFunc.apply(bundle)) {
 					if (!available.contains(needed)) {
 						mapAdd(map, needed, bundle);
@@ -123,7 +123,7 @@ public class Solstice {
 			boolean includeFragments, Function<SolsticeManifest, List<String>> groupBy) {
 		TreeMap<String, List<SolsticeManifest>> map = new TreeMap<>();
 		for (SolsticeManifest bundle : bundles) {
-			if (includeFragments || bundle.isNotFragment()) {
+			if (includeFragments || !bundle.isFragment()) {
 				for (String extracted : groupBy.apply(bundle)) {
 					mapAdd(map, extracted, bundle);
 				}
@@ -292,7 +292,7 @@ public class Solstice {
 	/** Starts all hydrated manfiests. */
 	public void startAllWithLazy(boolean lazyValue) {
 		for (var solstice : bundles) {
-			if (solstice.isNotFragment() && solstice.lazy == lazyValue) {
+			if (!solstice.isFragment() && solstice.lazy == lazyValue) {
 				start(solstice);
 			}
 		}
@@ -369,7 +369,7 @@ public class Solstice {
 	private List<SolsticeManifest> unactivatedBundlesForCap(SolsticeManifest.Capability targetCap) {
 		Object bundlesForCap = null;
 		for (var bundle : bundles) {
-			if (bundle.isNotFragment() && activatingBundles.contains(bundle)) {
+			if (bundle.isFragment() || activatingBundles.contains(bundle)) {
 				// targetCap wouldn't be missing if this bundle had it
 				continue;
 			}
@@ -392,7 +392,7 @@ public class Solstice {
 	private List<SolsticeManifest> unactivatedBundlesForPkg(String targetPkg) {
 		Object bundlesForPkg = null;
 		for (var bundle : bundles) {
-			if (bundle.isNotFragment() && activatingBundles.contains(bundle)) {
+			if (bundle.isFragment() || activatingBundles.contains(bundle)) {
 				// targetPkg wouldn't be missing if this bundle had it
 				continue;
 			}

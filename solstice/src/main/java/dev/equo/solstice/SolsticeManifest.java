@@ -326,8 +326,8 @@ public class SolsticeManifest {
 		return pkgExportsRaw;
 	}
 
-	boolean isNotFragment() {
-		return !headersOriginal.containsKey(Constants.FRAGMENT_HOST);
+	boolean isFragment() {
+		return headersOriginal.containsKey(Constants.FRAGMENT_HOST);
 	}
 
 	String fragmentHost() {
@@ -411,7 +411,7 @@ public class SolsticeManifest {
 	}
 
 	private List<String> total(Function<SolsticeManifest, List<String>> getter) {
-		if (!isNotFragment()) {
+		if (isFragment()) {
 			throw new IllegalStateException(
 					"You cannot call this method on a fragment, this bundle "
 							+ symbolicName
