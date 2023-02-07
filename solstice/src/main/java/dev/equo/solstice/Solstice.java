@@ -314,7 +314,7 @@ public class Solstice {
 		pkgs.addAll(manifest.getPkgExports());
 		String pkg;
 		while ((pkg = missingPkg(manifest)) != null) {
-			var bundles = bundlesForPkg(pkg);
+			var bundles = unactivatedBundlesForPkg(pkg);
 			if (bundles.isEmpty()) {
 				throw new IllegalArgumentException(manifest + " imports missing package " + pkg);
 			} else {
@@ -353,9 +353,13 @@ public class Solstice {
 		return null;
 	}
 
-	private List<SolsticeManifest> bundlesForPkg(String targetPkg) {
+	private List<SolsticeManifest> unactivatedBundlesForPkg(String targetPkg) {
 		Object bundleForPkg = null;
 		for (var bundle : bundles) {
+			if (activatingBundles.contains(bundle)) {
+				// targetPkg wouldn't be missing if this bundle had it
+				continue;
+			}
 			if (bundle.getPkgExports().contains(targetPkg)) {
 				if (bundleForPkg == null) {
 					bundleForPkg = bundle;
