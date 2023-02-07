@@ -224,6 +224,29 @@ public class SolsticeManifest {
 	 * Represents an OSGi capability. `hashCode()` always throws an error, and two capabilities are
 	 * equal (by both {@link #equals(Object)} and {@link #compareTo(Capability)}) is one is an exact
 	 * subset of the other.
+	 *
+	 * <p>This design is quite fragile, we should probably not keep it. The problem with allowing
+	 * subset matching is this:
+	 *
+	 * <pre>
+	 * var set = new TreeSet<Capability>();
+	 * set.add(Capability.parse("namespace:name=foo,class=bar"))
+	 * set.contains(Capability.parse("Capability.parse("namespace:name=foo)) // subset matching says this should be true, and it is, huzzah!
+	 * set.contains(Capability.parse("Capability.parse("namespace:class=bar))) // subset matching says this should be true, but key ordering says it is not (class=bar is less name name=foo)
+	 * </pre>
+	 *
+	 * The design works perfect for capabilities with only one property. For capabilities with two
+	 * properties, we can workaround the problem by adding it in both orders
+	 *
+	 * <pre>
+	 * set.add(Capability.parse("namespace:name=foo,class=bar"))
+	 * set.add(Capability.parse("namespace:class=bar,name=foo"))
+	 * </pre>
+	 *
+	 * But this workaround is combinatoric. For a capability with three properties, we have to add it
+	 * in 3! = 6 different orders. We implemented this combinatoric adding in <a
+	 * href="https://github.com/equodev/equo-ide/pull/71/commits/976447fa56a1d20a31cf9caf52991f0303ef3a1c">this
+	 * commit</a> by hardcoding the cases for 1, 2, 3 and we error out on 4 or higher.
 	 */
 	public static class Capability implements Comparable<Capability> {
 		private static final String LIST_STR = ":List<String>";
