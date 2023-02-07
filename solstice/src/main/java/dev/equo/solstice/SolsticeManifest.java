@@ -24,7 +24,6 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.function.BiConsumer;
@@ -146,7 +145,11 @@ public class SolsticeManifest {
 	}
 
 	private static void parseRequire(CapabilityParsed parsed, ArrayList<Capability> total) {
-		var filter = parsed.directives.get(Constants.FILTER_DIRECTIVE);
+		var filter = parseSingleFilter(parsed.directives.get(Constants.FILTER_DIRECTIVE));
+		total.add(new Capability(parsed.namespace, filter.getKey(), filter.getValue()));
+	}
+
+	static Map.Entry<String, String> parseSingleFilter(String filter) {
 		int equalsSpot = filter.indexOf('=');
 		if (!filter.startsWith("(")
 				|| !filter.endsWith(")")
@@ -157,7 +160,7 @@ public class SolsticeManifest {
 		}
 		String key = filter.substring(1, equalsSpot);
 		String value = filter.substring(equalsSpot + 1, filter.length() - 1);
-		total.add(new Capability(parsed.namespace, key, value));
+		return Map.entry(key, value);
 	}
 
 	private List<Capability> parseCapability(
@@ -200,6 +203,11 @@ public class SolsticeManifest {
 		}
 	}
 
+	/**
+	 * Represents an OSGi capability. `hashCode()` always throws an error, and two capabilities are
+	 * equal (by both {@link #equals(Object)} and {@link #compareTo(Capability)}) is one is an exact
+	 * subset of the other.
+	 */
 	public static class Capability implements Comparable<Capability> {
 		private static final String LIST_STR = ":List<String>";
 		private static final Set<String> IGNORED_NAMESPACES = Set.of("osgi.ee");
@@ -208,7 +216,7 @@ public class SolsticeManifest {
 		final String namespace;
 		final ArrayList<String> keyValue = new ArrayList<>(2);
 
-		private Capability(String namespace, String key, String value) {
+		Capability(String namespace, String key, String value) {
 			this(namespace);
 			add(key, value);
 		}
@@ -228,6 +236,10 @@ public class SolsticeManifest {
 			if (result != 0) {
 				return result;
 			}
+			if (isSubsetMatch(this, o)) {
+				// if one is exactly the same as the other but with extras, we allow that to count
+				return 0;
+			}
 			for (int i = 0; i < Math.min(keyValue.size(), o.keyValue.size()); ++i) {
 				result = keyValue.get(i).compareTo(o.keyValue.get(i));
 				if (result != 0) {
@@ -235,6 +247,36 @@ public class SolsticeManifest {
 				}
 			}
 			return keyValue.size() - o.keyValue.size();
+		}
+
+		private static boolean isSubsetMatch(Capability a, Capability b) {
+			Capability shorter, longer;
+			if (a.keyValue.size() > b.keyValue.size()) {
+				shorter = b;
+				longer = a;
+			} else {
+				shorter = a;
+				longer = b;
+			}
+			for (int i = 0; i < shorter.keyValue.size() / 2; ++i) {
+				var key = shorter.keyValue.get(2 * i);
+				var value = shorter.keyValue.get(2 * i + 1);
+
+				var longerKeyIdx = longer.keyValue.indexOf(key);
+				if (longerKeyIdx == -1) {
+					// missing key
+					return false;
+				}
+				if (longerKeyIdx % 2 == 1) {
+					throw Unimplemented.onPurpose(
+							"Key has the same content as a value, unlikely to ever happen, straight-forward to fix if it does, please file an issue at https://github.com/equodev/equo-ide");
+				}
+				var longerValue = longer.keyValue.get(longerKeyIdx + 1);
+				if (!value.equals(longerValue)) {
+					return false;
+				}
+			}
+			return true;
 		}
 
 		@Override
@@ -245,7 +287,8 @@ public class SolsticeManifest {
 
 		@Override
 		public int hashCode() {
-			return Objects.hash(namespace, keyValue);
+			throw Unimplemented.onPurpose(
+					"For use in TreeSet/TreeMap only, only compareTo and equals are allowed");
 		}
 
 		@Override
