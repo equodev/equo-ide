@@ -55,6 +55,7 @@ public class Solstice {
 	private final List<SolsticeManifest> bundles;
 
 	private final TreeSet<String> pkgs = new TreeSet<>();
+	private final TreeSet<SolsticeManifest.Capability> caps = new TreeSet<>();
 	private BundleContext context;
 
 	private Solstice(List<SolsticeManifest> bundles) {
@@ -312,6 +313,7 @@ public class Solstice {
 		}
 		logger.info("Request activate {}", manifest);
 		pkgs.addAll(manifest.getPkgExports());
+		caps.addAll(manifest.capProvides);
 		String pkg;
 		while ((pkg = missingPkg(manifest)) != null) {
 			var bundles = unactivatedBundlesForPkg(pkg);
@@ -319,12 +321,18 @@ public class Solstice {
 				throw new IllegalArgumentException(manifest + " imports missing package " + pkg);
 			} else {
 				for (var bundle : bundles) {
-					if (bundle.isNotFragment()) {
-						start(bundle);
-					} else {
-						// if a fragment exports a package we need, start the fragment's host
-						start(bundleByName(bundle.fragmentHost()));
-					}
+					start(bundle);
+				}
+			}
+		}
+		SolsticeManifest.Capability cap;
+		while ((cap = missingCap(manifest)) != null) {
+			var bundles = unactivatedBundlesForCap(cap);
+			if (bundles.isEmpty()) {
+				throw new IllegalArgumentException(manifest + " requires missing capability " + cap);
+			} else {
+				for (var bundle : bundles) {
+					start(bundleByName(bundle.fragmentHost()));
 				}
 			}
 		}
@@ -344,6 +352,29 @@ public class Solstice {
 		}
 	}
 
+	private SolsticeManifest.Capability missingCap(SolsticeManifest manifest) {
+		for (var cap : manifest.capRequires) {
+			if (!caps.contains(cap)) {
+				return cap;
+			}
+		}
+		return null;
+	}
+
+	private List<SolsticeManifest> unactivatedBundlesForCap(SolsticeManifest.Capability targetCap) {
+		Object bundlesForCap = null;
+		for (var bundle : bundles) {
+			if (bundle.isNotFragment() && activatingBundles.contains(bundle)) {
+				// targetCap wouldn't be missing if this bundle had it
+				continue;
+			}
+			if (bundle.capProvides.contains(targetCap)) {
+				bundlesForCap = fastAdd(bundlesForCap, bundle);
+			}
+		}
+		return fastAddGet(bundlesForCap);
+	}
+
 	private String missingPkg(SolsticeManifest manifest) {
 		for (var pkg : manifest.getPkgImports()) {
 			if (!pkgs.contains(pkg)) {
@@ -356,7 +387,7 @@ public class Solstice {
 	private List<SolsticeManifest> unactivatedBundlesForPkg(String targetPkg) {
 		Object bundlesForPkg = null;
 		for (var bundle : bundles) {
-			if (activatingBundles.contains(bundle)) {
+			if (bundle.isNotFragment() && activatingBundles.contains(bundle)) {
 				// targetPkg wouldn't be missing if this bundle had it
 				continue;
 			}

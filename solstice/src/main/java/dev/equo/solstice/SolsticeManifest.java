@@ -24,12 +24,15 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.jar.Manifest;
 import javax.annotation.Nullable;
 import org.eclipse.osgi.util.ManifestElement;
+import org.jetbrains.annotations.NotNull;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
@@ -54,8 +57,8 @@ public class SolsticeManifest {
 	private final List<String> requiredBundles;
 	private final List<String> pkgImports;
 	private final List<String> pkgExports;
-	private final List<Capability> capProvides;
-	private final List<Capability> capRequires;
+	final List<Capability> capProvides;
+	final List<Capability> capRequires;
 	final boolean lazy;
 
 	final List<SolsticeManifest> fragments = new ArrayList<>();
@@ -97,9 +100,10 @@ public class SolsticeManifest {
 		pkgExports = parseAndStrip(Constants.EXPORT_PACKAGE);
 		pkgImports = parseAndStrip(Constants.IMPORT_PACKAGE);
 
-		capProvides = parseAndStripCapability(Constants.PROVIDE_CAPABILITY);
-		capRequires = parseAndStripCapability(Constants.REQUIRE_CAPABILITY);
-
+		capProvides =
+				parseCapability(Constants.PROVIDE_CAPABILITY, SolsticeManifest::parseProvideCapability);
+		capRequires =
+				parseCapability(Constants.REQUIRE_CAPABILITY, SolsticeManifest::parseRequireCapability);
 		if (!capProvides.isEmpty()) {
 			System.out.println("++ " + symbolicName + " provides");
 			for (var cap : capProvides) {
@@ -109,22 +113,64 @@ public class SolsticeManifest {
 		if (!capRequires.isEmpty()) {
 			System.out.println("-- " + symbolicName + " requires");
 			for (var cap : capRequires) {
-				System.out.println(
-						cap.namespace + " filter = " + cap.directives.get(Constants.FILTER_DIRECTIVE));
+				System.out.println(cap.toString());
 			}
 		}
-
 		if (headersOriginal.containsKey(Constants.FRAGMENT_HOST)
 				&& (!capRequires.isEmpty() || !capProvides.isEmpty())) {
 			throw Unimplemented.onPurpose(
-					"Solstice does not currently support OSGi capabilities in fragment bundles.");
+					"Solstice does not currently support OSGi capabilities in fragment bundles, but a PR is welcome.");
 		}
 
 		String activationPolicy = headersOriginal.get(Constants.BUNDLE_ACTIVATIONPOLICY);
 		lazy = activationPolicy == null ? false : activationPolicy.contains("lazy");
 	}
 
-	private List<Capability> parseAndStripCapability(String header) {
+	private static void parseProvideCapability(CapabilityParsed parsed, ArrayList<Capability> total) {
+		for (var attr : parsed.attributes.entrySet()) {
+			var key = attr.getKey();
+			if (key.endsWith(Capability.LIST_STR)) {
+				key = key.substring(0, key.length() - Capability.LIST_STR.length());
+				String[] values = attr.getValue().split(",");
+				for (String value : values) {
+					total.add(new Capability(parsed.namespace, key, value));
+				}
+			} else {
+				total.add(new Capability(parsed.namespace, key, attr.getValue()));
+			}
+		}
+	}
+
+	private static void parseRequireCapability(CapabilityParsed parsed, ArrayList<Capability> total) {
+		var filter = parsed.directives.get(Constants.FILTER_DIRECTIVE);
+		int equalsSpot = filter.indexOf('=');
+		if (!filter.startsWith("(")
+				|| !filter.endsWith(")")
+				|| equalsSpot == -1
+				|| filter.indexOf('=', equalsSpot + 1) != -1) {
+			throw Unimplemented.onPurpose(
+					"Require-Capability supports (key=value) only, this was " + filter);
+		}
+		String key = filter.substring(1, equalsSpot);
+		String value = filter.substring(equalsSpot + 1, filter.length() - 1);
+		total.add(new Capability(parsed.namespace, key, value));
+	}
+
+	private List<Capability> parseCapability(
+			String header, BiConsumer<CapabilityParsed, ArrayList<Capability>> parser) {
+		var parsed = parseAndStripCapability(header);
+		if (parsed.isEmpty()) {
+			return Collections.emptyList();
+		}
+		var capabilities = new ArrayList<Capability>();
+		var raws = parseAndStripCapability(header);
+		for (var raw : raws) {
+			parser.accept(raw, capabilities);
+		}
+		return capabilities;
+	}
+
+	private List<CapabilityParsed> parseAndStripCapability(String header) {
 		try {
 			String capability = headersOriginal.get(header);
 			if (capability == null) {
@@ -133,12 +179,12 @@ public class SolsticeManifest {
 			// org.eclipse.ecf.identity has these gunky quotes
 			capability = capability.replace('”', '"');
 			ManifestElement[] elements = ManifestElement.parseHeader(header, capability);
-			List<Capability> capabilities = new ArrayList<>(elements.length);
+			List<CapabilityParsed> capabilities = new ArrayList<>(elements.length);
 			for (ManifestElement element : elements) {
 				if (Capability.IGNORED_NAMESPACES.contains(element.getValue())) {
 					continue;
 				}
-				capabilities.add(new Capability(element));
+				capabilities.add(new CapabilityParsed(element));
 			}
 			if (capabilities.isEmpty()) {
 				return Collections.emptyList();
@@ -150,21 +196,63 @@ public class SolsticeManifest {
 		}
 	}
 
-	static class Capability {
-		private static Set<String> IGNORED_NAMESPACES = Set.of("osgi.ee");
-		private static Set<String> IGNORED_ATTRIBUTES = Set.of("version:Version");
+	public static class Capability implements Comparable<Capability> {
+		private static final String LIST_STR = ":List<String>";
+		private static final Set<String> IGNORED_NAMESPACES = Set.of("osgi.ee");
+		private static final Set<String> IGNORED_ATTRIBUTES = Set.of("version:Version");
 
+		final String namespace;
+		final String key;
+		final String value;
+
+		public Capability(String namespace, String key, String value) {
+			this.namespace = namespace;
+			this.key = key;
+			this.value = value;
+		}
+
+		@Override
+		public int compareTo(@NotNull Capability o) {
+			int result = namespace.compareTo(o.namespace);
+			if (result != 0) {
+				return result;
+			}
+			result = key.compareTo(o.key);
+			if (result != 0) {
+				return result;
+			}
+			return value.compareTo(value);
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			return o instanceof Capability ? compareTo((Capability) o) == 0 : false;
+		}
+
+		@Override
+		public int hashCode() {
+			return Objects.hash(namespace, key, value);
+		}
+
+		@Override
+		public String toString() {
+			return namespace + ":" + key + "=" + value;
+		}
+	}
+
+	private static class CapabilityParsed {
 		String namespace;
 		Map<String, String> attributes = new TreeMap<>();
 		Map<String, String> directives = new TreeMap<>();
 
-		public Capability(ManifestElement element) {
+		public CapabilityParsed(ManifestElement element) {
 			namespace = element.getValue();
 			var keys = element.getKeys();
 			if (keys != null) {
 				while (keys.hasMoreElements()) {
 					String key = keys.nextElement();
-					if (!IGNORED_ATTRIBUTES.contains(key)) {
+					if (!Capability.IGNORED_ATTRIBUTES.contains(key)) {
 						this.attributes.put(key, element.getAttribute(key));
 					}
 				}
