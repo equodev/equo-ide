@@ -130,6 +130,8 @@ public class SolsticeManifest {
 			if (capability == null) {
 				return Collections.emptyList();
 			}
+			// org.eclipse.ecf.identity has these gunky quotes
+			capability = capability.replace('”', '"');
 			ManifestElement[] elements = ManifestElement.parseHeader(header, capability);
 			List<Capability> capabilities = new ArrayList<>(elements.length);
 			for (ManifestElement element : elements) {
