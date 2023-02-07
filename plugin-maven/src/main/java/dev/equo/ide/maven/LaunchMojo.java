@@ -99,13 +99,13 @@ public class LaunchMojo extends AbstractP2Mojo {
 							new DefaultArtifact("dev.equo.ide:solstice:" + NestedJars.solsticeVersion()), null));
 			deps.add(
 					new Dependency(
-							new DefaultArtifact("org.slf4j:slf4j-api:2.0.6"),
+							new DefaultArtifact("org.slf4j:slf4j-api:1.7.36"),
 							null,
 							null,
 							EXCLUDE_ALL_TRANSITIVES));
 			deps.add(
 					new Dependency(
-							new DefaultArtifact("org.slf4j:slf4j-simple:2.0.6"),
+							new DefaultArtifact("org.slf4j:slf4j-simple:1.7.36"),
 							null,
 							null,
 							EXCLUDE_ALL_TRANSITIVES));

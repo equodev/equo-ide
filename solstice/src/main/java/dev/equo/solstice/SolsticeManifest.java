@@ -24,6 +24,8 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.jar.Manifest;
 import javax.annotation.Nullable;
@@ -49,9 +51,11 @@ public class SolsticeManifest {
 	final int classpathOrder;
 	private final @Nullable String symbolicName;
 	private final LinkedHashMap<String, String> headersOriginal = new LinkedHashMap<>();
-	private final List<String> requiredBundles;
-	private final List<String> pkgImports;
-	private final List<String> pkgExports;
+	final List<String> requiredBundles;
+	final List<String> pkgImports;
+	final List<String> pkgExports;
+	final List<Capability> capProvides;
+	final List<Capability> capRequires;
 	final boolean lazy;
 
 	final List<SolsticeManifest> fragments = new ArrayList<>();
@@ -92,13 +96,156 @@ public class SolsticeManifest {
 
 		pkgExports = parseAndStrip(Constants.EXPORT_PACKAGE);
 		pkgImports = parseAndStrip(Constants.IMPORT_PACKAGE);
-		// if we export a package, we don't actually have to import it, that's just for letting
-		// multiple bundles define the same classes, which is a dubious feature to support
-		// https://access.redhat.com/documentation/en-us/red_hat_jboss_fuse/6.3/html/managing_osgi_dependencies/importexport
-		pkgImports.removeAll(pkgExports);
+
+		capProvides = parseCapability(Constants.PROVIDE_CAPABILITY, SolsticeManifest::parseProvide);
+		capRequires = parseCapability(Constants.REQUIRE_CAPABILITY, SolsticeManifest::parseRequire);
+		if (headersOriginal.containsKey(Constants.FRAGMENT_HOST)
+				&& (!capRequires.isEmpty() || !capProvides.isEmpty())) {
+			throw Unimplemented.onPurpose(
+					"Solstice does not currently support OSGi capabilities in fragment bundles, but a PR is welcome.");
+		}
 
 		String activationPolicy = headersOriginal.get(Constants.BUNDLE_ACTIVATIONPOLICY);
 		lazy = activationPolicy == null ? false : activationPolicy.contains("lazy");
+	}
+
+	private static void parseProvide(CapabilityParsed parsed, ArrayList<Capability> total) {
+		if (parsed.attributes.size() == 1) {
+			var attr = parsed.attributes.entrySet().iterator().next();
+			var key = attr.getKey();
+			if (key.endsWith(Capability.LIST_STR)) {
+				key = key.substring(0, key.length() - Capability.LIST_STR.length());
+				String[] values = attr.getValue().split(",");
+				for (String value : values) {
+					total.add(new Capability(parsed.namespace, key, value));
+				}
+			} else {
+				total.add(new Capability(parsed.namespace, key, attr.getValue()));
+			}
+		} else {
+			Capability cap = new Capability(parsed.namespace);
+			for (var attr : parsed.attributes.entrySet()) {
+				String key = attr.getKey();
+				if (key.endsWith(Capability.LIST_STR)) {
+					key = key.substring(0, key.length() - Capability.LIST_STR.length());
+					if (attr.getValue().indexOf(',') != -1) {
+						throw Unimplemented.onPurpose(
+								"Solstice does not support "
+										+ Capability.LIST_STR
+										+ " unless that is the only property, this had "
+										+ parsed);
+					}
+				}
+				cap.add(key, attr.getValue());
+			}
+			total.add(cap);
+		}
+	}
+
+	private static void parseRequire(CapabilityParsed parsed, ArrayList<Capability> total) {
+		var filter = parseSingleFilter(parsed.directives.get(Constants.FILTER_DIRECTIVE));
+		total.add(new Capability(parsed.namespace, filter.getKey(), filter.getValue()));
+	}
+
+	static Map.Entry<String, String> parseSingleFilter(String filter) {
+		int equalsSpot = filter.indexOf('=');
+		if (!filter.startsWith("(")
+				|| !filter.endsWith(")")
+				|| equalsSpot == -1
+				|| filter.indexOf('=', equalsSpot + 1) != -1) {
+			throw Unimplemented.onPurpose(
+					"Require-Capability supports (key=value) only, this was " + filter);
+		}
+		String key = filter.substring(1, equalsSpot);
+		String value = filter.substring(equalsSpot + 1, filter.length() - 1);
+		return Map.entry(key, value);
+	}
+
+	private List<Capability> parseCapability(
+			String header, BiConsumer<CapabilityParsed, ArrayList<Capability>> parser) {
+		var parsed = parseAndStripCapability(header);
+		if (parsed.isEmpty()) {
+			return Collections.emptyList();
+		}
+		var capabilities = new ArrayList<Capability>();
+		var raws = parseAndStripCapability(header);
+		for (var raw : raws) {
+			parser.accept(raw, capabilities);
+		}
+		return capabilities;
+	}
+
+	private List<CapabilityParsed> parseAndStripCapability(String header) {
+		try {
+			String capability = headersOriginal.get(header);
+			if (capability == null) {
+				return Collections.emptyList();
+			}
+			// org.eclipse.ecf.identity has these gunky quotes
+			capability = capability.replace('”', '"');
+			ManifestElement[] elements = ManifestElement.parseHeader(header, capability);
+			List<CapabilityParsed> capabilities = new ArrayList<>(elements.length);
+			for (ManifestElement element : elements) {
+				if (Capability.IGNORED_NAMESPACES.contains(element.getValue())) {
+					continue;
+				}
+				capabilities.add(new CapabilityParsed(element));
+			}
+			if (capabilities.isEmpty()) {
+				return Collections.emptyList();
+			} else {
+				return capabilities;
+			}
+		} catch (BundleException e) {
+			throw Unchecked.wrap(e);
+		}
+	}
+
+	private static class CapabilityParsed {
+		String namespace;
+		Map<String, String> attributes = new TreeMap<>();
+		Map<String, String> directives = new TreeMap<>();
+
+		public CapabilityParsed(ManifestElement element) {
+			namespace = element.getValue();
+			var keys = element.getKeys();
+			if (keys != null) {
+				while (keys.hasMoreElements()) {
+					String key = keys.nextElement();
+					if (!Capability.IGNORED_ATTRIBUTES.contains(key)) {
+						this.attributes.put(key, element.getAttribute(key));
+					}
+				}
+			}
+			var directives = element.getDirectiveKeys();
+			if (directives != null) {
+				while (directives.hasMoreElements()) {
+					String key = directives.nextElement();
+					if (key.equals(Constants.FILTER_DIRECTIVE)) {
+						this.directives.put(
+								Constants.FILTER_DIRECTIVE,
+								stripVersionsFromFilter(element.getDirective(Constants.FILTER_DIRECTIVE)));
+					} else {
+						this.directives.put(key, element.getDirective(key));
+					}
+				}
+			}
+		}
+
+		private String stripVersionsFromFilter(String filter) {
+			var removeVersionGt = filter.replaceAll("\\(version>=(.*?)\\)", "");
+			var removeEmptyNots = removeVersionGt.replace("(!)", "");
+			if (removeEmptyNots.startsWith("(&(") && removeEmptyNots.endsWith("))")) {
+				return removeEmptyNots.substring(2, removeEmptyNots.length() - 1);
+			} else {
+				return removeEmptyNots;
+			}
+		}
+
+		@Override
+		public String toString() {
+			return namespace + ": " + attributes + " " + directives;
+		}
 	}
 
 	private List<ManifestElement> pkgExportsRaw;
@@ -116,8 +263,8 @@ public class SolsticeManifest {
 		return pkgExportsRaw;
 	}
 
-	boolean isNotFragment() {
-		return !headersOriginal.containsKey(Constants.FRAGMENT_HOST);
+	boolean isFragment() {
+		return headersOriginal.containsKey(Constants.FRAGMENT_HOST);
 	}
 
 	String fragmentHost() {
@@ -188,26 +335,38 @@ public class SolsticeManifest {
 		}
 	}
 
-	public List<String> getRequiredBundles() {
+	public List<String> totalRequiredBundles() {
 		return total(m -> m.requiredBundles);
 	}
 
-	public List<String> getPkgImports() {
+	public List<String> totalPkgImports() {
 		return total(m -> m.pkgImports);
 	}
 
-	public List<String> getPkgExports() {
+	public List<String> totalPkgExports() {
 		return total(m -> m.pkgExports);
 	}
 
 	private List<String> total(Function<SolsticeManifest, List<String>> getter) {
+		if (isFragment()) {
+			throw new IllegalStateException(
+					"You cannot call this method on a fragment, this bundle "
+							+ symbolicName
+							+ " is a fragment to "
+							+ fragmentHost());
+		}
 		if (fragments.isEmpty()) {
 			return Collections.unmodifiableList(getter.apply(this));
 		} else {
 			var total = new ArrayList<String>();
 			total.addAll(getter.apply(this));
 			for (var fragment : fragments) {
-				total.addAll(getter.apply(fragment));
+				List<String> toAdd = getter.apply(fragment);
+				for (String e : toAdd) {
+					if (!total.contains(e)) {
+						total.add(e);
+					}
+				}
 			}
 			return total;
 		}

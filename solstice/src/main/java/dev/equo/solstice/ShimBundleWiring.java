@@ -31,7 +31,7 @@ class ShimBundleWiring extends Unimplemented.BundleWiring {
 
 	@Override
 	public List<BundleWire> getRequiredWires(String namespace) {
-		if (namespace.equals(HostNamespace.HOST_NAMESPACE) && !bundle.manifest.isNotFragment()) {
+		if (namespace.equals(HostNamespace.HOST_NAMESPACE) && bundle.manifest.isFragment()) {
 			var host = bundle.getBundleContext().bundleForSymbolicName(bundle.manifest.fragmentHost());
 			return Collections.singletonList(
 					new Unimplemented.BundleWire() {
@@ -68,7 +68,7 @@ class ShimBundleWiring extends Unimplemented.BundleWiring {
 			var url = urls.nextElement();
 			asStrings.add(url.toExternalForm());
 		}
-		for (var required : bundle.manifest.getRequiredBundles()) {
+		for (var required : bundle.manifest.totalRequiredBundles()) {
 			// TODO: this should respect whether a required bundle is re-exported or not
 			listResourcesHelper(
 					asStrings,

@@ -28,6 +28,7 @@ import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -37,12 +38,13 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import javax.annotation.Nullable;
 import org.eclipse.core.internal.runtime.InternalPlatform;
-import org.eclipse.osgi.internal.framework.FilterImpl;
+import org.eclipse.osgi.framework.log.FrameworkLog;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleEvent;
 import org.osgi.framework.BundleListener;
 import org.osgi.framework.Constants;
+import org.osgi.framework.FrameworkEvent;
 import org.osgi.framework.FrameworkListener;
 import org.osgi.framework.Version;
 import org.osgi.framework.namespace.IdentityNamespace;
@@ -52,15 +54,18 @@ import org.osgi.framework.wiring.BundleCapability;
 import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.framework.wiring.BundleWiring;
 import org.osgi.framework.wiring.FrameworkWiring;
-import org.osgi.resource.Namespace;
 import org.osgi.resource.Requirement;
 import org.osgi.service.packageadmin.PackageAdmin;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A single-classloader implementation of OSGi which eagerly loads all the OSGi plugins it can find
  * on the classpath.
  */
 public class BundleContextSolstice extends ServiceRegistry {
+	private final Logger logger = LoggerFactory.getLogger(BundleContextSolstice.class);
+
 	private static final Set<String> DONT_ACTIVATE = Set.of("org.eclipse.osgi");
 
 	private static BundleContextSolstice instance;
@@ -132,6 +137,11 @@ public class BundleContextSolstice extends ServiceRegistry {
 				@Override
 				public URL getResource(String name) {
 					return bundles.get(0).getResource(name);
+				}
+
+				@Override
+				public Class<?> loadClass(String name) throws ClassNotFoundException {
+					return Class.forName(name);
 				}
 
 				@Override
@@ -226,19 +236,34 @@ public class BundleContextSolstice extends ServiceRegistry {
 				}
 			};
 
+	private Capability.SupersetMap<ShimBundle> capabilities = new Capability.SupersetMap<>();
+
 	final FrameworkWiring frameworkWiring =
 			new Unimplemented.FrameworkWiring() {
 				@Override
-				public Collection<BundleCapability> findProviders(Requirement requirement) {
-					String filterSpec =
-							requirement.getDirectives().get(Namespace.REQUIREMENT_FILTER_DIRECTIVE);
-					try {
-						var requirementFilter = FilterImpl.newInstance(filterSpec).getStandardOSGiAttributes();
-						var requiredBundle = requirementFilter.get(IdentityNamespace.IDENTITY_NAMESPACE);
-						var bundle = bundleForSymbolicName(requiredBundle);
+				public Collection<BundleCapability> findProviders(Requirement req) {
+					if (!Set.of(Constants.FILTER_DIRECTIVE).equals(req.getDirectives().keySet())) {
+						throw Unimplemented.onPurpose(
+								"Solstice supports only filter, this was " + req.getDirectives());
+					}
+					String filterRaw = req.getDirectives().get(Constants.FILTER_DIRECTIVE);
+					var filter = SolsticeManifest.parseSingleFilter(filterRaw);
+
+					if (req.getNamespace().equals(IdentityNamespace.IDENTITY_NAMESPACE)) {
+						if (!filter.getKey().equals(IdentityNamespace.IDENTITY_NAMESPACE)) {
+							throw Unimplemented.onPurpose(
+									"Solstice expected " + IdentityNamespace.IDENTITY_NAMESPACE + ", was " + filter);
+						}
+						var bundle = bundleForSymbolicName(filter.getValue());
+						Objects.requireNonNull(bundle, filter.getValue());
 						return Collections.singleton(new ShimBundleCapability(bundle));
-					} catch (Exception e) {
-						throw Unimplemented.onPurpose();
+					} else {
+						var cap = new Capability(req.getNamespace(), filter.getKey(), filter.getValue());
+						var result = capabilities.getAnySupersetOf(cap);
+						if (result == null) {
+							throw new NoSuchElementException("No capability matching " + cap);
+						}
+						return Collections.singleton(new ShimBundleCapability(result));
 					}
 				}
 			};
@@ -313,7 +338,12 @@ public class BundleContextSolstice extends ServiceRegistry {
 	private synchronized void notifyBundleListeners(int type, ShimBundle bundle) {
 		var event = new BundleEvent(type, bundle);
 		for (BundleListener listener : bundleListeners) {
-			listener.bundleChanged(event);
+			try {
+				listener.bundleChanged(event);
+			} catch (Exception e) {
+				getService(getServiceReference(FrameworkLog.class))
+						.log(new FrameworkEvent(FrameworkEvent.ERROR, bundle, e));
+			}
 		}
 	}
 
@@ -392,17 +422,18 @@ public class BundleContextSolstice extends ServiceRegistry {
 
 			state = STARTING;
 			notifyBundleListeners(BundleEvent.STARTING, this);
+
+			for (var cap : manifest.capProvides) {
+				capabilities.put(cap, this);
+			}
+
 			if (!DONT_ACTIVATE.contains(getSymbolicName()) && activator != null) {
 				try {
 					var c = (Constructor<BundleActivator>) Class.forName(activator).getConstructor();
 					var bundleActivator = c.newInstance();
 					bundleActivator.start(BundleContextSolstice.this);
 				} catch (Exception e) {
-					try {
-						throw new ActivatorException(this, e);
-					} catch (ActivatorException ae) {
-						ae.printStackTrace();
-					}
+					logger.warn("Error in activator of " + getSymbolicName(), e);
 				}
 			}
 			state = ACTIVE;
@@ -574,15 +605,6 @@ public class BundleContextSolstice extends ServiceRegistry {
 			} else {
 				return null;
 			}
-		}
-	}
-
-	static class ActivatorException extends RuntimeException {
-		final ShimBundle bundle;
-
-		ActivatorException(ShimBundle bundle, Exception cause) {
-			super(cause);
-			this.bundle = bundle;
 		}
 	}
 }

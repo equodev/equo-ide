@@ -49,6 +49,7 @@ public class LaunchTest extends MavenHarness {
 						+ "</p2repos>\n"
 						+ "<installs>\n"
 						+ "  <install>org.eclipse.swt</install>\n"
+						+ "  <install>org.eclipse.equinox.common</install>\n"
 						+ "</installs>");
 		var output = mvnw("equo-ide:launch -DinitOnly -DuseAtomos=" + useAtomos);
 		output.raw().matches("(?s)(.*)Loaded (\\d+) bundles(.*)");

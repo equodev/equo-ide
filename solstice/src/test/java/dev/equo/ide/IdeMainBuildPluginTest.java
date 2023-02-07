@@ -17,7 +17,7 @@ import dev.equo.solstice.NestedJars;
 import java.io.IOException;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.InvalidSyntaxException;
-import org.slf4j.simple.SimpleLogger;
+import org.slf4j.impl.SimpleLogger;
 
 public class IdeMainBuildPluginTest {
 	public static void main(String[] args)

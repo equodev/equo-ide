@@ -35,10 +35,18 @@ import org.osgi.service.packageadmin.RequiredBundle;
 
 class Unimplemented {
 	static RuntimeException onPurpose() {
-		//		com.diffplug.common.debug.StackDumper.dump("About to die");
-		//		System.exit(1);
-		return new UnsupportedOperationException(
-				"Solstice believes that this method is not actually needed.");
+		return onPurpose("Solstice believes that this method is not actually needed.");
+	}
+
+	static RuntimeException onPurpose(String reason) {
+		return new UnsupportedOperationException(reason);
+		//		try {
+		//			throw new UnsupportedOperationException(reason);
+		//		} catch (UnsupportedOperationException e) {
+		//			e.printStackTrace();
+		//			System.exit(1);
+		//			return e;
+		//		}
 	}
 
 	interface Bundle extends org.osgi.framework.Bundle {

@@ -30,7 +30,7 @@ spotless {
 	}
 }
 
-String VER_SLF4J = '2.0.6'
+String VER_SLF4J = '1.7.36'
 dependencies {
 	api 'com.diffplug.durian:durian-swt.os:4.1.1'
 	implementation 'org.apache.felix:org.apache.felix.scr:2.2.2'
@@ -97,6 +97,10 @@ p2deps {
 		addFilter 'multiple-ICompilationUnit', {
 			it.exclude 'org.apache.jasper.glassfish'
 		}
+
+		install 'org.eclipse.releng.java.languages.categoryIU'
+		p2repo 'https://download.eclipse.org/buildship/updates/e423/releases/3.x/3.1.6.v20220511-1359/'
+		install 'org.eclipse.buildship.feature.group'
 	}
 	into 'welcomeCompileOnly', {
 		p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'

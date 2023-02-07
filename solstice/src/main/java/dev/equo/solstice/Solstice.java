@@ -55,6 +55,7 @@ public class Solstice {
 	private final List<SolsticeManifest> bundles;
 
 	private final TreeSet<String> pkgs = new TreeSet<>();
+	private final Capability.SupersetSet caps = new Capability.SupersetSet();
 	private BundleContext context;
 
 	private Solstice(List<SolsticeManifest> bundles) {
@@ -87,53 +88,45 @@ public class Solstice {
 	private static final String JDT_CORE = "org.eclipse.jdt.core";
 
 	public Map<String, List<SolsticeManifest>> bySymbolicName() {
-		return groupBundles(manifest -> Collections.singletonList(manifest.getSymbolicName()));
+		return groupBundlesIncludeFragments(
+				true, manifest -> Collections.singletonList(manifest.getSymbolicName()));
 	}
 
 	public Map<String, List<SolsticeManifest>> byExportedPackage() {
-		Map<String, List<SolsticeManifest>> manifests = groupBundles(SolsticeManifest::getPkgExports);
-		// fragments export the same packages as their parent, no need to report those conflicts
-		manifests.replaceAll(
-				(pkg, bundles) -> {
-					if (bundles.size() > 1) {
-						long numNonFragments = bundles.stream().filter(SolsticeManifest::isNotFragment).count();
-						if (numNonFragments == 1) {
-							return Collections.singletonList(
-									bundles.stream().filter(SolsticeManifest::isNotFragment).findFirst().get());
-						}
-					}
-					return bundles;
-				});
-		return manifests;
+		return groupBundlesIncludeFragments(false, SolsticeManifest::totalPkgExports);
 	}
 
 	public Map<String, List<SolsticeManifest>> calculateMissingBundles(Set<String> available) {
-		return calculateMissing(available, SolsticeManifest::getRequiredBundles);
+		return calculateMissingNoFragments(available, SolsticeManifest::totalRequiredBundles);
 	}
 
 	public Map<String, List<SolsticeManifest>> calculateMissingPackages(Set<String> available) {
-		return calculateMissing(available, SolsticeManifest::getPkgImports);
+		return calculateMissingNoFragments(available, SolsticeManifest::totalPkgImports);
 	}
 
-	private Map<String, List<SolsticeManifest>> calculateMissing(
+	private Map<String, List<SolsticeManifest>> calculateMissingNoFragments(
 			Set<String> available, Function<SolsticeManifest, List<String>> neededFunc) {
 		TreeMap<String, List<SolsticeManifest>> map = new TreeMap<>();
 		for (SolsticeManifest bundle : bundles) {
-			for (var needed : neededFunc.apply(bundle)) {
-				if (!available.contains(needed)) {
-					mapAdd(map, needed, bundle);
+			if (!bundle.isFragment()) {
+				for (var needed : neededFunc.apply(bundle)) {
+					if (!available.contains(needed)) {
+						mapAdd(map, needed, bundle);
+					}
 				}
 			}
 		}
 		return map;
 	}
 
-	private Map<String, List<SolsticeManifest>> groupBundles(
-			Function<SolsticeManifest, List<String>> groupBy) {
+	private Map<String, List<SolsticeManifest>> groupBundlesIncludeFragments(
+			boolean includeFragments, Function<SolsticeManifest, List<String>> groupBy) {
 		TreeMap<String, List<SolsticeManifest>> map = new TreeMap<>();
 		for (SolsticeManifest bundle : bundles) {
-			for (String extracted : groupBy.apply(bundle)) {
-				mapAdd(map, extracted, bundle);
+			if (includeFragments || !bundle.isFragment()) {
+				for (String extracted : groupBy.apply(bundle)) {
+					mapAdd(map, extracted, bundle);
+				}
 			}
 		}
 		return map;
@@ -182,30 +175,18 @@ public class Solstice {
 				});
 		byExportedPackage.forEach(
 				(pkg, manifests) -> {
+					if (pkg.startsWith("META-INF.versions.")) {
+						// just an artifact of multijar
+						return;
+					}
 					if (manifests.size() > 1) {
-						int numSplitPkgs = 0;
+						int okayToExport = 1;
 						for (SolsticeManifest manifest : manifests) {
-							if (pkg.startsWith("META-INF.versions.")) {
-								// just an artifact of multijar
-								return;
-							}
-							var element =
-									manifest.pkgExportsRaw().stream()
-											.filter(e -> e.getValue().equals(pkg))
-											.findFirst()
-											.get();
-							String mandatory = element.getDirective("mandatory");
-							if (mandatory != null) {
-								if ("split".equals(element.getAttribute(mandatory))) {
-									++numSplitPkgs;
-								}
-							}
-							String uses = element.getDirective("uses");
-							if (uses != null) {
-								++numSplitPkgs;
+							if (pkgExportIsNotDuplicate(pkg, manifest, manifests)) {
+								++okayToExport;
 							}
 						}
-						if (numSplitPkgs < manifests.size() - 1) {
+						if (manifests.size() > okayToExport) {
 							logger.warn("Multiple bundles exporting the same package: " + pkg);
 							for (SolsticeManifest manifest : manifests) {
 								logger.warn("  - " + manifest.getJarUrl());
@@ -236,6 +217,52 @@ public class Solstice {
 			bundle.removeFromRequiredBundles(missingBundles.keySet());
 			bundle.removeFromPkgImports(missingPackages.keySet());
 		}
+
+		// warn about missing requirements. TODO: remove missing requirements and set them in Atomos
+		var allCapabilities = new Capability.SupersetSet();
+		for (var bundle : bundles) {
+			allCapabilities.addAll(bundle.capProvides);
+		}
+		for (var bundle : bundles) {
+			for (var cap : bundle.capRequires) {
+				if (!allCapabilities.containsAnySupersetOf(cap)) {
+					logger.warn("Missing capability " + cap + " required by " + bundle);
+				}
+			}
+		}
+	}
+
+	private boolean pkgExportIsNotDuplicate(
+			String pkg, SolsticeManifest thisManifest, List<SolsticeManifest> allManifestsForPkg) {
+		if (thisManifest.totalPkgImports().contains(pkg)) {
+			return true;
+		}
+		var element =
+				thisManifest.pkgExportsRaw().stream()
+						.filter(e -> e.getValue().equals(pkg))
+						.findFirst()
+						.get();
+		String mandatory = element.getDirective("mandatory");
+		if (mandatory != null) {
+			if ("split".equals(element.getAttribute(mandatory))) {
+				return true;
+			}
+		}
+		String uses = element.getDirective("uses");
+		if (uses != null) {
+			return true;
+		}
+		String friends = element.getDirective("x-friends");
+		if (friends != null) {
+			for (String friend : friends.split(",")) {
+				for (SolsticeManifest otherManifest : allManifestsForPkg) {
+					if (otherManifest != thisManifest && otherManifest.getSymbolicName().equals(friend)) {
+						return true;
+					}
+				}
+			}
+		}
+		return false;
 	}
 
 	private void assertContextInitialized(boolean isInitialized) {
@@ -278,7 +305,7 @@ public class Solstice {
 	/** Starts all hydrated manfiests. */
 	public void startAllWithLazy(boolean lazyValue) {
 		for (var solstice : bundles) {
-			if (solstice.isNotFragment() && solstice.lazy == lazyValue) {
+			if (!solstice.isFragment() && solstice.lazy == lazyValue) {
 				start(solstice);
 			}
 		}
@@ -299,25 +326,34 @@ public class Solstice {
 		if (!newAddition) {
 			return;
 		}
-		logger.info("Request activate {}", manifest);
-		pkgs.addAll(manifest.getPkgExports());
+		logger.info("prepare {}", manifest);
+		pkgs.addAll(manifest.totalPkgExports());
+		caps.addAll(manifest.capProvides);
 		String pkg;
 		while ((pkg = missingPkg(manifest)) != null) {
-			var bundles = bundlesForPkg(pkg);
+			var bundles = unactivatedBundlesForPkg(pkg);
 			if (bundles.isEmpty()) {
 				throw new IllegalArgumentException(manifest + " imports missing package " + pkg);
 			} else {
 				for (var bundle : bundles) {
-					if (bundle.isNotFragment()) {
-						start(bundle);
-					} else {
-						// if a fragment exports a package we need, start the fragment's host
-						start(bundleByName(bundle.fragmentHost()));
-					}
+					start(bundle);
 				}
 			}
 		}
-		for (var required : manifest.getRequiredBundles()) {
+		Capability cap;
+		while ((cap = missingCap(manifest)) != null) {
+			var bundles = unactivatedBundlesForCap(cap);
+			if (bundles.isEmpty()) {
+				logger.warn("{} requires missing capability {}", manifest, cap);
+				caps.add(cap);
+				// throw new IllegalArgumentException(manifest + " requires missing capability " + cap);
+			} else {
+				for (var bundle : bundles) {
+					start(bundle);
+				}
+			}
+		}
+		for (var required : manifest.totalRequiredBundles()) {
 			var bundle = bundleByName(required);
 			if (bundle == null) {
 				throw new IllegalArgumentException(manifest + " required missing bundle " + bundle);
@@ -327,14 +363,39 @@ public class Solstice {
 		}
 		// this happens when multiple with same version
 		try {
+			logger.info("activate {}", manifest);
 			manifest.hydrated.start();
 		} catch (BundleException e) {
 			e.printStackTrace();
 		}
 	}
 
+	private Capability missingCap(SolsticeManifest manifest) {
+		for (var cap : manifest.capRequires) {
+			if (!caps.containsAnySupersetOf(cap)) {
+				return cap;
+			}
+		}
+		return null;
+	}
+
+	private List<SolsticeManifest> unactivatedBundlesForCap(Capability targetCap) {
+		var target = targetCap.toString();
+		Object bundlesForCap = null;
+		for (var bundle : bundles) {
+			if (bundle.isFragment() || activatingBundles.contains(bundle)) {
+				// targetCap wouldn't be missing if this bundle had it
+				continue;
+			}
+			if (bundle.capProvides.contains(targetCap)) {
+				bundlesForCap = fastAdd(bundlesForCap, bundle);
+			}
+		}
+		return fastAddGet(bundlesForCap);
+	}
+
 	private String missingPkg(SolsticeManifest manifest) {
-		for (var pkg : manifest.getPkgImports()) {
+		for (var pkg : manifest.totalPkgImports()) {
 			if (!pkgs.contains(pkg)) {
 				return pkg;
 			}
@@ -342,29 +403,41 @@ public class Solstice {
 		return null;
 	}
 
-	private List<SolsticeManifest> bundlesForPkg(String targetPkg) {
-		Object bundleForPkg = null;
+	private List<SolsticeManifest> unactivatedBundlesForPkg(String targetPkg) {
+		Object bundlesForPkg = null;
 		for (var bundle : bundles) {
-			if (bundle.getPkgExports().contains(targetPkg)) {
-				if (bundleForPkg == null) {
-					bundleForPkg = bundle;
-				} else {
-					if (bundleForPkg instanceof ArrayList) {
-						((ArrayList) bundleForPkg).add(bundle);
-					} else {
-						var list = new ArrayList<SolsticeManifest>();
-						list.add((SolsticeManifest) bundleForPkg);
-						list.add(bundle);
-					}
-				}
+			if (bundle.isFragment() || activatingBundles.contains(bundle)) {
+				// targetPkg wouldn't be missing if this bundle had it
+				continue;
+			}
+			if (bundle.totalPkgExports().contains(targetPkg)) {
+				bundlesForPkg = fastAdd(bundlesForPkg, bundle);
 			}
 		}
-		if (bundleForPkg == null) {
-			return Collections.emptyList();
-		} else if (bundleForPkg instanceof SolsticeManifest) {
-			return Collections.singletonList((SolsticeManifest) bundleForPkg);
+		return fastAddGet(bundlesForPkg);
+	}
+
+	private Object fastAdd(Object currentValue, SolsticeManifest toAdd) {
+		if (currentValue == null) {
+			return toAdd;
+		} else if (currentValue instanceof ArrayList) {
+			((ArrayList<SolsticeManifest>) currentValue).add(toAdd);
+			return currentValue;
 		} else {
-			return (List<SolsticeManifest>) bundleForPkg;
+			var list = new ArrayList<SolsticeManifest>();
+			list.add((SolsticeManifest) currentValue);
+			list.add(toAdd);
+			return list;
+		}
+	}
+
+	private List<SolsticeManifest> fastAddGet(Object currentValue) {
+		if (currentValue == null) {
+			return Collections.emptyList();
+		} else if (currentValue instanceof ArrayList) {
+			return (ArrayList<SolsticeManifest>) currentValue;
+		} else {
+			return Collections.singletonList((SolsticeManifest) currentValue);
 		}
 	}
 

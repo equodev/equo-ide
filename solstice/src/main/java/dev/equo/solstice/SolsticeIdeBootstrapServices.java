@@ -18,14 +18,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Map;
+import java.util.MissingResourceException;
 import java.util.PropertyResourceBundle;
 import javax.xml.parsers.SAXParserFactory;
+import org.eclipse.core.internal.runtime.CommonMessages;
 import org.eclipse.osgi.framework.log.FrameworkLog;
 import org.eclipse.osgi.service.datalocation.Location;
 import org.eclipse.osgi.service.debug.DebugOptions;
 import org.eclipse.osgi.service.debug.DebugTrace;
 import org.eclipse.osgi.service.environment.EnvironmentInfo;
 import org.eclipse.osgi.service.localization.BundleLocalization;
+import org.eclipse.osgi.util.NLS;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
@@ -44,7 +47,10 @@ public class SolsticeIdeBootstrapServices {
 					// TODO: we don't handle locale
 					String localization = bundle.getHeaders().get(Constants.BUNDLE_LOCALIZATION);
 					if (localization == null) {
-						throw new IllegalArgumentException("No localization for " + bundle);
+						throw new MissingResourceException(
+								NLS.bind(CommonMessages.activator_resourceBundleNotFound, locale),
+								bundle.getSymbolicName(),
+								""); //$NON-NLS-1$
 					}
 					URL url = bundle.getEntry(localization + ".properties");
 					try (InputStream input = url.openStream()) {
@@ -71,7 +77,18 @@ public class SolsticeIdeBootstrapServices {
 				org.osgi.service.condition.Condition.class,
 				new org.osgi.service.condition.Condition() {},
 				Dictionaries.of("osgi.condition.id", "true"));
-		context.registerService(FrameworkLog.class, new ShimFrameworkLog(), Dictionaries.empty());
+		context.registerService(
+				FrameworkLog.class,
+				Unchecked.get(
+						() -> {
+							var frameworkLog = new ShimFrameworkLog();
+							boolean append = false;
+							File logFile = new File(installDir, "instance/log");
+							logFile.getParentFile().mkdirs();
+							frameworkLog.setFile(logFile, append);
+							return frameworkLog;
+						}),
+				Dictionaries.empty());
 
 		context.registerService(
 				DebugOptions.class,

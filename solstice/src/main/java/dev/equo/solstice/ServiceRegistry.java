@@ -24,11 +24,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicLong;
+import org.eclipse.osgi.framework.log.FrameworkLog;
 import org.eclipse.osgi.internal.framework.FilterImpl;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.Filter;
+import org.osgi.framework.FrameworkEvent;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceFactory;
@@ -61,7 +63,7 @@ abstract class ServiceRegistry implements BundleContext {
 	@Override
 	public synchronized ServiceRegistration<?> registerService(
 			String[] clazzes, Object service, Dictionary<String, ?> properties) {
-		logger.info(
+		logger.debug(
 				"{} implemented by service {} with {}",
 				Arrays.asList(clazzes),
 				service.getClass(),
@@ -115,14 +117,14 @@ abstract class ServiceRegistry implements BundleContext {
 
 	@Override
 	public final synchronized void addServiceListener(ServiceListener listener, String filter) {
-		logger.info("add listener {} with {}", listener.getClass(), filter);
+		logger.debug("add listener {} with {}", listener.getClass(), filter);
 		serviceListeners.add(
 				new ListenerEntry(listener, Unchecked.get(() -> FilterImpl.newInstance(filter))));
 	}
 
 	@Override
 	public final synchronized void addServiceListener(ServiceListener listener) {
-		logger.info("add listener {} with no filter", listener);
+		logger.debug("add listener {} with no filter", listener);
 		serviceListeners.add(new ListenerEntry(listener, null));
 	}
 
@@ -131,7 +133,12 @@ abstract class ServiceRegistry implements BundleContext {
 		var event = new ServiceEvent(type, serviceReference);
 		for (var listener : serviceListeners) {
 			if (listener.filter == null || listener.filter.match(serviceReference)) {
-				listener.listener.serviceChanged(event);
+				try {
+					listener.listener.serviceChanged(event);
+				} catch (Exception e) {
+					getService(getServiceReference(FrameworkLog.class))
+							.log(new FrameworkEvent(FrameworkEvent.ERROR, serviceReference.getBundle(), e));
+				}
 			}
 		}
 	}

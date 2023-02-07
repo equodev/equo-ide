@@ -70,6 +70,7 @@ public class EquoIdeTest extends GradleHarness {
 						"equoIde {",
 						"  p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'",
 						"  install 'org.eclipse.swt'",
+						"  install 'org.eclipse.equinox.common'",
 						"}");
 		runAndAssert("equoIde", "--init-only")
 				.matches("(?s)(.*)Loaded (\\d+) bundles using Atomos(.*)");
@@ -81,6 +82,7 @@ public class EquoIdeTest extends GradleHarness {
 						"equoIde {",
 						"  p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'",
 						"  install 'org.eclipse.swt'",
+						"  install 'org.eclipse.equinox.common'",
 						"  useAtomos = false",
 						"}");
 		runAndAssert("equoIde", "--init-only")
@@ -93,6 +95,7 @@ public class EquoIdeTest extends GradleHarness {
 						"equoIde {",
 						"  p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'",
 						"  install 'org.eclipse.swt'",
+						"  install 'org.eclipse.equinox.common'",
 						"}");
 		runAndAssert("equoIde", "--init-only", "--dont-use-atomos")
 				.matches("(?s)(.*)Loaded (\\d+) bundles not using Atomos(.*)");
