@@ -14,7 +14,6 @@
 package dev.equo.solstice;
 
 import java.net.URL;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -65,10 +64,9 @@ public class BundleContextAtomos implements Atomos.HeaderProvider {
 
 	public Map<String, String> atomosHeaders(SolsticeManifest manifest) {
 		Map<String, String> atomos = new LinkedHashMap<>(manifest.getHeadersOriginal());
-		setHeader(atomos, Constants.IMPORT_PACKAGE, manifest.getPkgImports());
-		setHeader(atomos, Constants.EXPORT_PACKAGE, manifest.getPkgExports());
-		setHeader(atomos, Constants.REQUIRE_BUNDLE, manifest.getRequiredBundles());
-		setHeader(atomos, Constants.REQUIRE_CAPABILITY, Collections.emptyList());
+		setHeader(atomos, Constants.IMPORT_PACKAGE, manifest.pkgImports);
+		setHeader(atomos, Constants.EXPORT_PACKAGE, manifest.pkgExports);
+		setHeader(atomos, Constants.REQUIRE_BUNDLE, manifest.requiredBundles);
 		return atomos;
 	}
 
