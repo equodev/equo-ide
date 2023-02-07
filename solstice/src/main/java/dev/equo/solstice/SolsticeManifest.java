@@ -54,9 +54,9 @@ public class SolsticeManifest {
 	final int classpathOrder;
 	private final @Nullable String symbolicName;
 	private final LinkedHashMap<String, String> headersOriginal = new LinkedHashMap<>();
-	private final List<String> requiredBundles;
-	private final List<String> pkgImports;
-	private final List<String> pkgExports;
+	final List<String> requiredBundles;
+	final List<String> pkgImports;
+	final List<String> pkgExports;
 	final List<Capability> capProvides;
 	final List<Capability> capRequires;
 	final boolean lazy;
@@ -398,19 +398,26 @@ public class SolsticeManifest {
 		}
 	}
 
-	public List<String> getRequiredBundles() {
+	public List<String> totalRequiredBundles() {
 		return total(m -> m.requiredBundles);
 	}
 
-	public List<String> getPkgImports() {
+	public List<String> totalPkgImports() {
 		return total(m -> m.pkgImports);
 	}
 
-	public List<String> getPkgExports() {
+	public List<String> totalPkgExports() {
 		return total(m -> m.pkgExports);
 	}
 
 	private List<String> total(Function<SolsticeManifest, List<String>> getter) {
+		if (!isNotFragment()) {
+			throw new IllegalStateException(
+					"You cannot call this method on a fragment, this bundle "
+							+ symbolicName
+							+ " is a fragment to "
+							+ fragmentHost());
+		}
 		if (fragments.isEmpty()) {
 			return Collections.unmodifiableList(getter.apply(this));
 		} else {

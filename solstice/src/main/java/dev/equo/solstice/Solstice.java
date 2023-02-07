@@ -93,24 +93,26 @@ public class Solstice {
 	}
 
 	public Map<String, List<SolsticeManifest>> byExportedPackage() {
-		return groupBundlesIncludeFragments(false, SolsticeManifest::getPkgExports);
+		return groupBundlesIncludeFragments(false, SolsticeManifest::totalPkgExports);
 	}
 
 	public Map<String, List<SolsticeManifest>> calculateMissingBundles(Set<String> available) {
-		return calculateMissing(available, SolsticeManifest::getRequiredBundles);
+		return calculateMissingNoFragments(available, SolsticeManifest::totalRequiredBundles);
 	}
 
 	public Map<String, List<SolsticeManifest>> calculateMissingPackages(Set<String> available) {
-		return calculateMissing(available, SolsticeManifest::getPkgImports);
+		return calculateMissingNoFragments(available, SolsticeManifest::totalPkgImports);
 	}
 
-	private Map<String, List<SolsticeManifest>> calculateMissing(
+	private Map<String, List<SolsticeManifest>> calculateMissingNoFragments(
 			Set<String> available, Function<SolsticeManifest, List<String>> neededFunc) {
 		TreeMap<String, List<SolsticeManifest>> map = new TreeMap<>();
 		for (SolsticeManifest bundle : bundles) {
-			for (var needed : neededFunc.apply(bundle)) {
-				if (!available.contains(needed)) {
-					mapAdd(map, needed, bundle);
+			if (bundle.isNotFragment()) {
+				for (var needed : neededFunc.apply(bundle)) {
+					if (!available.contains(needed)) {
+						mapAdd(map, needed, bundle);
+					}
 				}
 			}
 		}
@@ -219,7 +221,7 @@ public class Solstice {
 
 	private boolean pkgExportIsNotDuplicate(
 			String pkg, SolsticeManifest thisManifest, List<SolsticeManifest> allManifestsForPkg) {
-		if (thisManifest.getPkgImports().contains(pkg)) {
+		if (thisManifest.totalPkgImports().contains(pkg)) {
 			return true;
 		}
 		var element =
@@ -312,7 +314,7 @@ public class Solstice {
 			return;
 		}
 		logger.info("prepare {}", manifest);
-		pkgs.addAll(manifest.getPkgExports());
+		pkgs.addAll(manifest.totalPkgExports());
 		caps.addAll(manifest.capProvides);
 		String pkg;
 		while ((pkg = missingPkg(manifest)) != null) {
@@ -338,7 +340,7 @@ public class Solstice {
 				}
 			}
 		}
-		for (var required : manifest.getRequiredBundles()) {
+		for (var required : manifest.totalRequiredBundles()) {
 			var bundle = bundleByName(required);
 			if (bundle == null) {
 				throw new IllegalArgumentException(manifest + " required missing bundle " + bundle);
@@ -379,7 +381,7 @@ public class Solstice {
 	}
 
 	private String missingPkg(SolsticeManifest manifest) {
-		for (var pkg : manifest.getPkgImports()) {
+		for (var pkg : manifest.totalPkgImports()) {
 			if (!pkgs.contains(pkg)) {
 				return pkg;
 			}
@@ -394,7 +396,7 @@ public class Solstice {
 				// targetPkg wouldn't be missing if this bundle had it
 				continue;
 			}
-			if (bundle.getPkgExports().contains(targetPkg)) {
+			if (bundle.totalPkgExports().contains(targetPkg)) {
 				bundlesForPkg = fastAdd(bundlesForPkg, bundle);
 			}
 		}

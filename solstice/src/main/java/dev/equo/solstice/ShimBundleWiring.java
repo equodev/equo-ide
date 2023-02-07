@@ -68,7 +68,7 @@ class ShimBundleWiring extends Unimplemented.BundleWiring {
 			var url = urls.nextElement();
 			asStrings.add(url.toExternalForm());
 		}
-		for (var required : bundle.manifest.getRequiredBundles()) {
+		for (var required : bundle.manifest.totalRequiredBundles()) {
 			// TODO: this should respect whether a required bundle is re-exported or not
 			listResourcesHelper(
 					asStrings,
