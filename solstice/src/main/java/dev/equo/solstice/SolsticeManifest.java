@@ -100,22 +100,8 @@ public class SolsticeManifest {
 		pkgExports = parseAndStrip(Constants.EXPORT_PACKAGE);
 		pkgImports = parseAndStrip(Constants.IMPORT_PACKAGE);
 
-		capProvides =
-				parseCapability(Constants.PROVIDE_CAPABILITY, SolsticeManifest::parseProvideCapability);
-		capRequires =
-				parseCapability(Constants.REQUIRE_CAPABILITY, SolsticeManifest::parseRequireCapability);
-		if (!capProvides.isEmpty()) {
-			System.out.println("++ " + symbolicName + " provides");
-			for (var cap : capProvides) {
-				System.out.println(cap.toString());
-			}
-		}
-		if (!capRequires.isEmpty()) {
-			System.out.println("-- " + symbolicName + " requires");
-			for (var cap : capRequires) {
-				System.out.println(cap.toString());
-			}
-		}
+		capProvides = parseCapability(Constants.PROVIDE_CAPABILITY, SolsticeManifest::parseProvide);
+		capRequires = parseCapability(Constants.REQUIRE_CAPABILITY, SolsticeManifest::parseRequire);
 		if (headersOriginal.containsKey(Constants.FRAGMENT_HOST)
 				&& (!capRequires.isEmpty() || !capProvides.isEmpty())) {
 			throw Unimplemented.onPurpose(
@@ -126,7 +112,7 @@ public class SolsticeManifest {
 		lazy = activationPolicy == null ? false : activationPolicy.contains("lazy");
 	}
 
-	private static void parseProvideCapability(CapabilityParsed parsed, ArrayList<Capability> total) {
+	private static void parseProvide(CapabilityParsed parsed, ArrayList<Capability> total) {
 		if (parsed.attributes.size() == 1) {
 			var attr = parsed.attributes.entrySet().iterator().next();
 			var key = attr.getKey();
@@ -159,7 +145,7 @@ public class SolsticeManifest {
 		}
 	}
 
-	private static void parseRequireCapability(CapabilityParsed parsed, ArrayList<Capability> total) {
+	private static void parseRequire(CapabilityParsed parsed, ArrayList<Capability> total) {
 		var filter = parsed.directives.get(Constants.FILTER_DIRECTIVE);
 		int equalsSpot = filter.indexOf('=');
 		if (!filter.startsWith("(")
