@@ -217,6 +217,19 @@ public class Solstice {
 			bundle.removeFromRequiredBundles(missingBundles.keySet());
 			bundle.removeFromPkgImports(missingPackages.keySet());
 		}
+
+		// warn about missing requirements. TODO: remove missing requirements and set them in Atomos
+		var allCapabilities = new TreeSet<SolsticeManifest.Capability>();
+		for (var bundle : bundles) {
+			allCapabilities.addAll(bundle.capProvides);
+		}
+		for (var bundle : bundles) {
+			for (var cap : bundle.capRequires) {
+				if (!allCapabilities.contains(cap)) {
+					logger.warn("Missing capability " + cap + " required by " + bundle);
+				}
+			}
+		}
 	}
 
 	private boolean pkgExportIsNotDuplicate(
@@ -331,6 +344,7 @@ public class Solstice {
 		while ((cap = missingCap(manifest)) != null) {
 			var bundles = unactivatedBundlesForCap(cap);
 			if (bundles.isEmpty()) {
+				unactivatedBundlesForCap(cap);
 				System.err.println(manifest + " requires missing capability " + cap);
 				caps.add(cap);
 				// throw new IllegalArgumentException(manifest + " requires missing capability " + cap);
@@ -367,6 +381,7 @@ public class Solstice {
 	}
 
 	private List<SolsticeManifest> unactivatedBundlesForCap(SolsticeManifest.Capability targetCap) {
+		var target = targetCap.toString();
 		Object bundlesForCap = null;
 		for (var bundle : bundles) {
 			if (bundle.isFragment() || activatingBundles.contains(bundle)) {
@@ -406,8 +421,8 @@ public class Solstice {
 	private Object fastAdd(Object currentValue, SolsticeManifest toAdd) {
 		if (currentValue == null) {
 			return toAdd;
-		} else if (currentValue instanceof List) {
-			((List<SolsticeManifest>) currentValue).add(toAdd);
+		} else if (currentValue instanceof ArrayList) {
+			((ArrayList<SolsticeManifest>) currentValue).add(toAdd);
 			return currentValue;
 		} else {
 			var list = new ArrayList<SolsticeManifest>();
@@ -420,8 +435,8 @@ public class Solstice {
 	private List<SolsticeManifest> fastAddGet(Object currentValue) {
 		if (currentValue == null) {
 			return Collections.emptyList();
-		} else if (currentValue instanceof List) {
-			return (List<SolsticeManifest>) currentValue;
+		} else if (currentValue instanceof ArrayList) {
+			return (ArrayList<SolsticeManifest>) currentValue;
 		} else {
 			return Collections.singletonList((SolsticeManifest) currentValue);
 		}
