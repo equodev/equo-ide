@@ -140,7 +140,24 @@ public class SolsticeManifest {
 				}
 				cap.add(key, attr.getValue());
 			}
-			total.add(cap);
+			if (cap.size() == 1) {
+				total.add(cap);
+			} else if (cap.size() == 2) {
+				total.add(cap);
+				// total.add(cap.swap(0, 1)); // same as just cap
+				total.add(cap.swap(1, 0));
+			} else if (cap.size() == 3) {
+				total.add(cap);
+				// total.add(cap.swap(0, 1, 2)); // same as just cap
+				total.add(cap.swap(0, 2, 1));
+				total.add(cap.swap(1, 0, 2));
+				total.add(cap.swap(1, 2, 0));
+				total.add(cap.swap(2, 0, 1));
+				total.add(cap.swap(2, 1, 0));
+			} else {
+				throw Unimplemented.onPurpose(
+						"Solstice only supports Capabilities with at most 3 properties, see Capabilities javadoc for how to remove this limitation");
+			}
 		}
 	}
 
@@ -225,9 +242,13 @@ public class SolsticeManifest {
 			this.namespace = namespace;
 		}
 
-		void add(String key, String value) {
+		private void add(String key, String value) {
 			keyValue.add(key);
 			keyValue.add(value);
+		}
+
+		public int size() {
+			return keyValue.size() / 2;
 		}
 
 		@Override
@@ -304,6 +325,14 @@ public class SolsticeManifest {
 			}
 			builder.setLength(builder.length() - 1); // remove the trailing comma
 			return builder.toString();
+		}
+
+		private Capability swap(int... indices) {
+			Capability copy = new Capability(namespace);
+			for (int i = 0; i < indices.length; ++i) {
+				copy.add(keyValue.get(2 * indices[i]), keyValue.get(2 * indices[i] + 1));
+			}
+			return copy;
 		}
 	}
 
