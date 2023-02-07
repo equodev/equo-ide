@@ -56,12 +56,16 @@ import org.osgi.framework.wiring.BundleWiring;
 import org.osgi.framework.wiring.FrameworkWiring;
 import org.osgi.resource.Requirement;
 import org.osgi.service.packageadmin.PackageAdmin;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A single-classloader implementation of OSGi which eagerly loads all the OSGi plugins it can find
  * on the classpath.
  */
 public class BundleContextSolstice extends ServiceRegistry {
+	private final Logger logger = LoggerFactory.getLogger(BundleContextSolstice.class);
+
 	private static final Set<String> DONT_ACTIVATE = Set.of("org.eclipse.osgi");
 
 	private static BundleContextSolstice instance;
@@ -429,7 +433,7 @@ public class BundleContextSolstice extends ServiceRegistry {
 					var bundleActivator = c.newInstance();
 					bundleActivator.start(BundleContextSolstice.this);
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.warn("Error in activator of " + getSymbolicName(), e);
 				}
 			}
 			state = ACTIVE;
