@@ -228,7 +228,7 @@ public class SolsticeManifest {
 			if (result != 0) {
 				return result;
 			}
-			for (int i = 0; i < Math.max(keyValue.size(), o.keyValue.size()); ++i) {
+			for (int i = 0; i < Math.min(keyValue.size(), o.keyValue.size()); ++i) {
 				result = keyValue.get(i).compareTo(o.keyValue.get(i));
 				if (result != 0) {
 					return result;
