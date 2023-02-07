@@ -24,14 +24,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicLong;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
+import org.eclipse.osgi.framework.log.FrameworkLog;
 import org.eclipse.osgi.internal.framework.FilterImpl;
-import org.eclipse.ui.statushandlers.StatusManager;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.Filter;
+import org.osgi.framework.FrameworkEvent;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceFactory;
@@ -137,13 +136,8 @@ abstract class ServiceRegistry implements BundleContext {
 				try {
 					listener.listener.serviceChanged(event);
 				} catch (Exception e) {
-					StatusManager.getManager()
-							.handle(
-									new Status(
-											IStatus.ERROR,
-											listener.getClass(),
-											"Error notifying service listener of event type " + type,
-											e));
+					getService(getServiceReference(FrameworkLog.class))
+							.log(new FrameworkEvent(FrameworkEvent.ERROR, serviceReference.getBundle(), e));
 				}
 			}
 		}

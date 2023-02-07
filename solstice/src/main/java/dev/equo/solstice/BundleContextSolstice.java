@@ -28,8 +28,10 @@ import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Function;
 import java.util.regex.Pattern;
@@ -37,15 +39,13 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import javax.annotation.Nullable;
 import org.eclipse.core.internal.runtime.InternalPlatform;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.osgi.internal.framework.FilterImpl;
-import org.eclipse.ui.statushandlers.StatusManager;
+import org.eclipse.osgi.framework.log.FrameworkLog;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleEvent;
 import org.osgi.framework.BundleListener;
 import org.osgi.framework.Constants;
+import org.osgi.framework.FrameworkEvent;
 import org.osgi.framework.FrameworkListener;
 import org.osgi.framework.Version;
 import org.osgi.framework.namespace.IdentityNamespace;
@@ -55,7 +55,6 @@ import org.osgi.framework.wiring.BundleCapability;
 import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.framework.wiring.BundleWiring;
 import org.osgi.framework.wiring.FrameworkWiring;
-import org.osgi.resource.Namespace;
 import org.osgi.resource.Requirement;
 import org.osgi.service.packageadmin.PackageAdmin;
 
@@ -234,19 +233,39 @@ public class BundleContextSolstice extends ServiceRegistry {
 				}
 			};
 
+	private TreeMap<SolsticeManifest.Capability, ShimBundle> capabilities = new TreeMap<>();
+
 	final FrameworkWiring frameworkWiring =
 			new Unimplemented.FrameworkWiring() {
 				@Override
 				public Collection<BundleCapability> findProviders(Requirement requirement) {
-					String filterSpec =
-							requirement.getDirectives().get(Namespace.REQUIREMENT_FILTER_DIRECTIVE);
-					try {
-						var requirementFilter = FilterImpl.newInstance(filterSpec).getStandardOSGiAttributes();
-						var requiredBundle = requirementFilter.get(IdentityNamespace.IDENTITY_NAMESPACE);
-						var bundle = bundleForSymbolicName(requiredBundle);
+					if (!Set.of(Constants.FILTER_DIRECTIVE).equals(requirement.getDirectives().keySet())) {
+						throw Unimplemented.onPurpose(
+								"Solstice supports only filter, this was " + requirement.getDirectives());
+					}
+					String filterRaw = requirement.getDirectives().get(Constants.FILTER_DIRECTIVE);
+					var filter = SolsticeManifest.parseSingleFilter(filterRaw);
+
+					if (requirement.getNamespace().equals(IdentityNamespace.IDENTITY_NAMESPACE)) {
+						if (!filter.getKey().equals(IdentityNamespace.IDENTITY_NAMESPACE)) {
+							throw Unimplemented.onPurpose(
+									"Solstice expected " + IdentityNamespace.IDENTITY_NAMESPACE + ", was " + filter);
+						}
+						var bundle =
+								Objects.requireNonNull(bundleForSymbolicName(filter.getValue()), filter.getValue());
 						return Collections.singleton(new ShimBundleCapability(bundle));
-					} catch (Exception e) {
-						throw Unimplemented.onPurpose();
+					} else {
+						var capability =
+								new SolsticeManifest.Capability(
+										requirement.getNamespace(), filter.getKey(), filter.getValue());
+						var result = capabilities.get(capability);
+						if (result == null) {
+							var floor = capabilities.floorKey(capability);
+							var ceiling = capabilities.ceilingKey(capability);
+							throw new NoSuchElementException(
+									"No element " + capability + " but we do have " + floor + " and " + ceiling);
+						}
+						return Collections.singleton(new ShimBundleCapability(result));
 					}
 				}
 			};
@@ -324,13 +343,8 @@ public class BundleContextSolstice extends ServiceRegistry {
 			try {
 				listener.bundleChanged(event);
 			} catch (Exception e) {
-				StatusManager.getManager()
-						.handle(
-								new Status(
-										IStatus.ERROR,
-										listener.getClass(),
-										"Error notifying bundle listener of event type " + type,
-										e));
+				getService(getServiceReference(FrameworkLog.class))
+						.log(new FrameworkEvent(FrameworkEvent.ERROR, bundle, e));
 			}
 		}
 	}
@@ -410,17 +424,18 @@ public class BundleContextSolstice extends ServiceRegistry {
 
 			state = STARTING;
 			notifyBundleListeners(BundleEvent.STARTING, this);
+
+			for (var cap : manifest.capProvides) {
+				capabilities.put(cap, this);
+			}
+
 			if (!DONT_ACTIVATE.contains(getSymbolicName()) && activator != null) {
 				try {
 					var c = (Constructor<BundleActivator>) Class.forName(activator).getConstructor();
 					var bundleActivator = c.newInstance();
 					bundleActivator.start(BundleContextSolstice.this);
 				} catch (Exception e) {
-					try {
-						throw new ActivatorException(this, e);
-					} catch (ActivatorException ae) {
-						ae.printStackTrace();
-					}
+					e.printStackTrace();
 				}
 			}
 			state = ACTIVE;
@@ -592,15 +607,6 @@ public class BundleContextSolstice extends ServiceRegistry {
 			} else {
 				return null;
 			}
-		}
-	}
-
-	static class ActivatorException extends RuntimeException {
-		final ShimBundle bundle;
-
-		ActivatorException(ShimBundle bundle, Exception cause) {
-			super(cause);
-			this.bundle = bundle;
 		}
 	}
 }
