@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+### Fixed
+- No more errors on filesystems which don't support atomic move ([#73](https://github.com/equodev/equo-ide/pull/73))
 
 ## [0.13.0] - 2023-02-05
 ### Added
