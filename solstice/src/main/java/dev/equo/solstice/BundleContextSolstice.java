@@ -161,12 +161,12 @@ public class BundleContextSolstice extends ServiceRegistry {
 
 				@Override
 				public Version getVersion() {
-					return null;
+					return Version.emptyVersion;
 				}
 
 				@Override
 				public String getLocation() {
-					return null;
+					return "SYSTEM_BUNDLE_LOCATION";
 				}
 
 				@Override
