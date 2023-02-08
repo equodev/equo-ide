@@ -537,7 +537,11 @@ public class BundleContextSolstice extends ServiceRegistry {
 		@Override
 		public URL getEntry(String path) {
 			try {
-				return new URL(manifest.getJarUrl() + "/" + stripLeadingSlash(path));
+				ZipEntry entry = parseFromZip(zip -> zip.getEntry(stripLeadingSlash(path)));
+				if (entry != null) {
+					return new URL(manifest.getJarUrl() + "/" + stripLeadingSlash(path));
+				}
+				return null;
 			} catch (MalformedURLException e) {
 				throw Unchecked.wrap(e);
 			}
