@@ -41,6 +41,7 @@ import org.eclipse.core.internal.runtime.InternalPlatform;
 import org.eclipse.osgi.framework.log.FrameworkLog;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
+import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
 import org.osgi.framework.BundleListener;
 import org.osgi.framework.Constants;
@@ -380,12 +381,13 @@ public class BundleContextSolstice extends ServiceRegistry {
 		return id == -1 ? systemBundle : bundles.get((int) id);
 	}
 
-	public class ShimBundle implements Unimplemented.Bundle {
+	public class ShimBundle extends BundleContextDelegate implements Unimplemented.Bundle {
 		final SolsticeManifest manifest;
 		final @Nullable String activator;
 		final Hashtable<String, String> headers = new Hashtable<>();
 
 		ShimBundle(SolsticeManifest manifest) {
+			super(BundleContextSolstice.this);
 			this.manifest = manifest;
 			activator = manifest.getHeadersOriginal().get(Constants.BUNDLE_ACTIVATOR);
 			manifest
@@ -399,6 +401,22 @@ public class BundleContextSolstice extends ServiceRegistry {
 							});
 		}
 
+		// BundleContext stuff
+		@Override
+		public org.osgi.framework.Bundle getBundle() {
+			return this;
+		}
+
+		@Override
+		public BundleContext getBundleContext() {
+			return this;
+		}
+
+		BundleContextSolstice getRootBundleContext() {
+			return BundleContextSolstice.this;
+		}
+
+		// bundle stuff
 		@Override
 		public String toString() {
 			return manifest.toString();
@@ -472,11 +490,6 @@ public class BundleContextSolstice extends ServiceRegistry {
 		@Override
 		public Dictionary<String, String> getHeaders(String locale) {
 			return headers;
-		}
-
-		@Override
-		public BundleContextSolstice getBundleContext() {
-			return BundleContextSolstice.this;
 		}
 
 		@Override
