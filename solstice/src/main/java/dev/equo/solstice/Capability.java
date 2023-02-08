@@ -107,34 +107,45 @@ public class Capability implements Comparable<Capability> {
 	}
 
 	/** Order-insignificant matching to determine if this Capability is a superset of its argument. */
-	public boolean isSupersetOf(Capability other) {
-		if (size() >= other.size()) {
-			return __isSubsetMatch(other, this);
-		} else {
+	public boolean isSupersetOf(Capability shorter) {
+		if (size() < shorter.size()) {
 			return false;
 		}
-	}
-
-	private static boolean __isSubsetMatch(Capability shorter, Capability longer) {
 		for (int i = 0; i < shorter.keyValue.size() / 2; ++i) {
 			var key = shorter.keyValue.get(2 * i);
 			var value = shorter.keyValue.get(2 * i + 1);
 
-			var longerKeyIdx = longer.keyValue.indexOf(key);
+			var longerKeyIdx = keyIdxShortcut(key);
 			if (longerKeyIdx == -1) {
 				// missing key
 				return false;
 			}
-			if (longerKeyIdx % 2 == 1) {
-				throw Unimplemented.onPurpose(
-						"Key has the same content as a value, unlikely to ever happen, straight-forward to fix if it does, please file an issue at https://github.com/equodev/equo-ide");
-			}
-			var longerValue = longer.keyValue.get(longerKeyIdx + 1);
+			var longerValue = keyValue.get(longerKeyIdx + 1);
 			if (!value.equals(longerValue)) {
 				return false;
 			}
 		}
 		return true;
+	}
+
+	public String getValue(String key) {
+		int idx = keyIdxShortcut(key);
+		if (idx == -1) {
+			return null;
+		}
+		return keyValue.get(idx + 1);
+	}
+
+	private int keyIdxShortcut(String key) {
+		int idx = keyValue.indexOf(key);
+		if (idx == -1) {
+			return -1;
+		}
+		if (idx % 2 == 1) {
+			throw Unimplemented.onPurpose(
+					"Key has the same content as a value, unlikely to ever happen, straight-forward to fix if it does, please file an issue at https://github.com/equodev/equo-ide");
+		}
+		return idx;
 	}
 
 	/**
