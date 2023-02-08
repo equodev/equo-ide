@@ -477,7 +477,7 @@ public class BundleContextSolstice extends ServiceRegistry {
 				try {
 					var c = (Constructor<BundleActivator>) Class.forName(activator).getConstructor();
 					var bundleActivator = c.newInstance();
-					bundleActivator.start(BundleContextSolstice.this);
+					bundleActivator.start(this);
 				} catch (Exception e) {
 					logger.warn("Error in activator of " + getSymbolicName(), e);
 				}
