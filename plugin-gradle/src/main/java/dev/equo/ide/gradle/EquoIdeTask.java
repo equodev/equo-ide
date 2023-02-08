@@ -15,15 +15,14 @@ package dev.equo.ide.gradle;
 
 import dev.equo.ide.BuildPluginIdeMain;
 import dev.equo.ide.IdeHook;
-import dev.equo.ide.IdeLockFile;
 import dev.equo.solstice.p2.P2Client;
 import dev.equo.solstice.p2.P2Query;
-import dev.equo.solstice.p2.WorkspaceRegistry;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import javax.inject.Inject;
 import org.gradle.api.DefaultTask;
+import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.provider.Property;
@@ -112,45 +111,31 @@ public abstract class EquoIdeTask extends DefaultTask {
 
 	@TaskAction
 	public void launch() throws IOException, InterruptedException {
-		var workspaceRegistry = WorkspaceRegistry.instance();
-		var workspaceDir = workspaceRegistry.workspaceDirForProjectDir(getProjectDir().get());
-		workspaceRegistry.removeAbandoned();
+		var caller = BuildPluginIdeMain.Caller.forProjectDir(getProjectDir().get(), clean);
 
-		var lockfile = IdeLockFile.forWorkspaceDir(workspaceDir);
-		var alreadyRunning = lockfile.ideAlreadyRunning();
-		if (IdeLockFile.alreadyRunningAndUserRequestsAbort(alreadyRunning)) {
-			return;
-		}
-
-		if (clean) {
-			workspaceRegistry.cleanWorkspaceDir(workspaceDir);
-		}
-
-		var mavenDeps = getMavenDeps().get();
-
-		var p2files = new ArrayList<File>();
 		var query = getQuery().get();
-		try (var client = new P2Client(getCaching().get())) {
-			for (var unit : query.getJarsNotOnMavenCentral()) {
-				p2files.add(client.download(unit));
+
+		ConfigurableFileCollection p2deps;
+		{
+			var p2files = new ArrayList<File>();
+			try (var client = new P2Client(getCaching().get())) {
+				for (var unit : query.getJarsNotOnMavenCentral()) {
+					p2files.add(client.download(unit));
+				}
 			}
+			p2deps = getObjectFactory().fileCollection().from(p2files);
 		}
 
-		var p2deps = getObjectFactory().fileCollection().from(p2files);
-		var p2AndMavenDeps = p2deps.plus(mavenDeps);
+		var p2AndMavenDeps = p2deps.plus(getMavenDeps().get());
 		var classpath = new ArrayList<File>();
 		p2AndMavenDeps.forEach(classpath::add);
 
-		BuildPluginIdeMain.Caller caller = new BuildPluginIdeMain.Caller();
-		caller.lockFile = lockfile;
 		caller.ideHooks = ideHooks;
-		caller.workspaceDir = workspaceDir;
 		caller.classpath = classpath;
 		caller.debugClasspath = debugClasspath;
 		caller.initOnly = initOnly;
 		caller.showConsole = showConsole;
-		caller.useAtomos =
-				useAtomosOverride != null ? useAtomosOverride.booleanValue() : getUseAtomos().get();
+		caller.useAtomos = useAtomosOverride != null ? useAtomosOverride : getUseAtomos().get();
 		caller.debugIde = debugIde;
 		caller.showConsoleFlag = "--show-console";
 		caller.cleanFlag = "--clean";

@@ -17,11 +17,9 @@ import dev.equo.ide.BuildPluginIdeMain;
 import dev.equo.ide.IdeHook;
 import dev.equo.ide.IdeHookBranding;
 import dev.equo.ide.IdeHookWelcome;
-import dev.equo.ide.IdeLockFile;
 import dev.equo.solstice.NestedJars;
 import dev.equo.solstice.p2.P2Client;
 import dev.equo.solstice.p2.P2Unit;
-import dev.equo.solstice.p2.WorkspaceRegistry;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -110,19 +108,7 @@ public class LaunchMojo extends AbstractP2Mojo {
 							null,
 							EXCLUDE_ALL_TRANSITIVES));
 
-			var workspaceRegistry = WorkspaceRegistry.instance();
-			var workspaceDir = workspaceRegistry.workspaceDirForProjectDir(baseDir);
-			workspaceRegistry.removeAbandoned();
-
-			var lockfile = IdeLockFile.forWorkspaceDir(workspaceDir);
-			var alreadyRunning = lockfile.ideAlreadyRunning();
-			if (IdeLockFile.alreadyRunningAndUserRequestsAbort(alreadyRunning)) {
-				return;
-			}
-
-			if (clean) {
-				workspaceRegistry.cleanWorkspaceDir(workspaceDir);
-			}
+			var caller = BuildPluginIdeMain.Caller.forProjectDir(baseDir, clean);
 
 			var query = super.query();
 			for (var coordinate : query.getJarsOnMavenCentral()) {
@@ -153,10 +139,7 @@ public class LaunchMojo extends AbstractP2Mojo {
 				ideHooks.add(welcomeHook);
 			}
 
-			BuildPluginIdeMain.Caller caller = new BuildPluginIdeMain.Caller();
-			caller.lockFile = lockfile;
 			caller.ideHooks = ideHooks;
-			caller.workspaceDir = workspaceDir;
 			caller.classpath = files;
 			caller.debugClasspath = debugClasspath;
 			caller.initOnly = initOnly;
