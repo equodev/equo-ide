@@ -90,23 +90,20 @@ public class BundleContextSolstice extends ServiceRegistry {
 					bundles.add(bundle);
 					return bundle;
 				});
-		bundles.forEach(
-				b -> {
-					notifyBundleListeners(BundleEvent.INSTALLED, b);
-					b.state = Bundle.INSTALLED;
-				});
-		bundles.forEach(
-				b -> {
-					notifyBundleListeners(BundleEvent.RESOLVED, b);
-					b.state = Bundle.RESOLVED;
-				});
-		bundles.forEach(
-				b -> {
-					if (b.manifest.lazy) {
-						notifyBundleListeners(BundleEvent.LAZY_ACTIVATION, b);
-						b.state = Bundle.STARTING;
-					}
-				});
+		for (var b : bundles) {
+			notifyBundleListeners(BundleEvent.INSTALLED, b);
+			b.state = Bundle.INSTALLED;
+		}
+		for (var b : bundles) {
+			notifyBundleListeners(BundleEvent.RESOLVED, b);
+			b.state = Bundle.RESOLVED;
+		}
+		for (var b : bundles) {
+			if (b.manifest.lazy) {
+				notifyBundleListeners(BundleEvent.LAZY_ACTIVATION, b);
+				b.state = Bundle.STARTING;
+			}
+		}
 	}
 
 	@Override
