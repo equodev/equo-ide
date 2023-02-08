@@ -258,7 +258,7 @@ public class BuildPluginIdeMain {
 			props.put("atomos.content.start", "false");
 			solstice.openAtomos(props);
 		} else {
-			solstice.openSolstice();
+			solstice.openSolstice(new File(installDir, "config"));
 			SolsticeIdeBootstrapServices.apply(installDir, solstice.getContext());
 		}
 		solstice.startAllWithLazy(false);

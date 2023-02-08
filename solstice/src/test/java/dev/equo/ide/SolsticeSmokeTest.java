@@ -24,7 +24,7 @@ public class SolsticeSmokeTest {
 	public void bundleIds() {
 		System.setProperty(SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "WARN");
 		var bundleSet = Solstice.findBundlesOnClasspath();
-		var solstice = BundleContextSolstice.hydrate(bundleSet);
+		var solstice = BundleContextSolstice.hydrate(bundleSet, null);
 		Assertions.assertThat(solstice.systemBundle().getBundleId()).isEqualTo(0);
 		Assertions.assertThat(solstice.getBundles().length).isGreaterThan(10);
 	}

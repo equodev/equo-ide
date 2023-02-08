@@ -13,6 +13,7 @@
  *******************************************************************************/
 package dev.equo.solstice;
 
+import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -285,9 +286,9 @@ public class Solstice {
 		context = dev.equo.solstice.BundleContextAtomos.hydrate(this, props);
 	}
 
-	public void openSolstice() {
+	public void openSolstice(File configDir) {
 		assertContextInitialized(false);
-		context = BundleContextSolstice.hydrate(this);
+		context = BundleContextSolstice.hydrate(this, configDir);
 	}
 
 	public BundleContext getContext() {

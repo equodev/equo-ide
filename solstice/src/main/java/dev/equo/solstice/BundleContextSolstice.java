@@ -72,17 +72,19 @@ public class BundleContextSolstice extends ServiceRegistry {
 
 	private static BundleContextSolstice instance;
 
-	public static BundleContextSolstice hydrate(Solstice bundleSet) {
+	public static BundleContextSolstice hydrate(Solstice bundleSet, File configDir) {
 		if (instance != null) {
 			throw new IllegalStateException("Solstice has already been initialized");
 		}
-		instance = new BundleContextSolstice(bundleSet);
+		instance = new BundleContextSolstice(bundleSet, configDir);
 		return instance;
 	}
 
-	private BundleContextSolstice(Solstice bundleSet) {
-		Handler.install(this);
+	private final ShimStorage storage;
 
+	private BundleContextSolstice(Solstice bundleSet, File configDir) {
+		this.storage = new ShimStorage(configDir);
+		Handler.install(this);
 		SolsticeFrameworkUtilHelper.initialize(this);
 		bundleSet.hydrateFrom(
 				manifest -> {
@@ -148,6 +150,11 @@ public class BundleContextSolstice extends ServiceRegistry {
 				@Override
 				public String getSymbolicName() {
 					return "solstice-system-bundle";
+				}
+
+				@Override
+				public File getDataFile(String filename) {
+					return storage.getDataFileSystemBundle(BundleContextSolstice.this, filename);
 				}
 
 				@Override
@@ -290,6 +297,11 @@ public class BundleContextSolstice extends ServiceRegistry {
 	}
 
 	@Override
+	public File getDataFile(String filename) {
+		return storage.getDataFileRootContext(this, filename);
+	}
+
+	@Override
 	public Bundle installBundle(String location, InputStream input) {
 		throw Unimplemented.onPurpose();
 	}
@@ -322,11 +334,6 @@ public class BundleContextSolstice extends ServiceRegistry {
 		} else {
 			return null;
 		}
-	}
-
-	@Override
-	public File getDataFile(String filename) {
-		return null;
 	}
 
 	private final CopyOnWriteArrayList<BundleListener> bundleListeners = new CopyOnWriteArrayList<>();
@@ -619,6 +626,11 @@ public class BundleContextSolstice extends ServiceRegistry {
 		@Override
 		public String getLocation() {
 			return manifest.getJarUrl();
+		}
+
+		@Override
+		public File getDataFile(String filename) {
+			return storage.getDataFileBundle(this, filename);
 		}
 
 		// implemented for OSGi DS
