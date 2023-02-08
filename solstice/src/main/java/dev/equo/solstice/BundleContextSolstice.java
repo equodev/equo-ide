@@ -46,6 +46,7 @@ import org.osgi.framework.BundleListener;
 import org.osgi.framework.Constants;
 import org.osgi.framework.FrameworkEvent;
 import org.osgi.framework.FrameworkListener;
+import org.osgi.framework.SynchronousBundleListener;
 import org.osgi.framework.Version;
 import org.osgi.framework.namespace.IdentityNamespace;
 import org.osgi.framework.startlevel.BundleStartLevel;
@@ -87,6 +88,23 @@ public class BundleContextSolstice extends ServiceRegistry {
 					var bundle = new ShimBundle(manifest);
 					bundles.add(bundle);
 					return bundle;
+				});
+		bundles.forEach(
+				b -> {
+					notifyBundleListeners(BundleEvent.INSTALLED, b);
+					b.state = Bundle.INSTALLED;
+				});
+		bundles.forEach(
+				b -> {
+					notifyBundleListeners(BundleEvent.RESOLVED, b);
+					b.state = Bundle.RESOLVED;
+				});
+		bundles.forEach(
+				b -> {
+					if (b.manifest.lazy) {
+						notifyBundleListeners(BundleEvent.LAZY_ACTIVATION, b);
+						b.state = Bundle.STARTING;
+					}
 				});
 	}
 
@@ -339,7 +357,17 @@ public class BundleContextSolstice extends ServiceRegistry {
 		var event = new BundleEvent(type, bundle);
 		for (BundleListener listener : bundleListeners) {
 			try {
-				listener.bundleChanged(event);
+				boolean synchronousOnly =
+						type == BundleEvent.STARTING
+								|| type == BundleEvent.LAZY_ACTIVATION
+								|| type == BundleEvent.STOPPING;
+				if (synchronousOnly) {
+					if (listener instanceof SynchronousBundleListener) {
+						listener.bundleChanged(event);
+					}
+				} else {
+					listener.bundleChanged(event);
+				}
 			} catch (Exception e) {
 				getService(getServiceReference(FrameworkLog.class))
 						.log(new FrameworkEvent(FrameworkEvent.ERROR, bundle, e));
@@ -408,18 +436,14 @@ public class BundleContextSolstice extends ServiceRegistry {
 		///////////////////
 		private int state = INSTALLED;
 
-		private boolean activating = false;
+		private boolean activateHasBeenCalled = false;
 
 		/** Returns false if the bundle cannot activate yet because of "requiresWorkbench" */
 		private void activate() {
-			if (activating) {
+			if (activateHasBeenCalled) {
 				return;
 			}
-			activating = true;
-
-			state = RESOLVED;
-			notifyBundleListeners(BundleEvent.RESOLVED, this);
-
+			activateHasBeenCalled = true;
 			state = STARTING;
 			notifyBundleListeners(BundleEvent.STARTING, this);
 
