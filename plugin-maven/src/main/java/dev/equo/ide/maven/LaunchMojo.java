@@ -67,7 +67,7 @@ public class LaunchMojo extends AbstractP2Mojo {
 	private BuildPluginIdeMain.DebugClasspath debugClasspath;
 
 	/** Determines whether to use Solstice's built-in OSGi runtime or instead Atomos+Equinox. */
-	@Parameter(property = "useAtomos", defaultValue = "true")
+	@Parameter(property = "useAtomos", defaultValue = "false")
 	private boolean useAtomos;
 
 	/** Blocks IDE startup to help you attach a debugger. */
