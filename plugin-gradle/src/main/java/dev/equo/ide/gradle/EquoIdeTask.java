@@ -145,7 +145,8 @@ public abstract class EquoIdeTask extends DefaultTask {
 		caller.debugClasspath = debugClasspath;
 		caller.initOnly = initOnly;
 		caller.showConsole = showConsole;
-		caller.useAtomos = useAtomosOverride != null ? useAtomosOverride : getUseAtomos().get();
+		caller.useAtomos =
+				useAtomosOverride != null ? useAtomosOverride.booleanValue() : getUseAtomos().get();
 		caller.debugIde = debugIde;
 		caller.showConsoleFlag = "--show-console";
 		caller.cleanFlag = "--clean";

@@ -348,7 +348,12 @@ public class BundleContextSolstice extends ServiceRegistry {
 		} else if (InternalPlatform.PROP_WS.equals(key)) {
 			return SwtPlatform.getRunning().getWs();
 		} else {
-			return props.get(key);
+			String prop = props.get(key);
+			if (prop != null) {
+				return prop;
+			} else {
+				return System.getProperty(key);
+			}
 		}
 	}
 
