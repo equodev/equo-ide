@@ -14,15 +14,30 @@
 package dev.equo.solstice;
 
 import java.io.File;
+import java.util.Map;
+import org.eclipse.osgi.service.datalocation.Location;
+import org.slf4j.Logger;
 
 class ShimStorage {
 	private final File configDir;
 
-	ShimStorage(File configDir) {
-		this.configDir = configDir;
+	ShimStorage(Map<String, String> props, Logger logger) {
+		String configArea = props.get(Location.CONFIGURATION_AREA_TYPE);
+		if (configArea == null) {
+			logger.warn(
+					"Recommend setting "
+							+ Location.CONFIGURATION_AREA_TYPE
+							+ " to a directory, getDataFile will return null");
+			this.configDir = null;
+		} else {
+			this.configDir = new File(configArea);
+		}
 	}
 
 	File getDataFileBundle(BundleContextSolstice.ShimBundle bundle, String filename) {
+		if (configDir == null) {
+			return null;
+		}
 		File dir = new File(configDir, bundle.getSymbolicName() + "/" + bundle.getBundleId() + "/data");
 		dir.mkdirs();
 		return new File(dir, filename);

@@ -16,7 +16,10 @@ package dev.equo.solstice;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.net.URL;
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.PropertyResourceBundle;
@@ -37,7 +40,13 @@ import org.osgi.service.packageadmin.PackageAdmin;
 
 /** Controls the initialization of the {@link BundleContextSolstice} runtime. */
 public class SolsticeIdeBootstrapServices {
-	public static void apply(File installDir, BundleContext context) {
+
+	static Collection<String> locationKeys() {
+		return List.of(
+				Location.INSTANCE_AREA_TYPE, Location.INSTALL_AREA_TYPE, Location.CONFIGURATION_AREA_TYPE);
+	}
+
+	public static void apply(BundleContext context) {
 		Bundle systemBundle = context.getBundle(Constants.SYSTEM_BUNDLE_LOCATION);
 		// in particular, we need services normally provided by
 		// org.eclipse.osgi.internal.framework.SystemBundleActivator::start
@@ -64,15 +73,20 @@ public class SolsticeIdeBootstrapServices {
 		context.registerService(
 				PackageAdmin.class, systemBundle.adapt(PackageAdmin.class), Dictionaries.empty());
 
-		ShimLocation.set(context, new File(installDir, "instance"), Location.INSTANCE_AREA_TYPE);
-		ShimLocation.set(context, new File(installDir, "install"), Location.INSTALL_AREA_TYPE);
-		ShimLocation.set(context, new File(installDir, "config"), Location.CONFIGURATION_AREA_TYPE);
+		for (String propKey : locationKeys()) {
+			var propValue = context.getProperty(propKey);
+			if (propValue != null) {
+				ShimLocation.set(context, Unchecked.get(() -> new URL(propValue)), propKey);
+			}
+		}
 		context.registerService(
 				SAXParserFactory.class, SAXParserFactory.newInstance(), Dictionaries.empty());
 
 		var serviceManager = new ShimLogServiceManager(100, LogLevel.INFO, false);
 		serviceManager.start(context);
 
+		var instanceDir =
+				Unchecked.get(() -> new File(new URI(context.getProperty(Location.INSTANCE_AREA_TYPE))));
 		context.registerService(
 				org.osgi.service.condition.Condition.class,
 				new org.osgi.service.condition.Condition() {},
@@ -83,7 +97,7 @@ public class SolsticeIdeBootstrapServices {
 						() -> {
 							var frameworkLog = new ShimFrameworkLog();
 							boolean append = false;
-							File logFile = new File(installDir, "instance/log");
+							File logFile = new File(instanceDir, "log");
 							logFile.getParentFile().mkdirs();
 							frameworkLog.setFile(logFile, append);
 							return frameworkLog;

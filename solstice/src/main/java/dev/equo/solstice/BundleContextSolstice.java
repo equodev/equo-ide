@@ -28,9 +28,11 @@ import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Function;
 import java.util.regex.Pattern;
@@ -72,18 +74,32 @@ public class BundleContextSolstice extends ServiceRegistry {
 
 	private static BundleContextSolstice instance;
 
-	public static BundleContextSolstice hydrate(Solstice bundleSet, File configDir) {
+	public static BundleContextSolstice hydrate(Solstice bundleSet, Map<String, String> props) {
 		if (instance != null) {
 			throw new IllegalStateException("Solstice has already been initialized");
 		}
-		instance = new BundleContextSolstice(bundleSet, configDir);
+		instance = new BundleContextSolstice(bundleSet, props);
 		return instance;
 	}
 
+	private final Map<String, String> props;
 	private final ShimStorage storage;
 
-	private BundleContextSolstice(Solstice bundleSet, File configDir) {
-		this.storage = new ShimStorage(configDir);
+	private BundleContextSolstice(Solstice bundleSet, Map<String, String> props) {
+		this.props = new TreeMap<>(props);
+		this.props.replaceAll(
+				(key, value) -> {
+					if (SolsticeIdeBootstrapServices.locationKeys().contains(key)) {
+						if (!value.startsWith("file:")) {
+							value = new File(value).toURI().toString();
+						}
+						if (!value.endsWith("/")) {
+							value = value + "/";
+						}
+					}
+					return value;
+				});
+		this.storage = new ShimStorage(props, logger);
 		Handler.install(this);
 		SolsticeFrameworkUtilHelper.initialize(this);
 		bundleSet.hydrateFrom(
@@ -332,7 +348,7 @@ public class BundleContextSolstice extends ServiceRegistry {
 		} else if (InternalPlatform.PROP_WS.equals(key)) {
 			return SwtPlatform.getRunning().getWs();
 		} else {
-			return null;
+			return props.get(key);
 		}
 	}
 
