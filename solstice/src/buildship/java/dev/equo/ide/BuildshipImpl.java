@@ -13,11 +13,8 @@
  *******************************************************************************/
 package dev.equo.ide;
 
-import org.eclipse.buildship.core.GradleBuild;
-import org.eclipse.buildship.core.GradleCore;
-import org.eclipse.buildship.core.GradleDistribution;
-import org.eclipse.buildship.ui.internal.util.gradle.GradleDistributionViewModel;
-import org.eclipse.buildship.ui.internal.wizard.project.ProjectImportConfiguration;
+import java.lang.reflect.InvocationTargetException;
+import org.eclipse.ui.internal.Workbench;
 import org.osgi.framework.BundleContext;
 
 class BuildshipImpl implements IdeHookInstantiated {
@@ -55,23 +52,40 @@ class BuildshipImpl implements IdeHookInstantiated {
 	 * <p>{@link org.eclipse.ui.application.WorkbenchAdvisor#initialize}
 	 */
 	@Override
-	public void initialize() {
+	public void postStartup() {
 		if (!isClean) {
 			// we only need to import the project when the IDE is fresh
 			return;
 		}
-		var configuration = new ProjectImportConfiguration();
-		configuration.setProjectDir(data.rootDir);
-		configuration.setOverwriteWorkspaceSettings(false);
-		configuration.setDistribution(GradleDistributionViewModel.from(GradleDistribution.fromBuild()));
-		configuration.setOfflineMode(data.isOffline);
+		try {
+			Workbench.getInstance()
+					.getActiveWorkbenchWindow()
+					.run(
+							true,
+							true,
+							monitor -> {
+								monitor.beginTask("Testing", 5);
+								for (int i = 0; i < 5; ++i) {
+									Thread.sleep(1_000);
+									monitor.worked(1);
+									monitor.subTask(Integer.toString(i) + " of 5");
+								}
+								monitor.done();
+							});
+		} catch (InvocationTargetException e) {
+			throw new RuntimeException(e);
+		} catch (InterruptedException e) {
+			throw new RuntimeException(e);
+		}
 
-		var internalBuildConfiguration = configuration.toInternalBuildConfiguration();
-		boolean showExecutionsView =
-				internalBuildConfiguration.getWorkspaceConfiguration().isShowExecutionsView();
-		var buildConfiguration = configuration.toBuildConfiguration();
-		GradleBuild gradleBuild = GradleCore.getWorkspace().createBuild(buildConfiguration);
-
+		//		var configuration = new ProjectImportConfiguration();
+		//		configuration.setProjectDir(data.rootDir);
+		//		configuration.setOverwriteWorkspaceSettings(false);
+		//
+		//	configuration.setDistribution(GradleDistributionViewModel.from(GradleDistribution.fromBuild()));
+		//		configuration.setOfflineMode(data.isOffline);
+		//
+		//		var internalBuildConfiguration = configuration.toInternalBuildConfiguration();
 		// TODO: very incomplete.
 	}
 }
