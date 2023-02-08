@@ -33,7 +33,7 @@ spotless {
 String VER_SLF4J = '1.7.36'
 dependencies {
 	api 'com.diffplug.durian:durian-swt.os:4.1.1'
-	implementation 'org.apache.felix:org.apache.felix.scr:2.2.2'
+	implementation 'org.apache.felix:org.apache.felix.scr:2.2.4'
 	implementation 'org.apache.felix:org.apache.felix.configadmin:1.9.26'
 	implementation 'org.apache.felix:org.apache.felix.dependencymanager:4.6.1'
 
