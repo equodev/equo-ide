@@ -8,7 +8,8 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
   - In particular, this means that we don't need to do any manual startup ordering anymore.
   - Also reverted from SLF4J 2.x to 1.x because 2.x uses fancy parts of the capability system that nothing else in Eclipse seems to use.
 ### Fixed
-- No more errors on filesystems which don't support atomic move ([#73](https://github.com/equodev/equo-ide/pull/73))
+- No more errors on filesystems which don't support atomic move. ([#73](https://github.com/equodev/equo-ide/pull/73))
+- Pure solstice can now run the full Eclipse IDE correctly, including `UIEventTopic`. ([#75](https://github.com/equodev/equo-ide/pull/75) fixes [#33](https://github.com/equodev/equo-ide/issues/33))
 
 ## [0.13.0] - 2023-02-05
 ### Added
