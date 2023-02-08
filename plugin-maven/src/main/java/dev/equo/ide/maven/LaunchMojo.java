@@ -111,13 +111,17 @@ public class LaunchMojo extends AbstractP2Mojo {
 							EXCLUDE_ALL_TRANSITIVES));
 
 			var workspaceRegistry = WorkspaceRegistry.instance();
-			var workspaceDir = workspaceRegistry.workspaceDir(baseDir, clean);
+			var workspaceDir = workspaceRegistry.workspaceDirForProjectDir(baseDir);
 			workspaceRegistry.removeAbandoned();
 
 			var lockfile = IdeLockFile.forWorkspaceDir(workspaceDir);
 			var alreadyRunning = lockfile.ideAlreadyRunning();
 			if (IdeLockFile.alreadyRunningAndUserRequestsAbort(alreadyRunning)) {
 				return;
+			}
+
+			if (clean) {
+				workspaceRegistry.cleanWorkspaceDir(workspaceDir);
 			}
 
 			var query = super.query();

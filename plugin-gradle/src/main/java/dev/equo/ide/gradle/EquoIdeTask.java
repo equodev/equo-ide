@@ -113,13 +113,17 @@ public abstract class EquoIdeTask extends DefaultTask {
 	@TaskAction
 	public void launch() throws IOException, InterruptedException {
 		var workspaceRegistry = WorkspaceRegistry.instance();
-		var workspaceDir = workspaceRegistry.workspaceDir(getProjectDir().get(), clean);
+		var workspaceDir = workspaceRegistry.workspaceDirForProjectDir(getProjectDir().get());
 		workspaceRegistry.removeAbandoned();
 
 		var lockfile = IdeLockFile.forWorkspaceDir(workspaceDir);
 		var alreadyRunning = lockfile.ideAlreadyRunning();
 		if (IdeLockFile.alreadyRunningAndUserRequestsAbort(alreadyRunning)) {
 			return;
+		}
+
+		if (clean) {
+			workspaceRegistry.cleanWorkspaceDir(workspaceDir);
 		}
 
 		var mavenDeps = getMavenDeps().get();
