@@ -32,10 +32,9 @@ spotless {
 
 String VER_SLF4J = '1.7.36'
 dependencies {
+	api "org.slf4j:slf4j-api:$VER_SLF4J"
 	api 'com.diffplug.durian:durian-swt.os:4.1.1'
-	implementation 'org.apache.felix:org.apache.felix.scr:2.2.2'
-	implementation 'org.apache.felix:org.apache.felix.configadmin:1.9.26'
-	implementation 'org.apache.felix:org.apache.felix.dependencymanager:4.6.1'
+	compileOnly 'com.google.code.findbugs:jsr305:3.0.2'
 
 	implementation 'org.apache.felix:org.apache.felix.atomos:1.0.0'
 	implementation 'org.apache.felix.atomos:osgi.core:8.0.0:AtomosEquinox'
@@ -45,10 +44,6 @@ dependencies {
 	// needed to navigate p2
 	implementation 'org.tukaani:xz:1.9'
 	implementation 'com.squareup.okhttp3:okhttp:4.10.0'
-
-	compileOnly 'com.google.code.findbugs:jsr305:3.0.2'
-	compileOnly 'com.google.code.findbugs:annotations:3.0.1'
-	api "org.slf4j:slf4j-api:$VER_SLF4J"
 
 	testImplementation "org.slf4j:slf4j-simple:$VER_SLF4J"
 	testImplementation "org.junit.jupiter:junit-jupiter:$VER_JUNIT"

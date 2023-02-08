@@ -285,9 +285,9 @@ public class Solstice {
 		context = dev.equo.solstice.BundleContextAtomos.hydrate(this, props);
 	}
 
-	public void openSolstice() {
+	public void openSolstice(Map<String, String> props) {
 		assertContextInitialized(false);
-		context = BundleContextSolstice.hydrate(this);
+		context = BundleContextSolstice.hydrate(this, props);
 	}
 
 	public BundleContext getContext() {
@@ -387,7 +387,7 @@ public class Solstice {
 				// targetCap wouldn't be missing if this bundle had it
 				continue;
 			}
-			if (bundle.capProvides.contains(targetCap)) {
+			if (targetCap.isSubsetOfElementIn(bundle.capProvides)) {
 				bundlesForCap = fastAdd(bundlesForCap, bundle);
 			}
 		}

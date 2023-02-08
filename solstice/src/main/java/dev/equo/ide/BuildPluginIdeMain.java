@@ -249,17 +249,17 @@ public class BuildPluginIdeMain {
 			ideHooks.forEach(IdeHookInstantiated::afterDisplay, display);
 		}
 
+		var props = new LinkedHashMap<String, String>();
+		props.put(Constants.FRAMEWORK_STORAGE_CLEAN, Constants.FRAMEWORK_STORAGE_CLEAN_ONFIRSTINIT);
+		props.put(Location.INSTANCE_AREA_TYPE, new File(installDir, "instance").getAbsolutePath());
+		props.put(Location.INSTALL_AREA_TYPE, new File(installDir, "install").getAbsolutePath());
+		props.put(Location.CONFIGURATION_AREA_TYPE, new File(installDir, "config").getAbsolutePath());
 		if (useAtomos) {
-			var props = new LinkedHashMap<String, String>();
-			props.put(Constants.FRAMEWORK_STORAGE_CLEAN, Constants.FRAMEWORK_STORAGE_CLEAN_ONFIRSTINIT);
-			props.put(Location.INSTANCE_AREA_TYPE, new File(installDir, "instance").getAbsolutePath());
-			props.put(Location.INSTALL_AREA_TYPE, new File(installDir, "install").getAbsolutePath());
-			props.put(Location.CONFIGURATION_AREA_TYPE, new File(installDir, "config").getAbsolutePath());
 			props.put("atomos.content.start", "false");
 			solstice.openAtomos(props);
 		} else {
-			solstice.openSolstice();
-			SolsticeIdeBootstrapServices.apply(installDir, solstice.getContext());
+			solstice.openSolstice(props);
+			SolsticeIdeBootstrapServices.apply(solstice.getContext());
 		}
 		solstice.startAllWithLazy(false);
 		solstice.start("org.eclipse.ui.ide.application");

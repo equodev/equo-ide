@@ -16,7 +16,11 @@ package dev.equo.solstice;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.net.URL;
+import java.nio.file.Files;
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.PropertyResourceBundle;
@@ -28,6 +32,7 @@ import org.eclipse.osgi.service.debug.DebugOptions;
 import org.eclipse.osgi.service.debug.DebugTrace;
 import org.eclipse.osgi.service.environment.EnvironmentInfo;
 import org.eclipse.osgi.service.localization.BundleLocalization;
+import org.eclipse.osgi.service.urlconversion.URLConverter;
 import org.eclipse.osgi.util.NLS;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -37,7 +42,16 @@ import org.osgi.service.packageadmin.PackageAdmin;
 
 /** Controls the initialization of the {@link BundleContextSolstice} runtime. */
 public class SolsticeIdeBootstrapServices {
-	public static void apply(File installDir, BundleContext context) {
+
+	static Collection<String> locationKeys() {
+		return List.of(
+				Location.INSTANCE_AREA_TYPE, Location.INSTALL_AREA_TYPE, Location.CONFIGURATION_AREA_TYPE);
+	}
+
+	public static void apply(BundleContext context) {
+		var instanceDir =
+				Unchecked.get(() -> new File(new URI(context.getProperty(Location.INSTANCE_AREA_TYPE))));
+
 		Bundle systemBundle = context.getBundle(Constants.SYSTEM_BUNDLE_LOCATION);
 		// in particular, we need services normally provided by
 		// org.eclipse.osgi.internal.framework.SystemBundleActivator::start
@@ -64,9 +78,12 @@ public class SolsticeIdeBootstrapServices {
 		context.registerService(
 				PackageAdmin.class, systemBundle.adapt(PackageAdmin.class), Dictionaries.empty());
 
-		ShimLocation.set(context, new File(installDir, "instance"), Location.INSTANCE_AREA_TYPE);
-		ShimLocation.set(context, new File(installDir, "install"), Location.INSTALL_AREA_TYPE);
-		ShimLocation.set(context, new File(installDir, "config"), Location.CONFIGURATION_AREA_TYPE);
+		for (String propKey : locationKeys()) {
+			var propValue = context.getProperty(propKey);
+			if (propValue != null) {
+				ShimLocation.set(context, Unchecked.get(() -> new URL(propValue)), propKey);
+			}
+		}
 		context.registerService(
 				SAXParserFactory.class, SAXParserFactory.newInstance(), Dictionaries.empty());
 
@@ -83,7 +100,7 @@ public class SolsticeIdeBootstrapServices {
 						() -> {
 							var frameworkLog = new ShimFrameworkLog();
 							boolean append = false;
-							File logFile = new File(installDir, "instance/log");
+							File logFile = new File(instanceDir, "log");
 							logFile.getParentFile().mkdirs();
 							frameworkLog.setFile(logFile, append);
 							return frameworkLog;
@@ -166,5 +183,63 @@ public class SolsticeIdeBootstrapServices {
 					}
 				},
 				Dictionaries.empty());
+		// make images work
+		context.registerService(
+				URLConverter.class,
+				new JarUrlResolver(new File(instanceDir, "JarUrlResolver")),
+				Dictionaries.of("protocol", "jar"));
+	}
+
+	static class JarUrlResolver implements URLConverter {
+		private final File dir;
+
+		JarUrlResolver(File dir) {
+			this.dir = dir;
+			if (!dir.exists()) {
+				dir.mkdirs();
+			}
+		}
+
+		@Override
+		public URL toFileURL(URL url) throws IOException {
+			var file = new File(dir, filenameSafe(url.toExternalForm()));
+			if (!file.exists()) {
+				byte[] content;
+				try (var read = url.openStream()) {
+					content = read.readAllBytes();
+				}
+				Files.write(file.toPath(), content);
+			}
+			return file.toURI().toURL();
+		}
+
+		@Override
+		public URL resolve(URL url) throws IOException {
+			throw Unimplemented.onPurpose();
+		}
+
+		private static final String DOT_JAR_EX_SLASH = ".jar!/";
+
+		private static String filenameSafe(String url) {
+			var dotJarIdx = url.indexOf(DOT_JAR_EX_SLASH);
+			if (dotJarIdx == -1) {
+				throw Unimplemented.onPurpose(
+						"This is only for " + DOT_JAR_EX_SLASH + " urls, this was " + url);
+			}
+
+			var jarNameStart = url.lastIndexOf('/', dotJarIdx);
+
+			var beforeJar = url.substring(0, jarNameStart);
+			var jar = url.substring(jarNameStart + 1, dotJarIdx);
+			var inZip = url.substring(dotJarIdx + DOT_JAR_EX_SLASH.length());
+
+			return NestedJars.filenameSafeHash(beforeJar) + "--" + safe(jar) + "--" + safe(inZip);
+		}
+
+		private static String safe(String in) {
+			String allSafeCharacters = in.replaceAll("[^a-zA-Z0-9-+_.]", "-");
+			String noDuplicateDash = allSafeCharacters.replaceAll("-+", "-");
+			return noDuplicateDash;
+		}
 	}
 }

@@ -28,9 +28,11 @@ import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Function;
 import java.util.regex.Pattern;
@@ -41,11 +43,13 @@ import org.eclipse.core.internal.runtime.InternalPlatform;
 import org.eclipse.osgi.framework.log.FrameworkLog;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
+import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
 import org.osgi.framework.BundleListener;
 import org.osgi.framework.Constants;
 import org.osgi.framework.FrameworkEvent;
 import org.osgi.framework.FrameworkListener;
+import org.osgi.framework.SynchronousBundleListener;
 import org.osgi.framework.Version;
 import org.osgi.framework.namespace.IdentityNamespace;
 import org.osgi.framework.startlevel.BundleStartLevel;
@@ -70,17 +74,33 @@ public class BundleContextSolstice extends ServiceRegistry {
 
 	private static BundleContextSolstice instance;
 
-	public static BundleContextSolstice hydrate(Solstice bundleSet) {
+	public static BundleContextSolstice hydrate(Solstice bundleSet, Map<String, String> props) {
 		if (instance != null) {
 			throw new IllegalStateException("Solstice has already been initialized");
 		}
-		instance = new BundleContextSolstice(bundleSet);
+		instance = new BundleContextSolstice(bundleSet, props);
 		return instance;
 	}
 
-	private BundleContextSolstice(Solstice bundleSet) {
-		Handler.install(this);
+	private final Map<String, String> props;
+	private final ShimStorage storage;
 
+	private BundleContextSolstice(Solstice bundleSet, Map<String, String> props) {
+		this.props = new TreeMap<>(props);
+		this.props.replaceAll(
+				(key, value) -> {
+					if (SolsticeIdeBootstrapServices.locationKeys().contains(key)) {
+						if (!value.startsWith("file:")) {
+							value = new File(value).toURI().toString();
+						}
+						if (!value.endsWith("/")) {
+							value = value + "/";
+						}
+					}
+					return value;
+				});
+		this.storage = new ShimStorage(props, logger);
+		Handler.install(this);
 		SolsticeFrameworkUtilHelper.initialize(this);
 		bundleSet.hydrateFrom(
 				manifest -> {
@@ -88,6 +108,20 @@ public class BundleContextSolstice extends ServiceRegistry {
 					bundles.add(bundle);
 					return bundle;
 				});
+		for (var b : bundles) {
+			notifyBundleListeners(BundleEvent.INSTALLED, b);
+			b.state = Bundle.INSTALLED;
+		}
+		for (var b : bundles) {
+			notifyBundleListeners(BundleEvent.RESOLVED, b);
+			b.state = Bundle.RESOLVED;
+		}
+		for (var b : bundles) {
+			if (b.manifest.lazy) {
+				notifyBundleListeners(BundleEvent.LAZY_ACTIVATION, b);
+				b.state = Bundle.STARTING;
+			}
+		}
 	}
 
 	@Override
@@ -135,6 +169,11 @@ public class BundleContextSolstice extends ServiceRegistry {
 				}
 
 				@Override
+				public File getDataFile(String filename) {
+					return storage.getDataFileSystemBundle(BundleContextSolstice.this, filename);
+				}
+
+				@Override
 				public URL getResource(String name) {
 					return bundles.get(0).getResource(name);
 				}
@@ -161,12 +200,12 @@ public class BundleContextSolstice extends ServiceRegistry {
 
 				@Override
 				public Version getVersion() {
-					return null;
+					return Version.emptyVersion;
 				}
 
 				@Override
 				public String getLocation() {
-					return null;
+					return "SYSTEM_BUNDLE_LOCATION";
 				}
 
 				@Override
@@ -274,6 +313,11 @@ public class BundleContextSolstice extends ServiceRegistry {
 	}
 
 	@Override
+	public File getDataFile(String filename) {
+		return storage.getDataFileRootContext(this, filename);
+	}
+
+	@Override
 	public Bundle installBundle(String location, InputStream input) {
 		throw Unimplemented.onPurpose();
 	}
@@ -304,13 +348,13 @@ public class BundleContextSolstice extends ServiceRegistry {
 		} else if (InternalPlatform.PROP_WS.equals(key)) {
 			return SwtPlatform.getRunning().getWs();
 		} else {
-			return null;
+			String prop = props.get(key);
+			if (prop != null) {
+				return prop;
+			} else {
+				return System.getProperty(key);
+			}
 		}
-	}
-
-	@Override
-	public File getDataFile(String filename) {
-		return null;
 	}
 
 	private final CopyOnWriteArrayList<BundleListener> bundleListeners = new CopyOnWriteArrayList<>();
@@ -339,7 +383,17 @@ public class BundleContextSolstice extends ServiceRegistry {
 		var event = new BundleEvent(type, bundle);
 		for (BundleListener listener : bundleListeners) {
 			try {
-				listener.bundleChanged(event);
+				boolean synchronousOnly =
+						type == BundleEvent.STARTING
+								|| type == BundleEvent.LAZY_ACTIVATION
+								|| type == BundleEvent.STOPPING;
+				if (synchronousOnly) {
+					if (listener instanceof SynchronousBundleListener) {
+						listener.bundleChanged(event);
+					}
+				} else {
+					listener.bundleChanged(event);
+				}
 			} catch (Exception e) {
 				getService(getServiceReference(FrameworkLog.class))
 						.log(new FrameworkEvent(FrameworkEvent.ERROR, bundle, e));
@@ -352,12 +406,13 @@ public class BundleContextSolstice extends ServiceRegistry {
 		return id == -1 ? systemBundle : bundles.get((int) id);
 	}
 
-	public class ShimBundle implements Unimplemented.Bundle {
+	public class ShimBundle extends BundleContextDelegate implements Unimplemented.Bundle {
 		final SolsticeManifest manifest;
 		final @Nullable String activator;
 		final Hashtable<String, String> headers = new Hashtable<>();
 
 		ShimBundle(SolsticeManifest manifest) {
+			super(BundleContextSolstice.this);
 			this.manifest = manifest;
 			activator = manifest.getHeadersOriginal().get(Constants.BUNDLE_ACTIVATOR);
 			manifest
@@ -371,6 +426,22 @@ public class BundleContextSolstice extends ServiceRegistry {
 							});
 		}
 
+		// BundleContext stuff
+		@Override
+		public org.osgi.framework.Bundle getBundle() {
+			return this;
+		}
+
+		@Override
+		public BundleContext getBundleContext() {
+			return this;
+		}
+
+		BundleContextSolstice getRootBundleContext() {
+			return BundleContextSolstice.this;
+		}
+
+		// bundle stuff
 		@Override
 		public String toString() {
 			return manifest.toString();
@@ -408,18 +479,14 @@ public class BundleContextSolstice extends ServiceRegistry {
 		///////////////////
 		private int state = INSTALLED;
 
-		private boolean activating = false;
+		private boolean activateHasBeenCalled = false;
 
 		/** Returns false if the bundle cannot activate yet because of "requiresWorkbench" */
 		private void activate() {
-			if (activating) {
+			if (activateHasBeenCalled) {
 				return;
 			}
-			activating = true;
-
-			state = RESOLVED;
-			notifyBundleListeners(BundleEvent.RESOLVED, this);
-
+			activateHasBeenCalled = true;
 			state = STARTING;
 			notifyBundleListeners(BundleEvent.STARTING, this);
 
@@ -431,7 +498,7 @@ public class BundleContextSolstice extends ServiceRegistry {
 				try {
 					var c = (Constructor<BundleActivator>) Class.forName(activator).getConstructor();
 					var bundleActivator = c.newInstance();
-					bundleActivator.start(BundleContextSolstice.this);
+					bundleActivator.start(this);
 				} catch (Exception e) {
 					logger.warn("Error in activator of " + getSymbolicName(), e);
 				}
@@ -448,11 +515,6 @@ public class BundleContextSolstice extends ServiceRegistry {
 		@Override
 		public Dictionary<String, String> getHeaders(String locale) {
 			return headers;
-		}
-
-		@Override
-		public BundleContextSolstice getBundleContext() {
-			return BundleContextSolstice.this;
 		}
 
 		@Override
@@ -480,7 +542,11 @@ public class BundleContextSolstice extends ServiceRegistry {
 		@Override
 		public URL getEntry(String path) {
 			try {
-				return new URL(manifest.getJarUrl() + "/" + stripLeadingSlash(path));
+				ZipEntry entry = parseFromZip(zip -> zip.getEntry(stripLeadingSlash(path)));
+				if (entry != null) {
+					return new URL(manifest.getJarUrl() + "/" + stripLeadingSlash(path));
+				}
+				return null;
 			} catch (MalformedURLException e) {
 				throw Unchecked.wrap(e);
 			}
@@ -585,6 +651,11 @@ public class BundleContextSolstice extends ServiceRegistry {
 		@Override
 		public String getLocation() {
 			return manifest.getJarUrl();
+		}
+
+		@Override
+		public File getDataFile(String filename) {
+			return storage.getDataFileBundle(this, filename);
 		}
 
 		// implemented for OSGi DS

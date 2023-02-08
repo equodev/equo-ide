@@ -90,13 +90,14 @@ public abstract class EquoIdeTask extends DefaultTask {
 		this.debugClasspath = debugClasspath;
 	}
 
-	private boolean dontUseAtomosOverride = false;
+	private Boolean useAtomosOverride = null;
 
 	@Option(
-			option = "dont-use-atomos",
-			description = "Uses Solstice's built-in OSGi runtime instead of Atomos+Equinox.")
-	void dontUseAtomos(boolean dontUseAtomos) {
-		this.dontUseAtomosOverride = dontUseAtomos;
+			option = "use-atomos",
+			description =
+					"Determines whether to use Atomos+Equinox or only Solstice's built-in OSGi shim")
+	void useAtomos(String useAtomos) {
+		this.useAtomosOverride = Boolean.parseBoolean(useAtomos);
 	}
 
 	private boolean debugIde = false;
@@ -144,7 +145,8 @@ public abstract class EquoIdeTask extends DefaultTask {
 		caller.debugClasspath = debugClasspath;
 		caller.initOnly = initOnly;
 		caller.showConsole = showConsole;
-		caller.useAtomos = dontUseAtomosOverride ? false : getUseAtomos().get();
+		caller.useAtomos =
+				useAtomosOverride != null ? useAtomosOverride.booleanValue() : getUseAtomos().get();
 		caller.debugIde = debugIde;
 		caller.showConsoleFlag = "--show-console";
 		caller.cleanFlag = "--clean";

@@ -15,6 +15,7 @@ package dev.equo.ide;
 
 import dev.equo.solstice.BundleContextSolstice;
 import dev.equo.solstice.Solstice;
+import java.util.Map;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.slf4j.impl.SimpleLogger;
@@ -24,7 +25,7 @@ public class SolsticeSmokeTest {
 	public void bundleIds() {
 		System.setProperty(SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "WARN");
 		var bundleSet = Solstice.findBundlesOnClasspath();
-		var solstice = BundleContextSolstice.hydrate(bundleSet);
+		var solstice = BundleContextSolstice.hydrate(bundleSet, Map.of());
 		Assertions.assertThat(solstice.systemBundle().getBundleId()).isEqualTo(0);
 		Assertions.assertThat(solstice.getBundles().length).isGreaterThan(10);
 	}

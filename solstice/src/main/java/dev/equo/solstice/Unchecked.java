@@ -13,23 +13,11 @@
  *******************************************************************************/
 package dev.equo.solstice;
 
-import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URL;
-
 class Unchecked {
 	static Class<?> classForName(String className) {
 		try {
 			return Class.forName(className);
 		} catch (ClassNotFoundException e) {
-			throw wrap(e);
-		}
-	}
-
-	static URL fileToURL(File file) {
-		try {
-			return file.toURI().toURL();
-		} catch (MalformedURLException e) {
 			throw wrap(e);
 		}
 	}

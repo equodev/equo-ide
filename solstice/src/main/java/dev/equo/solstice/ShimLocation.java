@@ -13,19 +13,17 @@
  *******************************************************************************/
 package dev.equo.solstice;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import org.eclipse.osgi.service.datalocation.Location;
 import org.osgi.framework.BundleContext;
 
 class ShimLocation extends Unimplemented.Location {
-	static void set(BundleContext context, File dir, String type) {
+	static void set(BundleContext context, URL dir, String type) {
 		context.registerService(
 				Location.class,
-				new ShimLocation(Unchecked.fileToURL(dir)),
-				Dictionaries.of(
-						SERVICE_PROPERTY_TYPE, type, "url", Unchecked.fileToURL(dir).toExternalForm()));
+				new ShimLocation(dir),
+				Dictionaries.of(SERVICE_PROPERTY_TYPE, type, "url", dir.toExternalForm()));
 	}
 
 	final URL url;

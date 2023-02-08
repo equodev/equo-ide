@@ -97,7 +97,7 @@ public class EquoIdeTest extends GradleHarness {
 						"  install 'org.eclipse.swt'",
 						"  install 'org.eclipse.equinox.common'",
 						"}");
-		runAndAssert("equoIde", "--init-only", "--dont-use-atomos")
+		runAndAssert("equoIde", "--init-only", "--use-atomos=false")
 				.matches("(?s)(.*)Loaded (\\d+) bundles not using Atomos(.*)");
 	}
 

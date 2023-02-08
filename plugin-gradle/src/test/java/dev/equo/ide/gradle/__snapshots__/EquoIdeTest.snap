@@ -18,11 +18,11 @@ Options
 
      --debug-ide     The IDE will suspend until you attach a debugger.
 
-     --dont-use-atomos     Uses Solstice's built-in OSGi runtime instead of Atomos+Equinox.
-
      --init-only     Initializes the runtime to check for errors then exits.
 
      --show-console     Adds a visible console to the launched application.
+
+     --use-atomos     Determines whether to use Atomos+Equinox or only Solstice's built-in OSGi shim
 
 Description
      Launches an Eclipse-based IDE for this project
