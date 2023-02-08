@@ -30,7 +30,7 @@ public class EquoIdeExtension extends P2ModelDsl {
 		this.project = project;
 	}
 
-	public boolean useAtomos = true;
+	public boolean useAtomos = false;
 	private final IdeHook.List ideHooks = new IdeHook.List();
 	public final IdeHookBranding branding = new IdeHookBranding();
 
