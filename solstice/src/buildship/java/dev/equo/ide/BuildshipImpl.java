@@ -56,7 +56,7 @@ class BuildshipImpl implements IdeHookInstantiated {
 	 */
 	@Override
 	public void initialize() {
-		if (isClean) {
+		if (!isClean) {
 			// we only need to import the project when the IDE is fresh
 			return;
 		}
