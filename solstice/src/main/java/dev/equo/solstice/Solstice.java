@@ -387,7 +387,7 @@ public class Solstice {
 				// targetCap wouldn't be missing if this bundle had it
 				continue;
 			}
-			if (bundle.capProvides.contains(targetCap)) {
+			if (targetCap.isSubsetOfElementIn(bundle.capProvides)) {
 				bundlesForCap = fastAdd(bundlesForCap, bundle);
 			}
 		}

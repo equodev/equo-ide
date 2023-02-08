@@ -101,6 +101,15 @@ public class Capability implements Comparable<Capability> {
 		return copy;
 	}
 
+	public boolean isSubsetOfElementIn(Iterable<Capability> other) {
+		for (var cap : other) {
+			if (isSubsetOf(cap)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	/** Order-insignificant matching to determine if this Capability is a subset of its argument. */
 	public boolean isSubsetOf(Capability other) {
 		return other.isSupersetOf(this);
@@ -160,9 +169,9 @@ public class Capability implements Comparable<Capability> {
 							if (lookingForSupersetOf == null) {
 								return a.compareTo(b);
 							} else {
-								if (lookingForSupersetOf == a && b.isSupersetOf(a)) {
+								if (lookingForSupersetOf == a && b.isSupersetOf(lookingForSupersetOf)) {
 									return 0;
-								} else if (lookingForSupersetOf == b && a.isSupersetOf(b)) {
+								} else if (lookingForSupersetOf == b && a.isSupersetOf(lookingForSupersetOf)) {
 									return 0;
 								} else {
 									return a.compareTo(b);
