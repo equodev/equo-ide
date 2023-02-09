@@ -115,14 +115,27 @@ public class IdeHookBranding implements IdeHook {
 			splash.dispose();
 			splash = null;
 
-			Image icon =
-					loadImage(Display.getDefault(), IdeHookBranding.this.icon, "dev/equo/ide/equo_icon.png");
-			Shell[] shells = Display.getCurrent().getShells();
-			for (var shell : shells) {
-				shell.setText(title);
-				shell.setImage(icon);
-				shell.forceActive();
-			}
+			Display.getDefault()
+					.asyncExec(
+							() -> {
+								var display = Display.getCurrent();
+								if (display == null) {
+									// early shutdown
+									return;
+								}
+								Display.setAppName(title);
+								Image icon =
+										loadImage(
+												Display.getDefault(),
+												IdeHookBranding.this.icon,
+												"dev/equo/ide/equo_icon.png");
+								Shell[] shells = display.getShells();
+								for (var shell : shells) {
+									shell.setText(title);
+									shell.setImage(icon);
+									shell.forceActive();
+								}
+							});
 		}
 	}
 }
