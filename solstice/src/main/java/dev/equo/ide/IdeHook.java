@@ -31,11 +31,16 @@ public interface IdeHook extends Serializable {
 		}
 
 		InstantiatedList instantiate() {
-			var copy = new ArrayList<IdeHookInstantiated>();
+			var list = new InstantiatedList();
 			for (int i = 0; i < size(); ++i) {
-				copy.add(get(i).instantiate());
+				var hookGenerator = get(i);
+				try {
+					list.list.add(hookGenerator.instantiate());
+				} catch (Exception e) {
+					list.logError(hookGenerator, e);
+				}
 			}
-			return new InstantiatedList(copy);
+			return list;
 		}
 	}
 
@@ -48,16 +53,12 @@ public interface IdeHook extends Serializable {
 			void accept(IdeHookInstantiated hook, T arg) throws Exception;
 		}
 
-		private final ArrayList<IdeHookInstantiated> list;
-		private final Logger logger;
-		private @Nullable ArrayList<Map.Entry<IdeHookInstantiated, Exception>> errorsToReport =
-				new ArrayList<>();
-		private @Nullable BiConsumer<IdeHookInstantiated, Exception> errorLogger;
+		private final ArrayList<IdeHookInstantiated> list = new ArrayList<>();
+		private final Logger logger = LoggerFactory.getLogger(IdeHook.class);
+		private @Nullable ArrayList<Map.Entry<Object, Exception>> errorsToReport = new ArrayList<>();
+		private @Nullable BiConsumer<Object, Exception> errorLogger;
 
-		private InstantiatedList(ArrayList<IdeHookInstantiated> list) {
-			this.list = list;
-			this.logger = LoggerFactory.getLogger(IdeHook.class);
-		}
+		private InstantiatedList() {}
 
 		@Nullable
 		<T extends IdeHookInstantiated> T find(Class<T> clazz) {
@@ -69,7 +70,7 @@ public interface IdeHook extends Serializable {
 			return null;
 		}
 
-		void logError(IdeHookInstantiated hook, Exception e) {
+		void logError(Object hook, Exception e) {
 			logger.error("IdeHook failure " + hook, e);
 			if (errorLogger == null) {
 				errorsToReport.add(Map.entry(hook, e));
@@ -84,7 +85,7 @@ public interface IdeHook extends Serializable {
 		 * then we pass the exception there too. If an error logger has *not* been set, then we store
 		 * the exception. When a logger is eventually set, we pass all the exceptions to it.
 		 */
-		void setErrorLogger(BiConsumer<IdeHookInstantiated, Exception> errorLogger) {
+		void setErrorLogger(BiConsumer<Object, Exception> errorLogger) {
 			for (var entry : errorsToReport) {
 				errorLogger.accept(entry.getKey(), entry.getValue());
 			}
@@ -117,5 +118,5 @@ public interface IdeHook extends Serializable {
 		}
 	}
 
-	IdeHookInstantiated instantiate();
+	IdeHookInstantiated instantiate() throws Exception;
 }

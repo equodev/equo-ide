@@ -22,6 +22,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
+import org.slf4j.LoggerFactory;
 
 public class IdeHookBranding implements IdeHook {
 	private static String DEFAULT_TITLE = "Equo IDE";
@@ -59,9 +60,9 @@ public class IdeHookBranding implements IdeHook {
 					return new Image(display, imageData);
 				}
 			} catch (Exception e) {
-				System.err.println(
-						"Error loading image " + file.getAbsolutePath() + ", falling back to default.");
-				e.printStackTrace();
+				LoggerFactory.getLogger(IdeHookBranding.class)
+						.warn(
+								"Unable to load image " + file.getAbsolutePath() + ", falling back to default.", e);
 			}
 			try (var input =
 					IdeHookBranding.class.getClassLoader().getResource(defaultResource).openStream()) {
