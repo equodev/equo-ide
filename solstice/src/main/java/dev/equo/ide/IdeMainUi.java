@@ -17,6 +17,7 @@ import dev.equo.solstice.Solstice;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher;
 import org.eclipse.equinox.app.IApplicationContext;
 import org.eclipse.osgi.service.runnable.ApplicationLauncher;
@@ -24,6 +25,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.application.IWorkbenchConfigurer;
 import org.eclipse.ui.internal.ide.application.DelayedEventsProcessor;
 import org.eclipse.ui.internal.ide.application.IDEWorkbenchAdvisor;
+import org.eclipse.ui.statushandlers.StatusManager;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.service.application.ApplicationException;
 
@@ -54,6 +56,10 @@ class IdeMainUi {
 			throw new RuntimeException(e);
 		}
 		var display = PlatformUI.createDisplay();
+		ideHooks.setErrorLogger(
+				(hook, exception) -> {
+					StatusManager.getManager().handle(Status.error("IdeHook failure " + hook, exception));
+				});
 
 		// processor must be created before we start event loop
 		var processor = new DelayedEventsProcessor(display);
@@ -84,7 +90,12 @@ class IdeMainUi {
 						boolean shutdownAllowed = super.preShutdown();
 						var iter = ideHooks.iterator();
 						while (shutdownAllowed && iter.hasNext()) {
-							shutdownAllowed = iter.next().preShutdown();
+							var hook = iter.next();
+							try {
+								shutdownAllowed = hook.preShutdown();
+							} catch (Exception e) {
+								ideHooks.logError(hook, e);
+							}
 						}
 						return shutdownAllowed;
 					}
