@@ -15,7 +15,6 @@ package dev.equo.ide;
 
 import java.io.File;
 import java.util.ArrayList;
-import org.eclipse.swt.widgets.Shell;
 
 class IdeHookLockFile implements IdeHook {
 	public static IdeHookLockFile forWorkspaceDirAndClasspath(
@@ -37,10 +36,9 @@ class IdeHookLockFile implements IdeHook {
 	}
 
 	class Instantiated implements IdeHookInstantiated {
-		private Shell splash;
-
 		public boolean isClean() {
 			if (workspaceDir != null) {
+				IdeLockFile.forWorkspaceDir(workspaceDir).savePid();
 				var lockfile = IdeLockFile.forWorkspaceDir(workspaceDir);
 				boolean isClean = !lockfile.hasClasspath();
 				if (isClean) {
@@ -49,13 +47,6 @@ class IdeHookLockFile implements IdeHook {
 				return isClean;
 			} else {
 				return false;
-			}
-		}
-
-		@Override
-		public void postStartup() {
-			if (workspaceDir != null) {
-				IdeLockFile.forWorkspaceDir(workspaceDir).savePid();
 			}
 		}
 	}
