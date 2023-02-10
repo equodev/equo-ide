@@ -86,11 +86,19 @@ public interface IdeHook extends Serializable {
 		 * the exception. When a logger is eventually set, we pass all the exceptions to it.
 		 */
 		void setErrorLogger(BiConsumer<Object, Exception> errorLogger) {
+			if (this.errorLogger != null) {
+				try {
+					throw new IllegalArgumentException("setErrorLogger was called twice!");
+				} catch (IllegalArgumentException e) {
+					logger.warn(e.getMessage(), e);
+				}
+				return;
+			}
+			this.errorLogger = errorLogger;
 			for (var entry : errorsToReport) {
 				errorLogger.accept(entry.getKey(), entry.getValue());
 			}
 			errorsToReport = null;
-			this.errorLogger = errorLogger;
 		}
 
 		void forEach(ThrowingConsumer method) {
