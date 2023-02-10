@@ -42,6 +42,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceFactory;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.condition.Condition;
 import org.osgi.service.log.LogLevel;
 import org.osgi.service.packageadmin.PackageAdmin;
 
@@ -117,9 +118,9 @@ public class SolsticeIdeBootstrapServices {
 		serviceManager.start(context);
 
 		context.registerService(
-				org.osgi.service.condition.Condition.class,
-				new org.osgi.service.condition.Condition() {},
-				Dictionaries.of("osgi.condition.id", "true"));
+				Condition.class,
+				Condition.INSTANCE,
+				Dictionaries.of(Condition.CONDITION_ID, Condition.CONDITION_ID_TRUE));
 		context.registerService(
 				FrameworkLog.class,
 				Unchecked.get(
