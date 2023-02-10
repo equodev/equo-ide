@@ -49,24 +49,11 @@ import org.osgi.service.packageadmin.PackageAdmin;
 /** Controls the initialization of the {@link BundleContextSolstice} runtime. */
 public class SolsticeIdeBootstrapServices {
 	public static void apply(Map<String, String> props, BundleContext context) {
-		EquinoxContainer container = new EquinoxContainer(props, null);
-		registerLocations(context, container.getLocations());
-		context.registerService(EnvironmentInfo.class, container.getConfiguration(), null);
-		context.registerService(
-				DebugOptions.class, container.getConfiguration().getDebugOptions(), null);
-
+		// in particular, we need services normally provided by
+		// org.eclipse.osgi.internal.framework.SystemBundleActivator::start
 		// Provided by org.eclipse.osgi
-		// - [x] org.eclipse.osgi.service.localization.BundleLocalization
-		// - [x] org.eclipse.osgi.service.environment.EnvironmentInfo
-		// - [x] org.osgi.service.packageadmin.PackageAdmin
-
-		// - [x] org.eclipse.osgi.service.datalocation.Location,type=osgi.user.area
-		// - [x] org.eclipse.osgi.service.datalocation.Location,type=osgi.instance.area
-		// - [x] org.eclipse.osgi.service.datalocation.Location,type=osgi.configuration.area
-		// - [x] org.eclipse.osgi.service.datalocation.Location,type=osgi.install.area
-		// - [x] org.eclipse.osgi.service.datalocation.Location,type=eclipse.home.location
-
-		// - [x] org.osgi.service.condition.Condition,osgi.condition.id=true
+		// - [ ] org.eclipse.osgi.signedcontent.SignedContentFactory
+		// NO-OP
 
 		// - [ ] org.osgi.service.log.LogReaderService
 		// - [ ] org.eclipse.equinox.log.ExtendedLogReaderService
@@ -75,20 +62,60 @@ public class SolsticeIdeBootstrapServices {
 		// - [ ] org.eclipse.equinox.log.ExtendedLogService
 		// - [ ] org.osgi.service.log.admin.LoggerAdmin
 		// - [ ] org.eclipse.osgi.framework.log.FrameworkLog
+		EquinoxContainer container = new EquinoxContainer(props, null);
+		var instanceDir =
+				Unchecked.get(() -> new File(new URI(context.getProperty(Location.INSTANCE_AREA_TYPE))));
+
+		var serviceManager = new ShimLogServiceManager(100, LogLevel.INFO, false);
+		serviceManager.start(context);
+		context.registerService(
+				FrameworkLog.class,
+				Unchecked.get(
+						() -> {
+							var frameworkLog = new ShimFrameworkLog();
+							boolean append = false;
+							File logFile = new File(instanceDir, "log");
+							logFile.getParentFile().mkdirs();
+							frameworkLog.setFile(logFile, append);
+							return frameworkLog;
+						}),
+				Dictionaries.empty());
+
+		// - [ ] org.osgi.service.condition.Condition,osgi.condition.id=true
+		context.registerService(
+				Condition.class,
+				Condition.INSTANCE,
+				Dictionaries.of(Condition.CONDITION_ID, Condition.CONDITION_ID_TRUE));
+
+		// - [ ] org.eclipse.osgi.service.datalocation.Location,type=osgi.user.area
+		// - [ ] org.eclipse.osgi.service.datalocation.Location,type=osgi.instance.area
+		// - [ ] org.eclipse.osgi.service.datalocation.Location,type=osgi.configuration.area
+		// - [ ] org.eclipse.osgi.service.datalocation.Location,type=osgi.install.area
+		// - [ ] org.eclipse.osgi.service.datalocation.Location,type=eclipse.home.location
+		registerLocations(context, container.getLocations());
+
+		// - [ ] org.eclipse.osgi.service.environment.EnvironmentInfo
+		// - [ ] org.osgi.service.packageadmin.PackageAdmin
+		context.registerService(EnvironmentInfo.class, container.getConfiguration(), null);
+		Bundle systemBundle = context.getBundle(Constants.SYSTEM_BUNDLE_LOCATION);
+		context.registerService(
+				PackageAdmin.class, systemBundle.adapt(PackageAdmin.class), Dictionaries.empty());
 		// - [ ] org.osgi.service.startlevel.StartLevel
 		// - [ ] org.osgi.service.permissionadmin.PermissionAdmin
 		// - [ ] org.osgi.service.condpermadmin.ConditionalPermissionAdmin
 		// - [ ] org.osgi.service.resolver.Resolver
+		// NO-OP
+
 		// - [ ] org.eclipse.osgi.service.debug.DebugOptions
 		// - [ ] org.eclipse.osgi.service.urlconversion.URLConverter
-		// - [ ] org.eclipse.osgi.service.security.TrustEngine
-		// - [ ] org.eclipse.osgi.signedcontent.SignedContentFactory
-		var instanceDir =
-				Unchecked.get(() -> new File(new URI(context.getProperty(Location.INSTANCE_AREA_TYPE))));
+		context.registerService(
+				DebugOptions.class, container.getConfiguration().getDebugOptions(), null);
+		context.registerService(
+				URLConverter.class,
+				new JarUrlResolver(new File(instanceDir, "JarUrlResolver")),
+				Dictionaries.of("protocol", "jar"));
 
-		Bundle systemBundle = context.getBundle(Constants.SYSTEM_BUNDLE_LOCATION);
-		// in particular, we need services normally provided by
-		// org.eclipse.osgi.internal.framework.SystemBundleActivator::start
+		// - [ ] org.eclipse.osgi.service.localization.BundleLocalization
 		context.registerService(
 				BundleLocalization.class,
 				(bundle, locale) -> {
@@ -108,36 +135,10 @@ public class SolsticeIdeBootstrapServices {
 					}
 				},
 				Dictionaries.empty());
-		context.registerService(
-				PackageAdmin.class, systemBundle.adapt(PackageAdmin.class), Dictionaries.empty());
 
+		// - [ ] XML parsing
 		context.registerService(SAXParserFactory.class, new XMLFactory<>(true), null);
 		context.registerService(DocumentBuilderFactory.class, new XMLFactory<>(false), null);
-
-		var serviceManager = new ShimLogServiceManager(100, LogLevel.INFO, false);
-		serviceManager.start(context);
-
-		context.registerService(
-				Condition.class,
-				Condition.INSTANCE,
-				Dictionaries.of(Condition.CONDITION_ID, Condition.CONDITION_ID_TRUE));
-		context.registerService(
-				FrameworkLog.class,
-				Unchecked.get(
-						() -> {
-							var frameworkLog = new ShimFrameworkLog();
-							boolean append = false;
-							File logFile = new File(instanceDir, "log");
-							logFile.getParentFile().mkdirs();
-							frameworkLog.setFile(logFile, append);
-							return frameworkLog;
-						}),
-				Dictionaries.empty());
-		// make images work
-		context.registerService(
-				URLConverter.class,
-				new JarUrlResolver(new File(instanceDir, "JarUrlResolver")),
-				Dictionaries.of("protocol", "jar"));
 	}
 
 	static Collection<String> locationKeys() {
