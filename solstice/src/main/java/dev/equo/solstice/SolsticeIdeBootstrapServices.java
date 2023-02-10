@@ -48,6 +48,8 @@ public class SolsticeIdeBootstrapServices {
 	public static void apply(Map<String, String> props, BundleContext context) {
 		EquinoxContainer container = new EquinoxContainer(props, null);
 		registerLocations(context, container.getLocations());
+		context.registerService(
+				EnvironmentInfo.class, container.getConfiguration(), Dictionaries.empty());
 
 		// Provided by org.eclipse.osgi
 		// - [x] org.eclipse.osgi.service.localization.BundleLocalization
@@ -102,7 +104,6 @@ public class SolsticeIdeBootstrapServices {
 					}
 				},
 				Dictionaries.empty());
-		context.registerService(EnvironmentInfo.class, new ShimEnvironmentInfo(), Dictionaries.empty());
 		context.registerService(
 				PackageAdmin.class, systemBundle.adapt(PackageAdmin.class), Dictionaries.empty());
 

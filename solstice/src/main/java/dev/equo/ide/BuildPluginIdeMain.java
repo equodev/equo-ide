@@ -286,7 +286,7 @@ public class BuildPluginIdeMain {
 			solstice.openAtomos(props);
 		} else {
 			solstice.openSolstice(props);
-			SolsticeIdeBootstrapServices.apply(solstice.getContext());
+			SolsticeIdeBootstrapServices.apply(props, solstice.getContext());
 		}
 		solstice.startAllWithLazy(false);
 		solstice.start("org.eclipse.ui.ide.application");
