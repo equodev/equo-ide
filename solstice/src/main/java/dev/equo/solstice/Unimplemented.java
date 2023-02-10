@@ -14,7 +14,6 @@
 package dev.equo.solstice;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.security.cert.X509Certificate;
@@ -339,79 +338,6 @@ class Unimplemented {
 
 		@Override
 		public org.osgi.framework.Bundle getBundle() {
-			throw onPurpose();
-		}
-	}
-
-	static class Location implements org.eclipse.osgi.service.datalocation.Location {
-		@Override
-		public boolean allowsDefault() {
-			throw onPurpose();
-		}
-
-		@Override
-		public URL getDefault() {
-			throw onPurpose();
-		}
-
-		@Override
-		public org.eclipse.osgi.service.datalocation.Location getParentLocation() {
-			throw onPurpose();
-		}
-
-		@Override
-		public URL getURL() {
-			throw onPurpose();
-		}
-
-		@Override
-		public boolean isSet() {
-			throw onPurpose();
-		}
-
-		@Override
-		public boolean isReadOnly() {
-			throw onPurpose();
-		}
-
-		@Override
-		public boolean setURL(URL value, boolean lock) throws IllegalStateException {
-			throw onPurpose();
-		}
-
-		@Override
-		public boolean set(URL value, boolean lock) throws IllegalStateException {
-			throw onPurpose();
-		}
-
-		@Override
-		public boolean set(URL value, boolean lock, String lockFilePath) throws IllegalStateException {
-			throw onPurpose();
-		}
-
-		@Override
-		public boolean lock() {
-			throw onPurpose();
-		}
-
-		@Override
-		public void release() {
-			throw onPurpose();
-		}
-
-		@Override
-		public boolean isLocked() {
-			throw onPurpose();
-		}
-
-		@Override
-		public org.eclipse.osgi.service.datalocation.Location createLocation(
-				org.eclipse.osgi.service.datalocation.Location parent, URL defaultValue, boolean readonly) {
-			throw onPurpose();
-		}
-
-		@Override
-		public URL getDataArea(String path) throws IOException {
 			throw onPurpose();
 		}
 	}

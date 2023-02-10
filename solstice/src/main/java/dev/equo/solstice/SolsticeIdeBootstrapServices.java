@@ -27,6 +27,9 @@ import java.util.PropertyResourceBundle;
 import javax.xml.parsers.SAXParserFactory;
 import org.eclipse.core.internal.runtime.CommonMessages;
 import org.eclipse.osgi.framework.log.FrameworkLog;
+import org.eclipse.osgi.internal.framework.EquinoxContainer;
+import org.eclipse.osgi.internal.location.BasicLocation;
+import org.eclipse.osgi.internal.location.EquinoxLocations;
 import org.eclipse.osgi.service.datalocation.Location;
 import org.eclipse.osgi.service.debug.DebugOptions;
 import org.eclipse.osgi.service.debug.DebugTrace;
@@ -42,17 +45,10 @@ import org.osgi.service.packageadmin.PackageAdmin;
 
 /** Controls the initialization of the {@link BundleContextSolstice} runtime. */
 public class SolsticeIdeBootstrapServices {
+	public static void apply(Map<String, String> props, BundleContext context) {
+		EquinoxContainer container = new EquinoxContainer(props, null);
+		registerLocations(context, container.getLocations());
 
-	static Collection<String> locationKeys() {
-		return List.of(
-				Location.USER_AREA_TYPE,
-				Location.INSTANCE_AREA_TYPE,
-				Location.CONFIGURATION_AREA_TYPE,
-				Location.INSTALL_AREA_TYPE,
-				Location.ECLIPSE_HOME_LOCATION_TYPE);
-	}
-
-	public static void apply(BundleContext context) {
 		// Provided by org.eclipse.osgi
 		// - [x] org.eclipse.osgi.service.localization.BundleLocalization
 		// - [x] org.eclipse.osgi.service.environment.EnvironmentInfo
@@ -110,12 +106,6 @@ public class SolsticeIdeBootstrapServices {
 		context.registerService(
 				PackageAdmin.class, systemBundle.adapt(PackageAdmin.class), Dictionaries.empty());
 
-		for (String propKey : locationKeys()) {
-			var propValue = context.getProperty(propKey);
-			if (propValue != null) {
-				ShimLocation.set(context, Unchecked.get(() -> new URL(propValue)), propKey);
-			}
-		}
 		context.registerService(
 				SAXParserFactory.class, SAXParserFactory.newInstance(), Dictionaries.empty());
 
@@ -220,6 +210,29 @@ public class SolsticeIdeBootstrapServices {
 				URLConverter.class,
 				new JarUrlResolver(new File(instanceDir, "JarUrlResolver")),
 				Dictionaries.of("protocol", "jar"));
+	}
+
+	static Collection<String> locationKeys() {
+		return List.of(
+				EquinoxLocations.PROP_USER_AREA,
+				EquinoxLocations.PROP_INSTANCE_AREA,
+				EquinoxLocations.PROP_CONFIG_AREA,
+				EquinoxLocations.PROP_INSTALL_AREA,
+				EquinoxLocations.PROP_HOME_LOCATION_AREA);
+	}
+
+	private static void registerLocations(BundleContext bc, EquinoxLocations locs) {
+		registerLocation(bc, locs.getUserLocation(), EquinoxLocations.PROP_USER_AREA);
+		registerLocation(bc, locs.getInstanceLocation(), EquinoxLocations.PROP_INSTANCE_AREA);
+		registerLocation(bc, locs.getConfigurationLocation(), EquinoxLocations.PROP_CONFIG_AREA);
+		registerLocation(bc, locs.getInstallLocation(), EquinoxLocations.PROP_INSTALL_AREA);
+		registerLocation(bc, locs.getEclipseHomeLocation(), EquinoxLocations.PROP_HOME_LOCATION_AREA);
+	}
+
+	private static void registerLocation(BundleContext bc, BasicLocation location, String type) {
+		if (location != null) {
+			location.register(bc);
+		}
 	}
 
 	static class JarUrlResolver implements URLConverter {
