@@ -20,9 +20,9 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.wiring.BundleCapability;
 
 class ShimBundleRevision extends Unimplemented.BundleRevision {
-	private final BundleContextSolstice.ShimBundle bundle;
+	private final ShimBundle bundle;
 
-	ShimBundleRevision(BundleContextSolstice.ShimBundle bundle) {
+	ShimBundleRevision(ShimBundle bundle) {
 		this.bundle = Objects.requireNonNull(bundle);
 	}
 

@@ -34,7 +34,7 @@ class ShimStorage {
 		}
 	}
 
-	File getDataFileBundle(BundleContextSolstice.ShimBundle bundle, String filename) {
+	File getDataFileBundle(ShimBundle bundle, String filename) {
 		if (configDir == null) {
 			return null;
 		}

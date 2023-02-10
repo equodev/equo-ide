@@ -18,15 +18,11 @@ import dev.equo.solstice.platform.Handler;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Constructor;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Dictionary;
 import java.util.Enumeration;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -34,16 +30,9 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.function.Function;
-import java.util.regex.Pattern;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
-import javax.annotation.Nullable;
 import org.eclipse.core.internal.runtime.InternalPlatform;
 import org.eclipse.osgi.framework.log.FrameworkLog;
 import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleActivator;
-import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
 import org.osgi.framework.BundleListener;
 import org.osgi.framework.Constants;
@@ -52,11 +41,9 @@ import org.osgi.framework.FrameworkListener;
 import org.osgi.framework.SynchronousBundleListener;
 import org.osgi.framework.Version;
 import org.osgi.framework.namespace.IdentityNamespace;
-import org.osgi.framework.startlevel.BundleStartLevel;
 import org.osgi.framework.startlevel.FrameworkStartLevel;
 import org.osgi.framework.wiring.BundleCapability;
 import org.osgi.framework.wiring.BundleRevision;
-import org.osgi.framework.wiring.BundleWiring;
 import org.osgi.framework.wiring.FrameworkWiring;
 import org.osgi.resource.Requirement;
 import org.osgi.service.packageadmin.PackageAdmin;
@@ -68,9 +55,9 @@ import org.slf4j.LoggerFactory;
  * on the classpath.
  */
 public class BundleContextSolstice extends ServiceRegistry {
-	private final Logger logger = LoggerFactory.getLogger(BundleContextSolstice.class);
+	final Logger logger = LoggerFactory.getLogger(BundleContextSolstice.class);
 
-	private static final Set<String> DONT_ACTIVATE = Set.of("org.eclipse.osgi");
+	static final Set<String> DONT_ACTIVATE = Set.of("org.eclipse.osgi");
 
 	private static BundleContextSolstice instance;
 
@@ -83,7 +70,7 @@ public class BundleContextSolstice extends ServiceRegistry {
 	}
 
 	private final Map<String, String> props;
-	private final ShimStorage storage;
+	final ShimStorage storage;
 
 	private BundleContextSolstice(Solstice bundleSet, Map<String, String> props) {
 		this.props = new TreeMap<>(props);
@@ -275,7 +262,7 @@ public class BundleContextSolstice extends ServiceRegistry {
 				}
 			};
 
-	private Capability.SupersetMap<ShimBundle> capabilities = new Capability.SupersetMap<>();
+	Capability.SupersetMap<ShimBundle> capabilities = new Capability.SupersetMap<>();
 
 	final FrameworkWiring frameworkWiring =
 			new Unimplemented.FrameworkWiring() {
@@ -379,7 +366,7 @@ public class BundleContextSolstice extends ServiceRegistry {
 		// TODO: not sure if we can survive without FrameworkEvents
 	}
 
-	private synchronized void notifyBundleListeners(int type, ShimBundle bundle) {
+	synchronized void notifyBundleListeners(int type, ShimBundle bundle) {
 		var event = new BundleEvent(type, bundle);
 		for (BundleListener listener : bundleListeners) {
 			try {
@@ -404,280 +391,5 @@ public class BundleContextSolstice extends ServiceRegistry {
 	@Override
 	public Bundle getBundle(long id) {
 		return id == -1 ? systemBundle : bundles.get((int) id);
-	}
-
-	public static class ShimBundle extends BundleContextDelegate implements Unimplemented.Bundle {
-		final SolsticeManifest manifest;
-		final @Nullable String activator;
-		final Hashtable<String, String> headers = new Hashtable<>();
-		private final BundleContextSolstice context;
-
-		ShimBundle(BundleContextSolstice context, SolsticeManifest manifest) {
-			super(context);
-			this.manifest = manifest;
-			activator = manifest.getHeadersOriginal().get(Constants.BUNDLE_ACTIVATOR);
-			manifest
-					.getHeadersOriginal()
-					.forEach(
-							(key, value) -> {
-								if (!Constants.IMPORT_PACKAGE.equals(key)
-										&& !Constants.EXPORT_PACKAGE.equals(key)) {
-									headers.put(key, value);
-								}
-							});
-			this.context = context;
-		}
-
-		// BundleContext stuff
-		@Override
-		public org.osgi.framework.Bundle getBundle() {
-			return this;
-		}
-
-		@Override
-		public BundleContext getBundleContext() {
-			return this;
-		}
-
-		BundleContextSolstice getRootBundleContext() {
-			return context;
-		}
-
-		// bundle stuff
-		@Override
-		public String toString() {
-			return manifest.toString();
-		}
-
-		@Override
-		public Class<?> loadClass(String name) throws ClassNotFoundException {
-			return Class.forName(name);
-		}
-
-		//////////////////////////
-		// BundleContext overrides
-		//////////////////////////
-		@Override
-		public long getBundleId() {
-			if (this == context.systemBundle) {
-				return context.systemBundle.getBundleId();
-			} else {
-				return manifest.classpathOrder + 1;
-			}
-		}
-
-		@Override
-		public Version getVersion() {
-			return Version.emptyVersion;
-		}
-
-		@Override
-		public void start(int options) {
-			activate();
-		}
-
-		///////////////////
-		// Bundle overrides
-		///////////////////
-		private int state = INSTALLED;
-
-		private boolean activateHasBeenCalled = false;
-
-		/** Returns false if the bundle cannot activate yet because of "requiresWorkbench" */
-		private void activate() {
-			if (activateHasBeenCalled) {
-				return;
-			}
-			activateHasBeenCalled = true;
-			state = STARTING;
-			context.notifyBundleListeners(BundleEvent.STARTING, this);
-
-			for (var cap : manifest.capProvides) {
-				context.capabilities.put(cap, this);
-			}
-
-			if (!DONT_ACTIVATE.contains(getSymbolicName()) && activator != null) {
-				try {
-					var c = (Constructor<BundleActivator>) Class.forName(activator).getConstructor();
-					var bundleActivator = c.newInstance();
-					bundleActivator.start(this);
-				} catch (Exception e) {
-					context.logger.warn("Error in activator of " + getSymbolicName(), e);
-				}
-			}
-			state = ACTIVE;
-			context.notifyBundleListeners(BundleEvent.STARTED, this);
-		}
-
-		@Override
-		public int getState() {
-			return state;
-		}
-
-		@Override
-		public Dictionary<String, String> getHeaders(String locale) {
-			return headers;
-		}
-
-		@Override
-		public String getSymbolicName() {
-			return manifest.getSymbolicName();
-		}
-
-		private String stripLeadingSlash(String path) {
-			if (path.startsWith("/")) {
-				return path.substring(1);
-			} else {
-				return path;
-			}
-		}
-
-		private String stripLeadingAddTrailingSlash(String path) {
-			path = stripLeadingSlash(path);
-			if (path.isEmpty() || path.equals("/")) {
-				return "";
-			} else {
-				return path.endsWith("/") ? path : (path + "/");
-			}
-		}
-
-		@Override
-		public URL getEntry(String path) {
-			try {
-				ZipEntry entry = parseFromZip(zip -> zip.getEntry(stripLeadingSlash(path)));
-				if (entry != null) {
-					return new URL(manifest.getJarUrl() + "/" + stripLeadingSlash(path));
-				}
-				return null;
-			} catch (MalformedURLException e) {
-				throw Unchecked.wrap(e);
-			}
-		}
-
-		private <T> T parseFromZip(Function<ZipFile, T> function) {
-			String prefix = "jar:file:";
-			if (!manifest.getJarUrl().startsWith(prefix)) {
-				throw new IllegalArgumentException(
-						"Must start with " + prefix + " was " + manifest.getJarUrl());
-			}
-			if (!manifest.getJarUrl().endsWith("!")) {
-				throw new IllegalArgumentException("Must end with ! was " + manifest.getJarUrl());
-			}
-			try (var zipFile =
-					new ZipFile(
-							manifest.getJarUrl().substring(prefix.length(), manifest.getJarUrl().length() - 1))) {
-				return function.apply(zipFile);
-			} catch (IOException e) {
-				throw Unchecked.wrap(e);
-			}
-		}
-
-		@Override
-		public URL getResource(String name) {
-			ZipEntry entry = parseFromZip(zip -> zip.getEntry(stripLeadingSlash(name)));
-			if (entry != null) {
-				return getEntry(name);
-			} else {
-				return BundleContextSolstice.class.getClassLoader().getResource(name);
-			}
-		}
-
-		@Override
-		public Enumeration<URL> getResources(String name) throws IOException {
-			return BundleContextSolstice.class.getClassLoader().getResources(name);
-		}
-
-		@Override
-		public Enumeration<String> getEntryPaths(String path) {
-			var pathFinal = stripLeadingAddTrailingSlash(path);
-			return parseFromZip(
-					zipFile -> {
-						List<String> zipPaths = new ArrayList<>();
-						var entries = zipFile.entries();
-						while (entries.hasMoreElements()) {
-							var entry = entries.nextElement();
-							if (entry.getName().startsWith(pathFinal)) {
-								zipPaths.add(entry.getName());
-							}
-						}
-						return Collections.enumeration(zipPaths);
-					});
-		}
-
-		@Override
-		public Enumeration<URL> findEntries(String path, String filePattern, boolean recurse) {
-			var urls = new ArrayList<URL>();
-			findEntries(urls, path, filePattern, recurse);
-			return Collections.enumeration(urls);
-		}
-
-		private void findEntries(List<URL> urls, String path, String filePattern, boolean recurse) {
-			for (var fragments : manifest.fragments) {
-				((ShimBundle) fragments.hydrated).findEntries(urls, path, filePattern, recurse);
-			}
-			var pathFinal = stripLeadingAddTrailingSlash(path);
-			var pattern = Pattern.compile(filePattern.replace(".", "\\.").replace("*", ".*"));
-			var pathsWithinZip =
-					parseFromZip(
-							zipFile -> {
-								List<String> zipPaths = new ArrayList<>();
-								var entries = zipFile.entries();
-								while (entries.hasMoreElements()) {
-									var entry = entries.nextElement();
-									if (entry.getName().startsWith(pathFinal)) {
-										var after = entry.getName().substring(pathFinal.length());
-										int lastSlash = after.lastIndexOf('/');
-										if (lastSlash == -1) {
-											if (pattern.matcher(after).matches()) {
-												zipPaths.add(entry.getName());
-											}
-										} else if (recurse) {
-											var name = after.substring(lastSlash + 1);
-											if (pattern.matcher(name).matches()) {
-												zipPaths.add(entry.getName());
-											}
-										}
-									}
-								}
-								return zipPaths;
-							});
-			try {
-				for (var withinZip : pathsWithinZip) {
-					urls.add(new URL(manifest.getJarUrl() + "/" + withinZip));
-				}
-			} catch (MalformedURLException e) {
-				throw Unchecked.wrap(e);
-			}
-		}
-
-		@Override
-		public String getLocation() {
-			return manifest.getJarUrl();
-		}
-
-		@Override
-		public File getDataFile(String filename) {
-			return context.storage.getDataFileBundle(this, filename);
-		}
-
-		// implemented for OSGi DS
-		@Override
-		public <A> A adapt(Class<A> type) {
-			if (BundleWiring.class.equals(type)) {
-				return state == Bundle.INSTALLED ? null : (A) new ShimBundleWiring(this);
-			} else if (BundleStartLevel.class.equals(type)) {
-				return (A)
-						new Unimplemented.BundleStartLevel() {
-							@Override
-							public boolean isActivationPolicyUsed() {
-								return true;
-							}
-						};
-			} else if (BundleRevision.class.equals(type)) {
-				return (A) new ShimBundleRevision(this);
-			} else {
-				return null;
-			}
-		}
 	}
 }
