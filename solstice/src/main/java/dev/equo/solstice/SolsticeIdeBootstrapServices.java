@@ -32,7 +32,6 @@ import org.eclipse.osgi.internal.location.BasicLocation;
 import org.eclipse.osgi.internal.location.EquinoxLocations;
 import org.eclipse.osgi.service.datalocation.Location;
 import org.eclipse.osgi.service.debug.DebugOptions;
-import org.eclipse.osgi.service.debug.DebugTrace;
 import org.eclipse.osgi.service.environment.EnvironmentInfo;
 import org.eclipse.osgi.service.localization.BundleLocalization;
 import org.eclipse.osgi.service.urlconversion.URLConverter;
@@ -48,8 +47,9 @@ public class SolsticeIdeBootstrapServices {
 	public static void apply(Map<String, String> props, BundleContext context) {
 		EquinoxContainer container = new EquinoxContainer(props, null);
 		registerLocations(context, container.getLocations());
+		context.registerService(EnvironmentInfo.class, container.getConfiguration(), null);
 		context.registerService(
-				EnvironmentInfo.class, container.getConfiguration(), Dictionaries.empty());
+				DebugOptions.class, container.getConfiguration().getDebugOptions(), null);
 
 		// Provided by org.eclipse.osgi
 		// - [x] org.eclipse.osgi.service.localization.BundleLocalization
@@ -128,83 +128,6 @@ public class SolsticeIdeBootstrapServices {
 							frameworkLog.setFile(logFile, append);
 							return frameworkLog;
 						}),
-				Dictionaries.empty());
-
-		context.registerService(
-				DebugOptions.class,
-				new DebugOptions() {
-					File file;
-
-					@Override
-					public void setFile(File newFile) {
-						this.file = newFile;
-					}
-
-					@Override
-					public File getFile() {
-						return file;
-					}
-
-					@Override
-					public boolean isDebugEnabled() {
-						return false;
-					}
-
-					@Override
-					public String getOption(String option) {
-						return null;
-					}
-
-					@Override
-					public boolean getBooleanOption(String option, boolean defaultValue) {
-						return defaultValue;
-					}
-
-					@Override
-					public DebugTrace newDebugTrace(String bundleSymbolicName) {
-						return null;
-					}
-
-					@Override
-					public DebugTrace newDebugTrace(String bundleSymbolicName, Class<?> traceEntryClass) {
-						return null;
-					}
-
-					@Override
-					public String getOption(String option, String defaultValue) {
-						throw Unimplemented.onPurpose();
-					}
-
-					@Override
-					public int getIntegerOption(String option, int defaultValue) {
-						throw Unimplemented.onPurpose();
-					}
-
-					@Override
-					public Map<String, String> getOptions() {
-						throw Unimplemented.onPurpose();
-					}
-
-					@Override
-					public void setOption(String option, String value) {
-						throw Unimplemented.onPurpose();
-					}
-
-					@Override
-					public void setOptions(Map<String, String> options) {
-						throw Unimplemented.onPurpose();
-					}
-
-					@Override
-					public void removeOption(String option) {
-						throw Unimplemented.onPurpose();
-					}
-
-					@Override
-					public void setDebugEnabled(boolean value) {
-						throw Unimplemented.onPurpose();
-					}
-				},
 				Dictionaries.empty());
 		// make images work
 		context.registerService(
