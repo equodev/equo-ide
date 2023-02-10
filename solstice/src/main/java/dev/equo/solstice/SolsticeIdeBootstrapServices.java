@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.PropertyResourceBundle;
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.SAXParserFactory;
 import org.eclipse.core.internal.runtime.CommonMessages;
 import org.eclipse.osgi.framework.log.FrameworkLog;
@@ -39,6 +40,8 @@ import org.eclipse.osgi.util.NLS;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
+import org.osgi.framework.ServiceFactory;
+import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.log.LogLevel;
 import org.osgi.service.packageadmin.PackageAdmin;
 
@@ -107,8 +110,8 @@ public class SolsticeIdeBootstrapServices {
 		context.registerService(
 				PackageAdmin.class, systemBundle.adapt(PackageAdmin.class), Dictionaries.empty());
 
-		context.registerService(
-				SAXParserFactory.class, SAXParserFactory.newInstance(), Dictionaries.empty());
+		context.registerService(SAXParserFactory.class, new XMLFactory<>(true), null);
+		context.registerService(DocumentBuilderFactory.class, new XMLFactory<>(false), null);
 
 		var serviceManager = new ShimLogServiceManager(100, LogLevel.INFO, false);
 		serviceManager.start(context);
@@ -210,5 +213,25 @@ public class SolsticeIdeBootstrapServices {
 			String noDuplicateDash = allSafeCharacters.replaceAll("-+", "-");
 			return noDuplicateDash;
 		}
+	}
+
+	static class XMLFactory<T> implements ServiceFactory<T> {
+		private final boolean isSax;
+
+		public XMLFactory(boolean isSax) {
+			this.isSax = isSax;
+		}
+
+		@Override
+		public T getService(Bundle bundle, ServiceRegistration<T> registration) {
+			if (isSax) {
+				return (T) SAXParserFactory.newInstance();
+			} else {
+				return (T) DocumentBuilderFactory.newInstance();
+			}
+		}
+
+		@Override
+		public void ungetService(Bundle bundle, ServiceRegistration<T> registration, T service) {}
 	}
 }
