@@ -19,9 +19,6 @@ public class IdeHookBuildship implements IdeHook {
 	File rootDir;
 	boolean isOffline;
 
-	/**
-	 * Logic comes from {@link org.eclipse.buildship.ui.internal.wizard.project.ProjectImportWizard}
-	 */
 	public IdeHookBuildship(File rootDir, boolean isOffline) {
 		this.rootDir = rootDir;
 		this.isOffline = isOffline;
@@ -29,8 +26,6 @@ public class IdeHookBuildship implements IdeHook {
 
 	@Override
 	public IdeHookInstantiated instantiate() throws Exception {
-		var clazz = Class.forName("dev.equo.ide.BuildshipImpl");
-		var constructor = clazz.getDeclaredConstructor(IdeHookBuildship.class);
-		return (IdeHookInstantiated) constructor.newInstance(this);
+		return IdeHook.usingReflection("dev.equo.ide.BuildshipImpl", this);
 	}
 }

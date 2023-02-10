@@ -119,4 +119,11 @@ public interface IdeHook extends Serializable {
 	}
 
 	IdeHookInstantiated instantiate() throws Exception;
+
+	static IdeHookInstantiated usingReflection(String implementationClassName, IdeHook constructorArg)
+			throws Exception {
+		var clazz = Class.forName(implementationClassName);
+		var constructor = clazz.getDeclaredConstructor(constructorArg.getClass());
+		return (IdeHookInstantiated) constructor.newInstance(constructorArg);
+	}
 }

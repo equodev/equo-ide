@@ -23,8 +23,6 @@ public class IdeHookWelcome implements IdeHook {
 
 	@Override
 	public IdeHookInstantiated instantiate() throws Exception {
-		var clazz = Class.forName("dev.equo.ide.WelcomeImpl");
-		var constructor = clazz.getDeclaredConstructor(IdeHookWelcome.class);
-		return (IdeHookInstantiated) constructor.newInstance(this);
+		return IdeHook.usingReflection("dev.equo.ide.WelcomeImpl", this);
 	}
 }
