@@ -104,7 +104,7 @@ public class BundleContextSolstice extends ServiceRegistry {
 		SolsticeFrameworkUtilHelper.initialize(this);
 		bundleSet.hydrateFrom(
 				manifest -> {
-					var bundle = new ShimBundle(manifest);
+					var bundle = new ShimBundle(this, manifest);
 					bundles.add(bundle);
 					return bundle;
 				});
@@ -406,13 +406,14 @@ public class BundleContextSolstice extends ServiceRegistry {
 		return id == -1 ? systemBundle : bundles.get((int) id);
 	}
 
-	public class ShimBundle extends BundleContextDelegate implements Unimplemented.Bundle {
+	public static class ShimBundle extends BundleContextDelegate implements Unimplemented.Bundle {
 		final SolsticeManifest manifest;
 		final @Nullable String activator;
 		final Hashtable<String, String> headers = new Hashtable<>();
+		private final BundleContextSolstice context;
 
-		ShimBundle(SolsticeManifest manifest) {
-			super(BundleContextSolstice.this);
+		ShimBundle(BundleContextSolstice context, SolsticeManifest manifest) {
+			super(context);
 			this.manifest = manifest;
 			activator = manifest.getHeadersOriginal().get(Constants.BUNDLE_ACTIVATOR);
 			manifest
@@ -424,6 +425,7 @@ public class BundleContextSolstice extends ServiceRegistry {
 									headers.put(key, value);
 								}
 							});
+			this.context = context;
 		}
 
 		// BundleContext stuff
@@ -438,7 +440,7 @@ public class BundleContextSolstice extends ServiceRegistry {
 		}
 
 		BundleContextSolstice getRootBundleContext() {
-			return BundleContextSolstice.this;
+			return context;
 		}
 
 		// bundle stuff
@@ -457,8 +459,8 @@ public class BundleContextSolstice extends ServiceRegistry {
 		//////////////////////////
 		@Override
 		public long getBundleId() {
-			if (this == systemBundle) {
-				return systemBundle.getBundleId();
+			if (this == context.systemBundle) {
+				return context.systemBundle.getBundleId();
 			} else {
 				return manifest.classpathOrder + 1;
 			}
@@ -488,10 +490,10 @@ public class BundleContextSolstice extends ServiceRegistry {
 			}
 			activateHasBeenCalled = true;
 			state = STARTING;
-			notifyBundleListeners(BundleEvent.STARTING, this);
+			context.notifyBundleListeners(BundleEvent.STARTING, this);
 
 			for (var cap : manifest.capProvides) {
-				capabilities.put(cap, this);
+				context.capabilities.put(cap, this);
 			}
 
 			if (!DONT_ACTIVATE.contains(getSymbolicName()) && activator != null) {
@@ -500,11 +502,11 @@ public class BundleContextSolstice extends ServiceRegistry {
 					var bundleActivator = c.newInstance();
 					bundleActivator.start(this);
 				} catch (Exception e) {
-					logger.warn("Error in activator of " + getSymbolicName(), e);
+					context.logger.warn("Error in activator of " + getSymbolicName(), e);
 				}
 			}
 			state = ACTIVE;
-			notifyBundleListeners(BundleEvent.STARTED, this);
+			context.notifyBundleListeners(BundleEvent.STARTED, this);
 		}
 
 		@Override
@@ -655,7 +657,7 @@ public class BundleContextSolstice extends ServiceRegistry {
 
 		@Override
 		public File getDataFile(String filename) {
-			return storage.getDataFileBundle(this, filename);
+			return context.storage.getDataFileBundle(this, filename);
 		}
 
 		// implemented for OSGi DS
