@@ -45,10 +45,42 @@ public class SolsticeIdeBootstrapServices {
 
 	static Collection<String> locationKeys() {
 		return List.of(
-				Location.INSTANCE_AREA_TYPE, Location.INSTALL_AREA_TYPE, Location.CONFIGURATION_AREA_TYPE);
+				Location.USER_AREA_TYPE,
+				Location.INSTANCE_AREA_TYPE,
+				Location.CONFIGURATION_AREA_TYPE,
+				Location.INSTALL_AREA_TYPE,
+				Location.ECLIPSE_HOME_LOCATION_TYPE);
 	}
 
 	public static void apply(BundleContext context) {
+		// Provided by org.eclipse.osgi
+		// - [x] org.eclipse.osgi.service.localization.BundleLocalization
+		// - [x] org.eclipse.osgi.service.environment.EnvironmentInfo
+		// - [x] org.osgi.service.packageadmin.PackageAdmin
+
+		// - [x] org.eclipse.osgi.service.datalocation.Location,type=osgi.user.area
+		// - [x] org.eclipse.osgi.service.datalocation.Location,type=osgi.instance.area
+		// - [x] org.eclipse.osgi.service.datalocation.Location,type=osgi.configuration.area
+		// - [x] org.eclipse.osgi.service.datalocation.Location,type=osgi.install.area
+		// - [x] org.eclipse.osgi.service.datalocation.Location,type=eclipse.home.location
+
+		// - [x] org.osgi.service.condition.Condition,osgi.condition.id=true
+
+		// - [ ] org.osgi.service.log.LogReaderService
+		// - [ ] org.eclipse.equinox.log.ExtendedLogReaderService
+		// - [ ] org.osgi.service.log.LoggerFactory
+		// - [ ] org.osgi.service.log.LogService
+		// - [ ] org.eclipse.equinox.log.ExtendedLogService
+		// - [ ] org.osgi.service.log.admin.LoggerAdmin
+		// - [ ] org.eclipse.osgi.framework.log.FrameworkLog
+		// - [ ] org.osgi.service.startlevel.StartLevel
+		// - [ ] org.osgi.service.permissionadmin.PermissionAdmin
+		// - [ ] org.osgi.service.condpermadmin.ConditionalPermissionAdmin
+		// - [ ] org.osgi.service.resolver.Resolver
+		// - [ ] org.eclipse.osgi.service.debug.DebugOptions
+		// - [ ] org.eclipse.osgi.service.urlconversion.URLConverter
+		// - [ ] org.eclipse.osgi.service.security.TrustEngine
+		// - [ ] org.eclipse.osgi.signedcontent.SignedContentFactory
 		var instanceDir =
 				Unchecked.get(() -> new File(new URI(context.getProperty(Location.INSTANCE_AREA_TYPE))));
 
