@@ -39,14 +39,20 @@ import org.osgi.framework.startlevel.BundleStartLevel;
 import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.framework.wiring.BundleWiring;
 
-public class ShimBundle extends BundleContextDelegate implements Unimplemented.Bundle {
+public class ShimBundle implements Unimplemented.Bundle {
 	final SolsticeManifest manifest;
 	final @Nullable String activator;
 	final Hashtable<String, String> headers = new Hashtable<>();
-	private final BundleContextSolstice context;
+	private final BundleContextDelegate context;
 
 	ShimBundle(BundleContextSolstice context, SolsticeManifest manifest) {
-		super(context);
+		this.context =
+				new BundleContextDelegate(context) {
+					@Override
+					public org.osgi.framework.Bundle getBundle() {
+						return ShimBundle.this;
+					}
+				};
 		this.manifest = manifest;
 		activator = manifest.getHeadersOriginal().get(Constants.BUNDLE_ACTIVATOR);
 		manifest
@@ -57,22 +63,15 @@ public class ShimBundle extends BundleContextDelegate implements Unimplemented.B
 								headers.put(key, value);
 							}
 						});
-		this.context = context;
-	}
-
-	// BundleContext stuff
-	@Override
-	public org.osgi.framework.Bundle getBundle() {
-		return this;
 	}
 
 	@Override
 	public BundleContext getBundleContext() {
-		return this;
+		return context;
 	}
 
 	BundleContextSolstice getRootBundleContext() {
-		return context;
+		return context.delegate;
 	}
 
 	// bundle stuff
@@ -91,8 +90,8 @@ public class ShimBundle extends BundleContextDelegate implements Unimplemented.B
 	//////////////////////////
 	@Override
 	public long getBundleId() {
-		if (this == context.systemBundle) {
-			return context.systemBundle.getBundleId();
+		if (this == context.delegate.systemBundle) {
+			return context.delegate.systemBundle.getBundleId();
 		} else {
 			return manifest.classpathOrder + 1;
 		}
@@ -122,23 +121,23 @@ public class ShimBundle extends BundleContextDelegate implements Unimplemented.B
 		}
 		activateHasBeenCalled = true;
 		state = STARTING;
-		context.notifyBundleListeners(BundleEvent.STARTING, this);
+		context.delegate.notifyBundleListeners(BundleEvent.STARTING, this);
 
 		for (var cap : manifest.capProvides) {
-			context.capabilities.put(cap, this);
+			context.delegate.capabilities.put(cap, this);
 		}
 
 		if (!BundleContextSolstice.DONT_ACTIVATE.contains(getSymbolicName()) && activator != null) {
 			try {
 				var c = (Constructor<BundleActivator>) Class.forName(activator).getConstructor();
 				var bundleActivator = c.newInstance();
-				bundleActivator.start(this);
+				bundleActivator.start(context);
 			} catch (Exception e) {
-				context.logger.warn("Error in activator of " + getSymbolicName(), e);
+				context.delegate.logger.warn("Error in activator of " + getSymbolicName(), e);
 			}
 		}
 		state = ACTIVE;
-		context.notifyBundleListeners(BundleEvent.STARTED, this);
+		context.delegate.notifyBundleListeners(BundleEvent.STARTED, this);
 	}
 
 	@Override
@@ -289,7 +288,7 @@ public class ShimBundle extends BundleContextDelegate implements Unimplemented.B
 
 	@Override
 	public File getDataFile(String filename) {
-		return context.storage.getDataFileBundle(this, filename);
+		return context.delegate.storage.getDataFileBundle(this, filename);
 	}
 
 	// implemented for OSGi DS

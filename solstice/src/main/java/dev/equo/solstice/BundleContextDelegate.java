@@ -30,9 +30,9 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 
 class BundleContextDelegate implements BundleContext {
-	final BundleContext delegate;
+	final BundleContextSolstice delegate;
 
-	BundleContextDelegate(BundleContext delegate) {
+	BundleContextDelegate(BundleContextSolstice delegate) {
 		this.delegate = delegate;
 	}
 
