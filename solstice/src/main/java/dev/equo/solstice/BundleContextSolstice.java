@@ -323,7 +323,16 @@ public class BundleContextSolstice extends ServiceRegistry {
 	}
 
 	@Override
-	public ShimBundle getBundle(long id) {
-		return id == -1 ? systemBundle : bundles.get((int) id);
+	public Bundle getBundle(long id) {
+		if (id == 0) {
+			return systemBundle;
+		} else {
+			for (var bundle : bundles) {
+				if (bundle.getBundleId() == id) {
+					return bundle;
+				}
+			}
+			return null;
+		}
 	}
 }
