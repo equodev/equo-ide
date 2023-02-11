@@ -44,10 +44,10 @@ import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.condition.Condition;
 import org.osgi.service.packageadmin.PackageAdmin;
 
-/** Controls the initialization of the {@link BundleContextSolstice} runtime. */
-public class SolsticeIdeBootstrapServices {
+/** Controls the initialization of the {@link BundleContextShim} runtime. */
+public class ShimIdeBootstrapServices {
 	public static void apply(Map<String, String> props, BundleContext contextUntyped) {
-		BundleContextSolstice context = (BundleContextSolstice) contextUntyped;
+		BundleContextShim context = (BundleContextShim) contextUntyped;
 		// in particular, we need services normally provided by
 		// org.eclipse.osgi.internal.framework.SystemBundleActivator::start
 		// Provided by org.eclipse.osgi

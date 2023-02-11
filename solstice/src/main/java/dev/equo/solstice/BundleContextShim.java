@@ -51,14 +51,14 @@ import org.slf4j.LoggerFactory;
  * A single-classloader implementation of OSGi which eagerly loads all the OSGi plugins it can find
  * on the classpath.
  */
-public class BundleContextSolstice extends ServiceRegistry {
-	final Logger logger = LoggerFactory.getLogger(BundleContextSolstice.class);
+public class BundleContextShim extends ServiceRegistry {
+	final Logger logger = LoggerFactory.getLogger(BundleContextShim.class);
 
 	static final Set<String> DONT_ACTIVATE = Set.of("org.eclipse.osgi");
 
-	private static BundleContextSolstice instance;
+	private static BundleContextShim instance;
 
-	public static BundleContextSolstice hydrate(Solstice bundleSet, Map<String, String> props) {
+	public static BundleContextShim hydrate(Solstice bundleSet, Map<String, String> props) {
 		if (instance != null) {
 			throw new IllegalStateException("Solstice has already been initialized");
 		}
@@ -66,7 +66,7 @@ public class BundleContextSolstice extends ServiceRegistry {
 		// TL;DR to use the built-in logging we need to pass an instanceof check
 		EquinoxContainer container = new EquinoxContainer(props, null);
 		EquinoxBundle fakeBundle = new EquinoxBundle(-1L, "FAKE LOCATION", null, null, -1, container);
-		instance = new BundleContextSolstice(bundleSet, props, container, fakeBundle);
+		instance = new BundleContextShim(bundleSet, props, container, fakeBundle);
 		return instance;
 	}
 
@@ -75,7 +75,7 @@ public class BundleContextSolstice extends ServiceRegistry {
 	final ShimStorage storage;
 	private ShimBundle systemBundle;
 
-	private BundleContextSolstice(
+	private BundleContextShim(
 			Solstice bundleSet,
 			Map<String, String> props,
 			EquinoxContainer fakeContainer,
@@ -85,7 +85,7 @@ public class BundleContextSolstice extends ServiceRegistry {
 		this.props = new TreeMap<>(props);
 		this.props.replaceAll(
 				(key, value) -> {
-					if (SolsticeIdeBootstrapServices.locationKeys().contains(key)) {
+					if (ShimIdeBootstrapServices.locationKeys().contains(key)) {
 						if (!value.startsWith("file:")) {
 							value = new File(value).toURI().toString();
 						}

@@ -54,7 +54,7 @@ public class ShimBundle implements Bundle {
 	final Hashtable<String, String> headers = new Hashtable<>();
 	private final BundleContextDelegate context;
 
-	ShimBundle(long bundleId, BundleContextSolstice context, SolsticeManifest manifest) {
+	ShimBundle(long bundleId, BundleContextShim context, SolsticeManifest manifest) {
 		this.bundleId = bundleId;
 		this.context =
 				new BundleContextDelegate(context) {
@@ -80,7 +80,7 @@ public class ShimBundle implements Bundle {
 		return context;
 	}
 
-	BundleContextSolstice getRootBundleContext() {
+	BundleContextShim getRootBundleContext() {
 		return context.delegate;
 	}
 
@@ -143,7 +143,7 @@ public class ShimBundle implements Bundle {
 			context.delegate.capabilities.put(cap, this);
 		}
 
-		if (!BundleContextSolstice.DONT_ACTIVATE.contains(getSymbolicName()) && activator != null) {
+		if (!BundleContextShim.DONT_ACTIVATE.contains(getSymbolicName()) && activator != null) {
 			try {
 				var c = (Constructor<BundleActivator>) Class.forName(activator).getConstructor();
 				var bundleActivator = c.newInstance();
@@ -230,13 +230,13 @@ public class ShimBundle implements Bundle {
 		if (entry != null) {
 			return getEntry(name);
 		} else {
-			return BundleContextSolstice.class.getClassLoader().getResource(name);
+			return BundleContextShim.class.getClassLoader().getResource(name);
 		}
 	}
 
 	@Override
 	public Enumeration<URL> getResources(String name) throws IOException {
-		return BundleContextSolstice.class.getClassLoader().getResources(name);
+		return BundleContextShim.class.getClassLoader().getResources(name);
 	}
 
 	@Override

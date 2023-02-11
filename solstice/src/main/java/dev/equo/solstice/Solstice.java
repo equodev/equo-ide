@@ -285,9 +285,9 @@ public class Solstice {
 		context = dev.equo.solstice.BundleContextAtomos.hydrate(this, props);
 	}
 
-	public void openSolstice(Map<String, String> props) {
+	public void openShim(Map<String, String> props) {
 		assertContextInitialized(false);
-		context = BundleContextSolstice.hydrate(this, props);
+		context = BundleContextShim.hydrate(this, props);
 	}
 
 	public BundleContext getContext() {
