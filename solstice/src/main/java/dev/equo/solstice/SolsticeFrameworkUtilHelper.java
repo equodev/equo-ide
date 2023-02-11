@@ -34,7 +34,7 @@ public class SolsticeFrameworkUtilHelper implements FrameworkUtilHelper {
 		var domain = classFromBundle.getProtectionDomain();
 		var source = domain.getCodeSource();
 		if (source == null) {
-			return Optional.of(owner.systemBundle);
+			return Optional.of(owner.getBundle(0));
 		}
 		var location = source.getLocation();
 		return Optional.of(owner.bundleForUrl(location));

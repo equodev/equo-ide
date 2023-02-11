@@ -16,13 +16,11 @@ package dev.equo.solstice;
 import com.diffplug.common.swt.os.SwtPlatform;
 import dev.equo.solstice.platform.Handler;
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -39,11 +37,8 @@ import org.osgi.framework.Constants;
 import org.osgi.framework.FrameworkEvent;
 import org.osgi.framework.FrameworkListener;
 import org.osgi.framework.SynchronousBundleListener;
-import org.osgi.framework.Version;
 import org.osgi.framework.namespace.IdentityNamespace;
-import org.osgi.framework.startlevel.FrameworkStartLevel;
 import org.osgi.framework.wiring.BundleCapability;
-import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.framework.wiring.FrameworkWiring;
 import org.osgi.resource.Requirement;
 import org.osgi.service.packageadmin.PackageAdmin;
@@ -71,6 +66,7 @@ public class BundleContextSolstice extends ServiceRegistry {
 
 	private final Map<String, String> props;
 	final ShimStorage storage;
+	private ShimBundle systemBundle;
 
 	private BundleContextSolstice(Solstice bundleSet, Map<String, String> props) {
 		this.props = new TreeMap<>(props);
@@ -91,10 +87,20 @@ public class BundleContextSolstice extends ServiceRegistry {
 		SolsticeFrameworkUtilHelper.initialize(this);
 		bundleSet.hydrateFrom(
 				manifest -> {
-					var bundle = new ShimBundle(this, manifest);
+					long bundleId;
+					if ("org.eclipse.osgi".equals(manifest.getSymbolicName())) {
+						bundleId = 0;
+					} else {
+						bundleId = manifest.classpathOrder + 1;
+					}
+					var bundle = new ShimBundle(bundleId, this, manifest);
 					bundles.add(bundle);
+					if (bundleId == 0) {
+						systemBundle = bundle;
+					}
 					return bundle;
 				});
+		Objects.requireNonNull(systemBundle);
 		for (var b : bundles) {
 			notifyBundleListeners(BundleEvent.INSTALLED, b);
 			b.state = Bundle.INSTALLED;
@@ -136,91 +142,6 @@ public class BundleContextSolstice extends ServiceRegistry {
 		}
 		return null;
 	}
-
-	final Bundle systemBundle =
-			new Unimplemented.Bundle() {
-				@Override
-				public long getBundleId() {
-					return 0;
-				}
-
-				@Override
-				public int getState() {
-					// this signals InternalPlatform.isRunning() to be true
-					return ACTIVE;
-				}
-
-				@Override
-				public String getSymbolicName() {
-					return "solstice-system-bundle";
-				}
-
-				@Override
-				public File getDataFile(String filename) {
-					return storage.getDataFileSystemBundle(BundleContextSolstice.this, filename);
-				}
-
-				@Override
-				public URL getResource(String name) {
-					return bundles.get(0).getResource(name);
-				}
-
-				@Override
-				public Class<?> loadClass(String name) throws ClassNotFoundException {
-					return Class.forName(name);
-				}
-
-				@Override
-				public Enumeration<URL> getResources(String name) throws IOException {
-					return bundles.get(0).getResources(name);
-				}
-
-				@Override
-				public Enumeration<String> getEntryPaths(String path) {
-					return Dictionaries.enumeration();
-				}
-
-				@Override
-				public Enumeration<URL> findEntries(String path, String filePattern, boolean recurse) {
-					return Dictionaries.enumeration();
-				}
-
-				@Override
-				public Version getVersion() {
-					return Version.emptyVersion;
-				}
-
-				@Override
-				public String getLocation() {
-					return "SYSTEM_BUNDLE_LOCATION";
-				}
-
-				@Override
-				public BundleContextSolstice getBundleContext() {
-					return BundleContextSolstice.this;
-				}
-
-				@Override
-				public <A> A adapt(Class<A> type) {
-					if (type.equals(PackageAdmin.class)) {
-						return (A) packageAdmin;
-					} else if (type.equals(FrameworkWiring.class)) {
-						return (A) frameworkWiring;
-					} else if (type.equals(BundleRevision.class)) {
-						return null;
-					} else if (type.equals(FrameworkStartLevel.class)) {
-						return (A) new Unimplemented.FrameworkStartLevel() {};
-
-					} else {
-						throw new UnsupportedOperationException(type.getName());
-					}
-				}
-
-				@Override
-				public String toString() {
-					return "SystemBundle";
-				}
-			};
 
 	final PackageAdmin packageAdmin =
 			new Unimplemented.PackageAdmin() {

@@ -36,16 +36,21 @@ import org.osgi.framework.BundleEvent;
 import org.osgi.framework.Constants;
 import org.osgi.framework.Version;
 import org.osgi.framework.startlevel.BundleStartLevel;
+import org.osgi.framework.startlevel.FrameworkStartLevel;
 import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.framework.wiring.BundleWiring;
+import org.osgi.framework.wiring.FrameworkWiring;
+import org.osgi.service.packageadmin.PackageAdmin;
 
 public class ShimBundle implements Unimplemented.Bundle {
+	final long bundleId;
 	final SolsticeManifest manifest;
 	final @Nullable String activator;
 	final Hashtable<String, String> headers = new Hashtable<>();
 	private final BundleContextDelegate context;
 
-	ShimBundle(BundleContextSolstice context, SolsticeManifest manifest) {
+	ShimBundle(long bundleId, BundleContextSolstice context, SolsticeManifest manifest) {
+		this.bundleId = bundleId;
 		this.context =
 				new BundleContextDelegate(context) {
 					@Override
@@ -90,11 +95,7 @@ public class ShimBundle implements Unimplemented.Bundle {
 	//////////////////////////
 	@Override
 	public long getBundleId() {
-		if (this == context.delegate.systemBundle) {
-			return context.delegate.systemBundle.getBundleId();
-		} else {
-			return manifest.classpathOrder + 1;
-		}
+		return bundleId;
 	}
 
 	@Override
@@ -294,6 +295,19 @@ public class ShimBundle implements Unimplemented.Bundle {
 	// implemented for OSGi DS
 	@Override
 	public <A> A adapt(Class<A> type) {
+		if (bundleId == 0) {
+			if (type.equals(PackageAdmin.class)) {
+				return (A) context.delegate.packageAdmin;
+			} else if (type.equals(FrameworkWiring.class)) {
+				return (A) context.delegate.frameworkWiring;
+			} else if (type.equals(BundleRevision.class)) {
+				return null;
+			} else if (type.equals(FrameworkStartLevel.class)) {
+				return (A) new Unimplemented.FrameworkStartLevel() {};
+			} else {
+				throw new UnsupportedOperationException(type.getName());
+			}
+		}
 		if (BundleWiring.class.equals(type)) {
 			return state == Bundle.INSTALLED ? null : (A) new ShimBundleWiring(this);
 		} else if (BundleStartLevel.class.equals(type)) {
