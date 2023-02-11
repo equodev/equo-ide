@@ -25,9 +25,11 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicLong;
 import org.eclipse.osgi.framework.log.FrameworkLog;
+import org.eclipse.osgi.internal.framework.BundleContextImpl;
+import org.eclipse.osgi.internal.framework.EquinoxBundle;
+import org.eclipse.osgi.internal.framework.EquinoxContainer;
 import org.eclipse.osgi.internal.framework.FilterImpl;
 import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.Filter;
 import org.osgi.framework.FrameworkEvent;
@@ -41,7 +43,17 @@ import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-abstract class ServiceRegistry implements BundleContext {
+/**
+ * The *only* reason we extend BundleContextImpl is to pass an instanceof check in <a
+ * href=https://github.com/eclipse-equinox/equinox/blob/db101f974f02a52383b4a8358f74aee4fa33e837/bundles/org.eclipse.osgi/container/src/org/eclipse/osgi/internal/log/LogServiceManager.java#L78">
+ * LogServiceManager</a>. If we can't pass that instance check, then we have to reimplement the
+ * logging ourselves, and that's a pain.
+ */
+abstract class ServiceRegistry extends BundleContextImpl {
+	ServiceRegistry(EquinoxBundle bundle, EquinoxContainer container) {
+		super(bundle, container);
+	}
+
 	private final Logger logger = LoggerFactory.getLogger(ServiceRegistry.class);
 	final Map<String, List<AbstractServiceReference<?>>> services = new HashMap<>();
 

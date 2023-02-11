@@ -30,6 +30,8 @@ import java.util.TreeMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import org.eclipse.core.internal.runtime.InternalPlatform;
 import org.eclipse.osgi.framework.log.FrameworkLog;
+import org.eclipse.osgi.internal.framework.EquinoxBundle;
+import org.eclipse.osgi.internal.framework.EquinoxContainer;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleEvent;
 import org.osgi.framework.BundleListener;
@@ -60,15 +62,26 @@ public class BundleContextSolstice extends ServiceRegistry {
 		if (instance != null) {
 			throw new IllegalStateException("Solstice has already been initialized");
 		}
-		instance = new BundleContextSolstice(bundleSet, props);
+		// see ServiceRegistry javadoc for explanation of why we need this container
+		// TL;DR to use the built-in logging we need to pass an instanceof check
+		EquinoxContainer container = new EquinoxContainer(props, null);
+		EquinoxBundle fakeBundle = new EquinoxBundle(-1L, "FAKE LOCATION", null, null, -1, container);
+		instance = new BundleContextSolstice(bundleSet, props, container, fakeBundle);
 		return instance;
 	}
 
+	final EquinoxContainer container;
 	private final Map<String, String> props;
 	final ShimStorage storage;
 	private ShimBundle systemBundle;
 
-	private BundleContextSolstice(Solstice bundleSet, Map<String, String> props) {
+	private BundleContextSolstice(
+			Solstice bundleSet,
+			Map<String, String> props,
+			EquinoxContainer fakeContainer,
+			EquinoxBundle fakeBundle) {
+		super(fakeBundle, fakeContainer);
+		this.container = fakeContainer;
 		this.props = new TreeMap<>(props);
 		this.props.replaceAll(
 				(key, value) -> {

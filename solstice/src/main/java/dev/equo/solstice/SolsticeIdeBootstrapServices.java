@@ -27,8 +27,6 @@ import java.util.PropertyResourceBundle;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.SAXParserFactory;
 import org.eclipse.core.internal.runtime.CommonMessages;
-import org.eclipse.osgi.framework.log.FrameworkLog;
-import org.eclipse.osgi.internal.framework.EquinoxContainer;
 import org.eclipse.osgi.internal.location.BasicLocation;
 import org.eclipse.osgi.internal.location.EquinoxLocations;
 import org.eclipse.osgi.service.datalocation.Location;
@@ -39,16 +37,17 @@ import org.eclipse.osgi.service.urlconversion.URLConverter;
 import org.eclipse.osgi.util.NLS;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceFactory;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.condition.Condition;
-import org.osgi.service.log.LogLevel;
 import org.osgi.service.packageadmin.PackageAdmin;
 
 /** Controls the initialization of the {@link BundleContextSolstice} runtime. */
 public class SolsticeIdeBootstrapServices {
-	public static void apply(Map<String, String> props, BundleContext context) {
+	public static void apply(Map<String, String> props, BundleContext contextUntyped) {
+		BundleContextSolstice context = (BundleContextSolstice) contextUntyped;
 		// in particular, we need services normally provided by
 		// org.eclipse.osgi.internal.framework.SystemBundleActivator::start
 		// Provided by org.eclipse.osgi
@@ -62,24 +61,11 @@ public class SolsticeIdeBootstrapServices {
 		// - [ ] org.eclipse.equinox.log.ExtendedLogService
 		// - [ ] org.osgi.service.log.admin.LoggerAdmin
 		// - [ ] org.eclipse.osgi.framework.log.FrameworkLog
-		EquinoxContainer container = new EquinoxContainer(props, null);
-		var instanceDir =
-				Unchecked.get(() -> new File(new URI(context.getProperty(Location.INSTANCE_AREA_TYPE))));
-
-		var serviceManager = new ShimLogServiceManager(100, LogLevel.INFO, false);
-		serviceManager.start(context);
-		context.registerService(
-				FrameworkLog.class,
-				Unchecked.get(
-						() -> {
-							var frameworkLog = new ShimFrameworkLog();
-							boolean append = false;
-							File logFile = new File(instanceDir, "log");
-							logFile.getParentFile().mkdirs();
-							frameworkLog.setFile(logFile, append);
-							return frameworkLog;
-						}),
-				Dictionaries.empty());
+		try {
+			context.container.getLogServices().start(context);
+		} catch (BundleException e) {
+			context.logger.error("error instantiating logging", e);
+		}
 
 		// - [ ] org.osgi.service.condition.Condition,osgi.condition.id=true
 		context.registerService(
@@ -92,11 +78,11 @@ public class SolsticeIdeBootstrapServices {
 		// - [ ] org.eclipse.osgi.service.datalocation.Location,type=osgi.configuration.area
 		// - [ ] org.eclipse.osgi.service.datalocation.Location,type=osgi.install.area
 		// - [ ] org.eclipse.osgi.service.datalocation.Location,type=eclipse.home.location
-		registerLocations(context, container.getLocations());
+		registerLocations(context, context.container.getLocations());
 
 		// - [ ] org.eclipse.osgi.service.environment.EnvironmentInfo
 		// - [ ] org.osgi.service.packageadmin.PackageAdmin
-		context.registerService(EnvironmentInfo.class, container.getConfiguration(), null);
+		context.registerService(EnvironmentInfo.class, context.container.getConfiguration(), null);
 		Bundle systemBundle = context.getBundle(Constants.SYSTEM_BUNDLE_LOCATION);
 		context.registerService(
 				PackageAdmin.class, systemBundle.adapt(PackageAdmin.class), Dictionaries.empty());
@@ -109,7 +95,9 @@ public class SolsticeIdeBootstrapServices {
 		// - [ ] org.eclipse.osgi.service.debug.DebugOptions
 		// - [ ] org.eclipse.osgi.service.urlconversion.URLConverter
 		context.registerService(
-				DebugOptions.class, container.getConfiguration().getDebugOptions(), null);
+				DebugOptions.class, context.container.getConfiguration().getDebugOptions(), null);
+		var instanceDir =
+				Unchecked.get(() -> new File(new URI(context.getProperty(Location.INSTANCE_AREA_TYPE))));
 		context.registerService(
 				URLConverter.class,
 				new JarUrlResolver(new File(instanceDir, "JarUrlResolver")),
