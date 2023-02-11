@@ -42,8 +42,4 @@ class ShimStorage {
 		dir.mkdirs();
 		return new File(dir, filename);
 	}
-
-	File getDataFileRootContext(BundleContextSolstice context, String filename) {
-		return getDataFileBundle(context.bundleForSymbolicName("org.eclipse.osgi"), filename);
-	}
 }

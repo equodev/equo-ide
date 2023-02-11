@@ -235,7 +235,7 @@ public class BundleContextSolstice extends ServiceRegistry {
 
 	@Override
 	public File getDataFile(String filename) {
-		return storage.getDataFileRootContext(this, filename);
+		return storage.getDataFileBundle(systemBundle, filename);
 	}
 
 	@Override
@@ -323,7 +323,7 @@ public class BundleContextSolstice extends ServiceRegistry {
 	}
 
 	@Override
-	public Bundle getBundle(long id) {
+	public ShimBundle getBundle(long id) {
 		return id == -1 ? systemBundle : bundles.get((int) id);
 	}
 }
