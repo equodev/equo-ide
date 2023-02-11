@@ -15,25 +15,30 @@ package dev.equo.solstice;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
 import org.osgi.framework.Constants;
+import org.osgi.framework.ServiceReference;
 import org.osgi.framework.Version;
 import org.osgi.framework.startlevel.BundleStartLevel;
 import org.osgi.framework.startlevel.FrameworkStartLevel;
@@ -42,7 +47,7 @@ import org.osgi.framework.wiring.BundleWiring;
 import org.osgi.framework.wiring.FrameworkWiring;
 import org.osgi.service.packageadmin.PackageAdmin;
 
-public class ShimBundle implements Unimplemented.Bundle {
+public class ShimBundle implements Bundle {
 	final long bundleId;
 	final SolsticeManifest manifest;
 	final @Nullable String activator;
@@ -105,7 +110,17 @@ public class ShimBundle implements Unimplemented.Bundle {
 
 	@Override
 	public void start(int options) {
+		start();
+	}
+
+	@Override
+	public void start() {
 		activate();
+	}
+
+	@Override
+	public void stop(int options) {
+		stop();
 	}
 
 	///////////////////
@@ -144,6 +159,11 @@ public class ShimBundle implements Unimplemented.Bundle {
 	@Override
 	public int getState() {
 		return state;
+	}
+
+	@Override
+	public Dictionary<String, String> getHeaders() {
+		return getHeaders("");
 	}
 
 	@Override
@@ -323,5 +343,58 @@ public class ShimBundle implements Unimplemented.Bundle {
 		} else {
 			return null;
 		}
+	}
+
+	//////////////////////////////
+	// Unimplemented below here //
+	//////////////////////////////
+	@Override
+	public Map<X509Certificate, List<X509Certificate>> getSignerCertificates(int signersType) {
+		throw Unimplemented.onPurpose();
+	}
+
+	@Override
+	public ServiceReference<?>[] getRegisteredServices() {
+		throw Unimplemented.onPurpose();
+	}
+
+	@Override
+	public ServiceReference<?>[] getServicesInUse() {
+		throw Unimplemented.onPurpose();
+	}
+
+	@Override
+	public boolean hasPermission(Object permission) {
+		throw Unimplemented.onPurpose();
+	}
+
+	@Override
+	public void stop() {
+		throw Unimplemented.onPurpose();
+	}
+
+	@Override
+	public void update(InputStream input) {
+		throw Unimplemented.onPurpose();
+	}
+
+	@Override
+	public void update() {
+		throw Unimplemented.onPurpose();
+	}
+
+	@Override
+	public void uninstall() {
+		throw Unimplemented.onPurpose();
+	}
+
+	@Override
+	public long getLastModified() {
+		throw Unimplemented.onPurpose();
+	}
+
+	@Override
+	public int compareTo(@NotNull Bundle o) {
+		throw Unimplemented.onPurpose();
 	}
 }
