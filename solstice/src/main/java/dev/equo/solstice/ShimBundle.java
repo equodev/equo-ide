@@ -48,21 +48,34 @@ import org.osgi.framework.wiring.FrameworkWiring;
 import org.osgi.service.packageadmin.PackageAdmin;
 
 public class ShimBundle implements Bundle {
+	static class ShimBundleContext extends BundleContextDelegate {
+		final ShimBundle bundle;
+		/**
+		 * This field is strange, but we need it because of this reflection code.
+		 * https://github.com/eclipse-platform/eclipse.platform/blob/7cf94a60b6c23d6166b5257ef1463aebd92a8136/runtime/bundles/org.eclipse.core.runtime/src/org/eclipse/core/internal/preferences/legacy/InitLegacyPreferences.java#L74-L87
+		 */
+		BundleActivator activator;
+
+		ShimBundleContext(BundleContextShim rootContext, ShimBundle bundle) {
+			super(rootContext);
+			this.bundle = bundle;
+		}
+
+		@Override
+		public org.osgi.framework.Bundle getBundle() {
+			return bundle;
+		}
+	}
+
 	final long bundleId;
 	final SolsticeManifest manifest;
 	final @Nullable String activator;
 	final Hashtable<String, String> headers = new Hashtable<>();
-	private final BundleContextDelegate context;
+	private final ShimBundleContext context;
 
 	ShimBundle(long bundleId, BundleContextShim context, SolsticeManifest manifest) {
 		this.bundleId = bundleId;
-		this.context =
-				new BundleContextDelegate(context) {
-					@Override
-					public org.osgi.framework.Bundle getBundle() {
-						return ShimBundle.this;
-					}
-				};
+		this.context = new ShimBundleContext(context, this);
 		this.manifest = manifest;
 		activator = manifest.getHeadersOriginal().get(Constants.BUNDLE_ACTIVATOR);
 		manifest
@@ -146,8 +159,8 @@ public class ShimBundle implements Bundle {
 		if (!BundleContextShim.DONT_ACTIVATE.contains(getSymbolicName()) && activator != null) {
 			try {
 				var c = (Constructor<BundleActivator>) Class.forName(activator).getConstructor();
-				var bundleActivator = c.newInstance();
-				bundleActivator.start(context);
+				context.activator = c.newInstance();
+				context.activator.start(context);
 			} catch (Exception e) {
 				context.delegate.logger.warn("Error in activator of " + getSymbolicName(), e);
 			}
