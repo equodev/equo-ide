@@ -23,7 +23,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeMap;
@@ -215,13 +214,17 @@ public class BundleContextShim extends ServiceRegistry {
 									"Solstice expected " + IdentityNamespace.IDENTITY_NAMESPACE + ", was " + filter);
 						}
 						var bundle = bundleForSymbolicName(filter.getValue());
-						Objects.requireNonNull(bundle, filter.getValue());
-						return Collections.singleton(new ShimBundleCapability(bundle));
+						if (bundle == null) {
+							return Collections.emptyList();
+						} else {
+							Objects.requireNonNull(bundle, filter.getValue());
+							return Collections.singleton(new ShimBundleCapability(bundle));
+						}
 					} else {
 						var cap = new Capability(req.getNamespace(), filter.getKey(), filter.getValue());
 						var result = capabilities.getAnySupersetOf(cap);
 						if (result == null) {
-							throw new NoSuchElementException("No capability matching " + cap);
+							return Collections.emptyList();
 						}
 						return Collections.singleton(new ShimBundleCapability(result));
 					}
