@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+
+## [0.14.0] - 2023-02-12
 ### Added
 - Introduced `Capability` which takes OSGi `Provide-Capability`/`Require-Capability` into account. ([#71](https://github.com/equodev/equo-ide/pull/71))
   - In particular, this means that we don't need to do any manual startup ordering anymore.
