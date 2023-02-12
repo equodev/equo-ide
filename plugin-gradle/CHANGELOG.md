@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+
+## [0.14.0] - 2023-02-12
 ### Added
 - Buildship import works! ([#76](https://github.com/equodev/equo-ide/pull/76))
   - We now run without Atomos by default.
