@@ -18,7 +18,7 @@ import org.osgi.framework.wiring.BundleRevision;
 class ShimBundleCapability extends Unimplemented.BundleCapability {
 	private final ShimBundleRevision revision;
 
-	ShimBundleCapability(BundleContextSolstice.ShimBundle bundle) {
+	ShimBundleCapability(ShimBundle bundle) {
 		this.revision = new ShimBundleRevision(bundle);
 	}
 

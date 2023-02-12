@@ -16,8 +16,8 @@ package dev.equo.ide;
 import com.diffplug.common.swt.os.OS;
 import dev.equo.solstice.NestedJars;
 import dev.equo.solstice.SerializableMisc;
+import dev.equo.solstice.ShimIdeBootstrapServices;
 import dev.equo.solstice.Solstice;
-import dev.equo.solstice.SolsticeIdeBootstrapServices;
 import dev.equo.solstice.SolsticeManifest;
 import dev.equo.solstice.p2.WorkspaceRegistry;
 import java.io.File;
@@ -285,8 +285,8 @@ public class BuildPluginIdeMain {
 			props.put("atomos.content.start", "false");
 			solstice.openAtomos(props);
 		} else {
-			solstice.openSolstice(props);
-			SolsticeIdeBootstrapServices.apply(solstice.getContext());
+			solstice.openShim(props);
+			ShimIdeBootstrapServices.apply(props, solstice.getContext());
 		}
 		solstice.startAllWithLazy(false);
 		solstice.start("org.eclipse.ui.ide.application");

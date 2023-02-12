@@ -23,9 +23,9 @@ import org.osgi.framework.wiring.BundleWire;
 import org.osgi.framework.wiring.BundleWiring;
 
 class ShimBundleWiring extends Unimplemented.BundleWiring {
-	private final BundleContextSolstice.ShimBundle bundle;
+	private final ShimBundle bundle;
 
-	ShimBundleWiring(BundleContextSolstice.ShimBundle bundle) {
+	ShimBundleWiring(ShimBundle bundle) {
 		this.bundle = Objects.requireNonNull(bundle);
 	}
 
@@ -59,11 +59,7 @@ class ShimBundleWiring extends Unimplemented.BundleWiring {
 	}
 
 	private static void listResourcesHelper(
-			List<String> asStrings,
-			BundleContextSolstice.ShimBundle bundle,
-			String path,
-			String filePattern,
-			boolean recurse) {
+			List<String> asStrings, ShimBundle bundle, String path, String filePattern, boolean recurse) {
 		var urls = bundle.findEntries(path, filePattern, recurse);
 		while (urls.hasMoreElements()) {
 			var url = urls.nextElement();

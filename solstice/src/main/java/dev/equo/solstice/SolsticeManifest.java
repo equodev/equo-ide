@@ -51,9 +51,9 @@ public class SolsticeManifest {
 	final int classpathOrder;
 	private final @Nullable String symbolicName;
 	private final LinkedHashMap<String, String> headersOriginal = new LinkedHashMap<>();
-	final List<String> requiredBundles;
-	final List<String> pkgImports;
-	final List<String> pkgExports;
+	final ArrayList<String> requiredBundles;
+	final ArrayList<String> pkgImports;
+	final ArrayList<String> pkgExports;
 	final List<Capability> capProvides;
 	final List<Capability> capRequires;
 	final boolean lazy;
@@ -284,10 +284,10 @@ public class SolsticeManifest {
 		return jarUrl;
 	}
 
-	private List<String> parseAndStrip(String key) {
+	private ArrayList<String> parseAndStrip(String key) {
 		String attribute = headersOriginal.get(key);
 		if (attribute == null) {
-			return Collections.emptyList();
+			return new ArrayList<>();
 		}
 		return parseAndStripManifestHeader(key, attribute);
 	}
@@ -305,10 +305,10 @@ public class SolsticeManifest {
 	 * Parses a jar manifest header, ignoring versions and removing anything with <code>
 	 * resolution:=optional</code>.
 	 */
-	static List<String> parseAndStripManifestHeader(String key, String in) {
+	static ArrayList<String> parseAndStripManifestHeader(String key, String in) {
 		try {
 			ManifestElement[] elements = ManifestElement.parseHeader(key, in);
-			List<String> stripped = new ArrayList<>(elements.length);
+			ArrayList<String> stripped = new ArrayList<>(elements.length);
 			for (var e : elements) {
 				if ("optional".equals(e.getDirective("resolution"))) {
 					continue;
