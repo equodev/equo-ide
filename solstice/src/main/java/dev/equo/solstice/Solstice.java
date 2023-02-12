@@ -179,12 +179,14 @@ public class Solstice {
 		var missingMap = knownMissingBundleDependencies();
 		for (var entry : missingMap.entrySet()) {
 			var inSystem = bySymbolicName.get(entry.getKey());
-			for (var manifest : inSystem) {
-				for (var missing : entry.getValue()) {
-					if (!manifest.requiredBundles.contains(missing)) {
-						logger.info(
-								"Modifying " + manifest.getSymbolicName() + " to add required bundle " + missing);
-						manifest.requiredBundles.add(missing);
+			if (inSystem != null) {
+				for (var manifest : inSystem) {
+					for (var missing : entry.getValue()) {
+						if (!manifest.requiredBundles.contains(missing)) {
+							logger.info(
+									"Modifying " + manifest.getSymbolicName() + " to add required bundle " + missing);
+							manifest.requiredBundles.add(missing);
+						}
 					}
 				}
 			}
