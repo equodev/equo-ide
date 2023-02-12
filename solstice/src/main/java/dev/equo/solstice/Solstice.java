@@ -17,6 +17,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +33,17 @@ import org.slf4j.LoggerFactory;
 
 /** Represents a closed universe of OSGi bundles. */
 public class Solstice {
+	/**
+	 * We have at least one case where a bundle requires another bundle but that requirement is not
+	 * expressed in the manifest. This map is an easy way to fix cases such as this.
+	 */
+	private static Map<String, List<String>> knownMissingBundleDependencies() {
+		var missing = new HashMap<String, List<String>>();
+		missing.put(
+				"org.eclipse.equinox.p2.reconciler.dropins", List.of("org.eclipse.equinox.p2.updatesite"));
+		return missing;
+	}
+
 	public static Solstice findBundlesOnClasspath() {
 		Enumeration<URL> manifestURLs =
 				Unchecked.get(
@@ -163,6 +175,21 @@ public class Solstice {
 	public void warnAndModifyManifestsToFix() {
 		Logger logger = LoggerFactory.getLogger(Solstice.class);
 		var bySymbolicName = bySymbolicName();
+
+		var missingMap = knownMissingBundleDependencies();
+		for (var entry : missingMap.entrySet()) {
+			var inSystem = bySymbolicName.get(entry.getKey());
+			for (var manifest : inSystem) {
+				for (var missing : entry.getValue()) {
+					if (!manifest.requiredBundles.contains(missing)) {
+						logger.info(
+								"Modifying " + manifest.getSymbolicName() + " to add required bundle " + missing);
+						manifest.requiredBundles.add(missing);
+					}
+				}
+			}
+		}
+
 		var byExportedPackage = byExportedPackage();
 		bySymbolicName.forEach(
 				(symbolicName, manifests) -> {
