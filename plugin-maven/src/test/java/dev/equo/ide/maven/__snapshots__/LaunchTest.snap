@@ -38,7 +38,7 @@ equo-ide:launch
       User property: showConsole
       Adds a visible console to the launched application.
 
-    useAtomos (Default: true)
+    useAtomos (Default: false)
       User property: useAtomos
       Determines whether to use Solstice's built-in OSGi runtime or instead
       Atomos+Equinox.

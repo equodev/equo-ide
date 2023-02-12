@@ -22,6 +22,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
+import org.slf4j.LoggerFactory;
 
 public class IdeHookBranding implements IdeHook {
 	private static String DEFAULT_TITLE = "Equo IDE";
@@ -59,9 +60,9 @@ public class IdeHookBranding implements IdeHook {
 					return new Image(display, imageData);
 				}
 			} catch (Exception e) {
-				System.err.println(
-						"Error loading image " + file.getAbsolutePath() + ", falling back to default.");
-				e.printStackTrace();
+				LoggerFactory.getLogger(IdeHookBranding.class)
+						.warn(
+								"Unable to load image " + file.getAbsolutePath() + ", falling back to default.", e);
 			}
 			try (var input =
 					IdeHookBranding.class.getClassLoader().getResource(defaultResource).openStream()) {
@@ -115,14 +116,27 @@ public class IdeHookBranding implements IdeHook {
 			splash.dispose();
 			splash = null;
 
-			Image icon =
-					loadImage(Display.getDefault(), IdeHookBranding.this.icon, "dev/equo/ide/equo_icon.png");
-			Shell[] shells = Display.getCurrent().getShells();
-			for (var shell : shells) {
-				shell.setText(title);
-				shell.setImage(icon);
-				shell.forceActive();
-			}
+			Display.getDefault()
+					.asyncExec(
+							() -> {
+								var display = Display.getCurrent();
+								if (display == null) {
+									// early shutdown
+									return;
+								}
+								Display.setAppName(title);
+								Image icon =
+										loadImage(
+												Display.getDefault(),
+												IdeHookBranding.this.icon,
+												"dev/equo/ide/equo_icon.png");
+								Shell[] shells = display.getShells();
+								for (var shell : shells) {
+									shell.setText(title);
+									shell.setImage(icon);
+									shell.forceActive();
+								}
+							});
 		}
 	}
 }

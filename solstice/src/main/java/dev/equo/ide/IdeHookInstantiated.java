@@ -18,13 +18,13 @@ public interface IdeHookInstantiated {
 	 * The very first method to be called, called as soon as the command line arguments have been
 	 * parsed.
 	 */
-	default void isClean(boolean isClean) {}
+	default void isClean(boolean isClean) throws Exception {}
 
 	/** Called after display is created, ~310ms after isClean. */
-	default void afterDisplay(org.eclipse.swt.widgets.Display display) {}
+	default void afterDisplay(org.eclipse.swt.widgets.Display display) throws Exception {}
 
 	/** Called after the OSGi container is created and populated, ~5850ms after isClean. */
-	default void afterOsgi(org.osgi.framework.BundleContext context) {}
+	default void afterOsgi(org.osgi.framework.BundleContext context) throws Exception {}
 
 	/**
 	 * This method is called during workbench initialization prior to any windows being opened,
@@ -32,7 +32,7 @@ public interface IdeHookInstantiated {
 	 *
 	 * <p>{@link org.eclipse.ui.application.WorkbenchAdvisor#initialize}
 	 */
-	default void initialize() {}
+	default void initialize() throws Exception {}
 
 	/**
 	 * Performs arbitrary actions just before the first workbench window is opened (or restored),
@@ -43,7 +43,7 @@ public interface IdeHookInstantiated {
 	 *
 	 * <p>{@link org.eclipse.ui.application.WorkbenchAdvisor#preStartup}
 	 */
-	default void preStartup() {}
+	default void preStartup() throws Exception {}
 
 	/**
 	 * Performs arbitrary actions after the workbench windows have been opened (or restored), but
@@ -51,7 +51,7 @@ public interface IdeHookInstantiated {
 	 *
 	 * <p>{@link org.eclipse.ui.application.WorkbenchAdvisor#postStartup}
 	 */
-	default void postStartup() {}
+	default void postStartup() throws Exception {}
 
 	/**
 	 * Performs arbitrary finalization before the workbench is about to shut down.
@@ -61,7 +61,7 @@ public interface IdeHookInstantiated {
 	 * @return <code>true</code> to allow the workbench to proceed with shutdown, <code>false</code>
 	 *     to veto a non-forced shutdown
 	 */
-	default boolean preShutdown() {
+	default boolean preShutdown() throws Exception {
 		return true;
 	}
 
@@ -70,5 +70,5 @@ public interface IdeHookInstantiated {
 	 *
 	 * <p>{@link org.eclipse.ui.application.WorkbenchAdvisor#postShutdown}
 	 */
-	default void postShutdown() {}
+	default void postShutdown() throws Exception {}
 }

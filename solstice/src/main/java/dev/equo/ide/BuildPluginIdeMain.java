@@ -16,9 +16,10 @@ package dev.equo.ide;
 import com.diffplug.common.swt.os.OS;
 import dev.equo.solstice.NestedJars;
 import dev.equo.solstice.SerializableMisc;
+import dev.equo.solstice.ShimIdeBootstrapServices;
 import dev.equo.solstice.Solstice;
-import dev.equo.solstice.SolsticeIdeBootstrapServices;
 import dev.equo.solstice.SolsticeManifest;
+import dev.equo.solstice.p2.WorkspaceRegistry;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -43,18 +44,40 @@ import org.osgi.framework.InvalidSyntaxException;
  */
 public class BuildPluginIdeMain {
 	public static class Caller {
+		public static Caller forProjectDir(File projectDir, boolean clean)
+				throws IOException, InterruptedException {
+			var caller = new Caller();
+
+			var workspaceRegistry = WorkspaceRegistry.instance();
+			caller.workspaceDir = workspaceRegistry.workspaceDirForProjectDir(projectDir);
+			workspaceRegistry.removeAbandoned();
+
+			caller.lockFile = IdeLockFile.forWorkspaceDir(caller.workspaceDir);
+			var alreadyRunning = caller.lockFile.ideAlreadyRunning();
+			if (IdeLockFile.alreadyRunningAndUserRequestsAbort(alreadyRunning)) {
+				return null;
+			}
+
+			if (clean) {
+				workspaceRegistry.cleanWorkspaceDir(caller.workspaceDir);
+			}
+			return caller;
+		}
+
+		private Caller() {}
+
+		public File workspaceDir;
 		public IdeLockFile lockFile;
 		public IdeHook.List ideHooks;
-		public File workspaceDir;
 		public ArrayList<File> classpath;
 		public BuildPluginIdeMain.DebugClasspath debugClasspath;
 		public Boolean initOnly, showConsole, useAtomos, debugIde;
 		public String showConsoleFlag, cleanFlag;
 
 		public void launch() throws IOException, InterruptedException {
+			Objects.requireNonNull(workspaceDir);
 			Objects.requireNonNull(lockFile);
 			Objects.requireNonNull(ideHooks);
-			Objects.requireNonNull(workspaceDir);
 			Objects.requireNonNull(classpath);
 			Objects.requireNonNull(debugClasspath);
 			Objects.requireNonNull(initOnly);
@@ -254,12 +277,16 @@ public class BuildPluginIdeMain {
 		props.put(Location.INSTANCE_AREA_TYPE, new File(installDir, "instance").getAbsolutePath());
 		props.put(Location.INSTALL_AREA_TYPE, new File(installDir, "install").getAbsolutePath());
 		props.put(Location.CONFIGURATION_AREA_TYPE, new File(installDir, "config").getAbsolutePath());
+		props.put(Location.USER_AREA_TYPE, new File(installDir, "user").getAbsolutePath());
+		String eclipseHome = new File(installDir, "eclipse-home").getAbsolutePath();
+		props.put(Location.ECLIPSE_HOME_LOCATION_TYPE, eclipseHome);
+		System.setProperty(Location.ECLIPSE_HOME_LOCATION_TYPE, eclipseHome);
 		if (useAtomos) {
 			props.put("atomos.content.start", "false");
 			solstice.openAtomos(props);
 		} else {
-			solstice.openSolstice(props);
-			SolsticeIdeBootstrapServices.apply(solstice.getContext());
+			solstice.openShim(props);
+			ShimIdeBootstrapServices.apply(props, solstice.getContext());
 		}
 		solstice.startAllWithLazy(false);
 		solstice.start("org.eclipse.ui.ide.application");

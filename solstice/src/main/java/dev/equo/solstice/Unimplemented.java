@@ -13,18 +13,11 @@
  *******************************************************************************/
 package dev.equo.solstice;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
-import java.security.cert.X509Certificate;
 import java.util.Collection;
-import java.util.Dictionary;
 import java.util.List;
 import java.util.Map;
-import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkListener;
-import org.osgi.framework.ServiceReference;
 import org.osgi.framework.Version;
 import org.osgi.framework.wiring.BundleRequirement;
 import org.osgi.resource.Capability;
@@ -47,133 +40,6 @@ class Unimplemented {
 		//			System.exit(1);
 		//			return e;
 		//		}
-	}
-
-	interface Bundle extends org.osgi.framework.Bundle {
-		@Override
-		default BundleContext getBundleContext() {
-			throw onPurpose();
-		}
-
-		@Override
-		default String getSymbolicName() {
-			throw onPurpose();
-		}
-
-		@Override
-		default URL getEntry(String path) {
-			throw onPurpose();
-		}
-
-		@Override
-		default int getState() {
-			throw onPurpose();
-		}
-
-		@Override
-		default void start(int options) {
-			throw onPurpose();
-		}
-
-		@Override
-		default void start() {
-			start(0);
-		}
-
-		@Override
-		default void stop(int options) {
-			throw onPurpose();
-		}
-
-		@Override
-		default void stop() {
-			stop(0);
-		}
-
-		@Override
-		default void update(InputStream input) {
-			throw onPurpose();
-		}
-
-		@Override
-		default void update() {
-			throw onPurpose();
-		}
-
-		@Override
-		default void uninstall() {
-			throw onPurpose();
-		}
-
-		@Override
-		default Dictionary<String, String> getHeaders(String locale) {
-			throw onPurpose();
-		}
-
-		@Override
-		default Dictionary<String, String> getHeaders() {
-			return getHeaders("");
-		}
-
-		@Override
-		default long getBundleId() {
-			throw onPurpose();
-		}
-
-		@Override
-		default String getLocation() {
-			throw onPurpose();
-		}
-
-		@Override
-		default ServiceReference<?>[] getRegisteredServices() {
-			throw onPurpose();
-		}
-
-		@Override
-		default ServiceReference<?>[] getServicesInUse() {
-			throw onPurpose();
-		}
-
-		@Override
-		default boolean hasPermission(Object permission) {
-			throw onPurpose();
-		}
-
-		@Override
-		default Class<?> loadClass(String name) throws ClassNotFoundException {
-			throw onPurpose();
-		}
-
-		@Override
-		default long getLastModified() {
-			throw onPurpose();
-		}
-
-		@Override
-		default File getDataFile(String filename) {
-			return null;
-		}
-
-		@Override
-		default Map<X509Certificate, List<X509Certificate>> getSignerCertificates(int signersType) {
-			throw onPurpose();
-		}
-
-		@Override
-		default Version getVersion() {
-			throw onPurpose();
-		}
-
-		@Override
-		default <A> A adapt(Class<A> type) {
-			throw onPurpose();
-		}
-
-		@Override
-		default int compareTo(org.osgi.framework.Bundle o) {
-			return getSymbolicName().compareTo(o.getSymbolicName());
-		}
 	}
 
 	static class PackageAdmin implements org.osgi.service.packageadmin.PackageAdmin {
@@ -339,79 +205,6 @@ class Unimplemented {
 
 		@Override
 		public org.osgi.framework.Bundle getBundle() {
-			throw onPurpose();
-		}
-	}
-
-	static class Location implements org.eclipse.osgi.service.datalocation.Location {
-		@Override
-		public boolean allowsDefault() {
-			throw onPurpose();
-		}
-
-		@Override
-		public URL getDefault() {
-			throw onPurpose();
-		}
-
-		@Override
-		public org.eclipse.osgi.service.datalocation.Location getParentLocation() {
-			throw onPurpose();
-		}
-
-		@Override
-		public URL getURL() {
-			throw onPurpose();
-		}
-
-		@Override
-		public boolean isSet() {
-			throw onPurpose();
-		}
-
-		@Override
-		public boolean isReadOnly() {
-			throw onPurpose();
-		}
-
-		@Override
-		public boolean setURL(URL value, boolean lock) throws IllegalStateException {
-			throw onPurpose();
-		}
-
-		@Override
-		public boolean set(URL value, boolean lock) throws IllegalStateException {
-			throw onPurpose();
-		}
-
-		@Override
-		public boolean set(URL value, boolean lock, String lockFilePath) throws IllegalStateException {
-			throw onPurpose();
-		}
-
-		@Override
-		public boolean lock() {
-			throw onPurpose();
-		}
-
-		@Override
-		public void release() {
-			throw onPurpose();
-		}
-
-		@Override
-		public boolean isLocked() {
-			throw onPurpose();
-		}
-
-		@Override
-		public org.eclipse.osgi.service.datalocation.Location createLocation(
-				org.eclipse.osgi.service.datalocation.Location parent, URL defaultValue, boolean readonly) {
-			throw onPurpose();
-		}
-
-		@Override
-		public URL getDataArea(String path) throws IOException {
 			throw onPurpose();
 		}
 	}

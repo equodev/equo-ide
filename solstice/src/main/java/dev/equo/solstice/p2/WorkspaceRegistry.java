@@ -89,27 +89,26 @@ public class WorkspaceRegistry {
 	}
 
 	/** Returns the workspace directory appropriate for the given name and file. */
-	public File workspaceDir(File ideDir, boolean clean) {
-		File workspaceDir =
-				ownerToWorkspace.computeIfAbsent(
-						ideDir,
-						owner -> {
-							File workspace =
-									new File(root, ideDir.getName() + "-" + owner.getAbsolutePath().hashCode());
-							FileMisc.mkdirs(workspace);
-							FileMisc.writeToken(root, workspace.getName() + OWNER_PATH, ideDir.getAbsolutePath());
-							return workspace;
-						});
-		if (clean) {
-			File[] files = workspaceDir.listFiles();
-			String tokenFilename = workspaceDir.getName() + OWNER_PATH;
-			for (File file : files) {
-				if (!file.getName().equals(tokenFilename)) {
-					FileMisc.delete(file);
-				}
+	public File workspaceDirForProjectDir(File ideDir) {
+		return ownerToWorkspace.computeIfAbsent(
+				ideDir,
+				owner -> {
+					File workspace =
+							new File(root, ideDir.getName() + "-" + owner.getAbsolutePath().hashCode());
+					FileMisc.mkdirs(workspace);
+					FileMisc.writeToken(root, workspace.getName() + OWNER_PATH, ideDir.getAbsolutePath());
+					return workspace;
+				});
+	}
+
+	public void cleanWorkspaceDir(File workspaceDir) {
+		File[] files = workspaceDir.listFiles();
+		String tokenFilename = workspaceDir.getName() + OWNER_PATH;
+		for (File file : files) {
+			if (!file.getName().equals(tokenFilename)) {
+				FileMisc.delete(file);
 			}
 		}
-		return workspaceDir;
 	}
 
 	/** Removes all workspace directories for which their owning workspace is no longer present. */

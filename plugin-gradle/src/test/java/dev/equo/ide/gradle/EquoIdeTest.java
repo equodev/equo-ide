@@ -64,17 +64,6 @@ public class EquoIdeTest extends GradleHarness {
 
 	@Test
 	public void initOnly() throws IOException {
-		setFile("build.gradle")
-				.toLines(
-						"plugins { id 'dev.equo.ide' }",
-						"equoIde {",
-						"  p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'",
-						"  install 'org.eclipse.swt'",
-						"  install 'org.eclipse.equinox.common'",
-						"}");
-		runAndAssert("equoIde", "--init-only")
-				.matches("(?s)(.*)Loaded (\\d+) bundles using Atomos(.*)");
-
 		// useAtomos = false in buildscript
 		setFile("build.gradle")
 				.toLines(
@@ -85,10 +74,10 @@ public class EquoIdeTest extends GradleHarness {
 						"  install 'org.eclipse.equinox.common'",
 						"  useAtomos = false",
 						"}");
-		runAndAssert("equoIde", "--init-only")
+		runAndAssert("equoIde", "--init-only", "--use-atomos=false")
 				.matches("(?s)(.*)Loaded (\\d+) bundles not using Atomos(.*)");
 
-		// --dont-use-atomos at command line
+		// command line overrides buildscript
 		setFile("build.gradle")
 				.toLines(
 						"plugins { id 'dev.equo.ide' }",
@@ -96,9 +85,10 @@ public class EquoIdeTest extends GradleHarness {
 						"  p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'",
 						"  install 'org.eclipse.swt'",
 						"  install 'org.eclipse.equinox.common'",
+						"  useAtomos = false",
 						"}");
-		runAndAssert("equoIde", "--init-only", "--use-atomos=false")
-				.matches("(?s)(.*)Loaded (\\d+) bundles not using Atomos(.*)");
+		runAndAssert("equoIde", "--init-only", "--use-atomos=true")
+				.matches("(?s)(.*)Loaded (\\d+) bundles using Atomos(.*)");
 	}
 
 	@Test

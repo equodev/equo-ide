@@ -16,9 +16,11 @@ package dev.equo.ide;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 import javax.annotation.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public interface IdeHook extends Serializable {
 	class List extends ArrayList<IdeHook> {
@@ -29,20 +31,34 @@ public interface IdeHook extends Serializable {
 		}
 
 		InstantiatedList instantiate() {
-			var copy = new ArrayList<IdeHookInstantiated>();
+			var list = new InstantiatedList();
 			for (int i = 0; i < size(); ++i) {
-				copy.add(get(i).instantiate());
+				var hookGenerator = get(i);
+				try {
+					list.list.add(hookGenerator.instantiate());
+				} catch (Exception e) {
+					list.logError(hookGenerator, e);
+				}
 			}
-			return new InstantiatedList(copy);
+			return list;
 		}
 	}
 
 	class InstantiatedList {
-		private final ArrayList<IdeHookInstantiated> list;
-
-		private InstantiatedList(ArrayList<IdeHookInstantiated> list) {
-			this.list = list;
+		interface ThrowingConsumer {
+			void accept(IdeHookInstantiated hook) throws Exception;
 		}
+
+		interface ThrowingBiConsumer<T> {
+			void accept(IdeHookInstantiated hook, T arg) throws Exception;
+		}
+
+		private final ArrayList<IdeHookInstantiated> list = new ArrayList<>();
+		private final Logger logger = LoggerFactory.getLogger(IdeHook.class);
+		private @Nullable ArrayList<Map.Entry<Object, Exception>> errorsToReport = new ArrayList<>();
+		private @Nullable BiConsumer<Object, Exception> errorLogger;
+
+		private InstantiatedList() {}
 
 		@Nullable
 		<T extends IdeHookInstantiated> T find(Class<T> clazz) {
@@ -54,15 +70,54 @@ public interface IdeHook extends Serializable {
 			return null;
 		}
 
-		void forEach(Consumer<IdeHookInstantiated> method) {
-			for (IdeHookInstantiated hook : list) {
-				method.accept(hook);
+		void logError(Object hook, Exception e) {
+			logger.error("IdeHook failure " + hook, e);
+			if (errorLogger == null) {
+				errorsToReport.add(Map.entry(hook, e));
+			} else {
+				errorLogger.accept(hook, e);
 			}
 		}
 
-		<T> void forEach(BiConsumer<IdeHookInstantiated, T> method, T arg) {
+		/**
+		 * Whenever we call IdeHook methods using the `forEach` methods, we catch the exceptions. If an
+		 * exception gets thrown, we always log it to the slf4j logger. If an error logger has been set,
+		 * then we pass the exception there too. If an error logger has *not* been set, then we store
+		 * the exception. When a logger is eventually set, we pass all the exceptions to it.
+		 */
+		void setErrorLogger(BiConsumer<Object, Exception> errorLogger) {
+			if (this.errorLogger != null) {
+				try {
+					throw new IllegalArgumentException("setErrorLogger was called twice!");
+				} catch (IllegalArgumentException e) {
+					logger.warn(e.getMessage(), e);
+				}
+				return;
+			}
+			this.errorLogger = errorLogger;
+			for (var entry : errorsToReport) {
+				errorLogger.accept(entry.getKey(), entry.getValue());
+			}
+			errorsToReport = null;
+		}
+
+		void forEach(ThrowingConsumer method) {
 			for (IdeHookInstantiated hook : list) {
-				method.accept(hook, arg);
+				try {
+					method.accept(hook);
+				} catch (Exception e) {
+					logError(hook, e);
+				}
+			}
+		}
+
+		<T> void forEach(ThrowingBiConsumer<T> method, T arg) {
+			for (IdeHookInstantiated hook : list) {
+				try {
+					method.accept(hook, arg);
+				} catch (Exception e) {
+					logError(hook, e);
+				}
 			}
 		}
 
@@ -71,5 +126,12 @@ public interface IdeHook extends Serializable {
 		}
 	}
 
-	IdeHookInstantiated instantiate();
+	IdeHookInstantiated instantiate() throws Exception;
+
+	static IdeHookInstantiated usingReflection(String implementationClassName, IdeHook constructorArg)
+			throws Exception {
+		var clazz = Class.forName(implementationClassName);
+		var constructor = clazz.getDeclaredConstructor(constructorArg.getClass());
+		return (IdeHookInstantiated) constructor.newInstance(constructorArg);
+	}
 }

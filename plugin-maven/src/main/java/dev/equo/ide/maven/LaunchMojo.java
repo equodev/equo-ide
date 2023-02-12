@@ -17,11 +17,9 @@ import dev.equo.ide.BuildPluginIdeMain;
 import dev.equo.ide.IdeHook;
 import dev.equo.ide.IdeHookBranding;
 import dev.equo.ide.IdeHookWelcome;
-import dev.equo.ide.IdeLockFile;
 import dev.equo.solstice.NestedJars;
 import dev.equo.solstice.p2.P2Client;
 import dev.equo.solstice.p2.P2Unit;
-import dev.equo.solstice.p2.WorkspaceRegistry;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -69,7 +67,7 @@ public class LaunchMojo extends AbstractP2Mojo {
 	private BuildPluginIdeMain.DebugClasspath debugClasspath;
 
 	/** Determines whether to use Solstice's built-in OSGi runtime or instead Atomos+Equinox. */
-	@Parameter(property = "useAtomos", defaultValue = "true")
+	@Parameter(property = "useAtomos", defaultValue = "false")
 	private boolean useAtomos;
 
 	/** Blocks IDE startup to help you attach a debugger. */
@@ -110,15 +108,7 @@ public class LaunchMojo extends AbstractP2Mojo {
 							null,
 							EXCLUDE_ALL_TRANSITIVES));
 
-			var workspaceRegistry = WorkspaceRegistry.instance();
-			var workspaceDir = workspaceRegistry.workspaceDir(baseDir, clean);
-			workspaceRegistry.removeAbandoned();
-
-			var lockfile = IdeLockFile.forWorkspaceDir(workspaceDir);
-			var alreadyRunning = lockfile.ideAlreadyRunning();
-			if (IdeLockFile.alreadyRunningAndUserRequestsAbort(alreadyRunning)) {
-				return;
-			}
+			var caller = BuildPluginIdeMain.Caller.forProjectDir(baseDir, clean);
 
 			var query = super.query();
 			for (var coordinate : query.getJarsOnMavenCentral()) {
@@ -149,10 +139,7 @@ public class LaunchMojo extends AbstractP2Mojo {
 				ideHooks.add(welcomeHook);
 			}
 
-			BuildPluginIdeMain.Caller caller = new BuildPluginIdeMain.Caller();
-			caller.lockFile = lockfile;
 			caller.ideHooks = ideHooks;
-			caller.workspaceDir = workspaceDir;
 			caller.classpath = files;
 			caller.debugClasspath = debugClasspath;
 			caller.initOnly = initOnly;

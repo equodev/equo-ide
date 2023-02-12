@@ -3,6 +3,10 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+### Added
+- Buildship import works! ([#76](https://github.com/equodev/equo-ide/pull/76))
+  - We now run without Atomos by default.
+  - Specifying `-Dclean` no longer breaks the IDE-already-running detection.
 ### Fixed
 - No more errors on filesystems which don't support atomic move ([#73](https://github.com/equodev/equo-ide/pull/73))
 ### Changed

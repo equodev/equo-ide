@@ -15,6 +15,7 @@ package dev.equo.solstice;
 
 import java.io.File;
 import java.util.Map;
+import javax.annotation.Nullable;
 import org.eclipse.osgi.service.datalocation.Location;
 import org.slf4j.Logger;
 
@@ -34,20 +35,16 @@ class ShimStorage {
 		}
 	}
 
-	File getDataFileBundle(BundleContextSolstice.ShimBundle bundle, String filename) {
+	File getDataFileBundle(ShimBundle bundle, @Nullable String filename) {
 		if (configDir == null) {
 			return null;
 		}
 		File dir = new File(configDir, bundle.getSymbolicName() + "/" + bundle.getBundleId() + "/data");
 		dir.mkdirs();
-		return new File(dir, filename);
-	}
-
-	File getDataFileSystemBundle(BundleContextSolstice context, String filename) {
-		return getDataFileBundle(context.bundleForSymbolicName("org.eclipse.osgi"), filename);
-	}
-
-	File getDataFileRootContext(BundleContextSolstice context, String filename) {
-		return getDataFileSystemBundle(context, filename);
+		if (filename == null) {
+			return dir;
+		} else {
+			return new File(dir, filename);
+		}
 	}
 }
