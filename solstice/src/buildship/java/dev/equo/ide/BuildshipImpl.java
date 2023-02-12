@@ -16,11 +16,14 @@ package dev.equo.ide;
 import com.google.common.collect.ImmutableList;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import org.eclipse.buildship.core.GradleCore;
+import org.eclipse.buildship.core.GradleDistribution;
 import org.eclipse.buildship.core.SynchronizationResult;
 import org.eclipse.buildship.core.internal.DefaultGradleBuild;
 import org.eclipse.buildship.core.internal.workspace.NewProjectHandler;
+import org.eclipse.buildship.ui.internal.util.gradle.GradleDistributionViewModel;
 import org.eclipse.buildship.ui.internal.util.workbench.WorkbenchUtils;
 import org.eclipse.buildship.ui.internal.util.workbench.WorkingSetUtils;
 import org.eclipse.buildship.ui.internal.wizard.project.ProjectImportConfiguration;
@@ -83,12 +86,24 @@ class BuildshipImpl implements IdeHookInstantiated {
 		importCfg.setProjectDir(data.rootDir);
 		importCfg.setOfflineMode(data.isOffline);
 
-		boolean showExecutionsView = true;
+		var distribution = GradleDistribution.fromBuild();
+		importCfg.setDistribution(GradleDistributionViewModel.from(distribution));
+
+		importCfg.setAutoSync(true);
+		importCfg.setApplyWorkingSets(true);
+		importCfg.setBuildScansEnabled(false);
+		importCfg.setShowConsoleView(true);
+		importCfg.setShowExecutionsView(true);
+		importCfg.setOverwriteWorkspaceSettings(true);
+		importCfg.setWorkingSets(Collections.emptyList());
+
 		var buildCfg = importCfg.toBuildConfiguration();
 		var gradleBuild = GradleCore.getWorkspace().createBuild(buildCfg);
 		var workingSetsAddingNewProjectHandler =
 				new ImportWizardNewProjectHandler(
-						NewProjectHandler.IMPORT_AND_MERGE, importCfg, showExecutionsView);
+						NewProjectHandler.IMPORT_AND_MERGE,
+						importCfg,
+						importCfg.getShowExecutionsView().getValue());
 		SynchronizationResult result =
 				((DefaultGradleBuild) gradleBuild)
 						.synchronize(
