@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+### Fixed
+- JUnit launch now works correctly. ([#81](https://github.com/equodev/equo-ide/pull/81))
 
 ## [0.14.0] - 2023-02-12
 ### Added
