@@ -16,6 +16,7 @@ package dev.equo.ide;
 import java.io.File;
 import java.util.ArrayList;
 
+@SuppressWarnings("serial")
 class IdeHookLockFile implements IdeHook {
 	public static IdeHookLockFile forWorkspaceDirAndClasspath(
 			File workspaceDir, ArrayList<File> classpath) {

@@ -50,6 +50,7 @@ import org.slf4j.LoggerFactory;
  * A single-classloader implementation of OSGi which eagerly loads all the OSGi plugins it can find
  * on the classpath.
  */
+@SuppressWarnings("deprecation")
 public class BundleContextShim extends ServiceRegistry {
 	final Logger logger = LoggerFactory.getLogger(BundleContextShim.class);
 

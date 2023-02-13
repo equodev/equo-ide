@@ -24,6 +24,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.slf4j.LoggerFactory;
 
+@SuppressWarnings("serial")
 public class IdeHookBranding implements IdeHook {
 	private static String DEFAULT_TITLE = "Equo IDE";
 	private String title = DEFAULT_TITLE;

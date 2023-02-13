@@ -45,6 +45,7 @@ import org.osgi.service.condition.Condition;
 import org.osgi.service.packageadmin.PackageAdmin;
 
 /** Controls the initialization of the {@link BundleContextShim} runtime. */
+@SuppressWarnings("deprecation")
 public class ShimIdeBootstrapServices {
 	public static void apply(Map<String, String> props, BundleContext contextUntyped) {
 		BundleContextShim context = (BundleContextShim) contextUntyped;
@@ -212,6 +213,7 @@ public class ShimIdeBootstrapServices {
 			this.isSax = isSax;
 		}
 
+		@SuppressWarnings("unchecked")
 		@Override
 		public T getService(Bundle bundle, ServiceRegistration<T> registration) {
 			if (isSax) {

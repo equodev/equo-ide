@@ -29,7 +29,6 @@ public class PartDescriptorHelper extends EditorPart {
 		input.createPartControl(parentCmp);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void init(IEditorSite site, IEditorInput input) {
 		setSite(site);

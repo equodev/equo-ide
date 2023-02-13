@@ -15,6 +15,7 @@ package dev.equo.ide;
 
 import java.io.File;
 
+@SuppressWarnings("serial")
 public class IdeHookBuildship implements IdeHook {
 	File rootDir;
 	boolean isOffline;

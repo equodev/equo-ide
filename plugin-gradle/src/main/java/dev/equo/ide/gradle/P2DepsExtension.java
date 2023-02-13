@@ -53,7 +53,7 @@ public class P2DepsExtension {
 				ModuleDependency dep = (ModuleDependency) project.getDependencies().add(config, mavenCoord);
 				dep.setTransitive(false);
 			}
-			var localFiles = new ArrayList();
+			var localFiles = new ArrayList<>();
 			try (var client = new P2Client(caching)) {
 				for (var unit : query.getJarsNotOnMavenCentral()) {
 					localFiles.add(client.download(unit));

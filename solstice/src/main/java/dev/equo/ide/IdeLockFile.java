@@ -47,6 +47,7 @@ public class IdeLockFile {
 		return new File(workspaceDir, CLASSPATH_FILENAME).exists();
 	}
 
+	@SuppressWarnings("unchecked")
 	public ArrayList<File> readClasspath() {
 		return SerializableMisc.fromFile(ArrayList.class, new File(workspaceDir, CLASSPATH_FILENAME));
 	}

@@ -20,6 +20,7 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 
 class Dictionaries {
+	@SafeVarargs
 	static <T> Enumeration<T> enumeration(T... values) {
 		return Collections.enumeration(Arrays.asList(values));
 	}
@@ -72,9 +73,11 @@ class Dictionaries {
 			return backing.equals(other);
 		}
 
+		@SuppressWarnings("rawtypes")
 		private static final EmptyDictionary INSTANCE = new EmptyDictionary();
 	}
 
+	@SuppressWarnings("unchecked")
 	public static <K, V> Dictionary<K, V> empty() {
 		return EmptyDictionary.INSTANCE;
 	}

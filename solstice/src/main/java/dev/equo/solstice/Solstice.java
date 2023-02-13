@@ -448,6 +448,7 @@ public class Solstice {
 		return fastAddGet(bundlesForPkg);
 	}
 
+	@SuppressWarnings("unchecked")
 	private Object fastAdd(Object currentValue, SolsticeManifest toAdd) {
 		if (currentValue == null) {
 			return toAdd;
@@ -462,6 +463,7 @@ public class Solstice {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	private List<SolsticeManifest> fastAddGet(Object currentValue) {
 		if (currentValue == null) {
 			return Collections.emptyList();

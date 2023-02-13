@@ -47,6 +47,7 @@ import org.osgi.framework.wiring.BundleWiring;
 import org.osgi.framework.wiring.FrameworkWiring;
 import org.osgi.service.packageadmin.PackageAdmin;
 
+@SuppressWarnings("deprecation")
 public class ShimBundle implements Bundle {
 	static class ShimBundleContext extends BundleContextDelegate {
 		final ShimBundle bundle;
@@ -158,6 +159,7 @@ public class ShimBundle implements Bundle {
 
 		if (!BundleContextShim.DONT_ACTIVATE.contains(getSymbolicName()) && activator != null) {
 			try {
+				@SuppressWarnings("unchecked")
 				var c = (Constructor<BundleActivator>) Class.forName(activator).getConstructor();
 				context.activator = c.newInstance();
 				context.activator.start(context);
@@ -337,6 +339,7 @@ public class ShimBundle implements Bundle {
 	}
 
 	// implemented for OSGi DS
+	@SuppressWarnings("unchecked")
 	@Override
 	public <A> A adapt(Class<A> type) {
 		if (bundleId == 0) {

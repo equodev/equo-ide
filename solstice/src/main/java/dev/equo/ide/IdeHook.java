@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public interface IdeHook extends Serializable {
+	@SuppressWarnings("serial")
 	class List extends ArrayList<IdeHook> {
 		public List copy() {
 			List copy = new List();
@@ -60,6 +61,7 @@ public interface IdeHook extends Serializable {
 
 		private InstantiatedList() {}
 
+		@SuppressWarnings("unchecked")
 		@Nullable
 		<T extends IdeHookInstantiated> T find(Class<T> clazz) {
 			for (var e : list) {
