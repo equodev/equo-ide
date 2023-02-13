@@ -6,6 +6,8 @@ apply plugin: 'java-gradle-plugin'
 apply plugin: 'com.gradle.plugin-publish'
 
 gradlePlugin {
+	website = "https://${url}"
+	vcsUrl = "https://${url}.git"
 	plugins {
 		for (plugin in plugin_list) {
 			register plugin, {
@@ -13,13 +15,8 @@ gradlePlugin {
 				implementationClass = 干.proj("gradlePlugin_${plugin}_impl", "for ${plugin}: implementationClass")
 				displayName         = 干.proj("gradlePlugin_${plugin}_name", "for ${plugin}: name for the plugin portal")
 				description         = 干.proj("gradlePlugin_${plugin}_desc", "for ${plugin}: description for the plugin portal")
+				tags.set(Arrays.asList(plugin_tags))
 			}
 		}
 	}
-}
-
-pluginBundle {
-	website = "https://${url}"
-	vcsUrl = "https://${url}.git"
-	tags = plugin_tags
 }
