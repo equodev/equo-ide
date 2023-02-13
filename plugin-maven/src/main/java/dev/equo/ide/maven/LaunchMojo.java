@@ -111,6 +111,21 @@ public class LaunchMojo extends AbstractP2Mojo {
 
 			var caller = BuildPluginIdeMain.Caller.forProjectDir(baseDir, clean);
 
+			if (useAtomos) {
+				deps.add(
+						new Dependency(
+								new DefaultArtifact("org.apache.felix:org.apache.felix.atomos:1.0.0"),
+								null,
+								null,
+								EXCLUDE_ALL_TRANSITIVES));
+				deps.add(
+						new Dependency(
+								new DefaultArtifact("org.apache.felix.atomos:osgi.core:8.0.0:AtomosEquinox"),
+								null,
+								null,
+								EXCLUDE_ALL_TRANSITIVES));
+			}
+
 			var query = super.query();
 			for (var coordinate : query.getJarsOnMavenCentral()) {
 				deps.add(

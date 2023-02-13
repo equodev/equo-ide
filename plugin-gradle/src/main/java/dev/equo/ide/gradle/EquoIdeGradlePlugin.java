@@ -33,6 +33,8 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 	private static final String TASK_GROUP = "IDE";
 	private static final String EQUO_IDE = "equoIde";
 
+	private static String USE_ATOMOS_FLAG = "--use-atomos=";
+
 	@Override
 	public void apply(Project project) {
 		if (gradleIsTooOld(project)) {
@@ -75,6 +77,23 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 		project.afterEvaluate(
 				unused -> {
 					try {
+						boolean useAtomosOverride =
+								project.getGradle().getStartParameter().getTaskRequests().stream()
+										.flatMap(taskReq -> taskReq.getArgs().stream())
+										.filter(
+												arg ->
+														arg.startsWith(USE_ATOMOS_FLAG)
+																&& Boolean.parseBoolean(arg.substring(USE_ATOMOS_FLAG.length())))
+										.findAny()
+										.isPresent();
+						if (extension.useAtomos || useAtomosOverride) {
+							project
+									.getDependencies()
+									.add(EQUO_IDE, "org.apache.felix:org.apache.felix.atomos:1.0.0");
+							project
+									.getDependencies()
+									.add(EQUO_IDE, "org.apache.felix.atomos:osgi.core:8.0.0:AtomosEquinox");
+						}
 						var query = extension.performQuery(caching);
 						query
 								.getJarsOnMavenCentral()
