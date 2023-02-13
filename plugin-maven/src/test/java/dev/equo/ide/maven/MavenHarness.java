@@ -62,8 +62,10 @@ public class MavenHarness extends ResourceHarness {
 			args.add("-c");
 			args.add("./mvnw " + argsAfterMvnw);
 		}
-		var outputBytes = new ProcessRunner(rootFolder()).exec(args).stdOut();
-		return new Output(new String(outputBytes));
+		try (var runner = new ProcessRunner(rootFolder())) {
+			var outputBytes = runner.exec(args).stdOut();
+			return new Output(new String(outputBytes));
+		}
 	}
 
 	public static class Output {

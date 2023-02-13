@@ -178,6 +178,7 @@ public class P2Client implements AutoCloseable {
 		throw new IllegalStateException("P2Client is in offline mode but has no cache for " + url);
 	}
 
+	@SuppressWarnings("serial")
 	static class NotFoundException extends Exception {
 		NotFoundException(String url) {
 			super(url);

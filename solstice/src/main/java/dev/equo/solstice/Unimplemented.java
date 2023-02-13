@@ -26,6 +26,7 @@ import org.osgi.resource.Wire;
 import org.osgi.service.packageadmin.ExportedPackage;
 import org.osgi.service.packageadmin.RequiredBundle;
 
+@SuppressWarnings("deprecation")
 class Unimplemented {
 	static RuntimeException onPurpose() {
 		return onPurpose("Solstice believes that this method is not actually needed.");

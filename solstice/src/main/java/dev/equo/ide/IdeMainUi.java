@@ -51,7 +51,7 @@ class IdeMainUi {
 		Map<String, Object> appProps = new HashMap<>();
 		appProps.put(IApplicationContext.APPLICATION_ARGS, new String[] {});
 		try {
-			var appHandle = appDescriptor.launch(appProps);
+			appDescriptor.launch(appProps);
 		} catch (ApplicationException e) {
 			throw new RuntimeException(e);
 		}

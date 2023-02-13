@@ -108,7 +108,7 @@ public class BundleContextAtomos implements Atomos.HeaderProvider {
 	public static void urlWorkaround(BundleContext bundleContext) throws InvalidSyntaxException {
 		var converters = bundleContext.getServiceReferences(URLConverter.class, "(protocol=platform)");
 		for (ServiceReference<URLConverter> toRemove : converters) {
-			((org.eclipse.osgi.internal.serviceregistry.ServiceReferenceImpl) toRemove)
+			((org.eclipse.osgi.internal.serviceregistry.ServiceReferenceImpl<URLConverter>) toRemove)
 					.getRegistration()
 					.unregister();
 		}

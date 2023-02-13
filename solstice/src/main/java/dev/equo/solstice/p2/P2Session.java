@@ -105,6 +105,7 @@ public class P2Session {
 	 * RequirementRoot}, but layers on top the ability to add detail to the requirement (specifically
 	 * that it is optional).
 	 */
+	@SuppressWarnings("unchecked")
 	private static class RequirementRoot implements Requirement {
 		private final String namespace;
 		private final String name;

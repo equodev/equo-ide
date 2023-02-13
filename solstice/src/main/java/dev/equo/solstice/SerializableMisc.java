@@ -36,6 +36,7 @@ public class SerializableMisc {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public static <T> T fromFile(Class<T> clazz, File file) {
 		try (InputStream fileStream = new FileInputStream(file);
 				ObjectInputStream objectStream = new ObjectInputStream(fileStream)) {

@@ -13,6 +13,7 @@
  *******************************************************************************/
 package dev.equo.ide;
 
+@SuppressWarnings("serial")
 public class IdeHookWelcome implements IdeHook {
 	String openUrl;
 

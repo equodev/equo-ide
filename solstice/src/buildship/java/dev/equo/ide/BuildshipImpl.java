@@ -143,7 +143,8 @@ class BuildshipImpl implements IdeHookInstantiated {
 		private void addWorkingSets(IProject project) {
 			List<String> workingSetNames =
 					configuration.getApplyWorkingSets().getValue()
-							? ImmutableList.copyOf((Collection) this.configuration.getWorkingSets().getValue())
+							? ImmutableList.copyOf(
+									(Collection<String>) this.configuration.getWorkingSets().getValue())
 							: ImmutableList.of();
 			IWorkingSetManager workingSetManager = PlatformUI.getWorkbench().getWorkingSetManager();
 			IWorkingSet[] workingSets = WorkingSetUtils.toWorkingSets(workingSetNames);

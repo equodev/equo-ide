@@ -65,6 +65,7 @@ abstract class ServiceRegistry extends BundleContextImpl {
 		return registerService(new String[] {clazz}, service, properties);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public final <S> ServiceRegistration<S> registerService(
 			Class<S> clazz, ServiceFactory<S> factory, Dictionary<String, ?> properties) {
@@ -98,14 +99,11 @@ abstract class ServiceRegistry extends BundleContextImpl {
 		if (dict == null) {
 			return "{null}";
 		}
-		StringBuilder builder = new StringBuilder();
-		builder.append('{');
-		TreeMap<String, String> map = new TreeMap<>();
+		// sort the keys
+		TreeMap<String, String> sorted = new TreeMap<>();
 		var keys = dict.keys();
 		while (keys.hasMoreElements()) {
 			var key = keys.nextElement();
-			builder.append(key);
-			builder.append('=');
 			var value = dict.get(key);
 			String valueStr;
 			if (value instanceof String[]) {
@@ -113,9 +111,18 @@ abstract class ServiceRegistry extends BundleContextImpl {
 			} else {
 				valueStr = value.toString();
 			}
-			builder.append(valueStr);
-			builder.append(',');
+			sorted.put(key, valueStr);
 		}
+
+		StringBuilder builder = new StringBuilder();
+		builder.append('{');
+		sorted.forEach(
+				(key, valueStr) -> {
+					builder.append(key);
+					builder.append('=');
+					builder.append(valueStr);
+					builder.append(',');
+				});
 		builder.setLength(builder.length() - 1);
 		return builder.toString();
 	}
@@ -170,6 +177,7 @@ abstract class ServiceRegistry extends BundleContextImpl {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public final <S> ServiceRegistration<S> registerService(
 			Class<S> clazz, S service, Dictionary<String, ?> properties) {
@@ -206,6 +214,7 @@ abstract class ServiceRegistry extends BundleContextImpl {
 				: servicesForClazz.get(0);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public final synchronized <S> ServiceReference<S> getServiceReference(Class<S> clazz) {
 		return (ServiceReference<S>) getServiceReference(clazz.getName());
@@ -241,6 +250,7 @@ abstract class ServiceRegistry extends BundleContextImpl {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public final <S> Collection<ServiceReference<S>> getServiceReferences(
 			Class<S> clazz, String filter) throws InvalidSyntaxException {
@@ -314,13 +324,13 @@ abstract class ServiceRegistry extends BundleContextImpl {
 			implements ServiceReference<S>, ServiceRegistration<S> {
 		final String[] objectClass;
 		final long id;
-		Dictionary<String, Object> properties;
+		Dictionary<String, ?> properties;
 
 		AbstractServiceReference(String[] objectClass, Dictionary<String, ?> properties) {
 			this.id = globalId.getAndIncrement();
 			this.objectClass = objectClass;
 			if (properties != null) {
-				this.properties = Dictionaries.copy((Dictionary<String, Object>) properties);
+				this.properties = Dictionaries.copy(properties);
 			} else {
 				this.properties = Dictionaries.empty();
 			}
@@ -347,13 +357,14 @@ abstract class ServiceRegistry extends BundleContextImpl {
 			return keys.toArray(new String[0]);
 		}
 
+		@SuppressWarnings("unchecked")
 		@Override
 		public synchronized Dictionary<String, Object> getProperties() {
-			return properties;
+			return (Dictionary<String, Object>) properties;
 		}
 
 		@Override
-		public synchronized void setProperties(Dictionary properties) {
+		public synchronized void setProperties(Dictionary<String, ?> properties) {
 			this.properties = properties;
 			notifyListeners(ServiceEvent.MODIFIED, this);
 		}

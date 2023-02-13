@@ -40,6 +40,7 @@ class Table {
 		RIGHT
 	}
 
+	@SafeVarargs
 	public static <T> String getTable(
 			ConsoleTable.Format kind, Collection<T> objects, TableColumn.Data<T>... columns) {
 		if (kind == ConsoleTable.Format.csv) {
