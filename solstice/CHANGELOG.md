@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+### Fixed
+- Missing OSGi capabilities are now handled the same as missing bundles and packages. ([#80](https://github.com/equodev/equo-ide/pull/80) fixes [#74](https://github.com/equodev/equo-ide/issues/74))
 
 ## [0.14.0] - 2023-02-12
 ### Added
