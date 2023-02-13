@@ -13,6 +13,7 @@
  *******************************************************************************/
 package dev.equo.ide.maven;
 
+import com.diffplug.common.swt.os.OS;
 import dev.equo.ide.BuildPluginIdeMain;
 import dev.equo.ide.IdeHook;
 import dev.equo.ide.IdeHookBranding;
@@ -139,6 +140,9 @@ public class LaunchMojo extends AbstractP2Mojo {
 				ideHooks.add(welcomeHook);
 			}
 
+			if (!OS.getNative().isMac()) {
+				System.setProperty("equo-ide-maven-workarounds", "true");
+			}
 			caller.ideHooks = ideHooks;
 			caller.classpath = files;
 			caller.debugClasspath = debugClasspath;
