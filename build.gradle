@@ -6,7 +6,7 @@ plugins {
 apply plugin: 'dev.equo.ide'
 equoIde {
 	branding().title('Equo IDE')
-	welcome().openUrl('https://github.com/equodev/equo-ide')
+	welcome().openUrl('https://github.com/equodev/equo-ide/blob/main/CONTRIBUTING.md#equoide-and-solstice-developers-guide')
 }
 
 allprojects {
