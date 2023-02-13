@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+### Fixed
+- Atomos dependencies are only added when they are needed. ([#83](https://github.com/equodev/equo-ide/pull/83))
 
 ## [0.14.1] - 2023-02-13
 ### Fixed
