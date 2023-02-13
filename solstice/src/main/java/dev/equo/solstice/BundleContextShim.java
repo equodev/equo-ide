@@ -217,7 +217,6 @@ public class BundleContextShim extends ServiceRegistry {
 						if (bundle == null) {
 							return Collections.emptyList();
 						} else {
-							Objects.requireNonNull(bundle, filter.getValue());
 							return Collections.singleton(new ShimBundleCapability(bundle));
 						}
 					} else {

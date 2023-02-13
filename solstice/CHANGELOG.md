@@ -5,6 +5,9 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 ## [Unreleased]
 ### Fixed
 - Missing OSGi capabilities are now handled the same as missing bundles and packages. ([#80](https://github.com/equodev/equo-ide/pull/80) fixes [#74](https://github.com/equodev/equo-ide/issues/74))
+- JUnit launch now works correctly. ([#81](https://github.com/equodev/equo-ide/pull/81))
+  - `Bundle.getEntry("/")` now returns `file://blah.jar` URL, instead of the `jar:file://blah.jar!/subpath` that it normally returns.
+  - We now remove the `Bundle-ClassPath` header from Atomos and Shim modes, because `NestedJars` ensures that it is not necessary.
 
 ## [0.14.0] - 2023-02-12
 ### Added

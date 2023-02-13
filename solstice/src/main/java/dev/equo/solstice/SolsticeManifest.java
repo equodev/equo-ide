@@ -89,6 +89,7 @@ public class SolsticeManifest {
 		for (Map.Entry<Object, Object> entry : manifest.getMainAttributes().entrySet()) {
 			headersOriginal.put(entry.getKey().toString(), entry.getValue().toString());
 		}
+		headersOriginal.remove(Constants.BUNDLE_CLASSPATH); // this is handled by NestedJars
 
 		var symbolicNameRaw = parseAndStrip(Constants.BUNDLE_SYMBOLICNAME);
 		symbolicName = symbolicNameRaw.isEmpty() ? null : symbolicNameRaw.get(0);

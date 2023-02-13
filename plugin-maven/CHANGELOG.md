@@ -8,6 +8,8 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
   - mac already works great
   - linux now has a `sleep 5`
   - windows now has a visible cmd prompt console
+- JUnit launch now works correctly. ([#81](https://github.com/equodev/equo-ide/pull/81))
+
 ## [0.13.1] - 2023-02-12
 ### Fixed
 - No more errors on filesystems which don't support atomic move. ([#73](https://github.com/equodev/equo-ide/pull/73))
