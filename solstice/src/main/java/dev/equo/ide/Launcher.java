@@ -87,8 +87,8 @@ public class Launcher {
 			builder.directory(cwd);
 		}
 		var process = builder.start();
-		var outPumper = new StreamPumper(process.getInputStream(), System.out);
-		var errPumper = new StreamPumper(process.getErrorStream(), System.err);
+		var outPumper = new StreamPumper(process, process.getInputStream(), System.out);
+		var errPumper = new StreamPumper(process, process.getErrorStream(), System.err);
 		if (monitorProcess != null) {
 			new Thread(
 							() -> {
@@ -104,10 +104,12 @@ public class Launcher {
 	}
 
 	static class StreamPumper extends Thread {
+		private final Process process;
 		private final InputStream in;
 		private final PrintStream out;
 
-		private StreamPumper(InputStream in, PrintStream out) {
+		private StreamPumper(Process process, InputStream in, PrintStream out) {
+			this.process = process;
 			this.in = in;
 			this.out = out;
 			start();
@@ -123,7 +125,10 @@ public class Launcher {
 					out.flush();
 				}
 			} catch (IOException e) {
-				throw new RuntimeException(e);
+				if (process.isAlive()) {
+					// only report the exception if the process is alive
+					throw new RuntimeException(e);
+				}
 			}
 		}
 	}

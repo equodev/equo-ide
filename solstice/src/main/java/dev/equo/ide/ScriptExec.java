@@ -76,6 +76,10 @@ class ScriptExec {
 		}
 	}
 
+	private static boolean mavenWorkarounds() {
+		return "true".equals(System.getProperty("equo-ide-maven-workarounds"));
+	}
+
 	/** The integer value which marks that a process exited successfully. */
 	private static final int EXIT_VALUE_SUCCESS = 0;
 
@@ -167,7 +171,11 @@ class ScriptExec {
 			// use sh to execute
 			if (isSeparate) {
 				File spawningScript =
-						createSelfDeletingScript("nohup " + quote(scriptFile) + " &" + "\n" + "disown");
+						createSelfDeletingScript(
+								""
+										+ ("nohup " + quote(scriptFile) + " &\n")
+										+ (mavenWorkarounds() ? "sleep 5\n" : "")
+										+ "disown\n");
 				return List.of("/bin/bash", spawningScript.getAbsolutePath());
 			} else {
 				return List.of("/bin/bash", scriptFile.getAbsolutePath());
@@ -181,7 +189,7 @@ class ScriptExec {
 				".vbs",
 				(file, printer) -> {
 					// args are at http://ss64.com/vb/run.html
-					String windowStyle = "0";
+					String windowStyle = mavenWorkarounds() ? "1" : "0";
 					String waitOnReturn = isSeparate ? "False" : "True";
 					// open the shell
 					printer.println(
