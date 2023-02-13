@@ -1,4 +1,4 @@
-# EquoIDE and Solstice Contributing Guide
+# EquoIDE and Solstice Developer's Guide
 
 We use EquoIDE to develop EquoIDE and Solstice. Clone this repo, cd into its root directory, and run `gradlew equoIde`.
 
