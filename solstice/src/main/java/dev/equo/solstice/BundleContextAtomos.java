@@ -14,6 +14,7 @@
 package dev.equo.solstice;
 
 import java.net.URL;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -67,6 +68,10 @@ public class BundleContextAtomos implements Atomos.HeaderProvider {
 		setHeader(atomos, Constants.IMPORT_PACKAGE, manifest.pkgImports);
 		setHeader(atomos, Constants.EXPORT_PACKAGE, manifest.pkgExports);
 		setHeader(atomos, Constants.REQUIRE_BUNDLE, manifest.requiredBundles);
+		setHeader(
+				atomos,
+				Constants.BUNDLE_CLASSPATH,
+				Collections.emptyList()); // NestedJars makes this unnecessary
 		// TODO: Atomos will work better if we finish https://github.com/equodev/equo-ide/issues/74
 		// setHeader(atomos, Constants.REQUIRE_CAPABILITY, manifest.TODO);
 		return atomos;
