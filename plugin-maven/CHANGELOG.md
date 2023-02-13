@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+
+## [0.13.2] - 2023-02-13
 ### Fixed
 - More attempts to improve maven IDE launch experience. ([#79](https://github.com/equodev/equo-ide/pull/79) fixes [#44](https://github.com/equodev/equo-ide/issues/44))
   - mac already works great
