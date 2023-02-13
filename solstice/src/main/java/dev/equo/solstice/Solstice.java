@@ -196,7 +196,7 @@ public class Solstice {
 		bySymbolicName.forEach(
 				(symbolicName, manifests) -> {
 					if (manifests.size() > 1) {
-						logger.warn("Multiple bundles with same symbolic name: " + symbolicName);
+						logger.warn("Multiple bundles with the same symbolic name: " + symbolicName);
 						for (SolsticeManifest manifest : manifests) {
 							logger.warn("  - " + manifest.getJarUrl());
 						}
@@ -240,24 +240,29 @@ public class Solstice {
 					if (missing.startsWith("org.xml.") || missing.startsWith("org.w3c.")) {
 						return;
 					}
-					logger.warn("Missing imported package " + missing + " imported by " + neededBy);
+					logger.warn("Missing imported package " + missing + " needed by " + neededBy);
 				});
 		for (var bundle : bundles) {
 			bundle.removeFromRequiredBundles(missingBundles.keySet());
 			bundle.removeFromPkgImports(missingPackages.keySet());
 		}
 
-		// warn about missing requirements. TODO: remove missing requirements and set them in Atomos
+		// warn about missing requirements
 		var allCapabilities = new Capability.SupersetSet();
 		for (var bundle : bundles) {
 			allCapabilities.addAll(bundle.capProvides);
 		}
+		var missingCapability = new TreeSet<Capability>();
 		for (var bundle : bundles) {
 			for (var cap : bundle.capRequires) {
 				if (!allCapabilities.containsAnySupersetOf(cap)) {
-					logger.warn("Missing capability " + cap + " required by " + bundle);
+					logger.warn("Missing required capability " + cap + " needed by " + bundle);
+					missingCapability.add(cap);
 				}
 			}
+		}
+		for (var bundle : bundles) {
+			bundle.removeRequiredCapabilities(missingCapability);
 		}
 	}
 
@@ -373,9 +378,7 @@ public class Solstice {
 		while ((cap = missingCap(manifest)) != null) {
 			var bundles = unactivatedBundlesForCap(cap);
 			if (bundles.isEmpty()) {
-				logger.warn("{} requires missing capability {}", manifest, cap);
-				caps.add(cap);
-				// throw new IllegalArgumentException(manifest + " requires missing capability " + cap);
+				throw new IllegalArgumentException(manifest + " requires missing capability " + cap);
 			} else {
 				for (var bundle : bundles) {
 					start(bundle);
@@ -409,7 +412,6 @@ public class Solstice {
 	}
 
 	private List<SolsticeManifest> unactivatedBundlesForCap(Capability targetCap) {
-		var target = targetCap.toString();
 		Object bundlesForCap = null;
 		for (var bundle : bundles) {
 			if (bundle.isFragment() || activatingBundles.contains(bundle)) {
