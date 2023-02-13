@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+
+## [0.14.1] - 2023-02-13
 ### Fixed
 - Missing OSGi capabilities are now handled the same as missing bundles and packages. ([#80](https://github.com/equodev/equo-ide/pull/80) fixes [#74](https://github.com/equodev/equo-ide/issues/74))
 - JUnit launch now works correctly. ([#81](https://github.com/equodev/equo-ide/pull/81))
