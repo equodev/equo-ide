@@ -6,7 +6,7 @@ The first time you launch it, watch the status bar at the bottom as the Gradle p
 
 A good place to start is running the Solstice tests by right-clicking the solstice project and doing `Run As -> JUnit Test`.
 
-<img src="https://github.com/equodev/equo-ide/raw/main/.github/example-run-junit-test.png" max-width=50% max-height=50%>
+<img src="https://github.com/equodev/equo-ide/raw/main/.github/example-run-junit-test.png" max-height="558px">
 
 ## Troubleshooting
 
