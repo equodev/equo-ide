@@ -209,6 +209,17 @@ public class ShimBundle implements Bundle {
 	@Override
 	public URL getEntry(String path) {
 		try {
+			if (path.equals("/")) {
+				// when asked for `/` we should return the jar file itself
+				if (!manifest.getJarUrl().startsWith("jar:file:") || !manifest.getJarUrl().endsWith("!")) {
+					throw new IllegalArgumentException(
+							"Expected jarUrl to start with `jar:` and end with `!`, was `"
+									+ manifest.getJarUrl()
+									+ "`");
+				}
+				int len = manifest.getJarUrl().length();
+				return new URL(manifest.getJarUrl().substring("jar:".length(), len - "!".length()));
+			}
 			ZipEntry entry = parseFromZip(zip -> zip.getEntry(stripLeadingSlash(path)));
 			if (entry != null) {
 				return new URL(manifest.getJarUrl() + "/" + stripLeadingSlash(path));
