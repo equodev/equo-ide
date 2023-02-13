@@ -24,6 +24,7 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
@@ -159,6 +160,11 @@ public class SolsticeManifest {
 		String key = filter.substring(1, equalsSpot);
 		String value = filter.substring(equalsSpot + 1, filter.length() - 1);
 		return Map.entry(key, value);
+	}
+
+	void removeRequiredCapabilities(Set<Capability> missingCapabilities) {
+		// TODO: Atomos will work better if we finish https://github.com/equodev/equo-ide/issues/74
+		capRequires.removeAll(missingCapabilities);
 	}
 
 	private List<Capability> parseCapability(

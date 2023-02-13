@@ -67,6 +67,8 @@ public class BundleContextAtomos implements Atomos.HeaderProvider {
 		setHeader(atomos, Constants.IMPORT_PACKAGE, manifest.pkgImports);
 		setHeader(atomos, Constants.EXPORT_PACKAGE, manifest.pkgExports);
 		setHeader(atomos, Constants.REQUIRE_BUNDLE, manifest.requiredBundles);
+		// TODO: Atomos will work better if we finish https://github.com/equodev/equo-ide/issues/74
+		// setHeader(atomos, Constants.REQUIRE_CAPABILITY, manifest.TODO);
 		return atomos;
 	}
 
