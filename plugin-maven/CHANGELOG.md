@@ -3,7 +3,11 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
-
+### Fixed
+- More attempts to improve maven IDE launch experience. ([#79](https://github.com/equodev/equo-ide/pull/79) fixes [#44](https://github.com/equodev/equo-ide/issues/44))
+  - mac already works great
+  - linux now has a `sleep 5`
+  - windows now has a visible cmd prompt console
 ## [0.13.1] - 2023-02-12
 ### Fixed
 - No more errors on filesystems which don't support atomic move. ([#73](https://github.com/equodev/equo-ide/pull/73))
