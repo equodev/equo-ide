@@ -24,6 +24,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.List;
@@ -31,7 +32,7 @@ import java.util.Map;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
-import org.osgi.framework.Constants;
+import javax.annotation.Nullable;
 
 /**
  * Unwraps nested bundles to be friendly to a normal classloader, see <a
@@ -54,8 +55,43 @@ public abstract class NestedJars {
 		return manifest.getMainAttributes().getValue("Implementation-Version");
 	}
 
+	/**
+	 * Returns the full maven coordinates of Solstice's transitive dependencies in
+	 * `group:artifact:version` form.
+	 */
+	public static Collection<String> transitiveDeps(boolean useAtomos, CoordFormat format) {
+		var coords = new ArrayList<String>();
+		String VER_SLF4J = "1.7.36";
+		coords.add(format.format("org.slf4j", "slf4j-api", VER_SLF4J, null));
+		coords.add(format.format("org.slf4j", "slf4j-simple", VER_SLF4J, null));
+		if (useAtomos) {
+			coords.add(format.format("org.apache.felix", "org.apache.felix.atomos", "1.0.0", null));
+			coords.add(format.format("org.apache.felix.atomos", "osgi.core", "8.0.0", "AtomosEquinox"));
+		}
+		return coords;
+	}
+
+	public static enum CoordFormat {
+		GRADLE,
+		MAVEN;
+
+		private String format(String g, String a, String version, @Nullable String c) {
+			if (c == null) {
+				return g + ":" + a + ":" + version;
+			} else {
+				if (this == GRADLE) {
+					return g + ":" + a + ":" + version + ":" + c;
+				} else if (this == MAVEN) {
+					return g + ":" + a + ":jar:" + c + ":" + version;
+				} else {
+					throw new IllegalArgumentException("Unknown format " + this);
+				}
+			}
+		}
+	}
+
 	public static final String DIR = "nested-jars";
-	private static final Attributes.Name CLASSPATH = new Attributes.Name(Constants.BUNDLE_CLASSPATH);
+	private static final Attributes.Name CLASSPATH = new Attributes.Name("Bundle-ClassPath");
 
 	private static void addNestedJarsFromManifest(
 			List<URL> nestedJars, String jarUrl, InputStream stream) throws IOException {

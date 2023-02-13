@@ -13,6 +13,7 @@
  *******************************************************************************/
 package dev.equo.ide.gradle;
 
+import dev.equo.solstice.NestedJars;
 import dev.equo.solstice.p2.CacheLocations;
 import dev.equo.solstice.p2.P2Client;
 import java.io.File;
@@ -61,7 +62,6 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 		} catch (IOException e) {
 			throw new GradleException("Unable to determine solstice version", e);
 		}
-		project.getDependencies().add(EQUO_IDE, "org.slf4j:slf4j-simple:1.7.36");
 
 		P2Client.Caching caching = P2ModelDsl.caching(project);
 		var equoIdeTask =
@@ -86,29 +86,23 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 																&& Boolean.parseBoolean(arg.substring(USE_ATOMOS_FLAG.length())))
 										.findAny()
 										.isPresent();
-						if (extension.useAtomos || useAtomosOverride) {
-							project
-									.getDependencies()
-									.add(EQUO_IDE, "org.apache.felix:org.apache.felix.atomos:1.0.0");
-							project
-									.getDependencies()
-									.add(EQUO_IDE, "org.apache.felix.atomos:osgi.core:8.0.0:AtomosEquinox");
+						boolean useAtomos = extension.useAtomos || useAtomosOverride;
+						for (var dep : NestedJars.transitiveDeps(useAtomos, NestedJars.CoordFormat.GRADLE)) {
+							project.getDependencies().add(EQUO_IDE, dep);
 						}
 						var query = extension.performQuery(caching);
-						query
-								.getJarsOnMavenCentral()
-								.forEach(
-										coordinate -> {
-											ModuleDependency dep =
-													(ModuleDependency) project.getDependencies().add(EQUO_IDE, coordinate);
-											dep.setTransitive(false);
-										});
+						for (var coordinate : query.getJarsNotOnMavenCentral()) {
+							ModuleDependency dep =
+									(ModuleDependency) project.getDependencies().add(EQUO_IDE, coordinate);
+							dep.setTransitive(false);
+						}
 						equoIdeTask.configure(
 								task -> {
 									task.getCaching().set(caching);
 									task.getQuery().set(query);
 									task.getMavenDeps().set(equoIde);
 									task.getProjectDir().set(project.getProjectDir());
+									// extension.useAtomos is on purpose, override is parsed inside the task
 									task.getUseAtomos().set(extension.useAtomos);
 									task.ideHooks = extension.getIdeHooks();
 								});
