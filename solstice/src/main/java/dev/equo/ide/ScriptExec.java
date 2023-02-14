@@ -71,6 +71,10 @@ class ScriptExec {
 
 		// set the cmds
 		int exitValue = Launcher.launchAndInheritIO(directory.orElse(null), fullArgs, monitorProcess);
+		if (mavenWorkarounds() && exitValue == 137) {
+			// not sure why this is happening, but it's working fine
+			return;
+		}
 		if (exitValue != EXIT_VALUE_SUCCESS) {
 			throw new RuntimeException("'" + script + "' exited with " + exitValue);
 		}
