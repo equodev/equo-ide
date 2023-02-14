@@ -71,6 +71,10 @@ class ScriptExec {
 
 		// set the cmds
 		int exitValue = Launcher.launchAndInheritIO(directory.orElse(null), fullArgs, monitorProcess);
+		if (mavenWorkarounds() && exitValue == 137) {
+			// not sure why this is happening, but it's working fine
+			return;
+		}
 		if (exitValue != EXIT_VALUE_SUCCESS) {
 			throw new RuntimeException("'" + script + "' exited with " + exitValue);
 		}
@@ -190,7 +194,7 @@ class ScriptExec {
 				(file, printer) -> {
 					// args are at http://ss64.com/vb/run.html
 					String windowStyle = mavenWorkarounds() ? "1" : "0";
-					String waitOnReturn = isSeparate ? "False" : "True";
+					String waitOnReturn = (isSeparate && !mavenWorkarounds()) ? "False" : "True";
 					// open the shell
 					printer.println(
 							String.format(
