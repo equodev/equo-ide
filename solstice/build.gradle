@@ -36,8 +36,8 @@ dependencies {
 	api 'com.diffplug.durian:durian-swt.os:4.1.1'
 	compileOnly 'com.google.code.findbugs:jsr305:3.0.2'
 
-	implementation 'org.apache.felix:org.apache.felix.atomos:1.0.0'
-	implementation 'org.apache.felix.atomos:osgi.core:8.0.0:AtomosEquinox'
+	compileOnly 'org.apache.felix:org.apache.felix.atomos:1.0.0'
+	compileOnly 'org.apache.felix.atomos:osgi.core:8.0.0:AtomosEquinox'
 
 	// needed to navigate p2
 	implementation 'org.tukaani:xz:1.9'

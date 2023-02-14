@@ -92,29 +92,18 @@ public class LaunchMojo extends AbstractP2Mojo {
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		try {
+			var caller = BuildPluginIdeMain.Caller.forProjectDir(baseDir, clean);
+
 			List<Dependency> deps = new ArrayList<>();
 			deps.add(
 					new Dependency(
 							new DefaultArtifact("dev.equo.ide:solstice:" + NestedJars.solsticeVersion()), null));
-			deps.add(
-					new Dependency(
-							new DefaultArtifact("org.slf4j:slf4j-api:1.7.36"),
-							null,
-							null,
-							EXCLUDE_ALL_TRANSITIVES));
-			deps.add(
-					new Dependency(
-							new DefaultArtifact("org.slf4j:slf4j-simple:1.7.36"),
-							null,
-							null,
-							EXCLUDE_ALL_TRANSITIVES));
-
-			var caller = BuildPluginIdeMain.Caller.forProjectDir(baseDir, clean);
-
+			for (var dep : NestedJars.transitiveDeps(useAtomos, NestedJars.CoordFormat.MAVEN)) {
+				deps.add(new Dependency(new DefaultArtifact(dep), null, null, EXCLUDE_ALL_TRANSITIVES));
+			}
 			var query = super.query();
-			for (var coordinate : query.getJarsOnMavenCentral()) {
-				deps.add(
-						new Dependency(new DefaultArtifact(coordinate), null, null, EXCLUDE_ALL_TRANSITIVES));
+			for (var dep : query.getJarsOnMavenCentral()) {
+				deps.add(new Dependency(new DefaultArtifact(dep), null, null, EXCLUDE_ALL_TRANSITIVES));
 			}
 			CollectRequest collectRequest = new CollectRequest(deps, null, repositories);
 			DependencyRequest dependencyRequest = new DependencyRequest(collectRequest, null);
