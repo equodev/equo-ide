@@ -91,7 +91,7 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 							project.getDependencies().add(EQUO_IDE, dep);
 						}
 						var query = extension.performQuery(caching);
-						for (var coordinate : query.getJarsNotOnMavenCentral()) {
+						for (var coordinate : query.getJarsOnMavenCentral()) {
 							ModuleDependency dep =
 									(ModuleDependency) project.getDependencies().add(EQUO_IDE, coordinate);
 							dep.setTransitive(false);
