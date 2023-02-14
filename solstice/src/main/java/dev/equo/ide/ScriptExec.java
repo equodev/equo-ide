@@ -194,7 +194,7 @@ class ScriptExec {
 				(file, printer) -> {
 					// args are at http://ss64.com/vb/run.html
 					String windowStyle = mavenWorkarounds() ? "1" : "0";
-					String waitOnReturn = (isSeparate && !mavenWorkarounds) ? "False" : "True";
+					String waitOnReturn = (isSeparate && !mavenWorkarounds()) ? "False" : "True";
 					// open the shell
 					printer.println(
 							String.format(
