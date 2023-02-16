@@ -64,6 +64,7 @@ public abstract class AbstractP2Mojo extends AbstractMojo {
 			setToDefault(model);
 		}
 		model.applyNativeFilterIfNoPlatformFilter();
+		return model;
 	}
 
 	protected P2Query query() throws MojoFailureException {
