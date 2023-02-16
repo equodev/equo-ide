@@ -26,6 +26,7 @@ Use it like this with `mvn equo-ide:launch`
     <welcome>
       <openUrl>https://github.com/me/myproject/CONTRIBUTING.md</openUrl>
     </welcome>
+    <jdt/>
   </configuration>
 </plugin>
 

@@ -21,6 +21,10 @@ equoIde { // launch with gradlew equoIde
   branding().icon(file('my_icon.png'))
   branding().splash(file('my_splash.png'))
   welcome().openUrl('https://github.com/me/myproject/CONTRIBUTING.md')
+  jdt()
+  gradleBuildship() {
+    importOnClean()
+  }
 }
 ```
 

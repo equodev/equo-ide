@@ -79,7 +79,7 @@ public class EquoFeature {
 	public String getUrlForOverride(@Nullable String override) {
 		if (override == null) {
 			return p2urlTemplate.replace(V, latestVersion);
-		} else if (override.startsWith("https:") || override.startsWith("http:")) {
+		} else if (isUrl(override)) {
 			return override;
 		} else {
 			return p2urlTemplate.replace(V, override);
@@ -88,5 +88,9 @@ public class EquoFeature {
 
 	public List<String> getTargetsFor(@Nullable String override) {
 		return Collections.singletonList(toInstall);
+	}
+
+	public static boolean isUrl(String maybeUrl) {
+		return maybeUrl.startsWith("https:") || maybeUrl.startsWith("http:");
 	}
 }

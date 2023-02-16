@@ -14,14 +14,16 @@
 package dev.equo.ide.gradle;
 
 import dev.equo.ide.EquoFeature;
+import dev.equo.ide.FeatureDsl;
 import dev.equo.ide.IdeHook;
 import dev.equo.ide.IdeHookBranding;
 import dev.equo.ide.IdeHookBuildship;
 import dev.equo.ide.IdeHookWelcome;
 import dev.equo.solstice.p2.P2Client;
-import dev.equo.solstice.p2.P2Model;
 import dev.equo.solstice.p2.P2Query;
+import java.util.List;
 import org.gradle.api.Action;
+import org.gradle.api.GradleException;
 import org.gradle.api.Project;
 
 /** The DSL inside the equoIde block. */
@@ -59,7 +61,13 @@ public class EquoIdeExtension extends P2ModelDsl {
 	}
 
 	public void platform(String urlOverride) {
-		addFeature(EquoFeature.PLATFORM, urlOverride);
+		addFeature(new Platform(urlOverride));
+	}
+
+	public static class Platform extends GradleFeatureDsl {
+		protected Platform(String urlOverride) {
+			super(EquoFeature.PLATFORM, urlOverride);
+		}
 	}
 
 	public void jdt() {
@@ -67,7 +75,13 @@ public class EquoIdeExtension extends P2ModelDsl {
 	}
 
 	public void jdt(String urlOverride) {
-		addFeature(EquoFeature.JDT, urlOverride);
+		addFeature(new Jdt(urlOverride));
+	}
+
+	public static class Jdt extends GradleFeatureDsl {
+		protected Jdt(String urlOverride) {
+			super(EquoFeature.JDT, urlOverride);
+		}
 	}
 
 	public void gradleBuildship() {
@@ -75,69 +89,59 @@ public class EquoIdeExtension extends P2ModelDsl {
 	}
 
 	public void gradleBuildship(String urlOverride) {
-		addFeature(EquoFeature.GRADLE_BUILDSHIP, urlOverride);
+		addFeature(new GradleBuildship(urlOverride, project));
 	}
 
-	private void addFeature(EquoFeature project, String urlOverride) {
-		eclipseProject(new ProjectDsl(project, urlOverride), unused -> {});
+	public static class GradleBuildship extends GradleFeatureDsl {
+		private IdeHookBuildship ideHook;
+
+		protected GradleBuildship(String urlOverride, Project project) {
+			super(EquoFeature.GRADLE_BUILDSHIP, urlOverride);
+			ideHook =
+					new IdeHookBuildship(
+							project.getProjectDir(), project.getGradle().getStartParameter().isOffline());
+		}
+
+		@Override
+		protected List<IdeHook> ideHooks() {
+			return List.of(ideHook);
+		}
 	}
 
-	private <T extends ProjectDsl> void eclipseProject(T dsl, Action<? super T> action) {
+	private <T extends GradleFeatureDsl> void addFeature(T dsl) {
+		addFeature(dsl, unused -> {});
+	}
+
+	private <T extends GradleFeatureDsl> void addFeature(T dsl, Action<? super T> action) {
 		action.execute(dsl);
-		dsl.apply(model);
+		features.addFeature(dsl);
 	}
 
-	public static class ProjectDsl {
-		protected EquoFeature eclipseProject;
-		protected String urlOverride;
+	private final FeatureDsl.TransitiveAwareList<GradleFeatureDsl> features =
+			new FeatureDsl.TransitiveAwareList<>();
 
-		protected ProjectDsl(EquoFeature project, String urlOverride) {
-			this.eclipseProject = project;
-			this.urlOverride = urlOverride;
-		}
-
-		protected void apply(P2Model model) {
-			model.addP2Repo(eclipseProject.getUrlForOverride(urlOverride));
-			eclipseProject.getTargetsFor(urlOverride).forEach(model.getInstall()::add);
+	public static class GradleFeatureDsl extends FeatureDsl {
+		protected GradleFeatureDsl(EquoFeature feature, String urlOverride) {
+			super(feature);
+			setUrlOverride(urlOverride);
 		}
 	}
 
-	private static void setToDefault(P2Model model) {
-		model.addP2Repo("https://download.eclipse.org/eclipse/updates/4.26/");
-		model.getInstall().add("org.eclipse.releng.java.languages.categoryIU");
-		model.getInstall().add("org.eclipse.platform.ide.categoryIU");
-
-		model.addP2Repo(
-				"https://download.eclipse.org/buildship/updates/e423/releases/3.x/3.1.6.v20220511-1359/");
-		model.getInstall().add("org.eclipse.buildship.feature.group");
-
-		model.addFilterAndValidate(
-				"no-slf4j-nop",
-				filter -> {
-					filter.exclude("slf4j.nop");
-					filter.exclude("org.slf4j.api");
-				});
-		model.addFilterAndValidate(
-				"no-source",
-				filter -> {
-					filter.excludeSuffix(".source");
-				});
-	}
-
-	IdeHook.List getIdeHooks() {
+	public IdeHook.List getIdeHooks() {
 		return ideHooks;
 	}
 
 	P2Query performQuery(P2Client.Caching caching) throws Exception {
-		var modelToQuery = model;
-		if (modelToQuery.isEmpty()) {
-			modelToQuery = modelToQuery.deepCopy();
-			setToDefault(modelToQuery);
-			ideHooks.add(
-					new IdeHookBuildship(
-							project.getProjectDir(), project.getGradle().getStartParameter().isOffline()));
+		if (model.isEmpty()) {
+			throw new GradleException(
+					"EquoIDE has nothing to install!\n\n"
+							+ "We recommend starting with this:\n"
+							+ "equoIde {\n"
+							+ "  gradleBuildship()\n"
+							+ "}");
 		}
-		modelToQuery.applyNativeFilterIfNoPlatformFilter();
-		return modelToQuery.query(caching);
+		features.putInto(model, ideHooks);
+		model.applyNativeFilterIfNoPlatformFilter();
+		return model.query(caching);
 	}
 }
