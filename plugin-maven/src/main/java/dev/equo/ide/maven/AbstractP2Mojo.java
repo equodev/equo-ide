@@ -13,15 +13,17 @@
  *******************************************************************************/
 package dev.equo.ide.maven;
 
-import dev.equo.solstice.p2.P2Client;
-import dev.equo.solstice.p2.P2Model;
-import dev.equo.solstice.p2.P2Query;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Parameter;
+
+import dev.equo.solstice.p2.P2Client;
+import dev.equo.solstice.p2.P2Model;
+import dev.equo.solstice.p2.P2Query;
 
 public abstract class AbstractP2Mojo extends AbstractMojo {
 	public static class Filter {

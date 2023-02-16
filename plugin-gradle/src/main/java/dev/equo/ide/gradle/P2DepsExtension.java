@@ -13,15 +13,17 @@
  *******************************************************************************/
 package dev.equo.ide.gradle;
 
-import dev.equo.solstice.p2.P2Client;
-import dev.equo.solstice.p2.P2Model;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+
 import org.gradle.api.Action;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ModuleDependency;
+
+import dev.equo.solstice.p2.P2Client;
+import dev.equo.solstice.p2.P2Model;
 
 public class P2DepsExtension {
 	private final Project project;
@@ -48,15 +50,15 @@ public class P2DepsExtension {
 		var caching = P2ModelDsl.caching(project);
 		for (Map.Entry<String, P2Model> entry : configurations.entrySet()) {
 			String config = entry.getKey();
-			var query = entry.getValue().query(caching);
+			var query = entry.getValue().queryUsingCache(caching, false);
 			for (String mavenCoord : query.getJarsOnMavenCentral()) {
 				ModuleDependency dep = (ModuleDependency) project.getDependencies().add(config, mavenCoord);
 				dep.setTransitive(false);
 			}
 			var localFiles = new ArrayList<>();
 			try (var client = new P2Client(caching)) {
-				for (var unit : query.getJarsNotOnMavenCentral()) {
-					localFiles.add(client.download(unit));
+				for (var downloadedJar : query.getJarsNotOnMavenCentral()) {
+					localFiles.add(downloadedJar);
 				}
 			}
 			project.getDependencies().add(config, project.files(localFiles));

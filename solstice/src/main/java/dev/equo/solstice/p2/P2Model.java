@@ -13,7 +13,6 @@
  *******************************************************************************/
 package dev.equo.solstice.p2;
 
-import com.diffplug.common.swt.os.SwtPlatform;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Set;
@@ -21,7 +20,10 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.function.Consumer;
 
+import com.diffplug.common.swt.os.SwtPlatform;
+
 public class P2Model {
+
 	private final TreeSet<String> p2repo = new TreeSet<>();
 	private final TreeSet<String> install = new TreeSet<>();
 	private final TreeMap<String, Filter> filters = new TreeMap<>();
@@ -60,18 +62,15 @@ public class P2Model {
 		p2repo.add(p2url);
 	}
 
-	/**
-	 * Applies a filter named `platform-specific-for-running` which selects artifacts for the running
-	 * platform iff there are no other platform-related filters so far.
-	 */
+	/** Applies a filter named `platform-specific-for-running` which selects artifacts for the running platform iff
+	 * there are no other platform-related filters so far. */
 	public void applyNativeFilterIfNoPlatformFilter() {
 		boolean hasAnyPlatformFilter =
 				filters.values().stream()
 						.filter(
-								filter ->
-										filter.props.containsKey(OSGI_OS)
-												|| filter.props.containsKey(OSGI_WS)
-												|| filter.props.containsKey(OSGI_ARCH))
+								filter -> filter.props.containsKey(OSGI_OS)
+										|| filter.props.containsKey(OSGI_WS)
+										|| filter.props.containsKey(OSGI_ARCH))
 						.findAny()
 						.isPresent();
 		if (!hasAnyPlatformFilter) {
@@ -89,10 +88,10 @@ public class P2Model {
 		return deepCopy;
 	}
 
-	public P2Query query(P2Client.Caching caching) throws Exception {
+	public P2Query query(P2Client.Caching cachingPolicy) throws Exception {
 		validateFilters();
 		var session = new P2Session();
-		try (var client = new P2Client(caching)) {
+		try (var client = new P2Client(cachingPolicy)) {
 			for (var repo : p2repo) {
 				session.populateFrom(client, repo);
 			}
@@ -112,6 +111,24 @@ public class P2Model {
 			query.install(target);
 		}
 		return query;
+	}
+
+	public P2QueryResult queryUsingCache(P2Client.Caching cachingPolicy, boolean forceRecalculate) {
+		QueryCache queryCache = new QueryCache(CacheLocations.p2Queries(), this);
+		if (!forceRecalculate) {
+			var queryResult = queryCache.get();
+			if (queryResult != null) {
+				return queryResult;
+			}
+		}
+		try {
+			var query = query(cachingPolicy);
+			var queryResult = new P2QueryResult(query, cachingPolicy);
+			queryCache.put(queryResult);
+			return queryResult;
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	/** Ensures there are no conflicts between the existing filters. */
@@ -222,6 +239,7 @@ public class P2Model {
 	}
 
 	public static class Filter {
+
 		private final TreeSet<String> exclude = new TreeSet<>();
 		private final TreeSet<String> excludePrefix = new TreeSet<>();
 		private final TreeSet<String> excludeSuffix = new TreeSet<>();

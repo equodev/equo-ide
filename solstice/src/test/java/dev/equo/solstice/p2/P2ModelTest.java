@@ -13,12 +13,14 @@
  *******************************************************************************/
 package dev.equo.solstice.p2;
 
-import au.com.origin.snapshots.Expect;
-import au.com.origin.snapshots.junit5.SnapshotExtension;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-@ExtendWith({SnapshotExtension.class})
+import au.com.origin.snapshots.Expect;
+import au.com.origin.snapshots.junit5.SnapshotExtension;
+
+@ExtendWith({ SnapshotExtension.class })
 public class P2ModelTest {
 	@Test
 	public void toString(Expect expect) {
@@ -59,5 +61,22 @@ public class P2ModelTest {
 		filter.getProps().put("green", "0,255,0");
 		filter.getProps().put("blue", "0,0,255");
 		expect.scenario("filter props multiple").toMatchSnapshot(filter.toString());
+	}
+
+	@Test
+	public void cache() {
+		var model = new P2Model();
+		model.addP2Repo("https://download.eclipse.org/eclipse/updates/4.26/");
+		model.getInstall().add("org.eclipse.releng.java.languages.categoryIU");
+		model.getInstall().add("org.eclipse.platform.ide.categoryIU");
+		var result = model.queryUsingCache(P2Client.Caching.ALLOW_OFFLINE, false);
+		var mavenCentralCoordinates = result.getJarsOnMavenCentral();
+		var downloadedJars = result.getJarsNotOnMavenCentral();
+		Assertions.assertFalse(mavenCentralCoordinates.isEmpty());
+		Assertions.assertFalse(downloadedJars.isEmpty());
+		result = model.queryUsingCache(P2Client.Caching.ALLOW_OFFLINE, false);
+		Assertions.assertEquals(result.getJarsOnMavenCentral(), mavenCentralCoordinates);
+		Assertions.assertEquals(result.getJarsNotOnMavenCentral(), downloadedJars);
+
 	}
 }

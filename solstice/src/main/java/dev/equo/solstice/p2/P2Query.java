@@ -13,7 +13,6 @@
  *******************************************************************************/
 package dev.equo.solstice.p2;
 
-import com.diffplug.common.swt.os.SwtPlatform;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -23,10 +22,10 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
-/**
- * Follows the dependency information of a set of {@link dev.equo.solstice.p2.P2Unit} so that they
- * can be installed from maven or directly from p2 if necessary.
- */
+import com.diffplug.common.swt.os.SwtPlatform;
+
+/** Follows the dependency information of a set of {@link dev.equo.solstice.p2.P2Unit} so that they can be installed
+ * from maven or directly from p2 if necessary. */
 public class P2Query {
 	private P2Session session;
 
@@ -112,10 +111,8 @@ public class P2Query {
 		return installed.get(id);
 	}
 
-	/**
-	 * Returns every unit available in the parent session with the given id, possibly multiple
-	 * versions of the same id.
-	 */
+	/** Returns every unit available in the parent session with the given id, possibly multiple versions of the same
+	 * id. */
 	public List<P2Unit> getAllAvailableUnitsById(String id) {
 		return session.units.stream().filter(u -> u.id.equals(id)).collect(Collectors.toList());
 	}
@@ -277,10 +274,7 @@ public class P2Query {
 		return installed.get(unit.getId()) == unit;
 	}
 
-	/**
-	 * Returns all optional requirements which were not installed, along with every unit which
-	 * optionally wanted it.
-	 */
+	/** Returns all optional requirements which were not installed, along with every unit which optionally wanted it. */
 	public Map<P2Session.Requirement, Set<P2Unit>> getOptionalRequirementsNotInstalled() {
 		var iter = optionalSoMaybeNotInstalled.entrySet().iterator();
 		while (iter.hasNext()) {
