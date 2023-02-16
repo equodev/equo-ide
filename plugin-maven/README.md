@@ -40,7 +40,6 @@ Use it like this with `mvn equo-ide:launch`
 
 ## Coming soon
 
-- A p2 multitool for Eclipse ecosystem developers ([#25](https://github.com/equodev/equo-ide/issues/25))
 - Use m2e to import this maven project ([#18](https://github.com/equodev/equo-ide/issues/18))
 
 ## Task listing
@@ -52,6 +51,7 @@ Use it like this with `mvn equo-ide:launch`
   - `equoIde -DdebugClasspath=[names|paths]` dumps the classpath (in order) without starting the application.
   - `equoIde -DdebugIde` blocks IDE startup and prints instructions to help you attach a remote debugger.
   - `equoIde -DuseAtomos=[true|false]` determines whether to use Atomos
+- `equo-ide:list` to debug IDE dependencies ([p2 multitool](../P2_MULTITOOL.md))
 
 ## Limitations
 
