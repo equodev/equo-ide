@@ -13,7 +13,6 @@
  *******************************************************************************/
 package dev.equo.ide;
 
-import com.google.common.collect.ImmutableList;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.Collections;
@@ -135,9 +134,8 @@ class BuildshipImpl implements IdeHookInstantiated {
 		private void addWorkingSets(IProject project) {
 			List<String> workingSetNames =
 					configuration.getApplyWorkingSets().getValue()
-							? ImmutableList.copyOf(
-									(Collection<String>) this.configuration.getWorkingSets().getValue())
-							: ImmutableList.of();
+							? List.copyOf((Collection<String>) this.configuration.getWorkingSets().getValue())
+							: List.of();
 			IWorkingSetManager workingSetManager = PlatformUI.getWorkbench().getWorkingSetManager();
 			IWorkingSet[] workingSets = WorkingSetUtils.toWorkingSets(workingSetNames);
 			workingSetManager.addToWorkingSets(project, workingSets);
