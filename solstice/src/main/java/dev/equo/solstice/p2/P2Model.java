@@ -13,14 +13,13 @@
  *******************************************************************************/
 package dev.equo.solstice.p2;
 
+import com.diffplug.common.swt.os.SwtPlatform;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.function.Consumer;
-
-import com.diffplug.common.swt.os.SwtPlatform;
 
 public class P2Model {
 
@@ -62,15 +61,18 @@ public class P2Model {
 		p2repo.add(p2url);
 	}
 
-	/** Applies a filter named `platform-specific-for-running` which selects artifacts for the running platform iff
-	 * there are no other platform-related filters so far. */
+	/**
+	 * Applies a filter named `platform-specific-for-running` which selects artifacts for the running
+	 * platform iff there are no other platform-related filters so far.
+	 */
 	public void applyNativeFilterIfNoPlatformFilter() {
 		boolean hasAnyPlatformFilter =
 				filters.values().stream()
 						.filter(
-								filter -> filter.props.containsKey(OSGI_OS)
-										|| filter.props.containsKey(OSGI_WS)
-										|| filter.props.containsKey(OSGI_ARCH))
+								filter ->
+										filter.props.containsKey(OSGI_OS)
+												|| filter.props.containsKey(OSGI_WS)
+												|| filter.props.containsKey(OSGI_ARCH))
 						.findAny()
 						.isPresent();
 		if (!hasAnyPlatformFilter) {

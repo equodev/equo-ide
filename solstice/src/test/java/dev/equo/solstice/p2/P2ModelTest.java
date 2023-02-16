@@ -13,14 +13,13 @@
  *******************************************************************************/
 package dev.equo.solstice.p2;
 
+import au.com.origin.snapshots.Expect;
+import au.com.origin.snapshots.junit5.SnapshotExtension;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import au.com.origin.snapshots.Expect;
-import au.com.origin.snapshots.junit5.SnapshotExtension;
-
-@ExtendWith({ SnapshotExtension.class })
+@ExtendWith({SnapshotExtension.class})
 public class P2ModelTest {
 	@Test
 	public void toString(Expect expect) {
@@ -77,6 +76,5 @@ public class P2ModelTest {
 		result = model.queryUsingCache(P2Client.Caching.ALLOW_OFFLINE, false);
 		Assertions.assertEquals(result.getJarsOnMavenCentral(), mavenCentralCoordinates);
 		Assertions.assertEquals(result.getJarsNotOnMavenCentral(), downloadedJars);
-
 	}
 }

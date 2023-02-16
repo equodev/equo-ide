@@ -13,12 +13,19 @@
  *******************************************************************************/
 package dev.equo.ide.maven;
 
+import com.diffplug.common.swt.os.OS;
+import dev.equo.ide.BuildPluginIdeMain;
+import dev.equo.ide.IdeHook;
+import dev.equo.ide.IdeHookBranding;
+import dev.equo.ide.IdeHookWelcome;
+import dev.equo.solstice.NestedJars;
+import dev.equo.solstice.p2.P2Client;
+import dev.equo.solstice.p2.P2Unit;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Component;
@@ -34,16 +41,6 @@ import org.eclipse.aether.repository.RemoteRepository;
 import org.eclipse.aether.resolution.DependencyRequest;
 import org.eclipse.aether.resolution.DependencyResolutionException;
 import org.eclipse.aether.resolution.DependencyResult;
-
-import com.diffplug.common.swt.os.OS;
-
-import dev.equo.ide.BuildPluginIdeMain;
-import dev.equo.ide.IdeHook;
-import dev.equo.ide.IdeHookBranding;
-import dev.equo.ide.IdeHookWelcome;
-import dev.equo.solstice.NestedJars;
-import dev.equo.solstice.p2.P2Client;
-import dev.equo.solstice.p2.P2Unit;
 
 /** Launches an Eclipse-based IDE for this project. */
 @Mojo(name = "launch")

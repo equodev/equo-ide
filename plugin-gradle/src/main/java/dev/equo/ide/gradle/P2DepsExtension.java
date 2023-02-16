@@ -13,17 +13,15 @@
  *******************************************************************************/
 package dev.equo.ide.gradle;
 
+import dev.equo.solstice.p2.P2Client;
+import dev.equo.solstice.p2.P2Model;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-
 import org.gradle.api.Action;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ModuleDependency;
-
-import dev.equo.solstice.p2.P2Client;
-import dev.equo.solstice.p2.P2Model;
 
 public class P2DepsExtension {
 	private final Project project;

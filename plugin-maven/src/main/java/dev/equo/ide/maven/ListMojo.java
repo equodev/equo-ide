@@ -13,15 +13,13 @@
  *******************************************************************************/
 package dev.equo.ide.maven;
 
+import dev.equo.solstice.p2.ConsoleTable;
+import dev.equo.solstice.p2.P2Multitool;
 import javax.xml.transform.TransformerException;
-
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
-
-import dev.equo.solstice.p2.ConsoleTable;
-import dev.equo.solstice.p2.P2Multitool;
 
 /** Lists the p2 dependencies of an Eclipse application. */
 @Mojo(name = "list")
