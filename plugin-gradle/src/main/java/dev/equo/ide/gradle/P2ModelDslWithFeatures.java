@@ -13,7 +13,7 @@
  *******************************************************************************/
 package dev.equo.ide.gradle;
 
-import dev.equo.ide.EquoFeature;
+import dev.equo.ide.EquoCatalog;
 import dev.equo.ide.FeatureDsl;
 import dev.equo.ide.IdeHook;
 import dev.equo.ide.IdeHookBuildship;
@@ -30,7 +30,7 @@ public class P2ModelDslWithFeatures extends P2ModelDsl {
 
 	public static class Platform extends GradleFeatureDsl {
 		protected Platform(String urlOverride) {
-			super(EquoFeature.PLATFORM, urlOverride);
+			super(EquoCatalog.PLATFORM, urlOverride);
 		}
 	}
 
@@ -44,7 +44,7 @@ public class P2ModelDslWithFeatures extends P2ModelDsl {
 
 	public static class Jdt extends GradleFeatureDsl {
 		protected Jdt(String urlOverride) {
-			super(EquoFeature.JDT, urlOverride);
+			super(EquoCatalog.JDT, urlOverride);
 		}
 	}
 
@@ -60,7 +60,7 @@ public class P2ModelDslWithFeatures extends P2ModelDsl {
 		private IdeHookBuildship ideHook;
 
 		protected GradleBuildship(String urlOverride, Project project) {
-			super(EquoFeature.GRADLE_BUILDSHIP, urlOverride);
+			super(EquoCatalog.GRADLE_BUILDSHIP, urlOverride);
 			ideHook =
 					new IdeHookBuildship(
 							project.getProjectDir(), project.getGradle().getStartParameter().isOffline());
@@ -81,7 +81,7 @@ public class P2ModelDslWithFeatures extends P2ModelDsl {
 	}
 
 	public static class GradleFeatureDsl extends FeatureDsl {
-		protected GradleFeatureDsl(EquoFeature feature, String urlOverride) {
+		protected GradleFeatureDsl(EquoCatalog feature, String urlOverride) {
 			super(feature);
 			super.setUrlOverride(urlOverride);
 		}

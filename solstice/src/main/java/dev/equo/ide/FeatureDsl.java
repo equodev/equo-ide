@@ -20,19 +20,19 @@ import java.util.TreeMap;
 import javax.annotation.Nullable;
 
 /**
- * Base class for DSL configuring an {@link EquoFeature} for inclusion in the Gradle or Maven
+ * Base class for DSL configuring an {@link EquoCatalog} for inclusion in the Gradle or Maven
  * plugins.
  */
 public class FeatureDsl {
-	protected final EquoFeature feature;
+	protected final EquoCatalog feature;
 	private final @Nullable FeatureDsl addedAsTransitiveOf;
 	private @Nullable String urlOverride;
 
-	protected FeatureDsl(EquoFeature feature) {
+	protected FeatureDsl(EquoCatalog feature) {
 		this(feature, null);
 	}
 
-	private FeatureDsl(EquoFeature feature, @Nullable FeatureDsl addedAsTransitiveOf) {
+	private FeatureDsl(EquoCatalog feature, @Nullable FeatureDsl addedAsTransitiveOf) {
 		this.feature = feature;
 		this.addedAsTransitiveOf = addedAsTransitiveOf;
 	}
@@ -103,7 +103,7 @@ public class FeatureDsl {
 	}
 
 	public static class TransitiveAwareList<T extends FeatureDsl> {
-		private TreeMap<EquoFeature, FeatureDsl> features = new TreeMap<>();
+		private TreeMap<EquoCatalog, FeatureDsl> features = new TreeMap<>();
 
 		public void addFeature(T dsl) {
 			var existing = features.get(dsl.feature);
@@ -132,7 +132,7 @@ public class FeatureDsl {
 		}
 
 		private FeatureDsl addFeatureAsTransitiveOf(
-				EquoFeature transitive, FeatureDsl originalRequest) {
+				EquoCatalog transitive, FeatureDsl originalRequest) {
 			var dsl = features.get(transitive);
 			if (dsl != null) {
 				dsl = new FeatureDsl(transitive, originalRequest);

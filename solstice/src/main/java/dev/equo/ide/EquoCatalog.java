@@ -18,23 +18,23 @@ import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nullable;
 
-public class EquoFeature {
+public class EquoCatalog {
 	private static String V = "${VERSION}";
-	public static final EquoFeature PLATFORM =
-			new EquoFeature(
+	public static final EquoCatalog PLATFORM =
+			new EquoCatalog(
 					"platform",
 					"https://download.eclipse.org/eclipse/updates/" + V,
 					"4.26",
 					"org.eclipse.platform.ide.categoryIU");
-	public static final EquoFeature JDT =
-			new EquoFeature(
+	public static final EquoCatalog JDT =
+			new EquoCatalog(
 					"jdt",
 					"https://download.eclipse.org/eclipse/updates/" + V,
 					"4.26",
 					"org.eclipse.releng.java.languages.categoryIU",
 					PLATFORM);
-	public static final EquoFeature GRADLE_BUILDSHIP =
-			new EquoFeature(
+	public static final EquoCatalog GRADLE_BUILDSHIP =
+			new EquoCatalog(
 					"gradleBuildship",
 					"https://download.eclipse.org/buildship/updates/e423/releases/3.x/" + V,
 					"3.1.6.v20220511-1359",
@@ -45,14 +45,14 @@ public class EquoFeature {
 	private final String p2urlTemplate;
 	private final String latestVersion;
 	private final String toInstall;
-	private final List<EquoFeature> requires;
+	private final List<EquoCatalog> requires;
 
-	EquoFeature(
+	EquoCatalog(
 			String name,
 			String p2urlTemplate,
 			String latestVersion,
 			String toInstall,
-			EquoFeature... requires) {
+			EquoCatalog... requires) {
 		this.name = name;
 		if (p2urlTemplate.endsWith("/")) {
 			this.p2urlTemplate = p2urlTemplate;
@@ -72,7 +72,7 @@ public class EquoFeature {
 		return name;
 	}
 
-	public List<EquoFeature> getRequires() {
+	public List<EquoCatalog> getRequires() {
 		return requires;
 	}
 
