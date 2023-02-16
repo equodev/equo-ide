@@ -14,6 +14,15 @@
 package dev.equo.solstice.p2;
 
 public enum QueryCache {
+	NONE,
 	ALLOW,
-	FORCE_RECALCULATE
+	FORCE_RECALCULATE;
+
+	public boolean allowRead() {
+		return this == ALLOW;
+	}
+
+	public boolean allowWrite() {
+		return this == ALLOW || this == FORCE_RECALCULATE;
+	}
 }

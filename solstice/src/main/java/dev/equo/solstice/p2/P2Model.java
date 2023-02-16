@@ -117,9 +117,9 @@ public class P2Model {
 
 	public P2QueryResult queryUsingCache(
 			P2Client.Caching clientCachingPolicy, QueryCache queryCachingPolicy) {
-		QueryCacheOnDisk queryCache = new QueryCacheOnDisk(CacheLocations.p2Queries(), this);
-		if (!QueryCache.FORCE_RECALCULATE.equals(queryCachingPolicy)) {
-			var queryResult = queryCache.get();
+		if (queryCachingPolicy.allowRead()) {
+			QueryCacheOnDisk onDisk = new QueryCacheOnDisk(CacheLocations.p2Queries(), this);
+			var queryResult = onDisk.get();
 			if (queryResult != null) {
 				return queryResult;
 			}
@@ -127,7 +127,10 @@ public class P2Model {
 		try {
 			var query = query(clientCachingPolicy);
 			var queryResult = new P2QueryResult(query, clientCachingPolicy);
-			queryCache.put(queryResult);
+			if (queryCachingPolicy.allowWrite()) {
+				QueryCacheOnDisk onDisk = new QueryCacheOnDisk(CacheLocations.p2Queries(), this);
+				onDisk.put(queryResult);
+			}
 			return queryResult;
 		} catch (Exception e) {
 			throw Unchecked.wrap(e);
