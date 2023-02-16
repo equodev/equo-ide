@@ -13,6 +13,7 @@
  *******************************************************************************/
 package dev.equo.ide.maven;
 
+import dev.equo.ide.IdeHook;
 import dev.equo.solstice.p2.ConsoleTable;
 import dev.equo.solstice.p2.P2Multitool;
 import javax.xml.transform.TransformerException;
@@ -23,11 +24,7 @@ import org.apache.maven.plugins.annotations.Parameter;
 
 /** Lists the p2 dependencies of an Eclipse application. */
 @Mojo(name = "list")
-public class ListMojo extends AbstractP2Mojo {
-	/** Allows the user to specify features and Equo will keep the versions up-to-date for them. */
-	@Parameter(required = false)
-	private WithFeatures withFeatures = new WithFeatures();
-
+public class ListMojo extends AbstractP2MojoWithFeatures {
 	/** Determines output format [ascii|csv] (can be combined with all other commands). */
 	@Parameter(property = "format", defaultValue = "ascii")
 	private ConsoleTable.Format format;
@@ -72,7 +69,7 @@ public class ListMojo extends AbstractP2Mojo {
 							+ "`mvn help:describe -Dcmd=equo-ide:list -Ddetail` for more info or visit https://github.com/equodev/equo-ide/blob/main/P2_MULTITOOL.md");
 		}
 		try {
-			tool.dump(query());
+			tool.dump(query(new IdeHook.List()));
 		} catch (TransformerException e) {
 			throw new RuntimeException(e);
 		}

@@ -44,15 +44,12 @@ import org.eclipse.aether.resolution.DependencyResult;
 
 /** Launches an Eclipse-based IDE for this project. */
 @Mojo(name = "launch")
-public class LaunchMojo extends AbstractP2Mojo {
+public class LaunchMojo extends AbstractP2MojoWithFeatures {
 	@Parameter(required = false)
 	private Branding branding = new Branding();
 
 	@Parameter(required = false)
 	private Welcome welcome = new Welcome();
-
-	@Parameter(required = false)
-	private WithFeatures withFeatures = new WithFeatures();
 
 	/** Wipes all IDE settings and state before rebuilding and launching. */
 	@Parameter(property = "clean", defaultValue = "false")
@@ -97,6 +94,15 @@ public class LaunchMojo extends AbstractP2Mojo {
 		try {
 			var caller = BuildPluginIdeMain.Caller.forProjectDir(baseDir, clean);
 
+			var ideHooks = new IdeHook.List();
+			ideHooks.add(
+					new IdeHookBranding().title(branding.title).icon(branding.icon).splash(branding.splash));
+			if (welcome != null) {
+				var welcomeHook = new IdeHookWelcome();
+				welcomeHook.openUrl(welcome.openUrl);
+				ideHooks.add(welcomeHook);
+			}
+
 			List<Dependency> deps = new ArrayList<>();
 			deps.add(
 					new Dependency(
@@ -104,7 +110,7 @@ public class LaunchMojo extends AbstractP2Mojo {
 			for (var dep : NestedJars.transitiveDeps(useAtomos, NestedJars.CoordFormat.MAVEN)) {
 				deps.add(new Dependency(new DefaultArtifact(dep), null, null, EXCLUDE_ALL_TRANSITIVES));
 			}
-			var query = super.query();
+			var query = super.query(ideHooks);
 			for (var dep : query.getJarsOnMavenCentral()) {
 				deps.add(new Dependency(new DefaultArtifact(dep), null, null, EXCLUDE_ALL_TRANSITIVES));
 			}
@@ -121,15 +127,6 @@ public class LaunchMojo extends AbstractP2Mojo {
 				for (P2Unit unit : query.getJarsNotOnMavenCentral()) {
 					files.add(client.download(unit));
 				}
-			}
-
-			var ideHooks = new IdeHook.List();
-			ideHooks.add(
-					new IdeHookBranding().title(branding.title).icon(branding.icon).splash(branding.splash));
-			if (welcome != null) {
-				var welcomeHook = new IdeHookWelcome();
-				welcomeHook.openUrl(welcome.openUrl);
-				ideHooks.add(welcomeHook);
 			}
 
 			if (!OS.getNative().isMac()) {

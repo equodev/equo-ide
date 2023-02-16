@@ -15,10 +15,13 @@ package dev.equo.ide.maven;
 
 import dev.equo.ide.EquoFeature;
 import dev.equo.ide.FeatureDsl;
+import dev.equo.ide.IdeHook;
+import dev.equo.solstice.p2.P2Model;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Parameter;
 
-public class WithFeatures {
+/** Performs typed p2 resolutions against known projects. */
+public abstract class AbstractP2MojoWithFeatures extends AbstractP2Mojo {
 	public final void addPlatform(Platform platform) throws MojoFailureException {
 		addFeature(platform);
 	}
@@ -70,6 +73,11 @@ public class WithFeatures {
 				setUrlOverride(url);
 			}
 		}
+	}
+
+	@Override
+	protected void modifyModel(P2Model model, IdeHook.List ideHooks) {
+		featuresInternal.putInto(model, ideHooks);
 	}
 
 	private void addFeature(MavenFeatureDsl dsl) {

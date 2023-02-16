@@ -13,6 +13,7 @@
  *******************************************************************************/
 package dev.equo.ide.gradle;
 
+import dev.equo.ide.IdeHook;
 import dev.equo.solstice.p2.P2Client;
 import dev.equo.solstice.p2.P2Model;
 import java.util.ArrayList;
@@ -30,13 +31,14 @@ public class P2DepsExtension {
 		this.project = project;
 	}
 
-	public void into(String configuration, Action<P2ModelDsl> p2) {
+	public void into(String configuration, Action<P2ModelDslWithFeatures> p2) {
 		into(project.getConfigurations().maybeCreate(configuration), p2);
 	}
 
-	public void into(Configuration configuration, Action<P2ModelDsl> p2) {
-		P2ModelDsl dsl = new P2ModelDsl();
+	public void into(Configuration configuration, Action<P2ModelDslWithFeatures> p2) {
+		P2ModelDslWithFeatures dsl = new P2ModelDslWithFeatures(project);
 		p2.execute(dsl);
+		dsl.features.putInto(dsl.model, new IdeHook.List());
 		dsl.model.applyNativeFilterIfNoPlatformFilter();
 		dsl.model.validateFilters();
 		configurations.put(configuration.getName(), dsl.model);
