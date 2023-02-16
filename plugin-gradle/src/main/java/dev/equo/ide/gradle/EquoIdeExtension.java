@@ -13,6 +13,7 @@
  *******************************************************************************/
 package dev.equo.ide.gradle;
 
+import dev.equo.ide.EquoFeature;
 import dev.equo.ide.IdeHook;
 import dev.equo.ide.IdeHookBranding;
 import dev.equo.ide.IdeHookBuildship;
@@ -20,6 +21,7 @@ import dev.equo.ide.IdeHookWelcome;
 import dev.equo.solstice.p2.P2Client;
 import dev.equo.solstice.p2.P2Model;
 import dev.equo.solstice.p2.P2Query;
+import org.gradle.api.Action;
 import org.gradle.api.Project;
 
 /** The DSL inside the equoIde block. */
@@ -50,6 +52,54 @@ public class EquoIdeExtension extends P2ModelDsl {
 			ideHooks.add(welcome);
 		}
 		return welcome;
+	}
+
+	public void platform() {
+		platform(null);
+	}
+
+	public void platform(String urlOverride) {
+		addFeature(EquoFeature.PLATFORM, urlOverride);
+	}
+
+	public void jdt() {
+		jdt(null);
+	}
+
+	public void jdt(String urlOverride) {
+		addFeature(EquoFeature.JDT, urlOverride);
+	}
+
+	public void gradleBuildship() {
+		gradleBuildship(null);
+	}
+
+	public void gradleBuildship(String urlOverride) {
+		addFeature(EquoFeature.GRADLE_BUILDSHIP, urlOverride);
+	}
+
+	private void addFeature(EquoFeature project, String urlOverride) {
+		eclipseProject(new ProjectDsl(project, urlOverride), unused -> {});
+	}
+
+	private <T extends ProjectDsl> void eclipseProject(T dsl, Action<? super T> action) {
+		action.execute(dsl);
+		dsl.apply(model);
+	}
+
+	public static class ProjectDsl {
+		protected EquoFeature eclipseProject;
+		protected String urlOverride;
+
+		protected ProjectDsl(EquoFeature project, String urlOverride) {
+			this.eclipseProject = project;
+			this.urlOverride = urlOverride;
+		}
+
+		protected void apply(P2Model model) {
+			model.addP2Repo(eclipseProject.getUrlForOverride(urlOverride));
+			eclipseProject.getTargetsFor(urlOverride).forEach(model.getInstall()::add);
+		}
 	}
 
 	private static void setToDefault(P2Model model) {

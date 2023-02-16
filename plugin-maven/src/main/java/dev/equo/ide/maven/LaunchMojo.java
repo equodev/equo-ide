@@ -51,6 +51,9 @@ public class LaunchMojo extends AbstractP2Mojo {
 	@Parameter(required = false)
 	private Welcome welcome = new Welcome();
 
+	@Parameter(required = false)
+	private WithFeatures withFeatures = new WithFeatures();
+
 	/** Wipes all IDE settings and state before rebuilding and launching. */
 	@Parameter(property = "clean", defaultValue = "false")
 	private boolean clean;
