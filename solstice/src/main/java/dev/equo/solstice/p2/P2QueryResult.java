@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class P2QueryResult implements Serializable {
@@ -27,7 +28,7 @@ public class P2QueryResult implements Serializable {
 	private List<File> downloadedP2Jars;
 
 	P2QueryResult(P2Query query, P2Client.Caching cachingPolicy) {
-		this.mavenCoordinates = query.getJarsOnMavenCentral();
+		this.mavenCoordinates = new ArrayList<>(query.getJarsOnMavenCentral());
 		this.downloadedP2Jars = new ArrayList<>();
 		try (var client = new P2Client(cachingPolicy)) {
 			for (P2Unit unit : query.getJarsNotOnMavenCentral()) {
@@ -39,10 +40,10 @@ public class P2QueryResult implements Serializable {
 	}
 
 	public List<String> getJarsOnMavenCentral() {
-		return new ArrayList<>(mavenCoordinates);
+		return Collections.unmodifiableList(mavenCoordinates);
 	}
 
 	public List<File> getJarsNotOnMavenCentral() {
-		return new ArrayList<>(downloadedP2Jars);
+		return Collections.unmodifiableList(downloadedP2Jars);
 	}
 }

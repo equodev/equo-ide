@@ -17,6 +17,7 @@ import dev.equo.solstice.p2.P2Client;
 import dev.equo.solstice.p2.P2Model;
 import dev.equo.solstice.p2.P2Query;
 import dev.equo.solstice.p2.P2QueryResult;
+import dev.equo.solstice.p2.QueryCache;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -79,7 +80,7 @@ public abstract class AbstractP2Mojo extends AbstractMojo {
 	protected P2QueryResult queryUsingCache() throws MojoFailureException {
 		var model = buildModel();
 		try {
-			return model.queryUsingCache(P2Client.Caching.ALLOW_OFFLINE, false);
+			return model.queryUsingCache(P2Client.Caching.ALLOW_OFFLINE, QueryCache.ALLOW);
 		} catch (RuntimeException e) {
 			throw new MojoFailureException(e.getMessage(), e);
 		}

@@ -115,17 +115,18 @@ public class P2Model {
 		return query;
 	}
 
-	public P2QueryResult queryUsingCache(P2Client.Caching cachingPolicy, boolean forceRecalculate) {
-		QueryCache queryCache = new QueryCache(CacheLocations.p2Queries(), this);
-		if (!forceRecalculate) {
+	public P2QueryResult queryUsingCache(
+			P2Client.Caching clientCachingPolicy, QueryCache queryCachingPolicy) {
+		QueryCacheOnDisk queryCache = new QueryCacheOnDisk(CacheLocations.p2Queries(), this);
+		if (!QueryCache.FORCE_RECALCULATE.equals(queryCachingPolicy)) {
 			var queryResult = queryCache.get();
 			if (queryResult != null) {
 				return queryResult;
 			}
 		}
 		try {
-			var query = query(cachingPolicy);
-			var queryResult = new P2QueryResult(query, cachingPolicy);
+			var query = query(clientCachingPolicy);
+			var queryResult = new P2QueryResult(query, clientCachingPolicy);
 			queryCache.put(queryResult);
 			return queryResult;
 		} catch (Exception e) {

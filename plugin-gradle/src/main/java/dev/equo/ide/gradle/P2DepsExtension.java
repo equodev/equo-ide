@@ -15,6 +15,7 @@ package dev.equo.ide.gradle;
 
 import dev.equo.solstice.p2.P2Client;
 import dev.equo.solstice.p2.P2Model;
+import dev.equo.solstice.p2.QueryCache;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -48,7 +49,7 @@ public class P2DepsExtension {
 		var caching = P2ModelDsl.caching(project);
 		for (Map.Entry<String, P2Model> entry : configurations.entrySet()) {
 			String config = entry.getKey();
-			var query = entry.getValue().queryUsingCache(caching, false);
+			var query = entry.getValue().queryUsingCache(caching, QueryCache.ALLOW);
 			for (String mavenCoord : query.getJarsOnMavenCentral()) {
 				ModuleDependency dep = (ModuleDependency) project.getDependencies().add(config, mavenCoord);
 				dep.setTransitive(false);
