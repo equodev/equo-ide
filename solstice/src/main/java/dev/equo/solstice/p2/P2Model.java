@@ -130,7 +130,7 @@ public class P2Model {
 			queryCache.put(queryResult);
 			return queryResult;
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			throw Unchecked.wrap(e);
 		}
 	}
 

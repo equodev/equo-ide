@@ -303,7 +303,7 @@ public class P2Session {
 					try {
 						return FilterImpl.newInstance(f);
 					} catch (InvalidSyntaxException e) {
-						throw new RuntimeException(e);
+						throw Unchecked.wrap(e);
 					}
 				});
 	}

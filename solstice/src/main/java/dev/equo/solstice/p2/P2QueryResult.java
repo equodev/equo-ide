@@ -35,7 +35,7 @@ public class P2QueryResult implements Serializable {
 				downloadedP2Jars.add(client.download(unit));
 			}
 		} catch (IOException e) {
-			throw new RuntimeException(e);
+			throw Unchecked.wrap(e);
 		}
 	}
 

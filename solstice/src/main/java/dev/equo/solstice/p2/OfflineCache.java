@@ -67,7 +67,7 @@ class OfflineCache {
 				md5.update(middle.getBytes(StandardCharsets.UTF_8));
 				hash = md5.digest();
 			} catch (NoSuchAlgorithmException e) {
-				throw new RuntimeException(e);
+				throw Unchecked.wrap(e);
 			}
 			String hashed = Base64.getEncoder().encodeToString(hash).replace('/', '-').replace('=', '-');
 			return first + "--" + hashed + end;

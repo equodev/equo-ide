@@ -17,4 +17,12 @@ class Unchecked {
 	interface ThrowingConsumer<T> {
 		void accept(T input) throws Exception;
 	}
+
+	static RuntimeException wrap(Exception e) {
+		if (e instanceof RuntimeException) {
+			return (RuntimeException) e;
+		} else {
+			return new RuntimeException(e);
+		}
+	}
 }
