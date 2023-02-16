@@ -29,7 +29,7 @@ class OfflineCache {
 
 	OfflineCache(File rootDir) {
 		this.rootDir = rootDir;
-		if (FileMisc.readToken(rootDir, VERSION).equals(Optional.of(VERSION_VALUE))) {
+		if (!FileMisc.readToken(rootDir, VERSION).equals(Optional.of(VERSION_VALUE))) {
 			if (rootDir.exists()) {
 				FileMisc.delete(rootDir);
 			}
