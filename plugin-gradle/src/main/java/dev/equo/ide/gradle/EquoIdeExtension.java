@@ -16,8 +16,7 @@ package dev.equo.ide.gradle;
 import dev.equo.ide.IdeHook;
 import dev.equo.ide.IdeHookBranding;
 import dev.equo.ide.IdeHookWelcome;
-import dev.equo.solstice.p2.P2Client;
-import dev.equo.solstice.p2.P2Query;
+import dev.equo.solstice.p2.P2Model;
 import org.gradle.api.GradleException;
 import org.gradle.api.Project;
 
@@ -50,7 +49,7 @@ public class EquoIdeExtension extends P2ModelDslWithFeatures {
 		return ideHooks;
 	}
 
-	P2Query performQuery(P2Client.Caching caching) throws Exception {
+	P2Model prepareModel() throws Exception {
 		if (model.isEmpty()) {
 			throw new GradleException(
 					"EquoIDE has nothing to install!\n\n"
@@ -59,8 +58,14 @@ public class EquoIdeExtension extends P2ModelDslWithFeatures {
 							+ "  gradleBuildship()\n"
 							+ "}");
 		}
+		if (hasBeenPrepared) {
+			return model;
+		}
+		hasBeenPrepared = true;
 		features.putInto(model, ideHooks);
 		model.applyNativeFilterIfNoPlatformFilter();
-		return model.query(caching);
+		return model;
 	}
+
+	private boolean hasBeenPrepared = false;
 }

@@ -20,7 +20,7 @@ import dev.equo.ide.IdeHookBranding;
 import dev.equo.ide.IdeHookWelcome;
 import dev.equo.solstice.NestedJars;
 import dev.equo.solstice.p2.P2Client;
-import dev.equo.solstice.p2.P2Unit;
+import dev.equo.solstice.p2.QueryCache;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -110,7 +110,11 @@ public class LaunchMojo extends AbstractP2MojoWithFeatures {
 			for (var dep : NestedJars.transitiveDeps(useAtomos, NestedJars.CoordFormat.MAVEN)) {
 				deps.add(new Dependency(new DefaultArtifact(dep), null, null, EXCLUDE_ALL_TRANSITIVES));
 			}
-			var query = super.query(ideHooks);
+			var query =
+					super.prepareModel(ideHooks)
+							.query(
+									P2Client.Caching.ALLOW_OFFLINE,
+									clean ? QueryCache.FORCE_RECALCULATE : QueryCache.ALLOW);
 			for (var dep : query.getJarsOnMavenCentral()) {
 				deps.add(new Dependency(new DefaultArtifact(dep), null, null, EXCLUDE_ALL_TRANSITIVES));
 			}
@@ -123,10 +127,8 @@ public class LaunchMojo extends AbstractP2MojoWithFeatures {
 			for (var artifact : dependencyResult.getArtifactResults()) {
 				files.add(artifact.getArtifact().getFile());
 			}
-			try (var client = new P2Client()) {
-				for (P2Unit unit : query.getJarsNotOnMavenCentral()) {
-					files.add(client.download(unit));
-				}
+			for (File downloadedJar : query.getJarsNotOnMavenCentral()) {
+				files.add(downloadedJar);
 			}
 
 			if (!OS.getNative().isMac()) {

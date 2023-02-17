@@ -16,6 +16,7 @@ package dev.equo.ide.gradle;
 import dev.equo.ide.IdeHook;
 import dev.equo.solstice.p2.P2Client;
 import dev.equo.solstice.p2.P2Model;
+import dev.equo.solstice.p2.QueryCache;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -47,18 +48,27 @@ public class P2DepsExtension {
 	private final Map<String, P2Model> configurations = new HashMap<>();
 
 	void configure() throws Exception {
+		boolean forceRecalculate =
+				EquoIdeGradlePlugin.anyArgMatching(
+								project, arg -> arg.equals(EquoIdeGradlePlugin.CLEAN_FLAG))
+						|| EquoIdeGradlePlugin.anyArgMatching(
+								project, arg -> arg.equals(EquoIdeGradlePlugin.REFRESH_DEPENDENCIES));
+
 		var caching = P2ModelDsl.caching(project);
 		for (Map.Entry<String, P2Model> entry : configurations.entrySet()) {
 			String config = entry.getKey();
-			var query = entry.getValue().query(caching);
+			var query =
+					entry
+							.getValue()
+							.query(caching, forceRecalculate ? QueryCache.FORCE_RECALCULATE : QueryCache.ALLOW);
 			for (String mavenCoord : query.getJarsOnMavenCentral()) {
 				ModuleDependency dep = (ModuleDependency) project.getDependencies().add(config, mavenCoord);
 				dep.setTransitive(false);
 			}
 			var localFiles = new ArrayList<>();
 			try (var client = new P2Client(caching)) {
-				for (var unit : query.getJarsNotOnMavenCentral()) {
-					localFiles.add(client.download(unit));
+				for (var downloadedJar : query.getJarsNotOnMavenCentral()) {
+					localFiles.add(downloadedJar);
 				}
 			}
 			project.getDependencies().add(config, project.files(localFiles));

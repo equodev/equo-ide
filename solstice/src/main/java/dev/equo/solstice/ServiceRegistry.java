@@ -192,7 +192,7 @@ abstract class ServiceRegistry extends BundleContextImpl {
 			var cast = (ShimServiceFactoryReference<S>) reference;
 			return cast.factory.getService(systemBundle(), cast);
 		} else {
-			throw new RuntimeException("Unexpected class " + reference);
+			throw new IllegalArgumentException("Unexpected class " + reference);
 		}
 	}
 

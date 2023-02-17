@@ -252,7 +252,7 @@ public abstract class NestedJars {
 					new String(Base64.getEncoder().encode(md5.digest()), StandardCharsets.US_ASCII);
 			return encoded.replace('/', '-').replace('=', '-');
 		} catch (NoSuchAlgorithmException e) {
-			throw new RuntimeException(e);
+			throw Unchecked.wrap(e);
 		}
 	}
 }

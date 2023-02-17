@@ -28,7 +28,7 @@ import org.gradle.api.tasks.options.OptionValues;
 
 public abstract class EquoListTask extends DefaultTask {
 	@Internal
-	public abstract Property<P2Client.Caching> getCaching();
+	public abstract Property<P2Client.Caching> getClientCaching();
 
 	@Internal
 	public abstract Property<EquoIdeExtension> getExtension();
@@ -99,6 +99,6 @@ public abstract class EquoListTask extends DefaultTask {
 					"Exactly one of --installed, --problems, --optional, --all, --detail, or --raw must be set.\n"
 							+ "`gradlew help --task equoList` for more info or visit https://github.com/equodev/equo-ide/blob/main/P2_MULTITOOL.md");
 		}
-		tool.dump(getExtension().get().performQuery(getCaching().get()));
+		tool.dump(getExtension().get().prepareModel().queryRaw(getClientCaching().get()));
 	}
 }

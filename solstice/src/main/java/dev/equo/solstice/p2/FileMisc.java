@@ -99,12 +99,12 @@ class FileMisc {
 	 */
 	static void retry(File input, ThrowingConsumer<File> function) {
 		long start = System.currentTimeMillis();
-		Throwable lastException;
+		Exception lastException;
 		do {
 			try {
 				function.accept(input);
 				return;
-			} catch (Throwable e) {
+			} catch (Exception e) {
 				lastException = e;
 				try {
 					Thread.sleep(1);
@@ -113,11 +113,7 @@ class FileMisc {
 				}
 			}
 		} while (System.currentTimeMillis() - start < MS_RETRY);
-		if (lastException instanceof RuntimeException) {
-			throw (RuntimeException) lastException;
-		} else {
-			throw new RuntimeException(lastException);
-		}
+		throw Unchecked.wrap(lastException);
 	}
 
 	interface ThrowingConsumer<T> {
