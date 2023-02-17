@@ -128,7 +128,7 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 							task.setGroup(TASK_GROUP);
 							task.setDescription("Lists the p2 dependencies of an Eclipse application");
 
-							task.getCaching().set(caching);
+							task.getClientCaching().set(caching);
 							task.getExtension().set(extension);
 						});
 	}
