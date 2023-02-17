@@ -20,6 +20,7 @@ import dev.equo.solstice.p2.QueryCache;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.gradle.api.GradleException;
@@ -79,27 +80,18 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 		project.afterEvaluate(
 				unused -> {
 					try {
-						boolean useAtomosOverride =
-								project.getGradle().getStartParameter().getTaskRequests().stream()
-										.flatMap(taskReq -> taskReq.getArgs().stream())
-										.filter(
-												arg ->
-														arg.startsWith(USE_ATOMOS_FLAG)
-																&& Boolean.parseBoolean(arg.substring(USE_ATOMOS_FLAG.length())))
-										.findAny()
-										.isPresent();
-
-						boolean isClean =
-								project.getGradle().getStartParameter().getTaskRequests().stream()
-										.flatMap(taskReq -> taskReq.getArgs().stream())
-										.filter(arg -> arg.startsWith(CLEAN_FLAG))
-										.findAny()
-										.isPresent();
-
-						boolean useAtomos = extension.useAtomos || useAtomosOverride;
+						boolean useAtomosOverrideTrue =
+								anyArgMatching(
+										project,
+										arg ->
+												arg.startsWith(USE_ATOMOS_FLAG)
+														&& Boolean.parseBoolean(arg.substring(USE_ATOMOS_FLAG.length())));
+						boolean useAtomos = extension.useAtomos || useAtomosOverrideTrue;
 						for (var dep : NestedJars.transitiveDeps(useAtomos, NestedJars.CoordFormat.GRADLE)) {
 							project.getDependencies().add(EQUO_IDE, dep);
 						}
+
+						boolean isClean = anyArgMatching(project, arg -> arg.startsWith(CLEAN_FLAG));
 						var query =
 								extension
 										.prepareModel()
@@ -134,6 +126,14 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 							task.getCaching().set(caching);
 							task.getExtension().set(extension);
 						});
+	}
+
+	private static boolean anyArgMatching(Project project, Predicate<String> predicate) {
+		return project.getGradle().getStartParameter().getTaskRequests().stream()
+				.flatMap(taskReq -> taskReq.getArgs().stream())
+				.filter(predicate)
+				.findAny()
+				.isPresent();
 	}
 
 	private Configuration createConfigurationWithTransitives(Project project, String name) {
