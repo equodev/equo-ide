@@ -91,7 +91,7 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 						for (var dep : NestedJars.transitiveDeps(useAtomos, NestedJars.CoordFormat.GRADLE)) {
 							project.getDependencies().add(EQUO_IDE, dep);
 						}
-						var query = extension.prepareModel().queryUsingCache(caching, QueryCache.ALLOW);
+						var query = extension.prepareModel().query(caching, QueryCache.ALLOW);
 						for (var coordinate : query.getJarsOnMavenCentral()) {
 							ModuleDependency dep =
 									(ModuleDependency) project.getDependencies().add(EQUO_IDE, coordinate);

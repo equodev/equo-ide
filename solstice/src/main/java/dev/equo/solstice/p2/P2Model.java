@@ -90,7 +90,7 @@ public class P2Model {
 		return deepCopy;
 	}
 
-	public P2Query query(P2Client.Caching cachingPolicy) throws Exception {
+	public P2Query queryRaw(P2Client.Caching cachingPolicy) throws Exception {
 		validateFilters();
 		var session = new P2Session();
 		try (var client = new P2Client(cachingPolicy)) {
@@ -115,8 +115,7 @@ public class P2Model {
 		return query;
 	}
 
-	public P2QueryResult queryUsingCache(
-			P2Client.Caching clientCachingPolicy, QueryCache queryCachingPolicy) {
+	public P2QueryResult query(P2Client.Caching clientCachingPolicy, QueryCache queryCachingPolicy) {
 		if (queryCachingPolicy.allowRead()) {
 			QueryCacheOnDisk onDisk = new QueryCacheOnDisk(CacheLocations.p2Queries(), this);
 			var queryResult = onDisk.get();
@@ -125,7 +124,7 @@ public class P2Model {
 			}
 		}
 		try {
-			var query = query(clientCachingPolicy);
+			var query = queryRaw(clientCachingPolicy);
 			var queryResult = new P2QueryResult(query, clientCachingPolicy);
 			if (queryCachingPolicy.allowWrite()) {
 				QueryCacheOnDisk onDisk = new QueryCacheOnDisk(CacheLocations.p2Queries(), this);

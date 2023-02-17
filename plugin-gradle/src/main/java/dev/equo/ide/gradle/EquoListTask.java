@@ -99,6 +99,6 @@ public abstract class EquoListTask extends DefaultTask {
 					"Exactly one of --installed, --problems, --optional, --all, --detail, or --raw must be set.\n"
 							+ "`gradlew help --task equoList` for more info or visit https://github.com/equodev/equo-ide/blob/main/P2_MULTITOOL.md");
 		}
-		tool.dump(getExtension().get().prepareModel().query(getCaching().get()));
+		tool.dump(getExtension().get().prepareModel().queryRaw(getCaching().get()));
 	}
 }

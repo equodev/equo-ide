@@ -68,13 +68,12 @@ public class P2ModelTest {
 		model.addP2Repo("https://download.eclipse.org/eclipse/updates/4.26/");
 		model.getInstall().add("org.eclipse.releng.java.languages.categoryIU");
 		model.getInstall().add("org.eclipse.platform.ide.categoryIU");
-		var result =
-				model.queryUsingCache(P2Client.Caching.ALLOW_OFFLINE, QueryCache.FORCE_RECALCULATE);
+		var result = model.query(P2Client.Caching.ALLOW_OFFLINE, QueryCache.FORCE_RECALCULATE);
 		var mavenCentralCoordinates = result.getJarsOnMavenCentral();
 		var downloadedJars = result.getJarsNotOnMavenCentral();
 		Assertions.assertFalse(mavenCentralCoordinates.isEmpty());
 		Assertions.assertFalse(downloadedJars.isEmpty());
-		result = model.queryUsingCache(P2Client.Caching.ALLOW_OFFLINE, QueryCache.ALLOW);
+		result = model.query(P2Client.Caching.ALLOW_OFFLINE, QueryCache.ALLOW);
 		Assertions.assertEquals(result.getJarsOnMavenCentral(), mavenCentralCoordinates);
 		Assertions.assertEquals(result.getJarsNotOnMavenCentral(), downloadedJars);
 	}

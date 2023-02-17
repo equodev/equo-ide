@@ -68,7 +68,7 @@ public class ListMojo extends AbstractP2Mojo {
 							+ "`mvn help:describe -Dcmd=equo-ide:list -Ddetail` for more info or visit https://github.com/equodev/equo-ide/blob/main/P2_MULTITOOL.md");
 		}
 		try {
-			tool.dump(prepareModel().query(P2Client.Caching.ALLOW_OFFLINE));
+			tool.dump(prepareModel().queryRaw(P2Client.Caching.ALLOW_OFFLINE));
 		} catch (Exception e) {
 			throw new MojoFailureException(e.getMessage(), e);
 		}

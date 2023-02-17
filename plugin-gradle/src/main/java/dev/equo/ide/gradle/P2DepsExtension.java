@@ -49,7 +49,7 @@ public class P2DepsExtension {
 		var caching = P2ModelDsl.caching(project);
 		for (Map.Entry<String, P2Model> entry : configurations.entrySet()) {
 			String config = entry.getKey();
-			var query = entry.getValue().queryUsingCache(caching, QueryCache.ALLOW);
+			var query = entry.getValue().query(caching, QueryCache.ALLOW);
 			for (String mavenCoord : query.getJarsOnMavenCentral()) {
 				ModuleDependency dep = (ModuleDependency) project.getDependencies().add(config, mavenCoord);
 				dep.setTransitive(false);
