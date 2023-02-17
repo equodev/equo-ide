@@ -35,7 +35,8 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 	private static final String TASK_GROUP = "IDE";
 	private static final String EQUO_IDE = "equoIde";
 
-	private static String USE_ATOMOS_FLAG = "--use-atomos=";
+	private static final String USE_ATOMOS_FLAG = "--use-atomos=";
+	private static final String CLEAN_FLAG = "--clean";
 
 	@Override
 	public void apply(Project project) {
@@ -87,11 +88,22 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 																&& Boolean.parseBoolean(arg.substring(USE_ATOMOS_FLAG.length())))
 										.findAny()
 										.isPresent();
+
+						boolean isClean =
+								project.getGradle().getStartParameter().getTaskRequests().stream()
+										.flatMap(taskReq -> taskReq.getArgs().stream())
+										.filter(arg -> arg.startsWith(CLEAN_FLAG))
+										.findAny()
+										.isPresent();
+
 						boolean useAtomos = extension.useAtomos || useAtomosOverride;
 						for (var dep : NestedJars.transitiveDeps(useAtomos, NestedJars.CoordFormat.GRADLE)) {
 							project.getDependencies().add(EQUO_IDE, dep);
 						}
-						var query = extension.prepareModel().query(caching, QueryCache.ALLOW);
+						var query =
+								extension
+										.prepareModel()
+										.query(caching, isClean ? QueryCache.FORCE_RECALCULATE : QueryCache.ALLOW);
 						for (var coordinate : query.getJarsOnMavenCentral()) {
 							ModuleDependency dep =
 									(ModuleDependency) project.getDependencies().add(EQUO_IDE, coordinate);

@@ -101,7 +101,11 @@ public class LaunchMojo extends AbstractP2Mojo {
 			for (var dep : NestedJars.transitiveDeps(useAtomos, NestedJars.CoordFormat.MAVEN)) {
 				deps.add(new Dependency(new DefaultArtifact(dep), null, null, EXCLUDE_ALL_TRANSITIVES));
 			}
-			var query = prepareModel().query(P2Client.Caching.ALLOW_OFFLINE, QueryCache.ALLOW);
+			var query =
+					prepareModel()
+							.query(
+									P2Client.Caching.ALLOW_OFFLINE,
+									clean ? QueryCache.FORCE_RECALCULATE : QueryCache.ALLOW);
 			for (var dep : query.getJarsOnMavenCentral()) {
 				deps.add(new Dependency(new DefaultArtifact(dep), null, null, EXCLUDE_ALL_TRANSITIVES));
 			}
