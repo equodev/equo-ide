@@ -16,9 +16,11 @@ package dev.equo.ide.gradle;
 import dev.equo.solstice.NestedJars;
 import dev.equo.solstice.p2.CacheLocations;
 import dev.equo.solstice.p2.P2Client;
+import dev.equo.solstice.p2.QueryCache;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.gradle.api.GradleException;
@@ -34,7 +36,9 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 	private static final String TASK_GROUP = "IDE";
 	private static final String EQUO_IDE = "equoIde";
 
-	private static String USE_ATOMOS_FLAG = "--use-atomos=";
+	private static final String USE_ATOMOS_FLAG = "--use-atomos=";
+	static final String CLEAN_FLAG = "--clean";
+	static final String REFRESH_DEPENDENCIES = "--refresh-dependencies";
 
 	@Override
 	public void apply(Project project) {
@@ -77,20 +81,26 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 		project.afterEvaluate(
 				unused -> {
 					try {
-						boolean useAtomosOverride =
-								project.getGradle().getStartParameter().getTaskRequests().stream()
-										.flatMap(taskReq -> taskReq.getArgs().stream())
-										.filter(
-												arg ->
-														arg.startsWith(USE_ATOMOS_FLAG)
-																&& Boolean.parseBoolean(arg.substring(USE_ATOMOS_FLAG.length())))
-										.findAny()
-										.isPresent();
-						boolean useAtomos = extension.useAtomos || useAtomosOverride;
+						boolean useAtomosOverrideTrue =
+								anyArgMatching(
+										project,
+										arg ->
+												arg.startsWith(USE_ATOMOS_FLAG)
+														&& Boolean.parseBoolean(arg.substring(USE_ATOMOS_FLAG.length())));
+						boolean useAtomos = extension.useAtomos || useAtomosOverrideTrue;
 						for (var dep : NestedJars.transitiveDeps(useAtomos, NestedJars.CoordFormat.GRADLE)) {
 							project.getDependencies().add(EQUO_IDE, dep);
 						}
-						var query = extension.performQuery(caching);
+
+						boolean forceRecalculate =
+								anyArgMatching(project, arg -> arg.equals(CLEAN_FLAG))
+										|| anyArgMatching(project, arg -> arg.equals(REFRESH_DEPENDENCIES));
+						var query =
+								extension
+										.prepareModel()
+										.query(
+												caching,
+												forceRecalculate ? QueryCache.FORCE_RECALCULATE : QueryCache.ALLOW);
 						for (var coordinate : query.getJarsOnMavenCentral()) {
 							ModuleDependency dep =
 									(ModuleDependency) project.getDependencies().add(EQUO_IDE, coordinate);
@@ -98,7 +108,6 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 						}
 						equoIdeTask.configure(
 								task -> {
-									task.getCaching().set(caching);
 									task.getQuery().set(query);
 									task.getMavenDeps().set(equoIde);
 									task.getProjectDir().set(project.getProjectDir());
@@ -119,9 +128,17 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 							task.setGroup(TASK_GROUP);
 							task.setDescription("Lists the p2 dependencies of an Eclipse application");
 
-							task.getCaching().set(caching);
+							task.getClientCaching().set(caching);
 							task.getExtension().set(extension);
 						});
+	}
+
+	static boolean anyArgMatching(Project project, Predicate<String> predicate) {
+		return project.getGradle().getStartParameter().getTaskRequests().stream()
+				.flatMap(taskReq -> taskReq.getArgs().stream())
+				.filter(predicate)
+				.findAny()
+				.isPresent();
 	}
 
 	private Configuration createConfigurationWithTransitives(Project project, String name) {

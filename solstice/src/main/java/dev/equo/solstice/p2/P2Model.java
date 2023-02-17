@@ -22,6 +22,7 @@ import java.util.TreeSet;
 import java.util.function.Consumer;
 
 public class P2Model {
+
 	private final TreeSet<String> p2repo = new TreeSet<>();
 	private final TreeSet<String> install = new TreeSet<>();
 	private final TreeMap<String, Filter> filters = new TreeMap<>();
@@ -89,10 +90,10 @@ public class P2Model {
 		return deepCopy;
 	}
 
-	public P2Query query(P2Client.Caching caching) throws Exception {
+	public P2Query queryRaw(P2Client.Caching cachingPolicy) throws Exception {
 		validateFilters();
 		var session = new P2Session();
-		try (var client = new P2Client(caching)) {
+		try (var client = new P2Client(cachingPolicy)) {
 			for (var repo : p2repo) {
 				session.populateFrom(client, repo);
 			}
@@ -112,6 +113,27 @@ public class P2Model {
 			query.install(target);
 		}
 		return query;
+	}
+
+	public P2QueryResult query(P2Client.Caching clientCachingPolicy, QueryCache queryCachingPolicy) {
+		if (queryCachingPolicy.allowRead()) {
+			QueryCacheOnDisk onDisk = new QueryCacheOnDisk(CacheLocations.p2Queries(), this);
+			var queryResult = onDisk.get();
+			if (queryResult != null) {
+				return queryResult;
+			}
+		}
+		try {
+			var query = queryRaw(clientCachingPolicy);
+			var queryResult = new P2QueryResult(query, clientCachingPolicy);
+			if (queryCachingPolicy.allowWrite()) {
+				QueryCacheOnDisk onDisk = new QueryCacheOnDisk(CacheLocations.p2Queries(), this);
+				onDisk.put(queryResult);
+			}
+			return queryResult;
+		} catch (Exception e) {
+			throw Unchecked.wrap(e);
+		}
 	}
 
 	/** Ensures there are no conflicts between the existing filters. */
@@ -222,6 +244,7 @@ public class P2Model {
 	}
 
 	public static class Filter {
+
 		private final TreeSet<String> exclude = new TreeSet<>();
 		private final TreeSet<String> excludePrefix = new TreeSet<>();
 		private final TreeSet<String> excludeSuffix = new TreeSet<>();

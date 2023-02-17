@@ -17,9 +17,7 @@ import dev.equo.ide.IdeHook;
 import dev.equo.ide.IdeHookBranding;
 import dev.equo.ide.IdeHookBuildship;
 import dev.equo.ide.IdeHookWelcome;
-import dev.equo.solstice.p2.P2Client;
 import dev.equo.solstice.p2.P2Model;
-import dev.equo.solstice.p2.P2Query;
 import org.gradle.api.Project;
 
 /** The DSL inside the equoIde block. */
@@ -78,7 +76,7 @@ public class EquoIdeExtension extends P2ModelDsl {
 		return ideHooks;
 	}
 
-	P2Query performQuery(P2Client.Caching caching) throws Exception {
+	P2Model prepareModel() throws Exception {
 		var modelToQuery = model;
 		if (modelToQuery.isEmpty()) {
 			modelToQuery = modelToQuery.deepCopy();
@@ -88,6 +86,6 @@ public class EquoIdeExtension extends P2ModelDsl {
 							project.getProjectDir(), project.getGradle().getStartParameter().isOffline()));
 		}
 		modelToQuery.applyNativeFilterIfNoPlatformFilter();
-		return modelToQuery.query(caching);
+		return modelToQuery;
 	}
 }

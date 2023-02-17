@@ -13,16 +13,16 @@
  *******************************************************************************/
 package dev.equo.solstice.p2;
 
-class Unchecked {
-	interface ThrowingConsumer<T> {
-		void accept(T input) throws Exception;
+public enum QueryCache {
+	NONE,
+	ALLOW,
+	FORCE_RECALCULATE;
+
+	public boolean allowRead() {
+		return this == ALLOW;
 	}
 
-	static RuntimeException wrap(Exception e) {
-		if (e instanceof RuntimeException) {
-			return (RuntimeException) e;
-		} else {
-			return new RuntimeException(e);
-		}
+	public boolean allowWrite() {
+		return this == ALLOW || this == FORCE_RECALCULATE;
 	}
 }

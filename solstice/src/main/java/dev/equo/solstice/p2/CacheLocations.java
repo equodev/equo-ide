@@ -25,10 +25,11 @@ import java.util.Optional;
  *   <li>{@link #p2metadata()}
  *   <li>{@link #p2bundlePool()}
  *   <li>{@link #ideWorkspaces()}
+ *   <li>{@link #p2Queries()}
  * </ul>
  *
- * All these values can be overridden by setting the value of the `public static override_whatever`
- * variable.
+ * <p>All these values can be overridden by setting the value of the `public static
+ * override_whatever` variable.
  *
  * <p>If you happen to be using Gradle, you can override these by setting any of the following in
  * your {@code ~/.gradle/gradle.properties} file.
@@ -36,7 +37,8 @@ import java.util.Optional;
  * <ul>
  *   <li>{@code equo_override_p2metadata}
  *   <li>{@code equo_override_p2bundlePool}
- *   <li>{@cide equo_override_ideWorkspaces}
+ *   <li>{@code equo_override_ideWorkspaces}
+ *   <li>{@code equo_override_p2Queries}
  * </ul>
  */
 public class CacheLocations {
@@ -83,6 +85,13 @@ public class CacheLocations {
 	}
 
 	public static File override_ideWorkspaces = null;
+
+	/** Directory used to cache p2 queries: `~/.equo/p2-queries` */
+	public static File p2Queries() {
+		return defOverride(ROOT + "/p2-queries", override_p2Queries);
+	}
+
+	public static File override_p2Queries;
 
 	private static File defOverride(String userHomeRelative, File override) {
 		return Optional.ofNullable(override)
