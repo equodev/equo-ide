@@ -37,7 +37,8 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 	private static final String EQUO_IDE = "equoIde";
 
 	private static final String USE_ATOMOS_FLAG = "--use-atomos=";
-	private static final String CLEAN_FLAG = "--clean";
+	static final String CLEAN_FLAG = "--clean";
+	static final String REFRESH_DEPENDENCIES = "--refresh-dependencies";
 
 	@Override
 	public void apply(Project project) {
@@ -91,11 +92,15 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 							project.getDependencies().add(EQUO_IDE, dep);
 						}
 
-						boolean isClean = anyArgMatching(project, arg -> arg.startsWith(CLEAN_FLAG));
+						boolean forceRecalculate =
+								anyArgMatching(project, arg -> arg.equals(CLEAN_FLAG))
+										|| anyArgMatching(project, arg -> arg.equals(REFRESH_DEPENDENCIES));
 						var query =
 								extension
 										.prepareModel()
-										.query(caching, isClean ? QueryCache.FORCE_RECALCULATE : QueryCache.ALLOW);
+										.query(
+												caching,
+												forceRecalculate ? QueryCache.FORCE_RECALCULATE : QueryCache.ALLOW);
 						for (var coordinate : query.getJarsOnMavenCentral()) {
 							ModuleDependency dep =
 									(ModuleDependency) project.getDependencies().add(EQUO_IDE, coordinate);
@@ -128,7 +133,7 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 						});
 	}
 
-	private static boolean anyArgMatching(Project project, Predicate<String> predicate) {
+	static boolean anyArgMatching(Project project, Predicate<String> predicate) {
 		return project.getGradle().getStartParameter().getTaskRequests().stream()
 				.flatMap(taskReq -> taskReq.getArgs().stream())
 				.filter(predicate)

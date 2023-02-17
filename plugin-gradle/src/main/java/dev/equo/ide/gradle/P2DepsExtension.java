@@ -46,10 +46,19 @@ public class P2DepsExtension {
 	private final Map<String, P2Model> configurations = new HashMap<>();
 
 	void configure() throws Exception {
+		boolean forceRecalculate =
+				EquoIdeGradlePlugin.anyArgMatching(
+								project, arg -> arg.equals(EquoIdeGradlePlugin.CLEAN_FLAG))
+						|| EquoIdeGradlePlugin.anyArgMatching(
+								project, arg -> arg.equals(EquoIdeGradlePlugin.REFRESH_DEPENDENCIES));
+
 		var caching = P2ModelDsl.caching(project);
 		for (Map.Entry<String, P2Model> entry : configurations.entrySet()) {
 			String config = entry.getKey();
-			var query = entry.getValue().query(caching, QueryCache.ALLOW);
+			var query =
+					entry
+							.getValue()
+							.query(caching, forceRecalculate ? QueryCache.FORCE_RECALCULATE : QueryCache.ALLOW);
 			for (String mavenCoord : query.getJarsOnMavenCentral()) {
 				ModuleDependency dep = (ModuleDependency) project.getDependencies().add(config, mavenCoord);
 				dep.setTransitive(false);
