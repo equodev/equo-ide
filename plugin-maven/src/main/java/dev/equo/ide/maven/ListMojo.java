@@ -14,8 +14,8 @@
 package dev.equo.ide.maven;
 
 import dev.equo.solstice.p2.ConsoleTable;
+import dev.equo.solstice.p2.P2Client;
 import dev.equo.solstice.p2.P2Multitool;
-import javax.xml.transform.TransformerException;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -68,9 +68,9 @@ public class ListMojo extends AbstractP2Mojo {
 							+ "`mvn help:describe -Dcmd=equo-ide:list -Ddetail` for more info or visit https://github.com/equodev/equo-ide/blob/main/P2_MULTITOOL.md");
 		}
 		try {
-			tool.dump(query());
-		} catch (TransformerException e) {
-			throw new RuntimeException(e);
+			tool.dump(prepareModel().query(P2Client.Caching.ALLOW_OFFLINE));
+		} catch (Exception e) {
+			throw new MojoFailureException(e.getMessage(), e);
 		}
 	}
 }

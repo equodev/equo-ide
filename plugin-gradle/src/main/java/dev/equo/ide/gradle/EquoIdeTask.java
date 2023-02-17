@@ -15,14 +15,12 @@ package dev.equo.ide.gradle;
 
 import dev.equo.ide.BuildPluginIdeMain;
 import dev.equo.ide.IdeHook;
-import dev.equo.solstice.p2.P2Client;
-import dev.equo.solstice.p2.P2Query;
+import dev.equo.solstice.p2.P2QueryResult;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import javax.inject.Inject;
 import org.gradle.api.DefaultTask;
-import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.provider.Property;
@@ -32,10 +30,7 @@ import org.gradle.api.tasks.options.Option;
 
 public abstract class EquoIdeTask extends DefaultTask {
 	@Internal
-	public abstract Property<P2Client.Caching> getCaching();
-
-	@Internal
-	public abstract Property<P2Query> getQuery();
+	public abstract Property<P2QueryResult> getQuery();
 
 	@Internal
 	public abstract Property<FileCollection> getMavenDeps();
@@ -113,20 +108,9 @@ public abstract class EquoIdeTask extends DefaultTask {
 	public void launch() throws IOException, InterruptedException {
 		var caller = BuildPluginIdeMain.Caller.forProjectDir(getProjectDir().get(), clean);
 
-		var query = getQuery().get();
-
-		ConfigurableFileCollection p2deps;
-		{
-			var p2files = new ArrayList<File>();
-			try (var client = new P2Client(getCaching().get())) {
-				for (var unit : query.getJarsNotOnMavenCentral()) {
-					p2files.add(client.download(unit));
-				}
-			}
-			p2deps = getObjectFactory().fileCollection().from(p2files);
-		}
-
-		var p2AndMavenDeps = p2deps.plus(getMavenDeps().get());
+		var jarsNotOnMaven =
+				getObjectFactory().fileCollection().from(getQuery().get().getJarsNotOnMavenCentral());
+		var p2AndMavenDeps = jarsNotOnMaven.plus(getMavenDeps().get());
 		var classpath = new ArrayList<File>();
 		p2AndMavenDeps.forEach(classpath::add);
 
