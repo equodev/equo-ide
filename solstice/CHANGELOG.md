@@ -3,6 +3,10 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+### Added
+- `P2QueryResult` which strips a `P2Query` down to pnly the maven coordinates and jars. ([#85](https://github.com/equodev/equo-ide/pull/85))
+	- Easy to cache, which allows us to grab massive speedup gains.
+	- Also fixed a bug which had been disabling our offline P2 metadata cache. 
 ### Fixed
 - Atomos was changed from an `implementation` dependency to `compileOnly`. ([#83](https://github.com/equodev/equo-ide/pull/83))
 
