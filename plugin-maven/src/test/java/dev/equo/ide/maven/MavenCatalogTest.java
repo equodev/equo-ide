@@ -28,9 +28,7 @@ public class MavenCatalogTest extends MavenHarness {
 						+ "<filters>\n"
 						+ "  <filter><platformNone>true</platformNone></filter>\n"
 						+ "</filters>\n");
-		mvnw("equo-ide:list -Drequest")
-				.snapshotBetween(
-						"(default-cli) @ equo-maven-test-harness ---", "[INFO] BUILD SUCCESS", expect);
+		mvnw("equo-ide:list -Drequest").snapshotBetween("(default-cli) @ equo-maven-test-harness ---", "[INFO] BUILD SUCCESS", expect);
 	}
 
 	@Test

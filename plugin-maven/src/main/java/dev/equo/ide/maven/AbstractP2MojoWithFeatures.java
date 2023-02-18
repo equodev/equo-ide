@@ -17,14 +17,17 @@ import dev.equo.ide.EquoCatalog;
 import dev.equo.ide.FeatureDsl;
 import dev.equo.ide.IdeHook;
 import dev.equo.solstice.p2.P2Model;
+
+import java.util.Objects;
+import java.util.stream.Stream;
+
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Parameter;
 
 /** Performs typed p2 resolutions against known projects. */
 public abstract class AbstractP2MojoWithFeatures extends AbstractP2Mojo {
-	public final void addPlatform(Platform platform) throws MojoFailureException {
-		addFeature(platform);
-	}
+	@Parameter
+	private Platform platform;
 
 	public static class Platform extends MavenFeatureDsl {
 		public Platform() {
@@ -32,9 +35,8 @@ public abstract class AbstractP2MojoWithFeatures extends AbstractP2Mojo {
 		}
 	}
 
-	public final void addJdt(Jdt jdt) throws MojoFailureException {
-		addFeature(jdt);
-	}
+	@Parameter
+	private Jdt jdt;
 
 	public static class Jdt extends MavenFeatureDsl {
 		public Jdt() {
@@ -42,9 +44,8 @@ public abstract class AbstractP2MojoWithFeatures extends AbstractP2Mojo {
 		}
 	}
 
-	public final void addGradleBuildship(GradleBuildship buildship) throws MojoFailureException {
-		addFeature(buildship);
-	}
+	@Parameter
+	private GradleBuildship gradleBuildship;
 
 	public static class GradleBuildship extends MavenFeatureDsl {
 		public GradleBuildship() {
@@ -77,14 +78,8 @@ public abstract class AbstractP2MojoWithFeatures extends AbstractP2Mojo {
 
 	@Override
 	protected void modifyModel(P2Model model, IdeHook.List ideHooks) {
+		FeatureDsl.TransitiveAwareList<MavenFeatureDsl> featuresInternal = new FeatureDsl.TransitiveAwareList<>();
+		Stream.of(platform, jdt, gradleBuildship).filter(Objects::nonNull).forEach(catalog -> featuresInternal.addFeature(catalog));
 		featuresInternal.putInto(model, ideHooks);
 	}
-
-	private void addFeature(MavenFeatureDsl dsl) {
-		dsl.processVersionOverrides();
-		featuresInternal.addFeature(dsl);
-	}
-
-	private final FeatureDsl.TransitiveAwareList<MavenFeatureDsl> featuresInternal =
-			new FeatureDsl.TransitiveAwareList<>();
 }
