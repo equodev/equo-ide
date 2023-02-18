@@ -1,0 +1,14 @@
+dev.equo.ide.maven.MavenCatalogTest.simple[gradleBuildship]=[
+{filters: { '-1003173200': {props: { 'osgi.arch': 'dont-include-platform-specific-artifacts',
+          'osgi.os': 'dont-include-platform-specific-artifacts',
+          'osgi.ws': 'dont-include-platform-specific-artifacts' }} }}
+[INFO] ------------------------------------------------------------------------
+]
+
+
+dev.equo.ide.maven.MavenCatalogTest.simple[jdt]=[
+{filters: { '-1003173200': {props: { 'osgi.arch': 'dont-include-platform-specific-artifacts',
+          'osgi.os': 'dont-include-platform-specific-artifacts',
+          'osgi.ws': 'dont-include-platform-specific-artifacts' }} }}
+[INFO] ------------------------------------------------------------------------
+]
