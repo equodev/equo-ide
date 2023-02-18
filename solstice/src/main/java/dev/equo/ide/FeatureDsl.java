@@ -134,7 +134,7 @@ public class FeatureDsl {
 		private FeatureDsl addFeatureAsTransitiveOf(
 				EquoCatalog transitive, FeatureDsl originalRequest) {
 			var dsl = features.get(transitive);
-			if (dsl != null) {
+			if (dsl == null) {
 				dsl = new FeatureDsl(transitive, originalRequest);
 				features.put(transitive, dsl);
 			}
