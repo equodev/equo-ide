@@ -13,49 +13,43 @@
  *******************************************************************************/
 package dev.equo.ide.maven;
 
+import dev.equo.ide.CatalogDsl;
 import dev.equo.ide.EquoCatalog;
-import dev.equo.ide.FeatureDsl;
 import dev.equo.ide.IdeHook;
 import dev.equo.solstice.p2.P2Model;
-
 import java.util.Objects;
 import java.util.stream.Stream;
-
-import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Parameter;
 
 /** Performs typed p2 resolutions against known projects. */
-public abstract class AbstractP2MojoWithFeatures extends AbstractP2Mojo {
-	@Parameter
-	private Platform platform;
+public abstract class AbstractP2MojoWithCatalog extends AbstractP2Mojo {
+	@Parameter private Platform platform;
 
-	public static class Platform extends MavenFeatureDsl {
+	public static class Platform extends MavenCatalogDsl {
 		public Platform() {
 			super(EquoCatalog.PLATFORM);
 		}
 	}
 
-	@Parameter
-	private Jdt jdt;
+	@Parameter private Jdt jdt;
 
-	public static class Jdt extends MavenFeatureDsl {
+	public static class Jdt extends MavenCatalogDsl {
 		public Jdt() {
 			super(EquoCatalog.JDT);
 		}
 	}
 
-	@Parameter
-	private GradleBuildship gradleBuildship;
+	@Parameter private GradleBuildship gradleBuildship;
 
-	public static class GradleBuildship extends MavenFeatureDsl {
+	public static class GradleBuildship extends MavenCatalogDsl {
 		public GradleBuildship() {
 			super(EquoCatalog.GRADLE_BUILDSHIP);
 		}
 	}
 
-	public static class MavenFeatureDsl extends FeatureDsl {
-		protected MavenFeatureDsl(EquoCatalog feature) {
-			super(feature);
+	public static class MavenCatalogDsl extends CatalogDsl {
+		protected MavenCatalogDsl(EquoCatalog catalog) {
+			super(catalog);
 		}
 
 		/** Override EquoIDE's default version for this feature. */
@@ -78,8 +72,9 @@ public abstract class AbstractP2MojoWithFeatures extends AbstractP2Mojo {
 
 	@Override
 	protected void modifyModel(P2Model model, IdeHook.List ideHooks) {
-		FeatureDsl.TransitiveAwareList<MavenFeatureDsl> featuresInternal = new FeatureDsl.TransitiveAwareList<>();
-		Stream.of(platform, jdt, gradleBuildship).filter(Objects::nonNull).forEach(catalog -> featuresInternal.addFeature(catalog));
-		featuresInternal.putInto(model, ideHooks);
+		CatalogDsl.TransitiveAwareList<MavenCatalogDsl> catalog =
+				new CatalogDsl.TransitiveAwareList<>();
+		Stream.of(platform, jdt, gradleBuildship).filter(Objects::nonNull).forEach(catalog::add);
+		catalog.putInto(model, ideHooks);
 	}
 }

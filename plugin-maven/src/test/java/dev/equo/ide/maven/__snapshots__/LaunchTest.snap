@@ -24,6 +24,9 @@ equo-ide:launch
     filters
       (no description available)
 
+    gradleBuildship
+      (no description available)
+
     initOnly (Default: false)
       User property: initOnly
       Initializes the runtime to check for errors then exits.
@@ -31,7 +34,13 @@ equo-ide:launch
     installs
       (no description available)
 
+    jdt
+      (no description available)
+
     p2repos
+      (no description available)
+
+    platform
       (no description available)
 
     showConsole (Default: false)

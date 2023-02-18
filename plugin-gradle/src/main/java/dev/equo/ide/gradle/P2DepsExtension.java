@@ -32,14 +32,14 @@ public class P2DepsExtension {
 		this.project = project;
 	}
 
-	public void into(String configuration, Action<P2ModelDslWithFeatures> p2) {
+	public void into(String configuration, Action<P2ModelDslWithCatalog> p2) {
 		into(project.getConfigurations().maybeCreate(configuration), p2);
 	}
 
-	public void into(Configuration configuration, Action<P2ModelDslWithFeatures> p2) {
-		P2ModelDslWithFeatures dsl = new P2ModelDslWithFeatures(project);
+	public void into(Configuration configuration, Action<P2ModelDslWithCatalog> p2) {
+		P2ModelDslWithCatalog dsl = new P2ModelDslWithCatalog(project);
 		p2.execute(dsl);
-		dsl.features.putInto(dsl.model, new IdeHook.List());
+		dsl.catalog.putInto(dsl.model, new IdeHook.List());
 		dsl.model.applyNativeFilterIfNoPlatformFilter();
 		dsl.model.validateFilters();
 		configurations.put(configuration.getName(), dsl.model);

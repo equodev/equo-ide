@@ -355,6 +355,9 @@ equo-ide:list
       Determines output format [ascii|csv] (can be combined with all other
       commands).
 
+    gradleBuildship
+      (no description available)
+
     installed (Default: false)
       User property: installed
       Lists the jars which were installed.
@@ -362,11 +365,17 @@ equo-ide:list
     installs
       (no description available)
 
+    jdt
+      (no description available)
+
     optional (Default: false)
       User property: optional
       Lists any optional requirements which were not installed.
 
     p2repos
+      (no description available)
+
+    platform
       (no description available)
 
     problems (Default: false)

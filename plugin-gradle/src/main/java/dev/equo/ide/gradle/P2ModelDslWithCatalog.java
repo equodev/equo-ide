@@ -13,50 +13,50 @@
  *******************************************************************************/
 package dev.equo.ide.gradle;
 
+import dev.equo.ide.CatalogDsl;
 import dev.equo.ide.EquoCatalog;
-import dev.equo.ide.FeatureDsl;
 import dev.equo.ide.IdeHook;
 import dev.equo.ide.IdeHookBuildship;
 import java.util.List;
 import org.gradle.api.Action;
 import org.gradle.api.Project;
 
-public class P2ModelDslWithFeatures extends P2ModelDsl {
+public class P2ModelDslWithCatalog extends P2ModelDsl {
 	final Project project;
 
-	public P2ModelDslWithFeatures(Project project) {
+	public P2ModelDslWithCatalog(Project project) {
 		this.project = project;
 	}
 
-	public static class Platform extends GradleFeatureDsl {
+	public static class Platform extends GradleCatalogDsl {
 		protected Platform(String urlOverride) {
 			super(EquoCatalog.PLATFORM, urlOverride);
 		}
 	}
 
 	public void platform(String urlOverride) {
-		addFeature(new Platform(urlOverride));
+		add(new Platform(urlOverride));
 	}
 
 	public void platform() {
 		platform(null);
 	}
 
-	public static class Jdt extends GradleFeatureDsl {
+	public static class Jdt extends GradleCatalogDsl {
 		protected Jdt(String urlOverride) {
 			super(EquoCatalog.JDT, urlOverride);
 		}
 	}
 
 	public void jdt(String urlOverride) {
-		addFeature(new Jdt(urlOverride));
+		add(new Jdt(urlOverride));
 	}
 
 	public void jdt() {
 		jdt(null);
 	}
 
-	public static class GradleBuildship extends GradleFeatureDsl {
+	public static class GradleBuildship extends GradleCatalogDsl {
 		private IdeHookBuildship ideHook;
 
 		protected GradleBuildship(String urlOverride, Project project) {
@@ -73,29 +73,29 @@ public class P2ModelDslWithFeatures extends P2ModelDsl {
 	}
 
 	public void gradleBuildship(String urlOverride) {
-		addFeature(new GradleBuildship(urlOverride, project));
+		add(new GradleBuildship(urlOverride, project));
 	}
 
 	public void gradleBuildship() {
 		gradleBuildship(null);
 	}
 
-	public static class GradleFeatureDsl extends FeatureDsl {
-		protected GradleFeatureDsl(EquoCatalog feature, String urlOverride) {
-			super(feature);
+	public static class GradleCatalogDsl extends CatalogDsl {
+		protected GradleCatalogDsl(EquoCatalog catalog, String urlOverride) {
+			super(catalog);
 			super.setUrlOverride(urlOverride);
 		}
 	}
 
-	private <T extends GradleFeatureDsl> void addFeature(T dsl) {
-		addFeature(dsl, unused -> {});
+	private <T extends GradleCatalogDsl> void add(T dsl) {
+		add(dsl, unused -> {});
 	}
 
-	private <T extends GradleFeatureDsl> void addFeature(T dsl, Action<? super T> action) {
+	private <T extends GradleCatalogDsl> void add(T dsl, Action<? super T> action) {
 		action.execute(dsl);
-		features.addFeature(dsl);
+		catalog.add(dsl);
 	}
 
-	final FeatureDsl.TransitiveAwareList<GradleFeatureDsl> features =
-			new FeatureDsl.TransitiveAwareList<>();
+	final CatalogDsl.TransitiveAwareList<GradleCatalogDsl> catalog =
+			new CatalogDsl.TransitiveAwareList<>();
 }

@@ -23,17 +23,17 @@ import javax.annotation.Nullable;
  * Base class for DSL configuring an {@link EquoCatalog} for inclusion in the Gradle or Maven
  * plugins.
  */
-public class FeatureDsl {
-	protected final EquoCatalog feature;
-	private final @Nullable FeatureDsl addedAsTransitiveOf;
+public class CatalogDsl {
+	protected final EquoCatalog catalog;
+	private final @Nullable CatalogDsl addedAsTransitiveOf;
 	private @Nullable String urlOverride;
 
-	protected FeatureDsl(EquoCatalog feature) {
-		this(feature, null);
+	protected CatalogDsl(EquoCatalog catalog) {
+		this(catalog, null);
 	}
 
-	private FeatureDsl(EquoCatalog feature, @Nullable FeatureDsl addedAsTransitiveOf) {
-		this.feature = feature;
+	private CatalogDsl(EquoCatalog catalog, @Nullable CatalogDsl addedAsTransitiveOf) {
+		this.catalog = catalog;
 		this.addedAsTransitiveOf = addedAsTransitiveOf;
 	}
 
@@ -46,11 +46,11 @@ public class FeatureDsl {
 	}
 
 	private String url() {
-		return feature.getUrlForOverride(urlOverride);
+		return catalog.getUrlForOverride(urlOverride);
 	}
 
 	private List<String> installs() {
-		return feature.getTargetsFor(urlOverride);
+		return catalog.getTargetsFor(urlOverride);
 	}
 
 	/** Sets the URL and/or version override. */
@@ -59,12 +59,12 @@ public class FeatureDsl {
 	}
 
 	/**
-	 * If this feature has the same URL template as one of its transitive dependencies, then it should
+	 * If this catalog has the same URL template as one of its transitive dependencies, then it should
 	 * also have the exact same urlOverride. If it doesn't, and one of them is null, then we can
 	 * automatically override the null with the non-null to resolve the issue.
 	 */
-	void syncUrlWith(FeatureDsl other) {
-		if (!feature.getP2UrlTemplate().equals(other.feature.getP2UrlTemplate())) {
+	void syncUrlWith(CatalogDsl other) {
+		if (!catalog.getP2UrlTemplate().equals(other.catalog.getP2UrlTemplate())) {
 			// syncing only matters when they have the same URL
 			return;
 		}
@@ -79,9 +79,9 @@ public class FeatureDsl {
 		} else {
 			// they are both non-null and unequal
 			throw new IllegalArgumentException(
-					feature.getName()
+					catalog.getName()
 							+ " "
-							+ other.feature.getName()
+							+ other.catalog.getName()
 							+ " must have the exact same URL, but\n"
 							+ urlReasoning()
 							+ "\n"
@@ -91,62 +91,61 @@ public class FeatureDsl {
 
 	private String urlReasoning() {
 		if (addedAsTransitiveOf != null) {
-			return feature.getName()
+			return catalog.getName()
 					+ " is using "
 					+ url()
 					+ " (was added automatically as a transitive of "
-					+ addedAsTransitiveOf.feature.getName()
+					+ addedAsTransitiveOf.catalog.getName()
 					+ ")";
 		} else {
-			return feature.getName() + " is using " + url();
+			return catalog.getName() + " is using " + url();
 		}
 	}
 
-	public static class TransitiveAwareList<T extends FeatureDsl> {
-		private TreeMap<EquoCatalog, FeatureDsl> features = new TreeMap<>();
+	public static class TransitiveAwareList<T extends CatalogDsl> {
+		private TreeMap<EquoCatalog, CatalogDsl> catalogEntries = new TreeMap<>();
 
-		public void addFeature(T dsl) {
-			var existing = features.get(dsl.feature);
+		public void add(T dsl) {
+			var existing = catalogEntries.get(dsl.catalog);
 			if (existing != null) {
 				if (existing.addedAsTransitiveOf != null) {
 					throw new IllegalArgumentException(
-							dsl.feature.getName()
+							dsl.catalog.getName()
 									+ " was already added as a transitive dependency of "
 									+ existing.addedAsTransitiveOf
 									+ ".\n"
 									+ "You can fix this by moving the <"
-									+ dsl.feature.getName()
+									+ dsl.catalog.getName()
 									+ "> block above the <"
-									+ existing.addedAsTransitiveOf.feature.getName()
+									+ existing.addedAsTransitiveOf.catalog.getName()
 									+ "> block.");
 				} else {
 					throw new IllegalArgumentException(
-							"You can only add " + dsl.feature.getName() + " once.");
+							"You can only add " + dsl.catalog.getName() + " once.");
 				}
 			}
-			features.put(dsl.feature, dsl);
-			for (var required : dsl.feature.getRequires()) {
-				var transitive = addFeatureAsTransitiveOf(required, dsl);
+			catalogEntries.put(dsl.catalog, dsl);
+			for (var required : dsl.catalog.getRequires()) {
+				var transitive = addAsTransitiveOf(required, dsl);
 				transitive.syncUrlWith(dsl);
 			}
 		}
 
-		private FeatureDsl addFeatureAsTransitiveOf(
-				EquoCatalog transitive, FeatureDsl originalRequest) {
-			var dsl = features.get(transitive);
+		private CatalogDsl addAsTransitiveOf(EquoCatalog transitive, CatalogDsl originalRequest) {
+			var dsl = catalogEntries.get(transitive);
 			if (dsl == null) {
-				dsl = new FeatureDsl(transitive, originalRequest);
-				features.put(transitive, dsl);
+				dsl = new CatalogDsl(transitive, originalRequest);
+				catalogEntries.put(transitive, dsl);
 			}
 			for (var required : transitive.getRequires()) {
-				var transitiveDsl = addFeatureAsTransitiveOf(required, originalRequest);
+				var transitiveDsl = addAsTransitiveOf(required, originalRequest);
 				transitiveDsl.syncUrlWith(dsl);
 			}
 			return dsl;
 		}
 
 		public void putInto(P2Model model, IdeHook.List hooks) {
-			for (FeatureDsl dsl : features.values()) {
+			for (CatalogDsl dsl : catalogEntries.values()) {
 				model.addP2Repo(dsl.url());
 				model.getInstall().addAll(dsl.installs());
 				hooks.addAll(dsl.ideHooks());

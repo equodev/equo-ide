@@ -44,7 +44,7 @@ import org.eclipse.aether.resolution.DependencyResult;
 
 /** Launches an Eclipse-based IDE for this project. */
 @Mojo(name = "launch")
-public class LaunchMojo extends AbstractP2MojoWithFeatures {
+public class LaunchMojo extends AbstractP2MojoWithCatalog {
 	@Parameter(required = false)
 	private Branding branding = new Branding();
 

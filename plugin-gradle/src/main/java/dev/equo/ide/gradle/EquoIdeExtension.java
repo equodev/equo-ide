@@ -20,7 +20,7 @@ import dev.equo.solstice.p2.P2Model;
 import org.gradle.api.Project;
 
 /** The DSL inside the equoIde block. */
-public class EquoIdeExtension extends P2ModelDslWithFeatures {
+public class EquoIdeExtension extends P2ModelDslWithCatalog {
 	public boolean useAtomos = false;
 	private final IdeHook.List ideHooks = new IdeHook.List();
 	public final IdeHookBranding branding = new IdeHookBranding();
@@ -53,7 +53,7 @@ public class EquoIdeExtension extends P2ModelDslWithFeatures {
 			return model;
 		}
 		hasBeenPrepared = true;
-		features.putInto(model, ideHooks);
+		catalog.putInto(model, ideHooks);
 		model.applyNativeFilterIfNoPlatformFilter();
 		return model;
 	}
