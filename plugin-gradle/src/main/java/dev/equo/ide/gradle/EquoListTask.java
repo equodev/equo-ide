@@ -92,13 +92,19 @@ public abstract class EquoListTask extends DefaultTask {
 		tool.raw = raw;
 	}
 
+	@Option(option = "request", description = "Dumps the full p2 request we are making")
+	void setRequest(boolean request) {
+		tool.request = request;
+	}
+
 	@TaskAction
 	public void list() throws Exception {
 		if (!tool.argsAreValid()) {
 			throw new GradleException(
-					"Exactly one of --installed, --problems, --optional, --all, --detail, or --raw must be set.\n"
+					"Exactly one of --request, --installed, --problems, --optional, --all, --detail, or --raw must be set.\n"
 							+ "`gradlew help --task equoList` for more info or visit https://github.com/equodev/equo-ide/blob/main/P2_MULTITOOL.md");
 		}
-		tool.dump(getExtension().get().prepareModel().queryRaw(getClientCaching().get()));
+		var model = getExtension().get().prepareModel();
+		tool.dump(model, model.queryRaw(getClientCaching().get()));
 	}
 }
