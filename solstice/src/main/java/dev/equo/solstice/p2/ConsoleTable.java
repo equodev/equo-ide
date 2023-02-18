@@ -47,9 +47,13 @@ public class ConsoleTable {
 			for (var excludeSuffix : filter.getValue().getExcludeSuffix()) {
 				table.addRow("  excludeSuffix", excludeSuffix);
 			}
-			filter.getValue().getProps().forEach((key, value) -> {
-				table.addRow("  " + key, value);
-			});
+			filter
+					.getValue()
+					.getProps()
+					.forEach(
+							(key, value) -> {
+								table.addRow("  " + key, value);
+							});
 		}
 		return table.toString(format);
 	}

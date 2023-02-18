@@ -38,4 +38,12 @@ public class GradleCatalogTest extends GradleHarness {
 		test("jdt()", expect.scenario("jdt"));
 		test("gradleBuildship()", expect.scenario("gradleBuildship"));
 	}
+
+	@Test
+	public void versionOverride(Expect expect) throws IOException {
+		test("jdt('4.25')", expect.scenario("jdt-spec"));
+		test("platform()\njdt('4.25')", expect.scenario("platform-neutral-jdt-spec"));
+		test("platform('4.25')\njdt()", expect.scenario("platform-spec"));
+		test("platform('4.25')\njdt('4.25')", expect.scenario("both-spec"));
+	}
 }
