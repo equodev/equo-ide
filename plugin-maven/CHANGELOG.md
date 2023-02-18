@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+### Fixed
+- Improved Windows launch experience. ([#44](https://github.com/equodev/equo-ide/issues/44))
 
 ## [0.13.3] - 2023-02-17
 ### Fixed
