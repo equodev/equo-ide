@@ -17,7 +17,6 @@ import dev.equo.ide.IdeHook;
 import dev.equo.ide.IdeHookBranding;
 import dev.equo.ide.IdeHookWelcome;
 import dev.equo.solstice.p2.P2Model;
-import org.gradle.api.GradleException;
 import org.gradle.api.Project;
 
 /** The DSL inside the equoIde block. */
@@ -50,14 +49,6 @@ public class EquoIdeExtension extends P2ModelDslWithFeatures {
 	}
 
 	P2Model prepareModel() throws Exception {
-		if (model.isEmpty()) {
-			throw new GradleException(
-					"EquoIDE has nothing to install!\n\n"
-							+ "We recommend starting with this:\n"
-							+ "equoIde {\n"
-							+ "  gradleBuildship()\n"
-							+ "}");
-		}
 		if (hasBeenPrepared) {
 			return model;
 		}

@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import javax.inject.Inject;
 import org.gradle.api.DefaultTask;
+import org.gradle.api.GradleException;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.provider.Property;
@@ -113,6 +114,15 @@ public abstract class EquoIdeTask extends DefaultTask {
 		var p2AndMavenDeps = jarsNotOnMaven.plus(getMavenDeps().get());
 		var classpath = new ArrayList<File>();
 		p2AndMavenDeps.forEach(classpath::add);
+
+		if (p2AndMavenDeps.isEmpty()) {
+			throw new GradleException(
+					"EquoIDE has nothing to install!\n\n"
+							+ "We recommend starting with this:\n"
+							+ "equoIde {\n"
+							+ "  gradleBuildship()\n"
+							+ "}");
+		}
 
 		caller.ideHooks = ideHooks;
 		caller.classpath = classpath;
