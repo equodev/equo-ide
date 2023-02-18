@@ -18,7 +18,7 @@ import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nullable;
 
-public class EquoCatalog {
+public class EquoCatalog implements Comparable<EquoCatalog> {
 	private static String V = "${VERSION}";
 	public static final EquoCatalog PLATFORM =
 			new EquoCatalog(
@@ -92,5 +92,24 @@ public class EquoCatalog {
 
 	public static boolean isUrl(String maybeUrl) {
 		return maybeUrl.startsWith("https:") || maybeUrl.startsWith("http:");
+	}
+
+	@Override
+	public int compareTo(EquoCatalog o) {
+		return name.compareTo(o.name);
+	}
+
+	@Override
+	public int hashCode() {
+		return name.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof EquoCatalog) {
+			return ((EquoCatalog) obj).name.equals(name);
+		} else {
+			return false;
+		}
 	}
 }
