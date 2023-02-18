@@ -1,18 +1,34 @@
 dev.equo.ide.maven.MavenCatalogTest.simple[gradleBuildship]=[
-{p2repo: ['https://download.eclipse.org/buildship/updates/e423/releases/3.x/3.1.6.v20220511-1359/', 'https://download.eclipse.org/eclipse/updates/4.26/'],
-install: ['org.eclipse.buildship.feature.group', 'org.eclipse.platform.ide.categoryIU', 'org.eclipse.releng.java.languages.categoryIU'],
-filters: { '-1003173200': {props: { 'osgi.arch': 'dont-include-platform-specific-artifacts',
-          'osgi.os': 'dont-include-platform-specific-artifacts',
-          'osgi.ws': 'dont-include-platform-specific-artifacts' }} }}
++-------------+----------------------------------------------------------------------------------------+
+| kind        | value                                                                                  |
++-------------+----------------------------------------------------------------------------------------+
+| p2repo      | https://download.eclipse.org/buildship/updates/e423/releases/3.x/3.1.6.v20220511-1359/ |
+| p2repo      | https://download.eclipse.org/eclipse/updates/4.26/                                     |
+| install     | org.eclipse.buildship.feature.group                                                    |
+| install     | org.eclipse.platform.ide.categoryIU                                                    |
+| install     | org.eclipse.releng.java.languages.categoryIU                                           |
+| filter      | -1003173200                                                                            |
+|   osgi.arch | dont-include-platform-specific-artifacts                                               |
+|   osgi.os   | dont-include-platform-specific-artifacts                                               |
+|   osgi.ws   | dont-include-platform-specific-artifacts                                               |
++-------------+----------------------------------------------------------------------------------------+
+
 [INFO] ------------------------------------------------------------------------
 ]
 
 
 dev.equo.ide.maven.MavenCatalogTest.simple[jdt]=[
-{p2repo: ['https://download.eclipse.org/eclipse/updates/4.26/'],
-install: ['org.eclipse.platform.ide.categoryIU', 'org.eclipse.releng.java.languages.categoryIU'],
-filters: { '-1003173200': {props: { 'osgi.arch': 'dont-include-platform-specific-artifacts',
-          'osgi.os': 'dont-include-platform-specific-artifacts',
-          'osgi.ws': 'dont-include-platform-specific-artifacts' }} }}
++-------------+----------------------------------------------------+
+| kind        | value                                              |
++-------------+----------------------------------------------------+
+| p2repo      | https://download.eclipse.org/eclipse/updates/4.26/ |
+| install     | org.eclipse.platform.ide.categoryIU                |
+| install     | org.eclipse.releng.java.languages.categoryIU       |
+| filter      | -1003173200                                        |
+|   osgi.arch | dont-include-platform-specific-artifacts           |
+|   osgi.os   | dont-include-platform-specific-artifacts           |
+|   osgi.ws   | dont-include-platform-specific-artifacts           |
++-------------+----------------------------------------------------+
+
 [INFO] ------------------------------------------------------------------------
 ]

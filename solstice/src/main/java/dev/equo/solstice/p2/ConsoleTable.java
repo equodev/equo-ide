@@ -27,6 +27,33 @@ public class ConsoleTable {
 		csv
 	}
 
+	/** Returns a table with the full content of the given P2Model. */
+	public static String request(P2Model model, Format format) {
+		var table = new NColumnTable("kind", "value");
+		for (var p2 : model.getP2repo()) {
+			table.addRow("p2repo", p2);
+		}
+		for (var install : model.getInstall()) {
+			table.addRow("install", install);
+		}
+		for (var filter : model.getFilters().entrySet()) {
+			table.addRow("filter", filter.getKey());
+			for (var exclude : filter.getValue().getExclude()) {
+				table.addRow("  exclude", exclude);
+			}
+			for (var excludePrefix : filter.getValue().getExcludePrefix()) {
+				table.addRow("  excludePrefix", excludePrefix);
+			}
+			for (var excludeSuffix : filter.getValue().getExcludeSuffix()) {
+				table.addRow("  excludeSuffix", excludeSuffix);
+			}
+			filter.getValue().getProps().forEach((key, value) -> {
+				table.addRow("  " + key, value);
+			});
+		}
+		return table.toString(format);
+	}
+
 	/** Returns a table with the {@link RepoStatus} of all its units. */
 	public static String mavenStatus(Iterable<P2Unit> units, Format format) {
 		var mavenStates = new ArrayList<RepoStatus>();

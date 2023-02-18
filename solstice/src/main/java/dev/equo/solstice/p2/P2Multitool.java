@@ -153,6 +153,6 @@ public class P2Multitool {
 	}
 
 	private void request(P2Model model) {
-		System.out.println(model.toString());
+		System.out.println(ConsoleTable.request(model, format));
 	}
 }
