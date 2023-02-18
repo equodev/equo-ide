@@ -60,7 +60,7 @@ public abstract class AbstractP2Mojo extends AbstractMojo {
 		installs.forEach(model.getInstall()::add);
 		for (Filter filterModel : filters) {
 			var filter = filterModel.toFilter();
-			model.addFilterAndValidate(Integer.toString(filter.hashCode()), filter);
+			model.addFilterAndValidate("maven-filter-unnamed-" + Integer.toString(filter.hashCode()), filter);
 		}
 		if (model.isEmpty()) {
 			throw new MojoFailureException(
