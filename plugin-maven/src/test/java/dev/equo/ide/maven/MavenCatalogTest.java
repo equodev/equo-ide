@@ -38,4 +38,12 @@ public class MavenCatalogTest extends MavenHarness {
 		test("<jdt/>", expect.scenario("jdt"));
 		test("<gradleBuildship/>", expect.scenario("gradleBuildship"));
 	}
+
+	@Test
+	public void versionOverride(Expect expect) throws IOException, InterruptedException {
+		test("<jdt><version>4.25</version></jdt>", expect.scenario("jdt-spec"));
+		test("<platform/><jdt><version>4.25</version></jdt>", expect.scenario("platform-neutral-jdt-spec"));
+		test("<platform><version>4.25</version></platform><jdt/>", expect.scenario("platform-spec"));
+		test("<platform><version>4.25</version></platform><jdt><version>4.25</version></jdt>", expect.scenario("both-spec"));
+	}
 }
