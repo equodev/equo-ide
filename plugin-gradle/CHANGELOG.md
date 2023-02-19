@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+
+## [0.15.0] - 2023-02-19
 ### Added
 - Users can now put `jdt()` or `gradleBuildship()` into the `equoIde` dsl, manually listing out p2 urls no longer necessary. ([#86](https://github.com/equodev/equo-ide/pull/86)) 
 
