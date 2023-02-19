@@ -105,6 +105,6 @@ public abstract class EquoListTask extends DefaultTask {
 							+ "`gradlew help --task equoList` for more info or visit https://github.com/equodev/equo-ide/blob/main/P2_MULTITOOL.md");
 		}
 		var model = getExtension().get().prepareModel();
-		tool.dump(model, model.queryRaw(getClientCaching().get()));
+		tool.dump(model, getClientCaching().get());
 	}
 }

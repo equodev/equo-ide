@@ -38,23 +38,26 @@ public class P2Multitool {
 		return numArgs == 1;
 	}
 
-	public void dump(P2Model model, P2Query query) throws TransformerException {
+	public void dump(P2Model model, P2Client.Caching caching) throws Exception {
 		if (request) {
 			request(model);
-		} else if (installed) {
-			installed(query);
-		} else if (problems) {
-			problems(query);
-		} else if (optional) {
-			optional(query);
-		} else if (all != null) {
-			all(query, all);
-		} else if (detail != null) {
-			detail(query, detail);
-		} else if (raw != null) {
-			raw(query, raw);
 		} else {
-			throw new UnsupportedOperationException("Programming error");
+			var query = model.queryRaw(caching);
+			if (installed) {
+				installed(query);
+			} else if (problems) {
+				problems(query);
+			} else if (optional) {
+				optional(query);
+			} else if (all != null) {
+				all(query, all);
+			} else if (detail != null) {
+				detail(query, detail);
+			} else if (raw != null) {
+				raw(query, raw);
+			} else {
+				throw new UnsupportedOperationException("Programming error");
+			}
 		}
 	}
 

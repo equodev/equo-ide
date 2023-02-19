@@ -74,7 +74,7 @@ public class ListMojo extends AbstractP2MojoWithCatalog {
 		}
 		try {
 			var model = prepareModel(new IdeHook.List());
-			tool.dump(model, model.queryRaw(P2Client.Caching.ALLOW_OFFLINE));
+			tool.dump(model, P2Client.Caching.ALLOW_OFFLINE);
 		} catch (Exception e) {
 			throw new MojoFailureException(e.getMessage(), e);
 		}
