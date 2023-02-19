@@ -50,4 +50,9 @@ public class MavenCatalogTest extends MavenHarness {
 				"<platform><version>4.25</version></platform><jdt><version>4.25</version></jdt>",
 				expect.scenario("both-spec"));
 	}
+
+	@Test
+	public void urlOverride(Expect expect) throws IOException, InterruptedException {
+		test("<jdt><url>http://test.url/</url></jdt>", expect);
+	}
 }
