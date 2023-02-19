@@ -15,6 +15,7 @@ package dev.equo.ide.gradle;
 
 import dev.equo.solstice.p2.P2Client;
 import dev.equo.solstice.p2.P2Model;
+import dev.equo.solstice.p2.QueryCache;
 import org.gradle.api.Action;
 import org.gradle.api.Project;
 
@@ -60,4 +61,14 @@ public class P2ModelDsl {
 	static P2Client.Caching clientCaching(Project project) {
 		return P2Client.Caching.defaultIfOfflineIs(project.getGradle().getStartParameter().isOffline());
 	}
+
+	static QueryCache queryCaching(Project project) {
+		boolean forceRecalculate =
+				EquoIdeGradlePlugin.anyArgEquals(project, CLEAN_FLAG)
+						|| EquoIdeGradlePlugin.anyArgEquals(project, REFRESH_DEPENDENCIES);
+		return forceRecalculate ? QueryCache.FORCE_RECALCULATE : QueryCache.ALLOW;
+	}
+
+	private static final String CLEAN_FLAG = "--clean";
+	private static final String REFRESH_DEPENDENCIES = "--refresh-dependencies";
 }

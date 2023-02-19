@@ -15,7 +15,6 @@ package dev.equo.ide.gradle;
 
 import dev.equo.solstice.NestedJars;
 import dev.equo.solstice.p2.CacheLocations;
-import dev.equo.solstice.p2.QueryCache;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -36,8 +35,6 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 	private static final String EQUO_IDE = "equoIde";
 
 	private static final String USE_ATOMOS_FLAG = "--use-atomos=";
-	static final String CLEAN_FLAG = "--clean";
-	static final String REFRESH_DEPENDENCIES = "--refresh-dependencies";
 
 	@Override
 	public void apply(Project project) {
@@ -90,15 +87,8 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 						for (var dep : NestedJars.transitiveDeps(useAtomos, NestedJars.CoordFormat.GRADLE)) {
 							project.getDependencies().add(EQUO_IDE, dep);
 						}
-
-						boolean forceRecalculate =
-								anyArgEquals(project, CLEAN_FLAG) || anyArgEquals(project, REFRESH_DEPENDENCIES);
 						var query =
-								extension
-										.prepareModel()
-										.query(
-												clientCaching,
-												forceRecalculate ? QueryCache.FORCE_RECALCULATE : QueryCache.ALLOW);
+								extension.prepareModel().query(clientCaching, P2ModelDsl.queryCaching(project));
 						for (var coordinate : query.getJarsOnMavenCentral()) {
 							ModuleDependency dep =
 									(ModuleDependency) project.getDependencies().add(EQUO_IDE, coordinate);
