@@ -46,4 +46,19 @@ public class GradleCatalogTest extends GradleHarness {
 		test("platform('4.25')\njdt()", expect.scenario("platform-spec"));
 		test("platform('4.25')\njdt('4.25')", expect.scenario("both-spec"));
 	}
+
+	@Test
+	public void wrongOrder(Expect expect) throws IOException {
+		setFile("build.gradle")
+				.toLines(
+						"plugins { id 'dev.equo.ide' }",
+						"equoIde {",
+						"  jdt()",
+						"  platform()",
+						"  addFilter 'platform-neutral', { platformNone() }",
+						"}");
+		runAndFail("equoList", "--request", "--stacktrace")
+				.snapshotBetween(
+						"A problem occurred evaluating root project 'under-test'.", "* Try:", expect);
+	}
 }

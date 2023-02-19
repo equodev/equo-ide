@@ -88,3 +88,9 @@ dev.equo.ide.gradle.GradleCatalogTest.versionOverride[platform-spec]=[
 |   osgi.ws   | dont-include-platform-specific-artifacts           |
 +-------------+----------------------------------------------------+
 ]
+
+
+dev.equo.ide.gradle.GradleCatalogTest.wrongOrder=[
+> platform was already added as a transitive dependency of jdt.
+  You can fix this by moving the <platform> block above the <jdt> block.
+]

@@ -112,7 +112,7 @@ public class CatalogDsl {
 					throw new IllegalArgumentException(
 							dsl.catalog.getName()
 									+ " was already added as a transitive dependency of "
-									+ existing.addedAsTransitiveOf
+									+ existing.addedAsTransitiveOf.catalog.getName()
 									+ ".\n"
 									+ "You can fix this by moving the <"
 									+ dsl.catalog.getName()
