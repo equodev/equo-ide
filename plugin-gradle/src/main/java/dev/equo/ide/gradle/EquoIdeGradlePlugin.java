@@ -73,7 +73,6 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 							task.getExtension().set(extension);
 						});
 
-		project.getRepositories().mavenCentral();
 		try {
 			for (var dep : DepsResolve.resolveSolsticeAndTransitives()) {
 				if (dep instanceof File) {
