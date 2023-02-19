@@ -74,10 +74,13 @@ public abstract class AbstractP2MojoWithCatalog extends AbstractP2Mojo {
 	protected void modifyModel(P2Model model, IdeHook.List ideHooks) {
 		CatalogDsl.TransitiveAwareList<MavenCatalogDsl> catalog =
 				new CatalogDsl.TransitiveAwareList<>();
-		Stream.of(platform, jdt, gradleBuildship).filter(Objects::nonNull).forEach(dsl -> {
-			dsl.processVersionOverrides();
-			catalog.add(dsl);
-		});
+		Stream.of(platform, jdt, gradleBuildship)
+				.filter(Objects::nonNull)
+				.forEach(
+						dsl -> {
+							dsl.processVersionOverrides();
+							catalog.add(dsl);
+						});
 		catalog.putInto(model, ideHooks);
 	}
 }
