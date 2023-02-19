@@ -52,19 +52,21 @@ public class P2DepsExtension {
 				EquoIdeGradlePlugin.anyArgEquals(project, EquoIdeGradlePlugin.CLEAN_FLAG)
 						|| EquoIdeGradlePlugin.anyArgEquals(project, EquoIdeGradlePlugin.REFRESH_DEPENDENCIES);
 
-		var caching = P2ModelDsl.caching(project);
+		var clientCaching = P2ModelDsl.clientCaching(project);
 		for (Map.Entry<String, P2Model> entry : configurations.entrySet()) {
 			String config = entry.getKey();
 			var query =
 					entry
 							.getValue()
-							.query(caching, forceRecalculate ? QueryCache.FORCE_RECALCULATE : QueryCache.ALLOW);
+							.query(
+									clientCaching,
+									forceRecalculate ? QueryCache.FORCE_RECALCULATE : QueryCache.ALLOW);
 			for (String mavenCoord : query.getJarsOnMavenCentral()) {
 				ModuleDependency dep = (ModuleDependency) project.getDependencies().add(config, mavenCoord);
 				dep.setTransitive(false);
 			}
 			var localFiles = new ArrayList<>();
-			try (var client = new P2Client(caching)) {
+			try (var client = new P2Client(clientCaching)) {
 				for (var downloadedJar : query.getJarsNotOnMavenCentral()) {
 					localFiles.add(downloadedJar);
 				}

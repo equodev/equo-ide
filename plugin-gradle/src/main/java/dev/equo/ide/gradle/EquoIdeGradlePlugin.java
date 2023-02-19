@@ -15,7 +15,6 @@ package dev.equo.ide.gradle;
 
 import dev.equo.solstice.NestedJars;
 import dev.equo.solstice.p2.CacheLocations;
-import dev.equo.solstice.p2.P2Client;
 import dev.equo.solstice.p2.QueryCache;
 import java.io.File;
 import java.io.IOException;
@@ -67,7 +66,7 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 			throw new GradleException("Unable to determine solstice version", e);
 		}
 
-		P2Client.Caching caching = P2ModelDsl.caching(project);
+		var clientCaching = P2ModelDsl.clientCaching(project);
 		var equoIdeTask =
 				project
 						.getTasks()
@@ -98,7 +97,7 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 								extension
 										.prepareModel()
 										.query(
-												caching,
+												clientCaching,
 												forceRecalculate ? QueryCache.FORCE_RECALCULATE : QueryCache.ALLOW);
 						for (var coordinate : query.getJarsOnMavenCentral()) {
 							ModuleDependency dep =
@@ -127,7 +126,7 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 							task.setGroup(TASK_GROUP);
 							task.setDescription("Lists the p2 dependencies of an Eclipse application");
 
-							task.getClientCaching().set(caching);
+							task.getClientCaching().set(clientCaching);
 							task.getExtension().set(extension);
 						});
 	}

@@ -57,7 +57,7 @@ public class P2ModelDsl {
 		model.getFilters().clear();
 	}
 
-	static P2Client.Caching caching(Project project) {
+	static P2Client.Caching clientCaching(Project project) {
 		return P2Client.Caching.defaultIfOfflineIs(project.getGradle().getStartParameter().isOffline());
 	}
 }
