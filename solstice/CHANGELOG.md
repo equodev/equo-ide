@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+
+## [0.15.0] - 2023-02-17
 ### Added
 - `P2QueryResult` which strips a `P2Query` down to pnly the maven coordinates and jars. ([#85](https://github.com/equodev/equo-ide/pull/85))
 	- Easy to cache, which allows us to grab massive speedup gains.

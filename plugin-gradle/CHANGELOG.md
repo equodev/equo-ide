@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+
+## [0.14.2] - 2023-02-17
 ### Fixed
 - Massive performance gains for the `ide` and `p2deps` plugins thanks to improved caching. ([#83](https://github.com/equodev/equo-ide/pull/83))
 - Atomos dependencies are only added when they are needed. ([#83](https://github.com/equodev/equo-ide/pull/83))

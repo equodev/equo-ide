@@ -4,6 +4,10 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
 ### Fixed
+- Improved Windows launch experience. ([#44](https://github.com/equodev/equo-ide/issues/44))
+
+## [0.13.3] - 2023-02-17
+### Fixed
 - Massive performance gains for the `ide` and `p2deps` plugins thanks to improved caching. ([#83](https://github.com/equodev/equo-ide/pull/83))
 - Launcher fixes on Windows and Linux. ([#84](https://github.com/equodev/equo-ide/pull/84) fixes [#44](https://github.com/equodev/equo-ide/issues/44))
 - Atomos dependencies are only added when they are needed. ([#83](https://github.com/equodev/equo-ide/pull/83))
