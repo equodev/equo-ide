@@ -13,8 +13,8 @@
  *******************************************************************************/
 package dev.equo.ide.maven;
 
+import dev.equo.ide.Catalog;
 import dev.equo.ide.CatalogDsl;
-import dev.equo.ide.EquoCatalog;
 import dev.equo.ide.IdeHook;
 import dev.equo.solstice.p2.P2Model;
 import java.util.Objects;
@@ -27,7 +27,7 @@ public abstract class AbstractP2MojoWithCatalog extends AbstractP2Mojo {
 
 	public static class Platform extends MavenCatalogDsl {
 		public Platform() {
-			super(EquoCatalog.PLATFORM);
+			super(Catalog.PLATFORM);
 		}
 	}
 
@@ -35,7 +35,7 @@ public abstract class AbstractP2MojoWithCatalog extends AbstractP2Mojo {
 
 	public static class Jdt extends MavenCatalogDsl {
 		public Jdt() {
-			super(EquoCatalog.JDT);
+			super(Catalog.JDT);
 		}
 	}
 
@@ -43,12 +43,12 @@ public abstract class AbstractP2MojoWithCatalog extends AbstractP2Mojo {
 
 	public static class GradleBuildship extends MavenCatalogDsl {
 		public GradleBuildship() {
-			super(EquoCatalog.GRADLE_BUILDSHIP);
+			super(Catalog.GRADLE_BUILDSHIP);
 		}
 	}
 
 	public static class MavenCatalogDsl extends CatalogDsl {
-		protected MavenCatalogDsl(EquoCatalog catalog) {
+		protected MavenCatalogDsl(Catalog catalog) {
 			super(catalog);
 		}
 

@@ -20,19 +20,18 @@ import java.util.TreeMap;
 import javax.annotation.Nullable;
 
 /**
- * Base class for DSL configuring an {@link EquoCatalog} for inclusion in the Gradle or Maven
- * plugins.
+ * Base class for DSL configuring an {@link Catalog} for inclusion in the Gradle or Maven plugins.
  */
 public class CatalogDsl {
-	protected final EquoCatalog catalog;
+	protected final Catalog catalog;
 	private final @Nullable CatalogDsl addedAsTransitiveOf;
 	private @Nullable String urlOverride;
 
-	protected CatalogDsl(EquoCatalog catalog) {
+	protected CatalogDsl(Catalog catalog) {
 		this(catalog, null);
 	}
 
-	private CatalogDsl(EquoCatalog catalog, @Nullable CatalogDsl addedAsTransitiveOf) {
+	private CatalogDsl(Catalog catalog, @Nullable CatalogDsl addedAsTransitiveOf) {
 		this.catalog = catalog;
 		this.addedAsTransitiveOf = addedAsTransitiveOf;
 	}
@@ -103,7 +102,7 @@ public class CatalogDsl {
 	}
 
 	public static class TransitiveAwareList<T extends CatalogDsl> {
-		private TreeMap<EquoCatalog, CatalogDsl> catalogEntries = new TreeMap<>();
+		private TreeMap<Catalog, CatalogDsl> catalogEntries = new TreeMap<>();
 
 		public void add(T dsl) {
 			var existing = catalogEntries.get(dsl.catalog);
@@ -131,7 +130,7 @@ public class CatalogDsl {
 			}
 		}
 
-		private CatalogDsl addAsTransitiveOf(EquoCatalog transitive, CatalogDsl originalRequest) {
+		private CatalogDsl addAsTransitiveOf(Catalog transitive, CatalogDsl originalRequest) {
 			var dsl = catalogEntries.get(transitive);
 			if (dsl == null) {
 				dsl = new CatalogDsl(transitive, originalRequest);
