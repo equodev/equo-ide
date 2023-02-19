@@ -46,7 +46,32 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 		EquoIdeExtension extension =
 				project.getExtensions().create(EQUO_IDE, EquoIdeExtension.class, project);
 		extension.branding.title(project.getName());
-		Configuration equoIde = createConfigurationWithTransitives(project, EQUO_IDE);
+		Configuration equoIde = createConfiguration(project, EQUO_IDE);
+
+		var clientCaching = P2ModelDsl.clientCaching(project);
+
+		var equoIdeTask =
+				project
+						.getTasks()
+						.register(
+								EQUO_IDE,
+								EquoIdeTask.class,
+								task -> {
+									task.setGroup(TASK_GROUP);
+									task.setDescription("Launches an Eclipse-based IDE for this project");
+								});
+		project
+				.getTasks()
+				.register(
+						"equoList",
+						EquoListTask.class,
+						task -> {
+							task.setGroup(TASK_GROUP);
+							task.setDescription("Lists the p2 dependencies of an Eclipse application");
+
+							task.getClientCaching().set(clientCaching);
+							task.getExtension().set(extension);
+						});
 
 		project.getRepositories().mavenCentral();
 		try {
@@ -62,18 +87,6 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 		} catch (IOException e) {
 			throw new GradleException("Unable to determine solstice version", e);
 		}
-
-		var clientCaching = P2ModelDsl.clientCaching(project);
-		var equoIdeTask =
-				project
-						.getTasks()
-						.register(
-								EQUO_IDE,
-								EquoIdeTask.class,
-								task -> {
-									task.setGroup(TASK_GROUP);
-									task.setDescription("Launches an Eclipse-based IDE for this project");
-								});
 		project.afterEvaluate(
 				unused -> {
 					try {
@@ -107,18 +120,6 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 						throw new RuntimeException(e);
 					}
 				});
-		project
-				.getTasks()
-				.register(
-						"equoList",
-						EquoListTask.class,
-						task -> {
-							task.setGroup(TASK_GROUP);
-							task.setDescription("Lists the p2 dependencies of an Eclipse application");
-
-							task.getClientCaching().set(clientCaching);
-							task.getExtension().set(extension);
-						});
 	}
 
 	static boolean anyArgMatching(Project project, Predicate<String> predicate) {
@@ -133,7 +134,7 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 		return anyArgMatching(project, a -> a.equals(arg));
 	}
 
-	private Configuration createConfigurationWithTransitives(Project project, String name) {
+	private Configuration createConfiguration(Project project, String name) {
 		return project
 				.getConfigurations()
 				.create(
