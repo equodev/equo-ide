@@ -27,12 +27,14 @@ import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ModuleDependency;
 import org.gradle.api.attributes.Bundling;
+import org.gradle.api.tasks.TaskProvider;
 
 public class EquoIdeGradlePlugin implements Plugin<Project> {
 	static final String MINIMUM_GRADLE = "6.0";
 
 	private static final String TASK_GROUP = "IDE";
 	private static final String EQUO_IDE = "equoIde";
+	private static final String EQUO_LIST = "equoList";
 
 	private static final String USE_ATOMOS_FLAG = "--use-atomos=";
 
@@ -43,13 +45,9 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 		}
 		setCacheLocations(project);
 
-		EquoIdeExtension extension =
-				project.getExtensions().create(EQUO_IDE, EquoIdeExtension.class, project);
+		var extension = project.getExtensions().create(EQUO_IDE, EquoIdeExtension.class, project);
 		extension.branding.title(project.getName());
-		Configuration equoIde = createConfiguration(project, EQUO_IDE);
-
-		var clientCaching = P2ModelDsl.clientCaching(project);
-
+		var equoIde = createConfiguration(project, EQUO_IDE);
 		var equoIdeTask =
 				project
 						.getTasks()
@@ -63,16 +61,26 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 		project
 				.getTasks()
 				.register(
-						"equoList",
+						EQUO_LIST,
 						EquoListTask.class,
 						task -> {
 							task.setGroup(TASK_GROUP);
 							task.setDescription("Lists the p2 dependencies of an Eclipse application");
 
-							task.getClientCaching().set(clientCaching);
+							task.getClientCaching().set(P2ModelDsl.clientCaching(project));
 							task.getExtension().set(extension);
 						});
 
+		if (anyArgEquals(project, EQUO_IDE) || anyArgEquals(project, EQUO_LIST)) {
+			configureEquoTasks(project, extension, equoIde, equoIdeTask);
+		}
+	}
+
+	private static void configureEquoTasks(
+			Project project,
+			EquoIdeExtension extension,
+			Configuration equoIde,
+			TaskProvider<EquoIdeTask> equoIdeTask) {
 		try {
 			for (var dep : DepsResolve.resolveSolsticeAndTransitives()) {
 				if (dep instanceof File) {
@@ -100,7 +108,9 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 							project.getDependencies().add(EQUO_IDE, dep);
 						}
 						var query =
-								extension.prepareModel().query(clientCaching, P2ModelDsl.queryCaching(project));
+								extension
+										.prepareModel()
+										.query(P2ModelDsl.clientCaching(project), P2ModelDsl.queryCaching(project));
 						for (var coordinate : query.getJarsOnMavenCentral()) {
 							ModuleDependency dep =
 									(ModuleDependency) project.getDependencies().add(EQUO_IDE, coordinate);
