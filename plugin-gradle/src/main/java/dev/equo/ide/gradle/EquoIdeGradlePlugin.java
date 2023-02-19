@@ -93,8 +93,7 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 						}
 
 						boolean forceRecalculate =
-								anyArgMatching(project, arg -> arg.equals(CLEAN_FLAG))
-										|| anyArgMatching(project, arg -> arg.equals(REFRESH_DEPENDENCIES));
+								anyArgEquals(project, CLEAN_FLAG) || anyArgEquals(project, REFRESH_DEPENDENCIES);
 						var query =
 								extension
 										.prepareModel()
@@ -139,6 +138,10 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 				.filter(predicate)
 				.findAny()
 				.isPresent();
+	}
+
+	static boolean anyArgEquals(Project project, String arg) {
+		return anyArgMatching(project, a -> a.equals(arg));
 	}
 
 	private Configuration createConfigurationWithTransitives(Project project, String name) {

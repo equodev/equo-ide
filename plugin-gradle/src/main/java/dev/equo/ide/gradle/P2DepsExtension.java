@@ -49,10 +49,8 @@ public class P2DepsExtension {
 
 	void configure() throws Exception {
 		boolean forceRecalculate =
-				EquoIdeGradlePlugin.anyArgMatching(
-								project, arg -> arg.equals(EquoIdeGradlePlugin.CLEAN_FLAG))
-						|| EquoIdeGradlePlugin.anyArgMatching(
-								project, arg -> arg.equals(EquoIdeGradlePlugin.REFRESH_DEPENDENCIES));
+				EquoIdeGradlePlugin.anyArgEquals(project, EquoIdeGradlePlugin.CLEAN_FLAG)
+						|| EquoIdeGradlePlugin.anyArgEquals(project, EquoIdeGradlePlugin.REFRESH_DEPENDENCIES);
 
 		var caching = P2ModelDsl.caching(project);
 		for (Map.Entry<String, P2Model> entry : configurations.entrySet()) {
