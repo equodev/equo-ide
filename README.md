@@ -17,7 +17,7 @@ plugins {
   id 'dev.equo.ide' version '{{ latest version at top of page }}'
 }
 equoIde { // launch with gradlew equoIde
-  release '4.26'
+  jdt()
 }
 ```
 
@@ -29,15 +29,9 @@ or like this in Maven with `mvn equo-ide:launch` ([more info](plugin-maven))
   <artifactId>equo-ide-maven-plugin</artifactId>
   <version>{{ latest version at top of page }}</version>
   <configuration>
-     <release>4.26</release>
+     <jdt/>
   </configuration>
 </plugin>
-
-<!-- or use equo on all your maven projects by putting this into ~/.m2/settings.xml -->
-<settings> 
-  <pluginGroups>
-    <pluginGroup>dev.equo.ide</pluginGroup>
-  </pluginGroups>
   ...
 ```
 
