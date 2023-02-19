@@ -1,12 +1,12 @@
 dev.equo.ide.maven.ListTest.argErrorCheck[multi args]=[
-Exactly one of -Dinstalled, -Dproblems, -Doptional, -Dall=[categories|features|jars], -Ddetail=id, or -Draw=id must be set.
+Exactly one of -Drequest, -Dinstalled, -Dproblems, -Doptional, -Dall=[categories|features|jars], -Ddetail=id, or -Draw=id must be set.
 [ERROR] `mvn help:describe -Dcmd=equo-ide:list -Ddetail` for more info or visit https://github.com/equodev/equo-ide/blob/main/P2_MULTITOOL.md
 [ERROR]
 ]
 
 
 dev.equo.ide.maven.ListTest.argErrorCheck[no args]=[
-Exactly one of -Dinstalled, -Dproblems, -Doptional, -Dall=[categories|features|jars], -Ddetail=id, or -Draw=id must be set.
+Exactly one of -Drequest, -Dinstalled, -Dproblems, -Doptional, -Dall=[categories|features|jars], -Ddetail=id, or -Draw=id must be set.
 [ERROR] `mvn help:describe -Dcmd=equo-ide:list -Ddetail` for more info or visit https://github.com/equodev/equo-ide/blob/main/P2_MULTITOOL.md
 [ERROR]
 ]
@@ -355,11 +355,17 @@ equo-ide:list
       Determines output format [ascii|csv] (can be combined with all other
       commands).
 
+    gradleBuildship
+      (no description available)
+
     installed (Default: false)
       User property: installed
       Lists the jars which were installed.
 
     installs
+      (no description available)
+
+    jdt
       (no description available)
 
     optional (Default: false)
@@ -369,6 +375,9 @@ equo-ide:list
     p2repos
       (no description available)
 
+    platform
+      (no description available)
+
     problems (Default: false)
       User property: problems
       Lists any problems with the installed jars.
@@ -376,6 +385,10 @@ equo-ide:list
     raw
       User property: raw
       Lists the raw xml for all available versions of the given unit id.
+
+    request (Default: false)
+      User property: request
+      (no description available)
 .
 .
 [INFO] ------------------------------------------------------------------------

@@ -13,7 +13,6 @@
  *******************************************************************************/
 package dev.equo.ide;
 
-import com.google.common.collect.ImmutableList;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.Collections;
@@ -100,10 +99,7 @@ class BuildshipImpl implements IdeHookInstantiated {
 		var buildCfg = importCfg.toBuildConfiguration();
 		var gradleBuild = GradleCore.getWorkspace().createBuild(buildCfg);
 		var workingSetsAddingNewProjectHandler =
-				new ImportWizardNewProjectHandler(
-						NewProjectHandler.IMPORT_AND_MERGE,
-						importCfg,
-						importCfg.getShowExecutionsView().getValue());
+				new ImportWizardNewProjectHandler(NewProjectHandler.IMPORT_AND_MERGE, importCfg);
 		SynchronizationResult result =
 				((DefaultGradleBuild) gradleBuild)
 						.synchronize(
@@ -118,16 +114,11 @@ class BuildshipImpl implements IdeHookInstantiated {
 	private static final class ImportWizardNewProjectHandler implements NewProjectHandler {
 		private final ProjectImportConfiguration configuration;
 		private final NewProjectHandler importedBuildDelegate;
-		private final boolean showExecutionsView;
-		private volatile boolean gradleViewsVisible;
 
 		private ImportWizardNewProjectHandler(
-				NewProjectHandler delegate,
-				ProjectImportConfiguration configuration,
-				boolean showExecutionsView) {
+				NewProjectHandler delegate, ProjectImportConfiguration configuration) {
 			this.importedBuildDelegate = delegate;
 			this.configuration = configuration;
-			this.showExecutionsView = showExecutionsView;
 		}
 
 		public boolean shouldImportNewProjects() {
@@ -143,9 +134,8 @@ class BuildshipImpl implements IdeHookInstantiated {
 		private void addWorkingSets(IProject project) {
 			List<String> workingSetNames =
 					configuration.getApplyWorkingSets().getValue()
-							? ImmutableList.copyOf(
-									(Collection<String>) this.configuration.getWorkingSets().getValue())
-							: ImmutableList.of();
+							? List.copyOf((Collection<String>) this.configuration.getWorkingSets().getValue())
+							: List.of();
 			IWorkingSetManager workingSetManager = PlatformUI.getWorkbench().getWorkingSetManager();
 			IWorkingSet[] workingSets = WorkingSetUtils.toWorkingSets(workingSetNames);
 			workingSetManager.addToWorkingSets(project, workingSets);

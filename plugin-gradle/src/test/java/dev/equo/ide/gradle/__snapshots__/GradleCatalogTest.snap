@@ -1,0 +1,96 @@
+dev.equo.ide.gradle.GradleCatalogTest.simple[gradleBuildship]=[
++-------------+----------------------------------------------------------------------------------------+
+| kind        | value                                                                                  |
++-------------+----------------------------------------------------------------------------------------+
+| p2repo      | https://download.eclipse.org/buildship/updates/e423/releases/3.x/3.1.6.v20220511-1359/ |
+| p2repo      | https://download.eclipse.org/eclipse/updates/4.26/                                     |
+| install     | org.eclipse.buildship.feature.group                                                    |
+| install     | org.eclipse.platform.ide.categoryIU                                                    |
+| install     | org.eclipse.releng.java.languages.categoryIU                                           |
+| filter      | platform-neutral                                                                       |
+|   osgi.arch | dont-include-platform-specific-artifacts                                               |
+|   osgi.os   | dont-include-platform-specific-artifacts                                               |
+|   osgi.ws   | dont-include-platform-specific-artifacts                                               |
++-------------+----------------------------------------------------------------------------------------+
+]
+
+
+dev.equo.ide.gradle.GradleCatalogTest.simple[jdt]=[
++-------------+----------------------------------------------------+
+| kind        | value                                              |
++-------------+----------------------------------------------------+
+| p2repo      | https://download.eclipse.org/eclipse/updates/4.26/ |
+| install     | org.eclipse.platform.ide.categoryIU                |
+| install     | org.eclipse.releng.java.languages.categoryIU       |
+| filter      | platform-neutral                                   |
+|   osgi.arch | dont-include-platform-specific-artifacts           |
+|   osgi.os   | dont-include-platform-specific-artifacts           |
+|   osgi.ws   | dont-include-platform-specific-artifacts           |
++-------------+----------------------------------------------------+
+]
+
+
+dev.equo.ide.gradle.GradleCatalogTest.versionOverride[both-spec]=[
++-------------+----------------------------------------------------+
+| kind        | value                                              |
++-------------+----------------------------------------------------+
+| p2repo      | https://download.eclipse.org/eclipse/updates/4.25/ |
+| install     | org.eclipse.platform.ide.categoryIU                |
+| install     | org.eclipse.releng.java.languages.categoryIU       |
+| filter      | platform-neutral                                   |
+|   osgi.arch | dont-include-platform-specific-artifacts           |
+|   osgi.os   | dont-include-platform-specific-artifacts           |
+|   osgi.ws   | dont-include-platform-specific-artifacts           |
++-------------+----------------------------------------------------+
+]
+
+
+dev.equo.ide.gradle.GradleCatalogTest.versionOverride[jdt-spec]=[
++-------------+----------------------------------------------------+
+| kind        | value                                              |
++-------------+----------------------------------------------------+
+| p2repo      | https://download.eclipse.org/eclipse/updates/4.25/ |
+| install     | org.eclipse.platform.ide.categoryIU                |
+| install     | org.eclipse.releng.java.languages.categoryIU       |
+| filter      | platform-neutral                                   |
+|   osgi.arch | dont-include-platform-specific-artifacts           |
+|   osgi.os   | dont-include-platform-specific-artifacts           |
+|   osgi.ws   | dont-include-platform-specific-artifacts           |
++-------------+----------------------------------------------------+
+]
+
+
+dev.equo.ide.gradle.GradleCatalogTest.versionOverride[platform-neutral-jdt-spec]=[
++-------------+----------------------------------------------------+
+| kind        | value                                              |
++-------------+----------------------------------------------------+
+| p2repo      | https://download.eclipse.org/eclipse/updates/4.25/ |
+| install     | org.eclipse.platform.ide.categoryIU                |
+| install     | org.eclipse.releng.java.languages.categoryIU       |
+| filter      | platform-neutral                                   |
+|   osgi.arch | dont-include-platform-specific-artifacts           |
+|   osgi.os   | dont-include-platform-specific-artifacts           |
+|   osgi.ws   | dont-include-platform-specific-artifacts           |
++-------------+----------------------------------------------------+
+]
+
+
+dev.equo.ide.gradle.GradleCatalogTest.versionOverride[platform-spec]=[
++-------------+----------------------------------------------------+
+| kind        | value                                              |
++-------------+----------------------------------------------------+
+| p2repo      | https://download.eclipse.org/eclipse/updates/4.25/ |
+| install     | org.eclipse.platform.ide.categoryIU                |
+| install     | org.eclipse.releng.java.languages.categoryIU       |
+| filter      | platform-neutral                                   |
+|   osgi.arch | dont-include-platform-specific-artifacts           |
+|   osgi.os   | dont-include-platform-specific-artifacts           |
+|   osgi.ws   | dont-include-platform-specific-artifacts           |
++-------------+----------------------------------------------------+
+]
+
+
+dev.equo.ide.gradle.GradleCatalogTest.wrongOrder=[
+> platform was already added as a transitive dependency of jdt.
+  You can fix this by moving the <platform> block above the <jdt> block.
+]

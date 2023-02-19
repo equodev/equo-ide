@@ -13,13 +13,16 @@
  *******************************************************************************/
 package dev.equo.ide.maven;
 
+import dev.equo.ide.IdeHook;
 import dev.equo.solstice.p2.P2Model;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import org.apache.maven.plugin.AbstractMojo;
+import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Parameter;
 
+/** Performs arbitrary p2 resolutions. */
 public abstract class AbstractP2Mojo extends AbstractMojo {
 	public static class Filter {
 		@Parameter private List<String> excludes = Collections.emptyList();
@@ -48,24 +51,27 @@ public abstract class AbstractP2Mojo extends AbstractMojo {
 
 	@Parameter private List<String> installs = new ArrayList<>();
 
-	protected P2Model prepareModel() {
+	protected void modifyModel(P2Model model, IdeHook.List ideHooks) {}
+
+	protected P2Model prepareModel(IdeHook.List ideHooks) throws MojoFailureException {
 		var model = new P2Model();
+		modifyModel(model, ideHooks);
 		p2repos.forEach(model::addP2Repo);
 		installs.forEach(model.getInstall()::add);
 		for (Filter filterModel : filters) {
 			var filter = filterModel.toFilter();
-			model.addFilterAndValidate(Integer.toString(filter.hashCode()), filter);
+			model.addFilterAndValidate(
+					"maven-filter-unnamed-" + Integer.toString(filter.hashCode()), filter);
 		}
 		if (model.isEmpty()) {
-			setToDefault(model);
+			throw new MojoFailureException(
+					"EquoIDE has nothing to install!\n\n"
+							+ "We recommend starting with this:\n"
+							+ "<configuration>\n"
+							+ "  <jdt/>\n"
+							+ "</configuration>\n");
 		}
 		model.applyNativeFilterIfNoPlatformFilter();
 		return model;
-	}
-
-	private void setToDefault(P2Model model) {
-		model.addP2Repo("https://download.eclipse.org/eclipse/updates/4.26/");
-		model.getInstall().add("org.eclipse.releng.java.languages.categoryIU");
-		model.getInstall().add("org.eclipse.platform.ide.categoryIU");
 	}
 }

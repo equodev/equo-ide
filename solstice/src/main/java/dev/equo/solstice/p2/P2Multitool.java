@@ -18,6 +18,7 @@ import javax.xml.transform.TransformerException;
 
 public class P2Multitool {
 	public ConsoleTable.Format format = ConsoleTable.Format.ascii;
+	public boolean request = false;
 	public boolean installed = false;
 	public boolean problems = false;
 	public boolean optional = false;
@@ -27,6 +28,7 @@ public class P2Multitool {
 
 	public boolean argsAreValid() {
 		int numArgs = 0;
+		if (request) ++numArgs;
 		if (installed) ++numArgs;
 		if (problems) ++numArgs;
 		if (optional) ++numArgs;
@@ -36,21 +38,26 @@ public class P2Multitool {
 		return numArgs == 1;
 	}
 
-	public void dump(P2Query query) throws TransformerException {
-		if (all != null) {
-			all(query, all);
-		} else if (detail != null) {
-			detail(query, detail);
-		} else if (raw != null) {
-			raw(query, raw);
-		} else if (installed) {
-			installed(query);
-		} else if (problems) {
-			problems(query);
-		} else if (optional) {
-			optional(query);
+	public void dump(P2Model model, P2Client.Caching caching) throws Exception {
+		if (request) {
+			request(model);
 		} else {
-			throw new UnsupportedOperationException("Programming error");
+			var query = model.queryRaw(caching);
+			if (installed) {
+				installed(query);
+			} else if (problems) {
+				problems(query);
+			} else if (optional) {
+				optional(query);
+			} else if (all != null) {
+				all(query, all);
+			} else if (detail != null) {
+				detail(query, detail);
+			} else if (raw != null) {
+				raw(query, raw);
+			} else {
+				throw new UnsupportedOperationException("Programming error");
+			}
 		}
 	}
 
@@ -146,5 +153,9 @@ public class P2Multitool {
 		categories,
 		features,
 		jars
+	}
+
+	private void request(P2Model model) {
+		System.out.println(ConsoleTable.request(model, format));
 	}
 }

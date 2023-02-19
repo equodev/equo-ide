@@ -15,24 +15,18 @@ package dev.equo.ide.gradle;
 
 import dev.equo.ide.IdeHook;
 import dev.equo.ide.IdeHookBranding;
-import dev.equo.ide.IdeHookBuildship;
 import dev.equo.ide.IdeHookWelcome;
 import dev.equo.solstice.p2.P2Model;
 import org.gradle.api.Project;
 
 /** The DSL inside the equoIde block. */
-public class EquoIdeExtension extends P2ModelDsl {
-	private Project project;
-
-	public EquoIdeExtension(Project project) {
-		this.project = project;
-	}
-
+public class EquoIdeExtension extends P2ModelDslWithCatalog {
 	public boolean useAtomos = false;
 	private final IdeHook.List ideHooks = new IdeHook.List();
 	public final IdeHookBranding branding = new IdeHookBranding();
 
-	{
+	public EquoIdeExtension(Project project) {
+		super(project);
 		ideHooks.add(branding);
 	}
 
@@ -50,42 +44,19 @@ public class EquoIdeExtension extends P2ModelDsl {
 		return welcome;
 	}
 
-	private static void setToDefault(P2Model model) {
-		model.addP2Repo("https://download.eclipse.org/eclipse/updates/4.26/");
-		model.getInstall().add("org.eclipse.releng.java.languages.categoryIU");
-		model.getInstall().add("org.eclipse.platform.ide.categoryIU");
-
-		model.addP2Repo(
-				"https://download.eclipse.org/buildship/updates/e423/releases/3.x/3.1.6.v20220511-1359/");
-		model.getInstall().add("org.eclipse.buildship.feature.group");
-
-		model.addFilterAndValidate(
-				"no-slf4j-nop",
-				filter -> {
-					filter.exclude("slf4j.nop");
-					filter.exclude("org.slf4j.api");
-				});
-		model.addFilterAndValidate(
-				"no-source",
-				filter -> {
-					filter.excludeSuffix(".source");
-				});
-	}
-
-	IdeHook.List getIdeHooks() {
+	public IdeHook.List getIdeHooks() {
 		return ideHooks;
 	}
 
 	P2Model prepareModel() throws Exception {
-		var modelToQuery = model;
-		if (modelToQuery.isEmpty()) {
-			modelToQuery = modelToQuery.deepCopy();
-			setToDefault(modelToQuery);
-			ideHooks.add(
-					new IdeHookBuildship(
-							project.getProjectDir(), project.getGradle().getStartParameter().isOffline()));
+		if (hasBeenPrepared) {
+			return model;
 		}
-		modelToQuery.applyNativeFilterIfNoPlatformFilter();
-		return modelToQuery;
+		hasBeenPrepared = true;
+		catalog.putInto(model, ideHooks);
+		model.applyNativeFilterIfNoPlatformFilter();
+		return model;
 	}
+
+	private boolean hasBeenPrepared = false;
 }

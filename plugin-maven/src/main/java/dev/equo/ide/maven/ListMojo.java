@@ -13,6 +13,7 @@
  *******************************************************************************/
 package dev.equo.ide.maven;
 
+import dev.equo.ide.IdeHook;
 import dev.equo.solstice.p2.ConsoleTable;
 import dev.equo.solstice.p2.P2Client;
 import dev.equo.solstice.p2.P2Multitool;
@@ -23,7 +24,7 @@ import org.apache.maven.plugins.annotations.Parameter;
 
 /** Lists the p2 dependencies of an Eclipse application. */
 @Mojo(name = "list")
-public class ListMojo extends AbstractP2Mojo {
+public class ListMojo extends AbstractP2MojoWithCatalog {
 	/** Determines output format [ascii|csv] (can be combined with all other commands). */
 	@Parameter(property = "format", defaultValue = "ascii")
 	private ConsoleTable.Format format;
@@ -52,6 +53,9 @@ public class ListMojo extends AbstractP2Mojo {
 	@Parameter(property = "raw", required = false)
 	private String raw;
 
+	@Parameter(property = "request", defaultValue = "false")
+	private boolean request;
+
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		var tool = new P2Multitool();
@@ -62,13 +66,15 @@ public class ListMojo extends AbstractP2Mojo {
 		tool.all = all;
 		tool.detail = detail;
 		tool.raw = raw;
+		tool.request = request;
 		if (!tool.argsAreValid()) {
 			throw new MojoExecutionException(
-					"Exactly one of -Dinstalled, -Dproblems, -Doptional, -Dall=[categories|features|jars], -Ddetail=id, or -Draw=id must be set.\n"
+					"Exactly one of -Drequest, -Dinstalled, -Dproblems, -Doptional, -Dall=[categories|features|jars], -Ddetail=id, or -Draw=id must be set.\n"
 							+ "`mvn help:describe -Dcmd=equo-ide:list -Ddetail` for more info or visit https://github.com/equodev/equo-ide/blob/main/P2_MULTITOOL.md");
 		}
 		try {
-			tool.dump(prepareModel().queryRaw(P2Client.Caching.ALLOW_OFFLINE));
+			var model = prepareModel(new IdeHook.List());
+			tool.dump(model, P2Client.Caching.ALLOW_OFFLINE);
 		} catch (Exception e) {
 			throw new MojoFailureException(e.getMessage(), e);
 		}

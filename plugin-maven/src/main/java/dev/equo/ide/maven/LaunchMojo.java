@@ -44,7 +44,7 @@ import org.eclipse.aether.resolution.DependencyResult;
 
 /** Launches an Eclipse-based IDE for this project. */
 @Mojo(name = "launch")
-public class LaunchMojo extends AbstractP2Mojo {
+public class LaunchMojo extends AbstractP2MojoWithCatalog {
 	@Parameter(required = false)
 	private Branding branding = new Branding();
 
@@ -94,6 +94,15 @@ public class LaunchMojo extends AbstractP2Mojo {
 		try {
 			var caller = BuildPluginIdeMain.Caller.forProjectDir(baseDir, clean);
 
+			var ideHooks = new IdeHook.List();
+			ideHooks.add(
+					new IdeHookBranding().title(branding.title).icon(branding.icon).splash(branding.splash));
+			if (welcome != null) {
+				var welcomeHook = new IdeHookWelcome();
+				welcomeHook.openUrl(welcome.openUrl);
+				ideHooks.add(welcomeHook);
+			}
+
 			List<Dependency> deps = new ArrayList<>();
 			deps.add(
 					new Dependency(
@@ -102,7 +111,7 @@ public class LaunchMojo extends AbstractP2Mojo {
 				deps.add(new Dependency(new DefaultArtifact(dep), null, null, EXCLUDE_ALL_TRANSITIVES));
 			}
 			var query =
-					prepareModel()
+					super.prepareModel(ideHooks)
 							.query(
 									P2Client.Caching.ALLOW_OFFLINE,
 									clean ? QueryCache.FORCE_RECALCULATE : QueryCache.ALLOW);
@@ -120,15 +129,6 @@ public class LaunchMojo extends AbstractP2Mojo {
 			}
 			for (File downloadedJar : query.getJarsNotOnMavenCentral()) {
 				files.add(downloadedJar);
-			}
-
-			var ideHooks = new IdeHook.List();
-			ideHooks.add(
-					new IdeHookBranding().title(branding.title).icon(branding.icon).splash(branding.splash));
-			if (welcome != null) {
-				var welcomeHook = new IdeHookWelcome();
-				welcomeHook.openUrl(welcome.openUrl);
-				ideHooks.add(welcomeHook);
 			}
 
 			if (!OS.getNative().isMac()) {

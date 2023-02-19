@@ -21,12 +21,15 @@ equoIde { // launch with gradlew equoIde
   branding().icon(file('my_icon.png'))
   branding().splash(file('my_splash.png'))
   welcome().openUrl('https://github.com/me/myproject/CONTRIBUTING.md')
+  jdt()
+  gradleBuildship() {
+    importOnClean()
+  }
 }
 ```
 
 ## Task listing
 
-- `equoList` to debug IDE dependencies ([p2 multitool](../P2_MULTITOOL.md))
 - `equoIde` to launch the IDE
   - `equoIde --clean` wipes all workspace settings and state before rebuilding and launching.
   - `equoIde --show-console` pipes console output of the launched IDE to the build console.
@@ -34,6 +37,7 @@ equoIde { // launch with gradlew equoIde
   - `equoIde --debug-classpath=[names|paths]` dumps the classpath (in order) without starting the application.
   - `equoIde --debug-ide` blocks IDE startup and prints instructions to help you attach a remote debugger.
   - `equoIde --useAtomos=[true|false]` determines whether to use Atomos
+- `equoList` to debug IDE dependencies ([p2 multitool](../P2_MULTITOOL.md))
 
 ## User plugins
 
