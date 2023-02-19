@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+
+## [0.16.0] - 2023-02-19
 ### Added
 - `Catalog` feature for specifying p2 repos in a user-friendly way. ([#86](https://github.com/equodev/equo-ide/pull/86))
 
