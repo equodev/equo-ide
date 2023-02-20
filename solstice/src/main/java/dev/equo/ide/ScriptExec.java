@@ -71,7 +71,9 @@ class ScriptExec {
 
 		// set the cmds
 		int exitValue = Launcher.launchAndInheritIO(directory.orElse(null), fullArgs, monitorProcess);
-		if (mavenWorkarounds() && exitValue == 137) {
+		if (mavenWorkarounds()
+				&& ((OS.getNative().isLinux() && exitValue == 137)
+						|| (OS.getNative().isWindows() && exitValue == 1))) {
 			// not sure why this is happening, but it's working fine
 			return;
 		}
