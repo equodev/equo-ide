@@ -1,8 +1,7 @@
 ### Table of Contents
 
 - [Available in DSL](#available-projects)
-  - [`platform`](#platform)
-  - [`jdt`](#jdt)
+  - [`platform`](#platform), [`jdt`](#jdt), [`pde`](#pde)
   - [`gradleBuildship`](#gradle-buildship)
 - [Wishlist](#wishlist)
   - [Eclipse Plug-in Development Environment (PDE)](#eclipse-pde)
@@ -48,12 +47,16 @@ This catalog is a useful reference for the p2 urls, code repositories, and issue
 - Latest release https://download.eclipse.org/eclipse/updates/4.26/
 - Code & issues https://github.com/eclipse-jdt
 
+### `pde`
+
+- Latest release https://download.eclipse.org/eclipse/updates/4.26/
+- Code & issues https://github.com/eclipse-pde
+
 <a name="gradle-buildship"></a>
 ### `gradleBuildship`
 
 - Latest release https://download.eclipse.org/buildship/updates/e423/releases/3.x/3.1.6.v20220511-1359/ 
 - Code & issues https://github.com/eclipse/buildship
-
 
 ## Wishlist
 
