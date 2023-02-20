@@ -42,6 +42,9 @@ public abstract class EquoIdeTask extends DefaultTask {
 	@Internal
 	public abstract Property<Boolean> getUseAtomos();
 
+	@Internal
+	public abstract Property<Boolean> getEquoIdeWasCalledDirectly();
+
 	@Internal IdeHook.List ideHooks;
 
 	public IdeHook.List getIdeHooks() {
@@ -107,15 +110,26 @@ public abstract class EquoIdeTask extends DefaultTask {
 
 	@TaskAction
 	public void launch() throws IOException, InterruptedException {
+		if (!getEquoIdeWasCalledDirectly().get()) {
+			throw new GradleException(
+					"You must call `equoIde` directly, you cannot call a task which depends on `equoIde`.");
+		}
 		var caller = BuildPluginIdeMain.Caller.forProjectDir(getProjectDir().get(), clean);
 
-		var jarsNotOnMaven =
-				getObjectFactory().fileCollection().from(getQuery().get().getJarsNotOnMavenCentral());
-		var p2AndMavenDeps = jarsNotOnMaven.plus(getMavenDeps().get());
 		var classpath = new ArrayList<File>();
-		p2AndMavenDeps.forEach(classpath::add);
+		try {
+			var jarsNotOnMaven =
+					getObjectFactory().fileCollection().from(getQuery().get().getJarsNotOnMavenCentral());
+			var p2AndMavenDeps = jarsNotOnMaven.plus(getMavenDeps().get());
+			p2AndMavenDeps.forEach(classpath::add);
+		} catch (Exception e) {
+			throw new GradleException(
+					"Unable to download Equo dependencies. You probably need to add\n"
+							+ "`repositories { mavenCentral() }` or something similar to your `build.gradle`.",
+					e);
+		}
 
-		if (p2AndMavenDeps.isEmpty()) {
+		if (classpath.isEmpty()) {
 			throw new GradleException(
 					"EquoIDE has nothing to install!\n\n"
 							+ "We recommend starting with this:\n"

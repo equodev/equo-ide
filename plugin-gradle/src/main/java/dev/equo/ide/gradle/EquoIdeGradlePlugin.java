@@ -15,8 +15,6 @@ package dev.equo.ide.gradle;
 
 import dev.equo.solstice.NestedJars;
 import dev.equo.solstice.p2.CacheLocations;
-import dev.equo.solstice.p2.P2Client;
-import dev.equo.solstice.p2.QueryCache;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -29,16 +27,16 @@ import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ModuleDependency;
 import org.gradle.api.attributes.Bundling;
+import org.gradle.api.tasks.TaskProvider;
 
 public class EquoIdeGradlePlugin implements Plugin<Project> {
 	static final String MINIMUM_GRADLE = "6.0";
 
 	private static final String TASK_GROUP = "IDE";
 	private static final String EQUO_IDE = "equoIde";
+	private static final String EQUO_LIST = "equoList";
 
 	private static final String USE_ATOMOS_FLAG = "--use-atomos=";
-	static final String CLEAN_FLAG = "--clean";
-	static final String REFRESH_DEPENDENCIES = "--refresh-dependencies";
 
 	@Override
 	public void apply(Project project) {
@@ -47,12 +45,44 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 		}
 		setCacheLocations(project);
 
-		EquoIdeExtension extension =
-				project.getExtensions().create(EQUO_IDE, EquoIdeExtension.class, project);
+		var extension = project.getExtensions().create(EQUO_IDE, EquoIdeExtension.class, project);
 		extension.branding.title(project.getName());
-		Configuration equoIde = createConfigurationWithTransitives(project, EQUO_IDE);
 
-		project.getRepositories().mavenCentral();
+		boolean equoIdeWasCalledDirectly = anyArgEquals(project, EQUO_IDE);
+		var equoIde = createConfiguration(project, EQUO_IDE);
+		var equoIdeTask =
+				project
+						.getTasks()
+						.register(
+								EQUO_IDE,
+								EquoIdeTask.class,
+								task -> {
+									task.setGroup(TASK_GROUP);
+									task.setDescription("Launches an Eclipse-based IDE for this project");
+									task.getEquoIdeWasCalledDirectly().set(equoIdeWasCalledDirectly);
+								});
+		project
+				.getTasks()
+				.register(
+						EQUO_LIST,
+						EquoListTask.class,
+						task -> {
+							task.setGroup(TASK_GROUP);
+							task.setDescription("Lists the p2 dependencies of an Eclipse application");
+
+							task.getClientCaching().set(P2ModelDsl.clientCaching(project));
+							task.getExtension().set(extension);
+						});
+		if (equoIdeWasCalledDirectly) {
+			configureEquoTasks(project, extension, equoIde, equoIdeTask);
+		}
+	}
+
+	private static void configureEquoTasks(
+			Project project,
+			EquoIdeExtension extension,
+			Configuration equoIde,
+			TaskProvider<EquoIdeTask> equoIdeTask) {
 		try {
 			for (var dep : DepsResolve.resolveSolsticeAndTransitives()) {
 				if (dep instanceof File) {
@@ -66,18 +96,6 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 		} catch (IOException e) {
 			throw new GradleException("Unable to determine solstice version", e);
 		}
-
-		P2Client.Caching caching = P2ModelDsl.caching(project);
-		var equoIdeTask =
-				project
-						.getTasks()
-						.register(
-								EQUO_IDE,
-								EquoIdeTask.class,
-								task -> {
-									task.setGroup(TASK_GROUP);
-									task.setDescription("Launches an Eclipse-based IDE for this project");
-								});
 		project.afterEvaluate(
 				unused -> {
 					try {
@@ -91,16 +109,10 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 						for (var dep : NestedJars.transitiveDeps(useAtomos, NestedJars.CoordFormat.GRADLE)) {
 							project.getDependencies().add(EQUO_IDE, dep);
 						}
-
-						boolean forceRecalculate =
-								anyArgMatching(project, arg -> arg.equals(CLEAN_FLAG))
-										|| anyArgMatching(project, arg -> arg.equals(REFRESH_DEPENDENCIES));
 						var query =
 								extension
 										.prepareModel()
-										.query(
-												caching,
-												forceRecalculate ? QueryCache.FORCE_RECALCULATE : QueryCache.ALLOW);
+										.query(P2ModelDsl.clientCaching(project), P2ModelDsl.queryCaching(project));
 						for (var coordinate : query.getJarsOnMavenCentral()) {
 							ModuleDependency dep =
 									(ModuleDependency) project.getDependencies().add(EQUO_IDE, coordinate);
@@ -119,18 +131,6 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 						throw new RuntimeException(e);
 					}
 				});
-		project
-				.getTasks()
-				.register(
-						"equoList",
-						EquoListTask.class,
-						task -> {
-							task.setGroup(TASK_GROUP);
-							task.setDescription("Lists the p2 dependencies of an Eclipse application");
-
-							task.getClientCaching().set(caching);
-							task.getExtension().set(extension);
-						});
 	}
 
 	static boolean anyArgMatching(Project project, Predicate<String> predicate) {
@@ -141,7 +141,11 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 				.isPresent();
 	}
 
-	private Configuration createConfigurationWithTransitives(Project project, String name) {
+	static boolean anyArgEquals(Project project, String arg) {
+		return anyArgMatching(project, a -> a.equals(arg));
+	}
+
+	private Configuration createConfiguration(Project project, String name) {
 		return project
 				.getConfigurations()
 				.create(
