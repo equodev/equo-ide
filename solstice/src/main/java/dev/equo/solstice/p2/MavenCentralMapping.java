@@ -24,6 +24,10 @@ class MavenCentralMapping {
 		var artifactId = unit.properties.get(P2Unit.MAVEN_ARTIFACT_ID);
 		var version = unit.properties.get(P2Unit.MAVEN_VERSION);
 		if (groupId != null && artifactId != null && version != null) {
+			// this artifact used by PDE is not available on mavenCentral
+			if (artifactId.equals("org.eclipse.emf.databinding.edit")) {
+				return null;
+			}
 			var groupArtifact = groupIdArtifactId(unit.id);
 			if (groupArtifact != null) {
 				if (version.endsWith(DASH_SNAPSHOT)) {
