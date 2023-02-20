@@ -27,12 +27,7 @@ public class Catalog implements Comparable<Catalog> {
 					"4.26",
 					"org.eclipse.platform.ide.categoryIU");
 	public static final Catalog JDT =
-			new Catalog(
-					"jdt",
-					"https://download.eclipse.org/eclipse/updates/" + V,
-					"4.26",
-					"org.eclipse.releng.java.languages.categoryIU",
-					PLATFORM);
+			new Catalog("jdt", PLATFORM, "org.eclipse.releng.java.languages.categoryIU", PLATFORM);
 	public static final Catalog GRADLE_BUILDSHIP =
 			new Catalog(
 					"gradleBuildship",
@@ -46,6 +41,10 @@ public class Catalog implements Comparable<Catalog> {
 	private final String latestVersion;
 	private final String toInstall;
 	private final List<Catalog> requires;
+
+	Catalog(String name, Catalog copyFrom, String toInstall, Catalog... requires) {
+		this(name, copyFrom.p2urlTemplate, copyFrom.latestVersion, toInstall, requires);
+	}
 
 	Catalog(
 			String name,
