@@ -127,7 +127,7 @@ abstract class ServiceRegistry extends BundleContextImpl {
 		return builder.toString();
 	}
 
-	private final List<ListenerEntry> serviceListeners = new ArrayList<>();
+	private final ListenerList<ListenerEntry> serviceListeners = new ListenerList<>();
 
 	@Override
 	public synchronized void removeServiceListener(ServiceListener listener) {
