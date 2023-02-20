@@ -116,13 +116,20 @@ public abstract class EquoIdeTask extends DefaultTask {
 		}
 		var caller = BuildPluginIdeMain.Caller.forProjectDir(getProjectDir().get(), clean);
 
-		var jarsNotOnMaven =
-				getObjectFactory().fileCollection().from(getQuery().get().getJarsNotOnMavenCentral());
-		var p2AndMavenDeps = jarsNotOnMaven.plus(getMavenDeps().get());
 		var classpath = new ArrayList<File>();
-		p2AndMavenDeps.forEach(classpath::add);
+		try {
+			var jarsNotOnMaven =
+					getObjectFactory().fileCollection().from(getQuery().get().getJarsNotOnMavenCentral());
+			var p2AndMavenDeps = jarsNotOnMaven.plus(getMavenDeps().get());
+			p2AndMavenDeps.forEach(classpath::add);
+		} catch (Exception e) {
+			throw new GradleException(
+					"Unable to download Equo dependencies. You probably need to add\n"
+							+ "`repositories { mavenCentral() }` or something similar to your `build.gradle`.",
+					e);
+		}
 
-		if (p2AndMavenDeps.isEmpty()) {
+		if (classpath.isEmpty()) {
 			throw new GradleException(
 					"EquoIDE has nothing to install!\n\n"
 							+ "We recommend starting with this:\n"

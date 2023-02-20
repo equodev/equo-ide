@@ -112,7 +112,14 @@ public class EquoIdeTest extends GradleHarness {
 		Assertions.assertThat(build.getOutput())
 				.contains(
 						"> You must call `equoIde` directly, you cannot call a task which depends on `equoIde`.");
+	}
 
-		System.out.println("build = " + build.getOutput());
+	@Test
+	public void equoIdeNoRepositories() throws IOException {
+		setFile("build.gradle").toLines("plugins { id 'dev.equo.ide' }", "equoIde {", "  jdt()", "}");
+		var build =
+				gradleRunner().withArguments("equoIde", "--stacktrace").forwardOutput().buildAndFail();
+		Assertions.assertThat(build.getOutput())
+				.contains("`repositories { mavenCentral() }` or something similar to your `build.gradle`");
 	}
 }
