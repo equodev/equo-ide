@@ -42,6 +42,9 @@ public abstract class EquoIdeTask extends DefaultTask {
 	@Internal
 	public abstract Property<Boolean> getUseAtomos();
 
+	@Internal
+	public abstract Property<Boolean> getEquoIdeWasCalledDirectly();
+
 	@Internal IdeHook.List ideHooks;
 
 	public IdeHook.List getIdeHooks() {
@@ -107,6 +110,10 @@ public abstract class EquoIdeTask extends DefaultTask {
 
 	@TaskAction
 	public void launch() throws IOException, InterruptedException {
+		if (!getEquoIdeWasCalledDirectly().get()) {
+			throw new GradleException(
+					"You must call `equoIde` directly, you cannot call a task which depends on `equoIde`.");
+		}
 		var caller = BuildPluginIdeMain.Caller.forProjectDir(getProjectDir().get(), clean);
 
 		var jarsNotOnMaven =

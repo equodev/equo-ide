@@ -16,7 +16,7 @@ package dev.equo.ide.gradle;
 import au.com.origin.snapshots.Expect;
 import au.com.origin.snapshots.junit5.SnapshotExtension;
 import java.io.IOException;
-import org.junit.jupiter.api.Disabled;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -68,6 +68,7 @@ public class EquoIdeTest extends GradleHarness {
 		setFile("build.gradle")
 				.toLines(
 						"plugins { id 'dev.equo.ide' }",
+						"repositories { mavenCentral() }",
 						"equoIde {",
 						"  p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'",
 						"  install 'org.eclipse.swt'",
@@ -81,6 +82,7 @@ public class EquoIdeTest extends GradleHarness {
 		setFile("build.gradle")
 				.toLines(
 						"plugins { id 'dev.equo.ide' }",
+						"repositories { mavenCentral() }",
 						"equoIde {",
 						"  p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'",
 						"  install 'org.eclipse.swt'",
@@ -92,17 +94,25 @@ public class EquoIdeTest extends GradleHarness {
 	}
 
 	@Test
-	@Disabled
-	public void equoIde() throws IOException {
+	public void equoIdeWithDependency() throws IOException {
 		setFile("build.gradle")
 				.toLines(
 						"plugins { id 'dev.equo.ide' }",
 						"equoIde {",
+						"  jdt()",
 						"}",
-						"// (placeholder so GPJ formats this nicely)");
-		gradleRunner()
-				.withArguments("equoIde", "--show-console", "--stacktrace")
-				.forwardOutput()
-				.build();
+						"tasks.register('dependsOnEquo') {",
+						"  dependsOn 'equoIde'",
+						"}");
+		var build =
+				gradleRunner()
+						.withArguments("dependsOnEquo", "--stacktrace")
+						.forwardOutput()
+						.buildAndFail();
+		Assertions.assertThat(build.getOutput())
+				.contains(
+						"> You must call `equoIde` directly, you cannot call a task which depends on `equoIde`.");
+
+		System.out.println("build = " + build.getOutput());
 	}
 }

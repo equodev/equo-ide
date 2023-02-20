@@ -47,6 +47,8 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 
 		var extension = project.getExtensions().create(EQUO_IDE, EquoIdeExtension.class, project);
 		extension.branding.title(project.getName());
+
+		boolean equoIdeWasCalledDirectly = anyArgEquals(project, EQUO_IDE);
 		var equoIde = createConfiguration(project, EQUO_IDE);
 		var equoIdeTask =
 				project
@@ -57,6 +59,7 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 								task -> {
 									task.setGroup(TASK_GROUP);
 									task.setDescription("Launches an Eclipse-based IDE for this project");
+									task.getEquoIdeWasCalledDirectly().set(equoIdeWasCalledDirectly);
 								});
 		project
 				.getTasks()
@@ -70,8 +73,7 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 							task.getClientCaching().set(P2ModelDsl.clientCaching(project));
 							task.getExtension().set(extension);
 						});
-
-		if (anyArgEquals(project, EQUO_IDE) || anyArgEquals(project, EQUO_LIST)) {
+		if (equoIdeWasCalledDirectly) {
 			configureEquoTasks(project, extension, equoIde, equoIdeTask);
 		}
 	}
