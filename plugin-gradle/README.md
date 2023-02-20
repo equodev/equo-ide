@@ -21,10 +21,10 @@ equoIde { // launch with gradlew equoIde
   branding().icon(file('my_icon.png'))
   branding().splash(file('my_splash.png'))
   welcome().openUrl('https://github.com/me/myproject/CONTRIBUTING.md')
-  jdt()
+  // see https://github.com/equodev/equo-ide/blob/main/CATALOG.md for all available plugins
   gradleBuildship() {
-    importOnClean()
-  }
+  // or you can add p2 urls and targets
+  // https://github.com/equodev/equo-ide/blob/main/P2_MULTITOOL.md for more info
 }
 ```
 

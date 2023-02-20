@@ -26,16 +26,12 @@ Use it like this with `mvn equo-ide:launch`
     <welcome>
       <openUrl>https://github.com/me/myproject/CONTRIBUTING.md</openUrl>
     </welcome>
+    <!-- see https://github.com/equodev/equo-ide/blob/main/CATALOG.md for all available plugins -->
     <jdt/>
+    <!-- or you can add specific p2 urls and targets
+         https://github.com/equodev/equo-ide/blob/main/P2_MULTITOOL.md for more info -->
   </configuration>
 </plugin>
-
-<!-- or use equo on all your maven projects by putting this into ~/.m2/settings.xml -->
-<settings> 
-  <pluginGroups>
-    <pluginGroup>dev.equo.ide</pluginGroup>
-  </pluginGroups>
-  ...
 ```
 
 ## Coming soon

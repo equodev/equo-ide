@@ -17,11 +17,11 @@ If you can't run the tests, the first thing to try is `Project -> Clean`. If tha
 - Use EquoIDE in my own project
   - for Gradle, see [the Gradle README.md](plugin-gradle/README.md).
   - for Maven, see [the Maven README.md](plugin-maven/README.md).
-- [Add a new feature into the catalog (e.g. `jdt`, `gradleBuildship`, `m2e`, etc.)](#equo-catalog)
+- [Add a new feature to the catalog DSL (e.g. `jdt`, `gradleBuildship`, `m2e`, etc.)](#catalog-dsl)
 
-## Equo Catalog
+## Catalog DSL
 
-- Add entry in `dev.equo.ide.EquoCatalog`
+- Add entry in `dev.equo.ide.Catalog`
 - Use that entry in `dev.equo.ide.maven.AbstractP2MojoWithFeatures`
 - Use that entry in `dev.equo.ide.gradle.P2ModelDslWithFeatures`
 
