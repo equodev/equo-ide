@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+### Added
+- Catalog now includes `pde`. ([#90](https://github.com/equodev/equo-ide/pull/90))
 
 ## [0.16.0] - 2023-02-19
 ### Added
