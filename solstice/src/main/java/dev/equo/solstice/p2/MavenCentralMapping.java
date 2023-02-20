@@ -24,10 +24,6 @@ class MavenCentralMapping {
 		var artifactId = unit.properties.get(P2Unit.MAVEN_ARTIFACT_ID);
 		var version = unit.properties.get(P2Unit.MAVEN_VERSION);
 		if (groupId != null && artifactId != null && version != null) {
-			// this artifact used by PDE is not available on mavenCentral
-			if (artifactId.equals("org.eclipse.emf.databinding.edit")) {
-				return null;
-			}
 			var groupArtifact = groupIdArtifactId(unit.id);
 			if (groupArtifact != null) {
 				if (version.endsWith(DASH_SNAPSHOT)) {
@@ -60,7 +56,12 @@ class MavenCentralMapping {
 		} else if (bundleId.startsWith(PDE)) {
 			return PDE + ":" + bundleId;
 		} else if (bundleId.startsWith(EMF)) {
-			return EMF + ":" + bundleId;
+			if (bundleId.equals("org.eclipse.emf.databinding.edit")) {
+				// this artifact used by PDE is not available on mavenCentral
+				return null;
+			} else {
+				return EMF + ":" + bundleId;
+			}
 		} else if (bundleId.startsWith(ECF)) {
 			return ECF + ":" + bundleId;
 		} else if (bundleId.startsWith(OSGI)) {
