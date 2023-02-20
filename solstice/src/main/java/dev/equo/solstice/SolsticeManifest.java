@@ -107,8 +107,9 @@ public class SolsticeManifest {
 					"Solstice does not currently support OSGi capabilities in fragment bundles, but a PR is welcome.");
 		}
 
+		boolean noActivator = !headersOriginal.containsKey(Constants.BUNDLE_ACTIVATOR);
 		String activationPolicy = headersOriginal.get(Constants.BUNDLE_ACTIVATIONPOLICY);
-		lazy = activationPolicy == null ? false : activationPolicy.contains("lazy");
+		lazy = activationPolicy == null ? noActivator : activationPolicy.contains("lazy");
 	}
 
 	private static void parseProvide(CapabilityParsed parsed, ArrayList<Capability> total) {
