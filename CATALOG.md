@@ -3,9 +3,9 @@
 - [Available in DSL](#available-projects)
   - [`platform`](#platform), [`jdt`](#jdt), [`pde`](#pde)
   - [`gradleBuildship`](#gradle-buildship)
+  - [`kotlin`](#kotlin)
 - [Wishlist](#wishlist)
   - [Eclipse Plug-in Development Environment (PDE)](#eclipse-pde)
-  - [Kotlin for Eclipse](#kotlin-eclipse)
   - [Eclipse C/C++ Development Tooling (CDT)](#eclipse-cdt)
   - [Eclipse Corrosion (Rust)](#eclipse-rust)
   - [Eclipse Groovy Development Tools](#eclipse-groovy)
@@ -58,15 +58,17 @@ This catalog is a useful reference for the p2 urls, code repositories, and issue
 - Latest release https://download.eclipse.org/buildship/updates/e423/releases/3.x/3.1.6.v20220511-1359/ 
 - Code & issues https://github.com/eclipse/buildship
 
+### `kotlin`
+
+- Latest release https://files.pkg.jetbrains.space/kotlin/p/kotlin-eclipse/main/0.8.21/
+  - Note: there is a newer release, `0.8.24`, but it has more bugs than `0.8.21`. 
+- Code & issues https://github.com/Kotlin/kotlin-eclipse
+
 ## Wishlist
 
 The projects below are notyet 
 
 <a name="kotlin-eclipse"></a>
-### Kotlin for Eclipse
-
-- Latest release https://files.pkg.jetbrains.space/kotlin/p/kotlin-eclipse/main/0.8.24/
-- Code & issues https://github.com/Kotlin/kotlin-eclipse 
 
 <a name="eclipse-cdt"></a>
 ### Eclipse C/C++ Development Tooling (CDT)
