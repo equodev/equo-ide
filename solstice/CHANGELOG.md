@@ -5,9 +5,12 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 ## [Unreleased]
 ### Added
 - Catalog now includes `pde`. ([#90](https://github.com/equodev/equo-ide/pull/90))
+- Catalog now includes `kotlin`. ([#91](https://github.com/equodev/equo-ide/pull/91))
 ### Fixed
 - Bundles without activators are now treated as `lazy=true` since there's no need to eagerly activate them. ([#90](https://github.com/equodev/equo-ide/pull/90))
 - Concurrent modification errors in service registry have been fixed by adding a custom datastructure. ([#90](https://github.com/equodev/equo-ide/pull/90))
+- We can now handle p2 update sites without a `p2.index` file. ([#91](https://github.com/equodev/equo-ide/pull/91))
+- Solstice Shim's URL handler now handles missing resources correctly. ([#91](https://github.com/equodev/equo-ide/pull/91))
 
 ## [0.16.0] - 2023-02-19
 ### Added

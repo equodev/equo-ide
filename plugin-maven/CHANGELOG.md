@@ -5,6 +5,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 ## [Unreleased]
 ### Added
 - Maven DSL now supports `pde`. ([#90](https://github.com/equodev/equo-ide/pull/90))
+- Maven DSL now includes `kotlin`. ([#91](https://github.com/equodev/equo-ide/pull/91))
 ### Fixed
 - Further improved Windows launch experience. ([#44](https://github.com/equodev/equo-ide/issues/44))
 
