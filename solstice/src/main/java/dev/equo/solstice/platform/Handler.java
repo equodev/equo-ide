@@ -49,7 +49,15 @@ public class Handler extends URLStreamHandler {
 			int nextSlash = after.indexOf('/');
 			String plugin = after.substring(0, nextSlash);
 			String resource = after.substring(nextSlash + 1);
-			return solstice.bundleForSymbolicName(plugin).getEntry(resource).openConnection();
+			var bundle = solstice.bundleForSymbolicName(plugin);
+			if (bundle == null) {
+				return null;
+			}
+			var entry = bundle.getEntry(resource);
+			if (entry == null) {
+				return null;
+			}
+			return entry.openConnection();
 		} else {
 			throw new IllegalArgumentException("Expected " + SLASH_PLUGIN + " got " + u.getPath());
 		}
