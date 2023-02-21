@@ -56,7 +56,12 @@ class MavenCentralMapping {
 		} else if (bundleId.startsWith(PDE)) {
 			return PDE + ":" + bundleId;
 		} else if (bundleId.startsWith(EMF)) {
-			return EMF + ":" + bundleId;
+			if (bundleId.equals("org.eclipse.emf.databinding.edit")) {
+				// this artifact used by PDE is not available on mavenCentral
+				return null;
+			} else {
+				return EMF + ":" + bundleId;
+			}
 		} else if (bundleId.startsWith(ECF)) {
 			return ECF + ":" + bundleId;
 		} else if (bundleId.startsWith(OSGI)) {

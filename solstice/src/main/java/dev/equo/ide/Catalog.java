@@ -35,6 +35,8 @@ public class Catalog implements Comparable<Catalog> {
 					"3.1.6.v20220511-1359",
 					"org.eclipse.buildship.feature.group",
 					JDT);
+	public static final Catalog PDE =
+			new Catalog("pde", PLATFORM, "org.eclipse.releng.pde.categoryIU", PLATFORM);
 
 	private final String name;
 	private final String p2urlTemplate;

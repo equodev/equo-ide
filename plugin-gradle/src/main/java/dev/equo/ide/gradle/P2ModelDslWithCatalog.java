@@ -29,7 +29,7 @@ public class P2ModelDslWithCatalog extends P2ModelDsl {
 	}
 
 	public static class Platform extends GradleCatalogDsl {
-		protected Platform(String urlOverride) {
+		public Platform(String urlOverride) {
 			super(Catalog.PLATFORM, urlOverride);
 		}
 	}
@@ -43,7 +43,7 @@ public class P2ModelDslWithCatalog extends P2ModelDsl {
 	}
 
 	public static class Jdt extends GradleCatalogDsl {
-		protected Jdt(String urlOverride) {
+		public Jdt(String urlOverride) {
 			super(Catalog.JDT, urlOverride);
 		}
 	}
@@ -59,7 +59,7 @@ public class P2ModelDslWithCatalog extends P2ModelDsl {
 	public static class GradleBuildship extends GradleCatalogDsl {
 		private IdeHookBuildship ideHook;
 
-		protected GradleBuildship(String urlOverride, Project project) {
+		public GradleBuildship(String urlOverride, Project project) {
 			super(Catalog.GRADLE_BUILDSHIP, urlOverride);
 			ideHook =
 					new IdeHookBuildship(
@@ -78,6 +78,20 @@ public class P2ModelDslWithCatalog extends P2ModelDsl {
 
 	public void gradleBuildship() {
 		gradleBuildship(null);
+	}
+
+	public static class Pde extends GradleCatalogDsl {
+		public Pde(String urlOverride, Project project) {
+			super(Catalog.PDE, urlOverride);
+		}
+	}
+
+	public void pde(String urlOverride) {
+		add(new Pde(urlOverride, project));
+	}
+
+	public void pde() {
+		pde(null);
 	}
 
 	public static class GradleCatalogDsl extends CatalogDsl {
