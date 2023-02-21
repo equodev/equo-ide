@@ -36,7 +36,7 @@ public class Catalog implements Comparable<Catalog> {
 					"org.eclipse.buildship.feature.group",
 					JDT);
 	public static final Catalog PDE =
-			new Catalog("pde", PLATFORM, "org.eclipse.releng.pde.categoryIU", PLATFORM);
+			new Catalog("pde", PLATFORM, "org.eclipse.releng.pde.categoryIU", JDT);
 
 	public static final Catalog KOTLIN =
 			new Catalog(
