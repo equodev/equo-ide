@@ -55,6 +55,14 @@ public abstract class AbstractP2MojoWithCatalog extends AbstractP2Mojo {
 		}
 	}
 
+	@Parameter private Kotlin kotlin;
+
+	public static class Kotlin extends MavenCatalogDsl {
+		public Kotlin() {
+			super(Catalog.KOTLIN);
+		}
+	}
+
 	public static class MavenCatalogDsl extends CatalogDsl {
 		protected MavenCatalogDsl(Catalog catalog) {
 			super(catalog);

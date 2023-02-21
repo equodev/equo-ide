@@ -38,10 +38,20 @@ public class Catalog implements Comparable<Catalog> {
 	public static final Catalog PDE =
 			new Catalog("pde", PLATFORM, "org.eclipse.releng.pde.categoryIU", PLATFORM);
 
+	public static final Catalog KOTLIN =
+			new Catalog(
+					"kotlin",
+					"https://files.pkg.jetbrains.space/kotlin/p/kotlin-eclipse/main/" + V,
+					"0.8.21", // 0.8.24 is broken in many ways
+					Arrays.asList(
+							"org.jetbrains.kotlin.feature.feature.group",
+							"org.jetbrains.kotlin.gradle.feature.feature.group"),
+					JDT);
+
 	private final String name;
 	private final String p2urlTemplate;
 	private final String latestVersion;
-	private final String toInstall;
+	private final List<String> toInstall;
 	private final List<Catalog> requires;
 
 	Catalog(String name, Catalog copyFrom, String toInstall, Catalog... requires) {
@@ -53,6 +63,15 @@ public class Catalog implements Comparable<Catalog> {
 			String p2urlTemplate,
 			String latestVersion,
 			String toInstall,
+			Catalog... requires) {
+		this(name, p2urlTemplate, latestVersion, Collections.singletonList(toInstall), requires);
+	}
+
+	Catalog(
+			String name,
+			String p2urlTemplate,
+			String latestVersion,
+			List<String> toInstall,
 			Catalog... requires) {
 		this.name = name;
 		if (p2urlTemplate.endsWith("/")) {
@@ -88,7 +107,7 @@ public class Catalog implements Comparable<Catalog> {
 	}
 
 	public List<String> getTargetsFor(@Nullable String override) {
-		return Collections.singletonList(toInstall);
+		return toInstall;
 	}
 
 	public static boolean isUrl(String maybeUrl) {
