@@ -122,6 +122,20 @@ public class P2ModelDslWithCatalog extends P2ModelDsl {
 		tmTerminal(null);
 	}
 
+	public static class Cdt extends GradleCatalogDsl {
+		public Cdt(String urlOverride, Project project) {
+			super(Catalog.CDT, urlOverride);
+		}
+	}
+
+	public void cdt(String urlOverride) {
+		add(new Cdt(urlOverride, project));
+	}
+
+	public void cdt() {
+		cdt(null);
+	}
+
 	public static class GradleCatalogDsl extends CatalogDsl {
 		protected GradleCatalogDsl(Catalog catalog, String urlOverride) {
 			super(catalog);
