@@ -55,7 +55,41 @@ public class Catalog implements Comparable<Catalog> {
 					"11.0.0",
 					Arrays.asList(
 							"org.eclipse.tm.terminal.feature.feature.group",
-							"org.eclipse.tm.terminal.view.feature.feature.group"));
+							"org.eclipse.tm.terminal.view.feature.feature.group"),
+					PLATFORM);
+
+	public static final Catalog CDT =
+			new Catalog(
+					"cdt",
+					TM_TERMINAL,
+					List.of(
+							"org.eclipse.launchbar.feature.group",
+							"org.eclipse.cdt.visualizer.feature.group",
+							"org.eclipse.cdt.unittest.feature.feature.group",
+							"org.eclipse.cdt.testsrunner.feature.feature.group",
+							"org.eclipse.cdt.platform.feature.group",
+							"org.eclipse.cdt.native.feature.group",
+							"org.eclipse.cdt.msw.feature.group",
+							"org.eclipse.cdt.meson.feature.group",
+							"org.eclipse.cdt.managedbuilder.llvm.feature.group",
+							"org.eclipse.cdt.llvm.dsf.lldb.feature.group",
+							"org.eclipse.cdt.launch.serial.feature.feature.group",
+							"org.eclipse.cdt.launch.remote.feature.group",
+							"org.eclipse.cdt.gnu.multicorevisualizer.feature.group",
+							"org.eclipse.cdt.gnu.dsf.feature.group",
+							"org.eclipse.cdt.gnu.debug.feature.group",
+							"org.eclipse.cdt.gnu.build.feature.group",
+							"org.eclipse.cdt.gdb.feature.group",
+							"org.eclipse.cdt.feature.group",
+							"org.eclipse.cdt.docker.launcher.feature.group",
+							"org.eclipse.cdt.debug.ui.memory.feature.group",
+							"org.eclipse.cdt.debug.standalone.feature.group",
+							"org.eclipse.cdt.debug.gdbjtag.feature.group",
+							"org.eclipse.cdt.core.autotools.feature.group",
+							"org.eclipse.cdt.cmake.feature.group",
+							"org.eclipse.cdt.build.crossgcc.feature.group",
+							"org.eclipse.cdt.autotools.feature.group"),
+					PLATFORM);
 
 	private final String name;
 	private final String p2urlTemplate;
@@ -64,6 +98,10 @@ public class Catalog implements Comparable<Catalog> {
 	private final List<Catalog> requires;
 
 	Catalog(String name, Catalog copyFrom, String toInstall, Catalog... requires) {
+		this(name, copyFrom.p2urlTemplate, copyFrom.latestVersion, toInstall, requires);
+	}
+
+	Catalog(String name, Catalog copyFrom, List<String> toInstall, Catalog... requires) {
 		this(name, copyFrom.p2urlTemplate, copyFrom.latestVersion, toInstall, requires);
 	}
 
