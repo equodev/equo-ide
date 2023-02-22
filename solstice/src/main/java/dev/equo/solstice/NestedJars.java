@@ -33,6 +33,7 @@ import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 import javax.annotation.Nullable;
+import org.slf4j.LoggerFactory;
 
 /**
  * Unwraps nested bundles to be friendly to a normal classloader, see <a
@@ -97,11 +98,16 @@ public abstract class NestedJars {
 			List<URL> nestedJars, String jarUrl, InputStream stream) throws IOException {
 		Manifest manifest = new Manifest(stream);
 		var cp = manifest.getMainAttributes().getValue(CLASSPATH);
-		if (cp != null && !".".equals(cp)) {
+		if (cp != null) {
 			var lines = cp.split(",");
 			for (var line : lines) {
-				var nestedJar = Unchecked.get(() -> new URL(jarUrl + "/" + line));
-				nestedJars.add(nestedJar);
+				if (line.startsWith("../")) {
+					LoggerFactory.getLogger(NestedJars.class)
+							.warn("Ignoring unexpected nested jar " + line + " inside " + jarUrl);
+				} else if (!line.equals(".")) {
+					var nestedJar = Unchecked.get(() -> new URL(jarUrl + "/" + line));
+					nestedJars.add(nestedJar);
+				}
 			}
 		}
 	}

@@ -203,9 +203,16 @@ public class P2Client implements AutoCloseable {
 				throw new IllegalArgumentException("URL needs to end with /" + url);
 			}
 			this.url = url;
-			var p2index = getString(url + "p2.index");
-			String metadataTarget = getGroup1(p2index, p2metadata).trim();
-			if (metadataTarget.indexOf(',') == -1) {
+			String metadataTarget;
+			try {
+				var p2index = getString(url + "p2.index");
+				metadataTarget = getGroup1(p2index, p2metadata).trim();
+			} catch (NotFoundException e) {
+				metadataTarget = null;
+			}
+			if (metadataTarget == null) {
+				this.metadataName = "content.xml";
+			} else if (metadataTarget.indexOf(',') == -1) {
 				this.metadataName = metadataTarget;
 			} else {
 				this.metadataName =
