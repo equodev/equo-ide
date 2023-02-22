@@ -278,9 +278,9 @@ public class BuildPluginIdeMain {
 		props.put(Location.INSTALL_AREA_TYPE, new File(installDir, "install").getAbsolutePath());
 		props.put(Location.CONFIGURATION_AREA_TYPE, new File(installDir, "config").getAbsolutePath());
 		props.put(Location.USER_AREA_TYPE, new File(installDir, "user").getAbsolutePath());
-		String eclipseHome = new File(installDir, "eclipse-home").getAbsolutePath();
-		props.put(Location.ECLIPSE_HOME_LOCATION_TYPE, eclipseHome);
-		System.setProperty(Location.ECLIPSE_HOME_LOCATION_TYPE, eclipseHome);
+		File eclipseHome = new File(installDir, "eclipse-home");
+		props.put(Location.ECLIPSE_HOME_LOCATION_TYPE, eclipseHome.getAbsolutePath());
+		System.setProperty(Location.ECLIPSE_HOME_LOCATION_TYPE, eclipseHome.toURI().toString());
 		if (useAtomos) {
 			props.put("atomos.content.start", "false");
 			solstice.openAtomos(props);
