@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -107,9 +108,14 @@ public class SolsticeManifest {
 					"Solstice does not currently support OSGi capabilities in fragment bundles, but a PR is welcome.");
 		}
 
-		boolean noActivator = !headersOriginal.containsKey(Constants.BUNDLE_ACTIVATOR);
-		String activationPolicy = headersOriginal.get(Constants.BUNDLE_ACTIVATIONPOLICY);
-		lazy = activationPolicy == null ? noActivator : activationPolicy.contains("lazy");
+		var legacyLazyStart = headersOriginal.get("Eclipse-LazyStart");
+		if (legacyLazyStart != null) {
+			lazy = legacyLazyStart.toLowerCase(Locale.ROOT).contains("true");
+		} else {
+			boolean noActivator = !headersOriginal.containsKey(Constants.BUNDLE_ACTIVATOR);
+			String activationPolicy = headersOriginal.get(Constants.BUNDLE_ACTIVATIONPOLICY);
+			lazy = activationPolicy == null ? noActivator : activationPolicy.contains("lazy");
+		}
 	}
 
 	private static void parseProvide(CapabilityParsed parsed, ArrayList<Capability> total) {
