@@ -48,6 +48,15 @@ public class Catalog implements Comparable<Catalog> {
 							"org.jetbrains.kotlin.gradle.feature.feature.group"),
 					JDT);
 
+	public static final Catalog TM_TERMINAL =
+			new Catalog(
+					"tmTerminal",
+					"https://download.eclipse.org/tools/cdt/releases/11.0/cdt-" + V,
+					"11.0.0",
+					Arrays.asList(
+							"org.eclipse.tm.terminal.feature.feature.group",
+							"org.eclipse.tm.terminal.view.feature.feature.group"));
+
 	private final String name;
 	private final String p2urlTemplate;
 	private final String latestVersion;

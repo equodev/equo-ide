@@ -395,6 +395,9 @@ equo-ide:list
     request (Default: false)
       User property: request
       (no description available)
+
+    tmTerminal
+      (no description available)
 .
 .
 [INFO] ------------------------------------------------------------------------
