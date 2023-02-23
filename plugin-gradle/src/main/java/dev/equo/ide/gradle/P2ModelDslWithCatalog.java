@@ -136,6 +136,20 @@ public class P2ModelDslWithCatalog extends P2ModelDsl {
 		cdt(null);
 	}
 
+	public static class Rust extends GradleCatalogDsl {
+		public Rust(String urlOverride, Project project) {
+			super(Catalog.RUST, urlOverride);
+		}
+	}
+
+	public void rust(String urlOverride) {
+		add(new Rust(urlOverride, project));
+	}
+
+	public void rust() {
+		rust(null);
+	}
+
 	public static class GradleCatalogDsl extends CatalogDsl {
 		protected GradleCatalogDsl(Catalog catalog, String urlOverride) {
 			super(catalog);

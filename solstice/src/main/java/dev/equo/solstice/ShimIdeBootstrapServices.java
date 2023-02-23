@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.PropertyResourceBundle;
+import java.util.ResourceBundle;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.SAXParserFactory;
 import org.eclipse.core.internal.runtime.CommonMessages;
@@ -107,20 +108,31 @@ public class ShimIdeBootstrapServices {
 		// - [ ] org.eclipse.osgi.service.localization.BundleLocalization
 		context.registerService(
 				BundleLocalization.class,
-				(bundle, locale) -> {
-					// TODO: we don't handle locale
-					String localization = bundle.getHeaders().get(Constants.BUNDLE_LOCALIZATION);
-					if (localization == null) {
-						throw new MissingResourceException(
-								NLS.bind(CommonMessages.activator_resourceBundleNotFound, locale),
-								bundle.getSymbolicName(),
-								""); //$NON-NLS-1$
+				new BundleLocalization() {
+					@Override
+					public ResourceBundle getLocalization(Bundle bundle, String locale) {
+						String localization = bundle.getHeaders().get(Constants.BUNDLE_LOCALIZATION);
+						if (localization == null) {
+							var defaultLocal =
+									bundle.getEntry(Constants.BUNDLE_LOCALIZATION_DEFAULT_BASENAME + ".properties");
+							if (defaultLocal != null) {
+								return parse(defaultLocal);
+							} else {
+								throw new MissingResourceException(
+										NLS.bind(CommonMessages.activator_resourceBundleNotFound, locale),
+										bundle.getSymbolicName(),
+										""); //$NON-NLS-1$
+							}
+						}
+						return parse(bundle.getEntry(localization + ".properties"));
 					}
-					URL url = bundle.getEntry(localization + ".properties");
-					try (InputStream input = url.openStream()) {
-						return new PropertyResourceBundle(input);
-					} catch (IOException e) {
-						throw Unchecked.wrap(e);
+
+					private PropertyResourceBundle parse(URL url) {
+						try (InputStream input = url.openStream()) {
+							return new PropertyResourceBundle(input);
+						} catch (IOException e) {
+							throw Unchecked.wrap(e);
+						}
 					}
 				},
 				Dictionaries.empty());

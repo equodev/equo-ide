@@ -5,6 +5,7 @@
   - [`gradleBuildship`](#gradle-buildship)
   - [`kotlin`](#kotlin)
   - [`cdt`](#cdt) and [`tmTerminal`](#tmterminal)
+  - [`rust`](#rust)
 - [Wishlist](#wishlist)
   - [Eclipse Corrosion (Rust)](#eclipse-rust)
   - [Eclipse Groovy Development Tools](#eclipse-groovy)
@@ -73,23 +74,14 @@ This catalog is a useful reference for the p2 urls, code repositories, and issue
 - Latest release https://download.eclipse.org/tools/cdt/releases/11.0/cdt-11.0.0/
 - Code & issues https://github.com/eclipse-cdt
 
-## Wishlist
-
-The projects below are notyet 
-
-<a name="kotlin-eclipse"></a>
-
-<a name="eclipse-cdt"></a>
-### Eclipse C/C++ Development Tooling (CDT)
-
-- Latest release https://download.eclipse.org/tools/cdt/releases/11.0/cdt-11.0.0/
-- Code & issues https://github.com/eclipse-cdt
-
-<a name="eclipse-rust"></a>
-### Eclipse Corrosion (Rust)
+### `rust`
 
 - Latest release https://download.eclipse.org/corrosion/releases/1.2.4/
 - Code & issues https://github.com/eclipse/corrosion
+
+## Wishlist
+
+The projects below are not in the catalog yet, but 
 
 <a name="eclipse-groovy"></a>
 ### Eclipse Groovy Development Tools
