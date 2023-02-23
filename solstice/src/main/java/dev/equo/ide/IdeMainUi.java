@@ -16,7 +16,9 @@ package dev.equo.ide;
 import dev.equo.solstice.Solstice;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher;
 import org.eclipse.equinox.app.IApplicationContext;
@@ -27,6 +29,8 @@ import org.eclipse.ui.internal.ide.application.DelayedEventsProcessor;
 import org.eclipse.ui.internal.ide.application.IDEWorkbenchAdvisor;
 import org.eclipse.ui.statushandlers.StatusManager;
 import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.framework.ServiceEvent;
+import org.osgi.framework.ServiceListener;
 import org.osgi.service.application.ApplicationException;
 
 class IdeMainUi {
@@ -63,6 +67,7 @@ class IdeMainUi {
 
 		// processor must be created before we start event loop
 		var processor = new DelayedEventsProcessor(display);
+		earlyStartupWorkaround(solstice);
 		return PlatformUI.createAndRunWorkbench(
 				display,
 				new IDEWorkbenchAdvisor(processor) {
@@ -112,5 +117,43 @@ class IdeMainUi {
 						super.eventLoopException(exception);
 					}
 				});
+	}
+
+	/**
+	 * Except for a very few lazy plugins, activating them in {@link
+	 * IDEWorkbenchAdvisor#initialize(IWorkbenchConfigurer)} works perfectly. But there are a few
+	 * which need to activate before that. Those are handled here.
+	 */
+	private static void earlyStartupWorkaround(Solstice solstice) throws InvalidSyntaxException {
+		List<String> needsEarlyActivation = List.of("org.eclipse.tm.terminal.view.ui");
+		var inSystem = solstice.bySymbolicName();
+		var toActivateEarly =
+				needsEarlyActivation.stream().filter(inSystem::containsKey).collect(Collectors.toList());
+		if (toActivateEarly.isEmpty()) {
+			return;
+		}
+		ServiceListener listener =
+				new ServiceListener() {
+					private boolean alreadyActivated = false;
+
+					@Override
+					public void serviceChanged(ServiceEvent event) {
+						if (alreadyActivated) {
+							return;
+						}
+						alreadyActivated = true;
+						toActivateEarly.forEach(solstice::start);
+					}
+				};
+		// there are two services we can hook to start a bit earlier than normal
+		// - org.eclipse.osgi.service.runnable.StartupMonitor (first)
+		// - org.osgi.service.event.EventHandler (second)
+		solstice
+				.getContext()
+				.addServiceListener(
+						listener,
+						"(objectClass="
+								+ org.eclipse.osgi.service.runnable.StartupMonitor.class.getName()
+								+ ")");
 	}
 }

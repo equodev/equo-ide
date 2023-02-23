@@ -108,6 +108,34 @@ public class P2ModelDslWithCatalog extends P2ModelDsl {
 		kotlin(null);
 	}
 
+	public static class TmTerminal extends GradleCatalogDsl {
+		public TmTerminal(String urlOverride, Project project) {
+			super(Catalog.TM_TERMINAL, urlOverride);
+		}
+	}
+
+	public void tmTerminal(String urlOverride) {
+		add(new TmTerminal(urlOverride, project));
+	}
+
+	public void tmTerminal() {
+		tmTerminal(null);
+	}
+
+	public static class Cdt extends GradleCatalogDsl {
+		public Cdt(String urlOverride, Project project) {
+			super(Catalog.CDT, urlOverride);
+		}
+	}
+
+	public void cdt(String urlOverride) {
+		add(new Cdt(urlOverride, project));
+	}
+
+	public void cdt() {
+		cdt(null);
+	}
+
 	public static class GradleCatalogDsl extends CatalogDsl {
 		protected GradleCatalogDsl(Catalog catalog, String urlOverride) {
 			super(catalog);

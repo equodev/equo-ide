@@ -6,6 +6,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 ### Added
 - Gradle DSL now supports `pde`. ([#90](https://github.com/equodev/equo-ide/pull/90))
 - Gradle DSL now includes `kotlin`. ([#91](https://github.com/equodev/equo-ide/pull/91))
+- Gradle DSL now includes `tmTerminal` and `cdt`. ([#92](https://github.com/equodev/equo-ide/pull/92))
 - `equoIde` now downloads its dependencies only if it is called directly. This means that CI builds don't need to download IDE dependencies. ([#89]https://github.com/equodev/equo-ide/pull/89))
   - Also, `equoIde` no longer adds `mavenCentral()` automatically.
 

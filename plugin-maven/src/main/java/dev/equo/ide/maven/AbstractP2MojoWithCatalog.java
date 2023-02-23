@@ -63,6 +63,22 @@ public abstract class AbstractP2MojoWithCatalog extends AbstractP2Mojo {
 		}
 	}
 
+	@Parameter private TmTerminal tmTerminal;
+
+	public static class TmTerminal extends MavenCatalogDsl {
+		public TmTerminal() {
+			super(Catalog.TM_TERMINAL);
+		}
+	}
+
+	@Parameter private Cdt cdt;
+
+	public static class Cdt extends MavenCatalogDsl {
+		public Cdt() {
+			super(Catalog.CDT);
+		}
+	}
+
 	public static class MavenCatalogDsl extends CatalogDsl {
 		protected MavenCatalogDsl(Catalog catalog) {
 			super(catalog);

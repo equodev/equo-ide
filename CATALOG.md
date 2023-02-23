@@ -4,9 +4,8 @@
   - [`platform`](#platform), [`jdt`](#jdt), [`pde`](#pde)
   - [`gradleBuildship`](#gradle-buildship)
   - [`kotlin`](#kotlin)
+  - [`cdt`](#cdt) and [`tmTerminal`](#tmterminal)
 - [Wishlist](#wishlist)
-  - [Eclipse Plug-in Development Environment (PDE)](#eclipse-pde)
-  - [Eclipse C/C++ Development Tooling (CDT)](#eclipse-cdt)
   - [Eclipse Corrosion (Rust)](#eclipse-rust)
   - [Eclipse Groovy Development Tools](#eclipse-groovy)
   - [Eclipse Web Tools Platform](#eclipse-wtp)
@@ -63,6 +62,16 @@ This catalog is a useful reference for the p2 urls, code repositories, and issue
 - Latest release https://files.pkg.jetbrains.space/kotlin/p/kotlin-eclipse/main/0.8.21/
   - Note: there is a newer release, `0.8.24`, but it has more bugs than `0.8.21`. 
 - Code & issues https://github.com/Kotlin/kotlin-eclipse
+
+### `cdt`
+
+- Latest release https://download.eclipse.org/tools/cdt/releases/11.0/cdt-11.0.0/
+- Code & issues https://github.com/eclipse-cdt
+
+### `tmTerminal`
+
+- Latest release https://download.eclipse.org/tools/cdt/releases/11.0/cdt-11.0.0/
+- Code & issues https://github.com/eclipse-cdt
 
 ## Wishlist
 

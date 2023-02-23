@@ -9,6 +9,9 @@ equo-ide:launch
     branding
       (no description available)
 
+    cdt
+      (no description available)
+
     clean (Default: false)
       User property: clean
       Wipes all IDE settings and state before rebuilding and launching.
@@ -52,6 +55,9 @@ equo-ide:launch
     showConsole (Default: false)
       User property: showConsole
       Adds a visible console to the launched application.
+
+    tmTerminal
+      (no description available)
 
     useAtomos (Default: false)
       User property: useAtomos

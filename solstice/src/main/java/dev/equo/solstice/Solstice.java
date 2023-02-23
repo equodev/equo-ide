@@ -398,7 +398,7 @@ public class Solstice {
 			logger.info("activate {}", manifest);
 			manifest.hydrated.start();
 		} catch (BundleException e) {
-			e.printStackTrace();
+			logger.warn("error in " + manifest, e);
 		}
 	}
 

@@ -342,6 +342,9 @@ equo-ide:list
       Lists the id and name of all [categories|features|jars] which meet the
       filter criteria.
 
+    cdt
+      (no description available)
+
     detail
       User property: detail
       Lists properties and requirements for all available versions of the given
@@ -394,6 +397,9 @@ equo-ide:list
 
     request (Default: false)
       User property: request
+      (no description available)
+
+    tmTerminal
       (no description available)
 .
 .
