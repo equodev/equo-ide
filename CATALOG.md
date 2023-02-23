@@ -7,7 +7,6 @@
   - [`cdt`](#cdt) and [`tmTerminal`](#tmterminal)
   - [`rust`](#rust)
 - [Wishlist](#wishlist)
-  - [Eclipse Corrosion (Rust)](#eclipse-rust)
   - [Eclipse Groovy Development Tools](#eclipse-groovy)
   - [Eclipse Web Tools Platform](#eclipse-wtp)
   - [Eclipse m2e (Maven integration)](#eclipse-m2e)
