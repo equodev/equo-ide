@@ -79,6 +79,14 @@ public abstract class AbstractP2MojoWithCatalog extends AbstractP2Mojo {
 		}
 	}
 
+	@Parameter private Rust rust;
+
+	public static class Rust extends MavenCatalogDsl {
+		public Rust() {
+			super(Catalog.RUST);
+		}
+	}
+
 	public static class MavenCatalogDsl extends CatalogDsl {
 		protected MavenCatalogDsl(Catalog catalog) {
 			super(catalog);

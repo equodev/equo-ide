@@ -52,6 +52,9 @@ equo-ide:launch
     platform
       (no description available)
 
+    rust
+      (no description available)
+
     showConsole (Default: false)
       User property: showConsole
       Adds a visible console to the launched application.

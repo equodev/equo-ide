@@ -83,6 +83,14 @@ public class Catalog implements Comparable<Catalog> {
 							"org.eclipse.cdt.autotools.feature.group"),
 					TM_TERMINAL);
 
+	public static final Catalog RUST =
+			new Catalog(
+					"rust",
+					"https://download.eclipse.org/corrosion/releases/" + V,
+					"1.2.4",
+					List.of("org.eclipse.corrosion.product", "org.eclipse.corrosion.feature.feature.group"),
+					TM_TERMINAL);
+
 	private final String name;
 	private final String p2urlTemplate;
 	private final String latestVersion;
