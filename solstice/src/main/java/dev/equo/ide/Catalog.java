@@ -13,8 +13,6 @@
  *******************************************************************************/
 package dev.equo.ide;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nullable;
 
@@ -25,25 +23,26 @@ public class Catalog implements Comparable<Catalog> {
 					"platform",
 					"https://download.eclipse.org/eclipse/updates/" + V,
 					"4.26",
-					"org.eclipse.platform.ide.categoryIU");
+					List.of("org.eclipse.platform.ide.categoryIU"));
 	public static final Catalog JDT =
-			new Catalog("jdt", PLATFORM, "org.eclipse.releng.java.languages.categoryIU", PLATFORM);
+			new Catalog(
+					"jdt", PLATFORM, List.of("org.eclipse.releng.java.languages.categoryIU"), PLATFORM);
 	public static final Catalog GRADLE_BUILDSHIP =
 			new Catalog(
 					"gradleBuildship",
 					"https://download.eclipse.org/buildship/updates/e423/releases/3.x/" + V,
 					"3.1.6.v20220511-1359",
-					"org.eclipse.buildship.feature.group",
+					List.of("org.eclipse.buildship.feature.group"),
 					JDT);
 	public static final Catalog PDE =
-			new Catalog("pde", PLATFORM, "org.eclipse.releng.pde.categoryIU", JDT);
+			new Catalog("pde", PLATFORM, List.of("org.eclipse.releng.pde.categoryIU"), JDT);
 
 	public static final Catalog KOTLIN =
 			new Catalog(
 					"kotlin",
 					"https://files.pkg.jetbrains.space/kotlin/p/kotlin-eclipse/main/" + V,
 					"0.8.21", // 0.8.24 is broken in many ways
-					Arrays.asList(
+					List.of(
 							"org.jetbrains.kotlin.feature.feature.group",
 							"org.jetbrains.kotlin.gradle.feature.feature.group"),
 					JDT);
@@ -53,7 +52,7 @@ public class Catalog implements Comparable<Catalog> {
 					"tmTerminal",
 					"https://download.eclipse.org/tools/cdt/releases/11.0/cdt-" + V,
 					"11.0.0",
-					Arrays.asList(
+					List.of(
 							"org.eclipse.tm.terminal.feature.feature.group",
 							"org.eclipse.tm.terminal.view.feature.feature.group"),
 					PLATFORM);
@@ -90,21 +89,8 @@ public class Catalog implements Comparable<Catalog> {
 	private final List<String> toInstall;
 	private final List<Catalog> requires;
 
-	Catalog(String name, Catalog copyFrom, String toInstall, Catalog... requires) {
-		this(name, copyFrom.p2urlTemplate, copyFrom.latestVersion, toInstall, requires);
-	}
-
 	Catalog(String name, Catalog copyFrom, List<String> toInstall, Catalog... requires) {
 		this(name, copyFrom.p2urlTemplate, copyFrom.latestVersion, toInstall, requires);
-	}
-
-	Catalog(
-			String name,
-			String p2urlTemplate,
-			String latestVersion,
-			String toInstall,
-			Catalog... requires) {
-		this(name, p2urlTemplate, latestVersion, Collections.singletonList(toInstall), requires);
 	}
 
 	Catalog(
@@ -121,7 +107,7 @@ public class Catalog implements Comparable<Catalog> {
 		}
 		this.latestVersion = latestVersion;
 		this.toInstall = toInstall;
-		this.requires = Arrays.asList(requires);
+		this.requires = List.of(requires);
 	}
 
 	public String getP2UrlTemplate() {
