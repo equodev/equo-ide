@@ -9,6 +9,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 - Gradle DSL now includes `tmTerminal` and `cdt`. ([#92](https://github.com/equodev/equo-ide/pull/92))
 - `equoIde` now downloads its dependencies only if it is called directly. This means that CI builds don't need to download IDE dependencies. ([#89]https://github.com/equodev/equo-ide/pull/89))
   - Also, `equoIde` no longer adds `mavenCentral()` automatically.
+- Gradle DSL now includes `rust`. ([#94](https://github.com/equodev/equo-ide/pull/94))
 
 ## [0.15.0] - 2023-02-19
 ### Added
