@@ -319,7 +319,11 @@ public class P2Client implements AutoCloseable {
 					for (int i = 0; i < children.getLength(); ++i) {
 						Node node = children.item(i);
 						if ("child".equals(node.getNodeName())) {
-							childLocations.add(node.getAttributes().getNamedItem("location").getNodeValue());
+							var location = node.getAttributes().getNamedItem("location").getNodeValue();
+							if (location.startsWith("file:")) {
+								location = location.substring("file:".length());
+							}
+							childLocations.add(location);
 						}
 					}
 					return childLocations;
