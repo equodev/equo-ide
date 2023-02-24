@@ -101,7 +101,7 @@ public class P2ModelDslWithCatalog extends P2ModelDsl {
 	}
 
 	public void m2e(String urlOverride) {
-		add(new Cdt(urlOverride, project));
+		add(new M2E(urlOverride, project));
 	}
 
 	public void m2e() {
