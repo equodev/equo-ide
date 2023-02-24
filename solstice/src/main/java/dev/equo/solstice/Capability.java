@@ -228,7 +228,13 @@ public class Capability implements Comparable<Capability> {
 					break;
 				default:
 					throw Unimplemented.onPurpose(
-							"Solstice only supports Capabilities with at most 3 properties, see Capabilities javadoc for how to remove this limitation");
+							"Solstice only supports Capabilities with at most 3 properties, this was "
+									+ cap.size()
+									+ "\n"
+									+ cap
+									+ " = "
+									+ value
+									+ ", see Capabilities javadoc for how to remove this limitation");
 			}
 		}
 
