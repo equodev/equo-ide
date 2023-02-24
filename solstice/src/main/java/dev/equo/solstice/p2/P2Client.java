@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -102,6 +103,7 @@ public class P2Client implements AutoCloseable {
 	}
 
 	private static final String CONTENT_XML = "content.xml";
+	private static final String COMPOSITE_XML = "compositeContent.xml";
 
 	void addUnits(P2Session session, String url) throws Exception {
 		Unchecked.ThrowingConsumer<Folder> addUnits =
@@ -211,7 +213,26 @@ public class P2Client implements AutoCloseable {
 				metadataTarget = null;
 			}
 			if (metadataTarget == null) {
-				this.metadataName = "content.xml";
+				String guessedXml = null;
+				List<String> triedUrls = new ArrayList<>();
+				triedUrls.add(url + "p2.index");
+				try {
+					resolveXml(url, CONTENT_XML);
+					guessedXml = CONTENT_XML;
+				} catch (CouldNotFindException e) {
+					triedUrls.addAll(e.triedUrls);
+					try {
+						resolveXml(url, COMPOSITE_XML);
+						guessedXml = COMPOSITE_XML;
+					} catch (CouldNotFindException e2) {
+						triedUrls.addAll(e.triedUrls);
+					}
+				}
+				if (guessedXml == null) {
+					throw new CouldNotFindException(triedUrls.toArray(new String[0]));
+				} else {
+					this.metadataName = guessedXml;
+				}
 			} else if (metadataTarget.indexOf(',') == -1) {
 				this.metadataName = metadataTarget;
 			} else {
@@ -245,6 +266,7 @@ public class P2Client implements AutoCloseable {
 		var xzUrl = url + metadataTarget + ".xz";
 		var jarUrl =
 				url + metadataTarget.substring(0, metadataTarget.length() - ".xml".length()) + ".jar";
+		var rawUrl = url + metadataTarget;
 
 		try {
 			var bytes = getBytes(xzUrl);
@@ -254,7 +276,6 @@ public class P2Client implements AutoCloseable {
 		} catch (NotFoundException e) {
 			// no problem, just keep trying
 		}
-
 		try {
 			var bytes = getBytes(jarUrl);
 			try (var zipStream = new ZipInputStream(new ByteArrayInputStream(bytes))) {
@@ -267,10 +288,25 @@ public class P2Client implements AutoCloseable {
 				}
 			}
 		} catch (NotFoundException e) {
+			// no problem, just keep trying
+		}
+		try {
+			return new String(getBytes(rawUrl), StandardCharsets.UTF_8);
+		} catch (NotFoundException e) {
 			// no problem, just tell what we tried
 		}
-		throw new IllegalArgumentException(
-				"Could not find " + metadataTarget + " at\n" + xzUrl + "\n" + jarUrl);
+		throw new CouldNotFindException(xzUrl, jarUrl, rawUrl);
+	}
+
+	private static class CouldNotFindException extends IllegalArgumentException {
+		final List<String> triedUrls;
+
+		CouldNotFindException(String... triedUrls) {
+			super(
+					"Attempted to find resource at\n"
+							+ Arrays.stream(triedUrls).collect(Collectors.joining("\n")));
+			this.triedUrls = Arrays.asList(triedUrls);
+		}
 	}
 
 	private static List<String> parseComposite(String content) throws Exception {
