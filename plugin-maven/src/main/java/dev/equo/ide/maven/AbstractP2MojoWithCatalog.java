@@ -55,6 +55,14 @@ public abstract class AbstractP2MojoWithCatalog extends AbstractP2Mojo {
 		}
 	}
 
+	@Parameter private M2E m2e;
+
+	public static class M2E extends MavenCatalogDsl {
+		public M2E() {
+			super(Catalog.M2E);
+		}
+	}
+
 	@Parameter private Kotlin kotlin;
 
 	public static class Kotlin extends MavenCatalogDsl {
@@ -116,7 +124,7 @@ public abstract class AbstractP2MojoWithCatalog extends AbstractP2Mojo {
 				new CatalogDsl.TransitiveAwareList<>();
 		// NB: each entry must be after all of its transitive dependencies
 		// e.g. jdt must be after platform
-		Stream.of(platform, jdt, gradleBuildship, pde)
+		Stream.of(platform, jdt, gradleBuildship, pde, m2e, tmTerminal, cdt, rust)
 				.filter(Objects::nonNull)
 				.forEach(
 						dsl -> {

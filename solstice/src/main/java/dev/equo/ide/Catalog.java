@@ -34,6 +34,18 @@ public class Catalog implements Comparable<Catalog> {
 					"3.1.6.v20220511-1359",
 					List.of("org.eclipse.buildship.feature.group"),
 					JDT);
+	public static final Catalog M2E =
+			new Catalog(
+					"m2e",
+					"https://download.eclipse.org/technology/m2e/releases/" + V,
+					"2.1.2",
+					List.of(
+							"org.eclipse.m2e.feature.feature.group",
+							"org.eclipse.m2e.lemminx.feature.feature.group",
+							"org.eclipse.m2e.logback.feature.feature.group",
+							"org.eclipse.m2e.pde.feature.feature.group",
+							"org.eclipse.m2e.sdk.feature.feature.group"),
+					JDT);
 	public static final Catalog PDE =
 			new Catalog("pde", PLATFORM, List.of("org.eclipse.releng.pde.categoryIU"), JDT);
 
@@ -41,7 +53,8 @@ public class Catalog implements Comparable<Catalog> {
 			new Catalog(
 					"kotlin",
 					"https://files.pkg.jetbrains.space/kotlin/p/kotlin-eclipse/main/" + V,
-					"0.8.21", // 0.8.24 is broken in many ways
+					"0.8.21", // 0.8.24 is broken in many
+					// ways
 					List.of(
 							"org.jetbrains.kotlin.feature.feature.group",
 							"org.jetbrains.kotlin.gradle.feature.feature.group"),

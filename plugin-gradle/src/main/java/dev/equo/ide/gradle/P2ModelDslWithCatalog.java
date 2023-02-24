@@ -94,6 +94,20 @@ public class P2ModelDslWithCatalog extends P2ModelDsl {
 		pde(null);
 	}
 
+	public static class M2E extends GradleCatalogDsl {
+		public M2E(String urlOverride, Project project) {
+			super(Catalog.M2E, urlOverride);
+		}
+	}
+
+	public void m2e(String urlOverride) {
+		add(new Cdt(urlOverride, project));
+	}
+
+	public void m2e() {
+		m2e(null);
+	}
+
 	public static class Kotlin extends GradleCatalogDsl {
 		public Kotlin(String urlOverride, Project project) {
 			super(Catalog.KOTLIN, urlOverride);
