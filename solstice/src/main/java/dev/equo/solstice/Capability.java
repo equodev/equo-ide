@@ -226,9 +226,36 @@ public class Capability implements Comparable<Capability> {
 					map.put(cap.swap(2, 0, 1), value);
 					map.put(cap.swap(2, 1, 0), value);
 					break;
+				case 4:
+					map.put(cap, value);
+					// map.put(cap.swap(0, 1, 2, 3), value); // same as just cap
+					map.put(cap.swap(0, 1, 3, 2), value);
+					map.put(cap.swap(0, 2, 1, 3), value);
+					map.put(cap.swap(0, 2, 3, 1), value);
+					map.put(cap.swap(0, 3, 1, 2), value);
+					map.put(cap.swap(0, 3, 2, 1), value);
+					map.put(cap.swap(1, 0, 2, 3), value);
+					map.put(cap.swap(1, 0, 3, 2), value);
+					map.put(cap.swap(1, 2, 0, 3), value);
+					map.put(cap.swap(1, 2, 3, 0), value);
+					map.put(cap.swap(1, 3, 0, 2), value);
+					map.put(cap.swap(1, 3, 2, 0), value);
+					map.put(cap.swap(2, 0, 1, 3), value);
+					map.put(cap.swap(2, 0, 3, 1), value);
+					map.put(cap.swap(2, 1, 0, 3), value);
+					map.put(cap.swap(2, 1, 3, 0), value);
+					map.put(cap.swap(2, 3, 0, 1), value);
+					map.put(cap.swap(2, 3, 1, 0), value);
+					map.put(cap.swap(3, 0, 1, 2), value);
+					map.put(cap.swap(3, 0, 2, 1), value);
+					map.put(cap.swap(3, 1, 0, 2), value);
+					map.put(cap.swap(3, 1, 2, 0), value);
+					map.put(cap.swap(3, 2, 1, 0), value);
+					map.put(cap.swap(3, 2, 0, 1), value);
+					break;
 				default:
 					throw Unimplemented.onPurpose(
-							"Solstice only supports Capabilities with at most 3 properties, this was "
+							"Solstice only supports Capabilities with at most 4 properties, this was "
 									+ cap.size()
 									+ "\n"
 									+ cap
