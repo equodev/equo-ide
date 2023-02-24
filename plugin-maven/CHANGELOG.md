@@ -8,6 +8,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 - Maven DSL now includes `kotlin`. ([#91](https://github.com/equodev/equo-ide/pull/91))
 - Maven DSL now includes `tmTerminal` and `cdt`. ([#92](https://github.com/equodev/equo-ide/pull/92))
 - Maven DSL now includes `rust`. ([#94](https://github.com/equodev/equo-ide/pull/94))
+- Maven DSL now includes `m2e`. ([#95](https://github.com/equodev/equo-ide/pull/95))
 ### Fixed
 - Further improved Windows launch experience. ([#44](https://github.com/equodev/equo-ide/issues/44))
 
