@@ -125,7 +125,14 @@ public class P2Client implements AutoCloseable {
 				var children = parseComposite(resolveXml(dir.url, dir.metadataName));
 				for (var child : children) {
 					try {
-						queue.push(new Folder(dir.url + child + "/"));
+						if (child.startsWith("https://") || child.startsWith("http://")) {
+							queue.push(new Folder(child + "/"));
+						} else {
+							if (child.startsWith("file:")) {
+								child = child.substring("file:".length());
+							}
+							queue.push(new Folder(dir.url + child + "/"));
+						}
 					} catch (NotFoundException e) {
 						addUnits.accept(new Folder(dir.url + child + "/", CONTENT_XML));
 					}
@@ -320,9 +327,6 @@ public class P2Client implements AutoCloseable {
 						Node node = children.item(i);
 						if ("child".equals(node.getNodeName())) {
 							var location = node.getAttributes().getNamedItem("location").getNodeValue();
-							if (location.startsWith("file:")) {
-								location = location.substring("file:".length());
-							}
 							childLocations.add(location);
 						}
 					}
