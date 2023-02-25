@@ -34,18 +34,36 @@ public class Catalog implements Comparable<Catalog> {
 					"3.1.6.v20220511-1359",
 					List.of("org.eclipse.buildship.feature.group"),
 					JDT);
+	private static final Catalog GUAVA =
+			new Catalog(
+					"guava",
+					"https://download.eclipse.org/tools/orbit/downloads/drops/" + V + "/repository/",
+					"R20221123021534",
+					List.of("com.google.guava"));
+	private static final Catalog WST =
+			new Catalog(
+					"wst",
+					"https://download.eclipse.org/webtools/downloads/drops/" + V + "/repository/",
+					"R3.28.0/R-3.28.0-20221120050827",
+					List.of(
+							"org.eclipse.wst.common.core",
+							"org.eclipse.wst.common.emf",
+							"org.eclipse.wst.common.environment",
+							"org.eclipse.wst.common.frameworks",
+							"org.eclipse.wst.common.uriresolver",
+							"org.eclipse.wst.sse.core",
+							"org.eclipse.wst.xml.core",
+							"org.apache.xerces",
+							"org.apache.xml.resolver"));
 	public static final Catalog M2E =
 			new Catalog(
 					"m2e",
 					"https://download.eclipse.org/technology/m2e/releases/" + V,
 					"2.1.2",
-					List.of(
-							"org.eclipse.m2e.feature.feature.group",
-							"org.eclipse.m2e.lemminx.feature.feature.group",
-							"org.eclipse.m2e.logback.feature.feature.group",
-							"org.eclipse.m2e.pde.feature.feature.group",
-							"org.eclipse.m2e.sdk.feature.feature.group"),
-					JDT);
+					List.of("org.eclipse.m2e.feature.feature.group"),
+					JDT,
+					WST,
+					GUAVA);
 	public static final Catalog PDE =
 			new Catalog("pde", PLATFORM, List.of("org.eclipse.releng.pde.categoryIU"), JDT);
 
