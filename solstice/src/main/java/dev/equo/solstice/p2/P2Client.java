@@ -60,8 +60,11 @@ public class P2Client implements AutoCloseable {
 			return this != NO_METADATA_CACHE;
 		}
 
-		public static Caching defaultIfOfflineIs(boolean isOffline) {
-			return isOffline ? Caching.OFFLINE : Caching.ALLOW_OFFLINE;
+		public static Caching defaultIfOfflineIsAndForceRecalculateIs(
+				boolean isOffline, boolean forceRecalculate) {
+			return isOffline
+					? Caching.OFFLINE
+					: (forceRecalculate ? Caching.ALLOW_OFFLINE : Caching.PREFER_OFFLINE);
 		}
 	}
 
@@ -71,7 +74,7 @@ public class P2Client implements AutoCloseable {
 	private final LockFile lock;
 
 	public P2Client() throws IOException {
-		this(Caching.ALLOW_OFFLINE);
+		this(Caching.PREFER_OFFLINE);
 	}
 
 	public P2Client(Caching cachingPolicy) throws IOException {

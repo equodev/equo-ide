@@ -59,7 +59,11 @@ public class P2ModelDsl {
 	}
 
 	static P2Client.Caching clientCaching(Project project) {
-		return P2Client.Caching.defaultIfOfflineIs(project.getGradle().getStartParameter().isOffline());
+		boolean forceRecalculate =
+				EquoIdeGradlePlugin.anyArgEquals(project, CLEAN_FLAG)
+						|| EquoIdeGradlePlugin.anyArgEquals(project, REFRESH_DEPENDENCIES);
+		return P2Client.Caching.defaultIfOfflineIsAndForceRecalculateIs(
+				project.getGradle().getStartParameter().isOffline(), forceRecalculate);
 	}
 
 	static QueryCache queryCaching(Project project) {
