@@ -40,7 +40,8 @@ public class Solstice {
 	private static Map<String, List<String>> knownMissingBundleDependencies() {
 		var missing = new HashMap<String, List<String>>();
 		missing.put(
-				"org.eclipse.equinox.p2.reconciler.dropins", List.of("org.eclipse.equinox.p2.updatesite"));
+				"org.eclipse.equinox.p2.reconciler.dropins",
+				List.of("org.eclipse.equinox.p2.updatesite", "org.apache.felix.scr"));
 		return missing;
 	}
 
@@ -313,7 +314,8 @@ public class Solstice {
 
 	public void openAtomos(Map<String, String> props) throws BundleException {
 		assertContextInitialized(false);
-		// the spelled-out package is on purpose so that Atomos can remain an optional component
+		// the spelled-out package is on purpose so that Atomos can remain an optional
+		// component
 		// works together with
 		// https://github.com/equodev/equo-ide/blob/aa7d30cba9988bc740ff4bc4b3015475d30d187c/solstice/build.gradle#L16-L22
 		context = dev.equo.solstice.BundleContextAtomos.hydrate(this, props);
