@@ -124,7 +124,7 @@ public abstract class AbstractP2MojoWithCatalog extends AbstractP2Mojo {
 				new CatalogDsl.TransitiveAwareList<>();
 		// NB: each entry must be after all of its transitive dependencies
 		// e.g. jdt must be after platform
-		Stream.of(platform, jdt, gradleBuildship, pde, m2e, tmTerminal, cdt, rust)
+		Stream.of(platform, jdt, gradleBuildship, pde, m2e, kotlin, tmTerminal, cdt, rust)
 				.filter(Objects::nonNull)
 				.forEach(
 						dsl -> {
