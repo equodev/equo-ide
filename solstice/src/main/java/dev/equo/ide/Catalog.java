@@ -34,27 +34,20 @@ public class Catalog implements Comparable<Catalog> {
 					"3.1.6.v20220511-1359",
 					List.of("org.eclipse.buildship.feature.group"),
 					JDT);
-	private static final Catalog GUAVA =
+
+	/** Pure transitive of m2e and others */
+	private static final Catalog LSP4J =
 			new Catalog(
-					"guava",
-					"https://download.eclipse.org/tools/orbit/downloads/drops/" + V + "/repository/",
-					"R20221123021534",
-					List.of("com.google.guava"));
+					"lsp4j", "https://download.eclipse.org/lsp4j/updates/releases/" + V, "0.20.0", List.of());
+
+	/** Pure transitive of m2e and others */
 	private static final Catalog WST =
 			new Catalog(
 					"wst",
 					"https://download.eclipse.org/webtools/downloads/drops/" + V + "/repository/",
 					"R3.28.0/R-3.28.0-20221120050827",
-					List.of(
-							"org.eclipse.wst.common.core",
-							"org.eclipse.wst.common.emf",
-							"org.eclipse.wst.common.environment",
-							"org.eclipse.wst.common.frameworks",
-							"org.eclipse.wst.common.uriresolver",
-							"org.eclipse.wst.sse.core",
-							"org.eclipse.wst.xml.core",
-							"org.apache.xerces",
-							"org.apache.xml.resolver"));
+					List.of());
+
 	public static final Catalog M2E =
 			new Catalog(
 					"m2e",
@@ -63,7 +56,7 @@ public class Catalog implements Comparable<Catalog> {
 					List.of("org.eclipse.m2e.feature.feature.group"),
 					JDT,
 					WST,
-					GUAVA);
+					LSP4J);
 	public static final Catalog PDE =
 			new Catalog("pde", PLATFORM, List.of("org.eclipse.releng.pde.categoryIU"), JDT);
 
