@@ -17,7 +17,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -38,11 +37,7 @@ public class Solstice {
 	 * expressed in the manifest. This map is an easy way to fix cases such as this.
 	 */
 	private static Map<String, List<String>> knownMissingBundleDependencies() {
-		var missing = new HashMap<String, List<String>>();
-		missing.put(
-				"org.eclipse.equinox.p2.reconciler.dropins",
-				List.of("org.eclipse.equinox.p2.updatesite", "org.apache.felix.scr"));
-		return missing;
+		return Map.of();
 	}
 
 	public static Solstice findBundlesOnClasspath() {
