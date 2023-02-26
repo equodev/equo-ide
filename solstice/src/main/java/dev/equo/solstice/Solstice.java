@@ -17,7 +17,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -38,10 +37,8 @@ public class Solstice {
 	 * expressed in the manifest. This map is an easy way to fix cases such as this.
 	 */
 	private static Map<String, List<String>> knownMissingBundleDependencies() {
-		var missing = new HashMap<String, List<String>>();
-		missing.put(
+		return Map.of(
 				"org.eclipse.equinox.p2.reconciler.dropins", List.of("org.eclipse.equinox.p2.updatesite"));
-		return missing;
 	}
 
 	public static Solstice findBundlesOnClasspath() {
@@ -313,7 +310,8 @@ public class Solstice {
 
 	public void openAtomos(Map<String, String> props) throws BundleException {
 		assertContextInitialized(false);
-		// the spelled-out package is on purpose so that Atomos can remain an optional component
+		// the spelled-out package is on purpose so that Atomos can remain an optional
+		// component
 		// works together with
 		// https://github.com/equodev/equo-ide/blob/aa7d30cba9988bc740ff4bc4b3015475d30d187c/solstice/build.gradle#L16-L22
 		context = dev.equo.solstice.BundleContextAtomos.hydrate(this, props);

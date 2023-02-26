@@ -374,6 +374,9 @@ equo-ide:list
     kotlin
       (no description available)
 
+    m2e
+      (no description available)
+
     optional (Default: false)
       User property: optional
       Lists any optional requirements which were not installed.

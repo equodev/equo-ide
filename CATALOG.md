@@ -6,10 +6,10 @@
   - [`kotlin`](#kotlin)
   - [`cdt`](#cdt) and [`tmTerminal`](#tmterminal)
   - [`rust`](#rust)
+  - [`m2e`](#m2e)
 - [Wishlist](#wishlist)
   - [Eclipse Groovy Development Tools](#eclipse-groovy)
   - [Eclipse Web Tools Platform](#eclipse-wtp)
-  - [Eclipse m2e (Maven integration)](#eclipse-m2e)
   - (PR's welcome!)
 
 ## Available in DSL
@@ -78,6 +78,14 @@ This catalog is a useful reference for the p2 urls, code repositories, and issue
 - Latest release https://download.eclipse.org/corrosion/releases/1.2.4/
 - Code & issues https://github.com/eclipse/corrosion
 
+### `m2e`
+
+- Latest release https://download.eclipse.org/technology/m2e/releases/2.1.2/
+- Code & issues https://github.com/eclipse-m2e/m2e-core
+- Also a transitive dependency on some jars from
+  - https://download.eclipse.org/webtools/downloads/drops/R3.28.0/R-3.28.0-20221120050827/repository/
+  - https://download.eclipse.org/lsp4j/updates/releases/0.20.0
+
 ## Wishlist
 
 The projects below are not in the catalog yet, but 
@@ -94,7 +102,3 @@ The projects below are not in the catalog yet, but
 - Code & issues ?
 
 <a name="eclipse-m2e"></a>
-### Eclipse m2e (Maven integration)
-
-- Latest release https://download.eclipse.org/technology/m2e/releases/2.1.2/
-- Code & issues https://github.com/eclipse-m2e/m2e-core

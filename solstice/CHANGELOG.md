@@ -8,11 +8,12 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 - Catalog now includes `kotlin`. ([#91](https://github.com/equodev/equo-ide/pull/91))
 - Catalog now includes `tmTerminal` and `cdt`. ([#92](https://github.com/equodev/equo-ide/pull/92))
 - Catalog now includes `rust`. ([#94](https://github.com/equodev/equo-ide/pull/94))
+- Catalog now includes `m2e`. ([#95](https://github.com/equodev/equo-ide/pull/95))
 ### Fixed
 - Bundles without activators are now treated as `lazy=true` since there's no need to eagerly activate them. ([#90](https://github.com/equodev/equo-ide/pull/90))
 - Concurrent modification errors in service registry have been fixed by adding a custom datastructure. ([#90](https://github.com/equodev/equo-ide/pull/90))
 - We can now handle p2 update sites without a `p2.index` file. ([#91](https://github.com/equodev/equo-ide/pull/91))
-- Solstice Shim's URL handler now handles missing resources correctly. ([#91](https://github.com/equodev/equo-ide/pull/91))
+- Solstice Shim's URL handler now handles missing resources correctly. ([#91](https://github.com/equodev/equo-ide/pull/91) and [#95](https://github.com/equodev/equo-ide/pull/95))
 - The Eclipse home location system property is now a proper `file:/` URL. ([#92](https://github.com/equodev/equo-ide/pull/92))
 - `IdeMainUi` now has a mechanism to allow certain lazy bundles to activate earlier than normal, which was needed for `tmTerminal`. ([#92](https://github.com/equodev/equo-ide/pull/92))
 - Added support for the legacy header `Eclipse-LazyStart`. ([#92](https://github.com/equodev/equo-ide/pull/92))
