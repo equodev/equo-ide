@@ -55,7 +55,7 @@ public class Handler extends URLStreamHandler {
 			}
 			var entry = bundle.getEntry(resource);
 			if (entry == null) {
-				return null;
+				throw new IOException("No such URL " + u);
 			}
 			return entry.openConnection();
 		} else {

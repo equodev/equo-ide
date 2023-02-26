@@ -189,8 +189,8 @@ public class ShimIdeBootstrapServices {
 		}
 
 		@Override
-		public URL resolve(URL url) throws IOException {
-			throw Unimplemented.onPurpose();
+		public URL resolve(URL url) {
+			return url;
 		}
 
 		private static final String DOT_JAR_EX_SLASH = ".jar!/";
