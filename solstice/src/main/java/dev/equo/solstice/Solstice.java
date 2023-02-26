@@ -37,7 +37,8 @@ public class Solstice {
 	 * expressed in the manifest. This map is an easy way to fix cases such as this.
 	 */
 	private static Map<String, List<String>> knownMissingBundleDependencies() {
-		return Map.of();
+		return Map.of(
+				"org.eclipse.equinox.p2.reconciler.dropins", List.of("org.eclipse.equinox.p2.updatesite"));
 	}
 
 	public static Solstice findBundlesOnClasspath() {
