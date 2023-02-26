@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+### Changed
+- P2 operations now use cached values whenever they are available, unless `-Dclean` is specified.
 ### Added
 - Maven DSL now supports `pde`. ([#90](https://github.com/equodev/equo-ide/pull/90))
 - Maven DSL now includes `kotlin`. ([#91](https://github.com/equodev/equo-ide/pull/91))
