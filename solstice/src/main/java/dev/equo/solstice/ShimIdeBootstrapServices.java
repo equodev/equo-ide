@@ -77,11 +77,9 @@ public class ShimIdeBootstrapServices {
 
 		// - [ ] org.eclipse.osgi.service.datalocation.Location,type=osgi.user.area
 		// - [ ] org.eclipse.osgi.service.datalocation.Location,type=osgi.instance.area
-		// - [ ]
-		// org.eclipse.osgi.service.datalocation.Location,type=osgi.configuration.area
+		// - [ ] org.eclipse.osgi.service.datalocation.Location,type=osgi.configuration.area
 		// - [ ] org.eclipse.osgi.service.datalocation.Location,type=osgi.install.area
-		// - [ ]
-		// org.eclipse.osgi.service.datalocation.Location,type=eclipse.home.location
+		// - [ ] org.eclipse.osgi.service.datalocation.Location,type=eclipse.home.location
 		registerLocations(context, context.container.getLocations());
 
 		// - [ ] org.eclipse.osgi.service.environment.EnvironmentInfo
@@ -191,12 +189,8 @@ public class ShimIdeBootstrapServices {
 		}
 
 		@Override
-		public URL resolve(URL url) throws IOException {
-			try {
-				return toFileURL(url);
-			} catch (IOException e) {
-				return url;
-			}
+		public URL resolve(URL url) {
+			return url;
 		}
 
 		private static final String DOT_JAR_EX_SLASH = ".jar!/";
