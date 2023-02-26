@@ -18,6 +18,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 - `IdeMainUi` now has a mechanism to allow certain lazy bundles to activate earlier than normal, which was needed for `tmTerminal`. ([#92](https://github.com/equodev/equo-ide/pull/92))
 - Added support for the legacy header `Eclipse-LazyStart`. ([#92](https://github.com/equodev/equo-ide/pull/92))
 - Solstice Shim's localization service now searches in the default location before giving up. ([#94](https://github.com/equodev/equo-ide/pull/94))
+- Compatibility improvements to the P2 client. ([#97](https://github.com/equodev/equo-ide/pull/97))
 
 ## [0.16.0] - 2023-02-19
 ### Added

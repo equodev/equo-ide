@@ -42,6 +42,7 @@ Use it like this with `mvn equo-ide:launch`
 
 - `equo-ide:launch` to launch
   - `equoIde -Dclean` wipes all workspace settings and state before rebuilding and launching.
+    - (also revalidates cached p2 data)
   - `equoIde -DshowConsole` pipes console output of launched IDE to the build console.
   - `equoIde -DinitOnly` initializes the runtime to check for errors then exits.
   - `equoIde -DdebugClasspath=[names|paths]` dumps the classpath (in order) without starting the application.

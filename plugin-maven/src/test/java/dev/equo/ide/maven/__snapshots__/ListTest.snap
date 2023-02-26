@@ -345,6 +345,10 @@ equo-ide:list
     cdt
       (no description available)
 
+    clean (Default: false)
+      User property: clean
+      Revalidates cached p2 data.
+
     detail
       User property: detail
       Lists properties and requirements for all available versions of the given
@@ -400,7 +404,7 @@ equo-ide:list
 
     request (Default: false)
       User property: request
-      (no description available)
+      Lists the full p2 request we are making (helpful for debugging catalog).
 
     rust
       (no description available)

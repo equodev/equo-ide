@@ -32,6 +32,7 @@ equoIde { // launch with gradlew equoIde
 
 - `equoIde` to launch the IDE
   - `equoIde --clean` wipes all workspace settings and state before rebuilding and launching.
+    - (also revalidates cached p2 data)
   - `equoIde --show-console` pipes console output of the launched IDE to the build console.
   - `equoIde --init-only` initializes the runtime to check for errors then exits.
   - `equoIde --debug-classpath=[names|paths]` dumps the classpath (in order) without starting the application.

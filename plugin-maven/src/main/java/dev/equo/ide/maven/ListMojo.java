@@ -53,8 +53,13 @@ public class ListMojo extends AbstractP2MojoWithCatalog {
 	@Parameter(property = "raw", required = false)
 	private String raw;
 
+	/** Lists the full p2 request we are making (helpful for debugging catalog). */
 	@Parameter(property = "request", defaultValue = "false")
 	private boolean request;
+
+	/** Revalidates cached p2 data. */
+	@Parameter(property = "clean", defaultValue = "false")
+	private boolean clean;
 
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
@@ -72,9 +77,11 @@ public class ListMojo extends AbstractP2MojoWithCatalog {
 					"Exactly one of -Drequest, -Dinstalled, -Dproblems, -Doptional, -Dall=[categories|features|jars], -Ddetail=id, or -Draw=id must be set.\n"
 							+ "`mvn help:describe -Dcmd=equo-ide:list -Ddetail` for more info or visit https://github.com/equodev/equo-ide/blob/main/P2_MULTITOOL.md");
 		}
+		boolean isOffline = false;
+		var clientCaching = P2Client.Caching.defaultIfOfflineIsAndForceRecalculateIs(isOffline, clean);
 		try {
 			var model = prepareModel(new IdeHook.List());
-			tool.dump(model, P2Client.Caching.ALLOW_OFFLINE);
+			tool.dump(model, clientCaching);
 		} catch (Exception e) {
 			throw new MojoFailureException(e.getMessage(), e);
 		}

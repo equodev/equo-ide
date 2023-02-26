@@ -110,11 +110,12 @@ public class LaunchMojo extends AbstractP2MojoWithCatalog {
 			for (var dep : NestedJars.transitiveDeps(useAtomos, NestedJars.CoordFormat.MAVEN)) {
 				deps.add(new Dependency(new DefaultArtifact(dep), null, null, EXCLUDE_ALL_TRANSITIVES));
 			}
+			boolean isOffline = false;
+			var clientCaching =
+					P2Client.Caching.defaultIfOfflineIsAndForceRecalculateIs(isOffline, clean);
 			var query =
 					super.prepareModel(ideHooks)
-							.query(
-									P2Client.Caching.ALLOW_OFFLINE,
-									clean ? QueryCache.FORCE_RECALCULATE : QueryCache.ALLOW);
+							.query(clientCaching, clean ? QueryCache.FORCE_RECALCULATE : QueryCache.ALLOW);
 			for (var dep : query.getJarsOnMavenCentral()) {
 				deps.add(new Dependency(new DefaultArtifact(dep), null, null, EXCLUDE_ALL_TRANSITIVES));
 			}

@@ -48,7 +48,7 @@ public class P2Test {
 
 	@Test
 	public void queryPlatformSpecific(Expect expect) throws Exception {
-		var session = populateSession(P2Client.Caching.ALLOW_OFFLINE);
+		var session = populateSession(P2Client.Caching.PREFER_OFFLINE);
 		var query = session.query();
 		query.install("org.eclipse.swt");
 		expect

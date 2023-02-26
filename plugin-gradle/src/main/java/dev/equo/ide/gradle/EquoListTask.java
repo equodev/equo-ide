@@ -92,7 +92,9 @@ public abstract class EquoListTask extends DefaultTask {
 		tool.raw = raw;
 	}
 
-	@Option(option = "request", description = "Dumps the full p2 request we are making")
+	@Option(
+			option = "request",
+			description = "Lists the full p2 request we are making (helpful for debugging catalog)")
 	void setRequest(boolean request) {
 		tool.request = request;
 	}
