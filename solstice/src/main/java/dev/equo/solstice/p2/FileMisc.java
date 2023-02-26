@@ -98,6 +98,10 @@ class FileMisc {
 	 * <p>Makes FS operations more reliable.
 	 */
 	static void retry(File input, ThrowingConsumer<File> function) {
+		retry(input, function, MS_RETRY);
+	}
+
+	static void retry(File input, ThrowingConsumer<File> function, int retry) {
 		long start = System.currentTimeMillis();
 		Exception lastException;
 		do {
@@ -112,7 +116,7 @@ class FileMisc {
 					// ignore
 				}
 			}
-		} while (System.currentTimeMillis() - start < MS_RETRY);
+		} while (System.currentTimeMillis() - start < retry);
 		throw Unchecked.wrap(lastException);
 	}
 

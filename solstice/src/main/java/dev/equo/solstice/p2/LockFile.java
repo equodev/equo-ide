@@ -20,6 +20,7 @@ import java.io.IOException;
 class LockFile implements AutoCloseable {
 	final FileOutputStream lock;
 	final File lockFile;
+	private static final int WAIT_FOR_BUSY = 5_000;
 
 	LockFile(File dir) throws IOException {
 		FileMisc.mkdirs(dir);
@@ -32,7 +33,8 @@ class LockFile implements AutoCloseable {
 								"P2 operation already in progress, close other clients or delete stale lockfile at "
 										+ lockFile.getAbsolutePath());
 					}
-				});
+				},
+				WAIT_FOR_BUSY);
 
 		lock = new FileOutputStream(lockFile);
 		lock.write(Long.toString(ProcessHandle.current().pid()).getBytes());
