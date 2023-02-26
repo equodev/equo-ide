@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+
+## [0.17.0] - 2023-02-26
 ### Added
 - Catalog now includes `pde`. ([#90](https://github.com/equodev/equo-ide/pull/90))
 - Catalog now includes `kotlin`. ([#91](https://github.com/equodev/equo-ide/pull/91))
