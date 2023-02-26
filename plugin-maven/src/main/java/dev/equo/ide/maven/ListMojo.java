@@ -53,9 +53,11 @@ public class ListMojo extends AbstractP2MojoWithCatalog {
 	@Parameter(property = "raw", required = false)
 	private String raw;
 
+	/** Lists the full p2 request we are making (helpful for debugging catalog). */
 	@Parameter(property = "request", defaultValue = "false")
 	private boolean request;
 
+	/** Revalidates cached p2 data. */
 	@Parameter(property = "clean", defaultValue = "false")
 	private boolean clean;
 

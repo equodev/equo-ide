@@ -1319,7 +1319,7 @@ Options
 
      --raw     Lists the raw xml for all available versions of the given unit id
 
-     --request     Dumps the full p2 request we are making
+     --request     Lists the full p2 request we are making (helpful for debugging catalog)
 
 Description
      Lists the p2 dependencies of an Eclipse application
