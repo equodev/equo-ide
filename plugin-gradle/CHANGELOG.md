@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+
+## [0.16.0] - 2023-02-26
 ### Changed
 - P2 operations now use cached values whenever they are available, unless `--clean` or `--refresh-dependencies` is specified.
 - `equoIde` now downloads its dependencies only if it is called directly. This means that CI builds don't need to download IDE dependencies. ([#89]https://github.com/equodev/equo-ide/pull/89))
