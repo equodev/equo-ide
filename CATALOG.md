@@ -14,7 +14,7 @@
 
 ## Available in DSL
 
-The following projects are available in the Gradle and Maven plugin catalog DSL. For example, to use `jdt` in Gradle, you do
+The following projects are available in the [Gradle](https://github.com/equodev/equo-ide/tree/main/plugin-gradle) and [Maven](https://github.com/equodev/equo-ide/tree/main/plugin-maven) plugin catalog DSL. For example, to use `jdt` in Gradle, you do
 
 ```gradle
 equoIde {
