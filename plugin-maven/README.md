@@ -54,6 +54,10 @@ Use it like this with `mvn equo-ide:launch`
 
 You can use the [`dev.equo.p2deps` gradle plugin](../plugin-gradle/README.md#user-plugins) to compile against p2 dependencies. We would love help porting this feature into the maven plugin, see [#54](https://github.com/equodev/equo-ide/issues/54).
 
+## How it works
+
+Much of the complexity of downloading, running, and modifying the Eclipse IDE is caused OSGi and p2. Equo IDE replaces p2 and OSGi with a simple shim called [Solstice](https://github.com/equodev/equo-ide/tree/main/solstice). This makes it easier and faster to build, debug, and run Eclipse-based applications.
+
 ## Limitations
 
 - Java 11+

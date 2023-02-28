@@ -61,6 +61,9 @@ Note that you can use the full p2 metadata (as in `compileOnly`) or the [catalog
 
 You can write plugins for the Eclipse IDE without creating any OSGi or plugin.xml metadata using our [`IdeHook` mechanism](../CONTRIBUTING.md#idehook). It's what we use to provide features like the `welcome` hook and automatically importing the current project into Gradle, for example.
 
+## How it works
+
+Much of the complexity of downloading, running, and modifying the Eclipse IDE is caused OSGi and p2. Equo IDE replaces p2 and OSGi with a simple shim called [Solstice](https://github.com/equodev/equo-ide/tree/main/solstice). This makes it easier and faster to build, debug, and run Eclipse-based applications.
 ## Limitations
 
 - Java 11+
