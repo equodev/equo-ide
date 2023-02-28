@@ -4,7 +4,7 @@
 [![Changelog](https://img.shields.io/badge/changelog-here-blue)](CHANGELOG.md)
 [![Javadoc](https://img.shields.io/badge/javadoc-here-blue)](https://javadoc.io/doc/dev.equo.ide/equo-ide-maven-plugin)
 
-**PUBLIC BETA! Try it out, but it's not production ready yet. [Join our mailing list](https://equo.dev/ide) to be notified when it's ready.**
+**[Join our mailing list](https://equo.dev/ide) for more updates.**
 
 - a build plugin for Gradle and Maven
 - downloads, configures, and launches an instance of the Eclipse IDE
@@ -36,7 +36,7 @@ Use it like this with `mvn equo-ide:launch`
 
 ## Coming soon
 
-- Use m2e to import this maven project ([#18](https://github.com/equodev/equo-ide/issues/18))
+- Use m2e to import this maven project. ([#18](https://github.com/equodev/equo-ide/issues/18))
 
 ## Task listing
 
@@ -49,6 +49,10 @@ Use it like this with `mvn equo-ide:launch`
   - `equoIde -DdebugIde` blocks IDE startup and prints instructions to help you attach a remote debugger.
   - `equoIde -DuseAtomos=[true|false]` determines whether to use Atomos
 - `equo-ide:list` to debug IDE dependencies ([p2 multitool](../P2_MULTITOOL.md))
+
+## User plugins
+
+You can use the [`dev.equo.p2deps` gradle plugin](../plugin-gradle/README.md#user-plugins) to compile against p2 dependencies. We would love help porting this feature into the maven plugin, see [#54](https://github.com/equodev/equo-ide/issues/54).
 
 ## Limitations
 

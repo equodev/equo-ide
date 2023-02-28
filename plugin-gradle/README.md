@@ -4,7 +4,7 @@
 [![Changelog](https://img.shields.io/badge/changelog-here-blue)](CHANGELOG.md)
 [![Javadoc](https://img.shields.io/badge/javadoc-here-blue)](https://javadoc.io/doc/dev.equo.ide/equo-ide-gradle-plugin)
 
-**PUBLIC BETA! Try it out, but it's not production ready yet. [Join our mailing list](https://equo.dev/ide) to be notified when it's ready.**
+**[Join our mailing list](https://equo.dev/ide) for more updates.**
 
 - a build plugin for Gradle and Maven
 - downloads, configures, and launches an instance of the Eclipse IDE
@@ -42,7 +42,24 @@ equoIde { // launch with gradlew equoIde
 
 ## User plugins
 
-You can develop your own Eclipse plugins using the [`dev.equo.p2deps` plugin](P2DEPS.md).
+To compile classes against dependencies from p2, you can use `dev.equo.p2deps`.
+
+```gradle
+apply plugin: 'dev.equo.p2deps'
+p2deps {
+  into 'compileOnly', {
+    p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'
+    install 'org.eclipse.platform.ide.categoryIU'
+  }
+  into 'buildshipCompileOnly', {
+    gradleBuildship()
+  }
+}
+```
+
+Note that you can use the full p2 metadata (as in `compileOnly`) or the [catalog notation](../CATALOG.md) (as in `buildshipCompileOnly`).
+
+You can write plugins for the Eclipse IDE without creating any OSGi or plugin.xml metadata using our [`IdeHook` mechanism](../CONTRIBUTING.md#idehook). It's what we use to provide features like the `welcome` hook and automatically importing the current project into Gradle, for example.
 
 ## Limitations
 

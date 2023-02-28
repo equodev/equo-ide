@@ -25,7 +25,7 @@
       <plugin>
         <groupId>dev.equo.ide</groupId>
         <artifactId>equo-ide-maven-plugin</artifactId>
-        <version>0.13.2</version>
+        <version>0.15.0</version>
         <configuration>
 <!--More info at https://github.com/equodev/equo-ide/blob/main/P2_MULTITOOL.md -->
 <!--MINIMAL EXAMPLE-->

@@ -3,12 +3,12 @@
 [//]: <> (UPDATE CHECKLIST)
 [//]: <> (update version in plugin-gradle/example-gradle/build.gradle)
 [//]: <> (update version in plugin-maven/example-maven/pom.xml)
+[//]: <> (find-replace existing '0.16.0' with '$NEW' in this document)
 [//]: <> ($ rm *.tar)
 [//]: <> ($ ./gradlew p2multitool)
 [//]: <> ($ cp p2multi<tab> p2multitool-latest.tar)
-[//]: <> (find-replace existing '0.12.1' with '$NEW' in this document)
 
-The EquoIDE maven and gradle plugins can help you browse and debug p2 repositories. If you'd like to follow along and modify the examples to suit your problem, just download [`p2multitool-0.12.1.tar`](https://github.com/equodev/equo-ide/raw/main/p2multitool-0.12.1.tar) and extract it to a directory of your choice - you don't need to install anything else (besides a JDK on your system path).
+The EquoIDE maven and gradle plugins can help you browse and debug p2 repositories. If you'd like to follow along and modify the examples to suit your problem, just download [`p2multitool-0.16.0.tar`](https://github.com/equodev/equo-ide/raw/main/p2multitool-0.16.0.tar) and extract it to a directory of your choice - you don't need to install anything else (besides a JDK on your system path).
 
 ## Command reference
 
@@ -20,12 +20,13 @@ The EquoIDE maven and gradle plugins can help you browse and debug p2 repositori
 - [`equoList --optional`](#equolist-optional)
 - [`equoList --detail=any.unit.id`](#equolist-detail)
 - [`equoList --raw=any.unit.id`](#equolist-raw)
+- [`equoList --request` and the `CATALOG.md`](#equoList-request)
 - (any command) `--format=csv` to output diff-friendly CSV instead of the default `ascii` table
 - [`equoIde --init-only`](#equoide-init-only)
 
 ## Maven vs Gradle
 
-The examples below are all in Gradle syntax because it is more compact, but it is trivial to map from the Gradle to Maven. The examples in [`p2multitool-0.12.1.tar`](https://github.com/equodev/equo-ide/raw/main/p2multitool-0.12.1.tar) include both `pom.xml` and `build.gradle`, as well as `gradlew` and `mvnw`, so you can use whatever is most convenient. 
+The examples below are all in Gradle syntax because it is more compact, but it is trivial to map from the Gradle to Maven. The examples in [`p2multitool-0.16.0.tar`](https://github.com/equodev/equo-ide/raw/main/p2multitool-0.16.0.tar) include both `pom.xml` and `build.gradle`, as well as `gradlew` and `mvnw`, so you can use whatever is most convenient. 
 
 Here is a rosetta stone to help map:
 
@@ -42,7 +43,7 @@ user@machine p2-multitool % ./mvnw equo-ide:launch
 
 ```gradle
 // build.gradle
-plugins { id 'dev.equo.ide' version '0.12.1' }
+plugins { id 'dev.equo.ide' version '0.16.0' }
 equoIde {
   p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'
   install 'org.eclipse.platform.ide.categoryIU'
@@ -52,7 +53,7 @@ equoIde {
 ```xml
 <!--pom.xml-->
 <build><plugins><plugin>
-  <groupId>dev.equo.ide</groupId> <artifactId>equo-ide-maven-plugin</artifactId> <version>0.12.1</version>
+  <groupId>dev.equo.ide</groupId> <artifactId>equo-ide-maven-plugin</artifactId> <version>0.16.0</version>
    <configuration>
      <p2repos>
        <p2repo>https://download.eclipse.org/eclipse/updates/4.26/</p2repo>
@@ -75,7 +76,7 @@ In this tutorial we're going to start with nothing, then get a stripped-down Ecl
 
 ```gradle
 // build.gradle
-plugins { id 'dev.equo.ide' version '0.12.1' }
+plugins { id 'dev.equo.ide' version '0.16.0' }
 equoIde {
   p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'
 }
@@ -434,6 +435,34 @@ Bundle-Version: 3.32.0.v20221108-1853
 ```
 
 If you think there's something important that we're ignoring in our parsing, [let us know](https://github.com/equodev/equo-ide/discussions)!
+
+<a name="equolist-request"></a>
+### `equoList --request` and the [`CATALOG.md`](CATALOG.md)
+
+It can be a pain to track down the update sites and category / feature names for every single project that you want to use, so Equo includes a [catalog](CATALOG.md) of popular projects. You can request a member of the catalog like so
+
+```gradle
+equoIde {
+  jdt()
+}
+```
+
+To see what is actually inside the catalog entries you have requested, you can do
+
+```console
+user@machine p2-multitool % ./gradlew equoList --request
++-------------+----------------------------------------------------------------------------------------+
+| kind        | value                                                                                  |
++-------------+----------------------------------------------------------------------------------------+
+| p2repo      | https://download.eclipse.org/eclipse/updates/4.26/                                     |
+| install     | org.eclipse.platform.ide.categoryIU                                                    |
+| install     | org.eclipse.releng.java.languages.categoryIU                                           |
+| filter      | platform-specific-for-running                                                          |
+|   osgi.arch | aarch64                                                                                |
+|   osgi.os   | macosx                                                                                 |
+|   osgi.ws   | cocoa                                                                                  |
++-------------+----------------------------------------------------------------------------------------+
+```
 
 <a name="equoide-init-only"></a>
 ### `equoIde --init-only`
