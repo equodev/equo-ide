@@ -12,7 +12,7 @@
 
 There are [slides and a recorded presentation available here](https://github.com/equodev/equo-ide/issues/60).
 
-## Demo 
+## Demo
 
 The best way to get acquainted with this project is to run this demo
 
