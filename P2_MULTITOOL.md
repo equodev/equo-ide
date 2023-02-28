@@ -20,6 +20,7 @@ The EquoIDE maven and gradle plugins can help you browse and debug p2 repositori
 - [`equoList --optional`](#equolist-optional)
 - [`equoList --detail=any.unit.id`](#equolist-detail)
 - [`equoList --raw=any.unit.id`](#equolist-raw)
+- [`equoList --request` and the `CATALOG.md`](#equoList-request)
 - (any command) `--format=csv` to output diff-friendly CSV instead of the default `ascii` table
 - [`equoIde --init-only`](#equoide-init-only)
 
@@ -434,6 +435,34 @@ Bundle-Version: 3.32.0.v20221108-1853
 ```
 
 If you think there's something important that we're ignoring in our parsing, [let us know](https://github.com/equodev/equo-ide/discussions)!
+
+<a name="equolist-request"></a>
+### `equoList --request` and the [`CATALOG.md`](CATALOG.md)
+
+It can be a pain to track down the update sites and category / feature names for every single project that you want to use, so Equo includes a [catalog](CATALOG.md) of popular projects. You can request a member of the catalog like so
+
+```gradle
+equoIde {
+  jdt()
+}
+```
+
+To see what is actually inside the catalog entries you have requested, you can do
+
+```console
+user@machine p2-multitool % ./gradlew equoList --request
++-------------+----------------------------------------------------------------------------------------+
+| kind        | value                                                                                  |
++-------------+----------------------------------------------------------------------------------------+
+| p2repo      | https://download.eclipse.org/eclipse/updates/4.26/                                     |
+| install     | org.eclipse.platform.ide.categoryIU                                                    |
+| install     | org.eclipse.releng.java.languages.categoryIU                                           |
+| filter      | platform-specific-for-running                                                          |
+|   osgi.arch | aarch64                                                                                |
+|   osgi.os   | macosx                                                                                 |
+|   osgi.ws   | cocoa                                                                                  |
++-------------+----------------------------------------------------------------------------------------+
+```
 
 <a name="equoide-init-only"></a>
 ### `equoIde --init-only`

@@ -88,7 +88,7 @@ This catalog is a useful reference for the p2 urls, code repositories, and issue
 
 ## Wishlist
 
-The projects below are not in the catalog yet, but 
+The projects below are not in the catalog yet, but somebody wants them! Feel free to add the plugins you want onto this wishlist. You can also move one of these out of the wishlist and into the Catalog DSL [like so](CONTRIBUTING.md#catalog-dsl).
 
 <a name="eclipse-groovy"></a>
 ### Eclipse Groovy Development Tools
