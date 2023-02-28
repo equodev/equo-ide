@@ -4,7 +4,7 @@
 [![Changelog](https://img.shields.io/badge/changelog-here-blue)](CHANGELOG.md)
 [![Javadoc](https://img.shields.io/badge/javadoc-here-blue)](https://javadoc.io/doc/dev.equo.ide/equo-ide-maven-plugin)
 
-**PUBLIC BETA! Try it out, but it's not production ready yet. [Join our mailing list](https://equo.dev/ide) to be notified when it's ready.**
+**[Join our mailing list](https://equo.dev/ide) for more updates.**
 
 - a build plugin for Gradle and Maven
 - downloads, configures, and launches an instance of the Eclipse IDE
@@ -37,7 +37,6 @@ Use it like this with `mvn equo-ide:launch`
 ## Coming soon
 
 - Use m2e to import this maven project. ([#18](https://github.com/equodev/equo-ide/issues/18))
-- Compile against artifacts from p2. ([#54](https://github.com/equodev/equo-ide/issues/54) tracks porting 
 
 ## Task listing
 
