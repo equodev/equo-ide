@@ -30,7 +30,7 @@ and in Maven, you do
 </configuration>
 ```
 
-There might be other aspects you can configure, see the [Gradle DSL](https://github.com/equodev/equo-ide/blob/main/plugin-gradle/src/main/java/dev/equo/ide/gradle/P2ModelDslWithCatalog.java) or [Maven DSL](https://github.com/equodev/equo-ide/blob/main/plugin-maven/src/main/java/dev/equo/ide/maven/AbstractP2MojoWithCatalog.java) for more details. PRs to add plugins to the catalog DSL or even just to the wishlist below are very welcome! See [`CONTRIBUTING.md#catalog-dsl`](https://github.com/equodev/equo-ide/blob/main/CONTRIBUTING.md#catalog.dsl) for details.
+There might be other aspects you can configure, see the [Gradle DSL](https://github.com/equodev/equo-ide/blob/main/plugin-gradle/src/main/java/dev/equo/ide/gradle/P2ModelDslWithCatalog.java) or [Maven DSL](https://github.com/equodev/equo-ide/blob/main/plugin-maven/src/main/java/dev/equo/ide/maven/AbstractP2MojoWithCatalog.java) for more details. PRs to add plugins to the catalog DSL or even just to the wishlist below are very welcome! See [`CONTRIBUTING.md#catalog-dsl`](https://github.com/equodev/equo-ide/blob/main/CONTRIBUTING.md#catalog-dsl) for details.
 
 This catalog is a useful reference for the p2 urls, code repositories, and issue trackers for each project.
 
