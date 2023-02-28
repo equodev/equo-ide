@@ -36,7 +36,8 @@ Use it like this with `mvn equo-ide:launch`
 
 ## Coming soon
 
-- Use m2e to import this maven project ([#18](https://github.com/equodev/equo-ide/issues/18))
+- Use m2e to import this maven project. ([#18](https://github.com/equodev/equo-ide/issues/18))
+- Compile against artifacts from p2. ([#54](https://github.com/equodev/equo-ide/issues/54) tracks porting 
 
 ## Task listing
 
@@ -49,6 +50,10 @@ Use it like this with `mvn equo-ide:launch`
   - `equoIde -DdebugIde` blocks IDE startup and prints instructions to help you attach a remote debugger.
   - `equoIde -DuseAtomos=[true|false]` determines whether to use Atomos
 - `equo-ide:list` to debug IDE dependencies ([p2 multitool](../P2_MULTITOOL.md))
+
+## User plugins
+
+You can use the [`dev.equo.p2deps` gradle plugin](../plugin-gradle/README.md#user-plugins) to compile against p2 dependencies. We would love help porting this feature into the maven plugin, see [#54](https://github.com/equodev/equo-ide/issues/54).
 
 ## Limitations
 
