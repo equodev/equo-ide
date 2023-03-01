@@ -39,7 +39,7 @@ However, this power brings a lot of complexity into the system. You can remove a
 - sorted plugins eagerly initialized -> no heisenbugs caused by initialization order
 - only one version of a class is allowed to exist in the runtime -> `Class.forName` just works 
 
-That's what Solstice does - removes the complexity by implementing fewer features. If you feel that Soltice implements too little, you can always opt-in to full Atomos Equinox by calling `openAtomos` instead of `openShim`, just make sure that [these Atomos jars](https://github.com/equodev/equo-ide/blob/2f47b51171c1b2fb2ebe9f93723393649d43172c/solstice/build.gradle#L39-L40) are on your classpath since Solstice doesn't bring them by default. But we've been able to get everything in the [`CATALOG.md`](../CATALOG.md) to run without any errors, so it's unlikely that you'll need anything besides Solstice.
+That's what Solstice does - removes the complexity by implementing fewer features. If you worry that Solstice implements too little, you can always opt-in to full Atomos Equinox by calling `openAtomos` instead of `openShim`, just make sure that [these Atomos jars](https://github.com/equodev/equo-ide/blob/2f47b51171c1b2fb2ebe9f93723393649d43172c/solstice/build.gradle#L39-L40) are on your classpath. But we've been able to get everything in the [`CATALOG.md`](../CATALOG.md) to run without much trouble, so it's unlikely that you'll need anything besides Solstice.
 
 ### p2 but just for jars
 
