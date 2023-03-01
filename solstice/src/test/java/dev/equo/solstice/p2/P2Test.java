@@ -62,4 +62,21 @@ public class P2Test {
 				.scenario("mac-only")
 				.toMatchSnapshot(ConsoleTable.mavenStatus(macQuery.getJars(), ConsoleTable.Format.ascii));
 	}
+
+	@Test
+	public void weirdUpdateSites(Expect expect) throws Exception {
+		listCategories("https://bndtools.jfrog.io/bndtools/update-latest/", expect.scenario("bnd"));
+		listCategories("https://www.certiv.net/updates/", expect.scenario("fluentmark"));
+	}
+
+	private void listCategories(String url, Expect expect) throws Exception {
+		var session = new P2Session();
+		try (var client = new P2Client(P2Client.Caching.PREFER_OFFLINE)) {
+			session.populateFrom(client, url);
+		}
+		var query = session.query();
+		query.addAllUnits();
+		expect.toMatchSnapshot(
+				ConsoleTable.nameAndDescription(query.getFeatures(), ConsoleTable.Format.csv));
+	}
 }

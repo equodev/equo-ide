@@ -282,3 +282,117 @@ dev.equo.solstice.p2.P2Test.queryPlatformSpecific[mac-only]=[
 +-------------------------------------------------------------------+----------------+
 
 ]
+
+
+dev.equo.solstice.p2.P2Test.weirdUpdateSites[bnd]=[
+id,name \n description
+bndtools.m2e.feature.feature.group,Bndtools m2e
+,  m2e integration for Bndtools
+bndtools.m2e.feature.feature.jar,Bndtools m2e
+,  m2e integration for Bndtools
+bndtools.main.feature.feature.group,Bndtools
+,  OSGi Development Tools for Eclipse based on bnd.
+bndtools.main.feature.feature.jar,Bndtools
+,  OSGi Development Tools for Eclipse based on bnd.
+bndtools.pde.feature.feature.group,Bndtools PDE
+,  PDE integration for Bndtools
+bndtools.pde.feature.feature.jar,Bndtools PDE
+,  PDE integration for Bndtools
+
+]
+
+
+dev.equo.solstice.p2.P2Test.weirdUpdateSites[fluentmark]=[
+id,name \n description
+net.certiv.antlr.dt.feature.feature.group,AntlrDT
+,  AntlrDT is an Eclipse editor and builder for
+,  ANTLR v4 grammars.
+net.certiv.antlr.dt.feature.feature.jar,AntlrDT
+,  AntlrDT is an Eclipse editor and builder for
+,  ANTLR v4 grammars.
+net.certiv.callgraph.feature.feature.group,CallGraph
+,  Enables graphical exploration of call
+,  hierarchies.
+net.certiv.callgraph.feature.feature.jar,CallGraph
+,  Enables graphical exploration of call
+,  hierarchies.
+net.certiv.codechase.feature.feature.group,CodeChase
+,  A local desktop search engine optimized for
+,  Eclipse developers and the Eclipse work
+,  environment.   Uses:     * search the Eclipse
+,  source jars to see how the platform itself uses
+,  any particular methods and classes     * search
+,  the Eclipse plugins to find specific features in
+,  the plugin.xmls     * search over multiple
+,  workspaces and projects (do not need to be open)
+,      * search local filesystem hierarchies
+,  external to any workspace
+net.certiv.codechase.feature.feature.jar,CodeChase
+,  A local desktop search engine optimized for
+,  Eclipse developers and the Eclipse work
+,  environment.   Uses:     * search the Eclipse
+,  source jars to see how the platform itself uses
+,  any particular methods and classes     * search
+,  the Eclipse plugins to find specific features in
+,  the plugin.xmls     * search over multiple
+,  workspaces and projects (do not need to be open)
+,      * search local filesystem hierarchies
+,  external to any workspace
+net.certiv.dsl.feature.feature.group,DSL Editor Framework
+,  DSL Editor Framework
+net.certiv.dsl.feature.feature.jar,DSL Editor Framework
+,  DSL Editor Framework
+net.certiv.dsl.jdt.feature.feature.group,DSL JDT Support
+,  DSL Editor Framework - JDT Dependencies
+net.certiv.dsl.jdt.feature.feature.jar,DSL JDT Support
+,  DSL Editor Framework - JDT Dependencies
+net.certiv.dsl.spy.feature.feature.group,Dsl Spy
+net.certiv.dsl.spy.feature.feature.jar,Dsl Spy
+net.certiv.feature.feature.group,Certiv Tools
+,  Top-level preference page for the Certiv
+,  plugins.
+net.certiv.feature.feature.jar,Certiv Tools
+,  Top-level preference page for the Certiv
+,  plugins.
+net.certiv.fluent.dt.feature.feature.group,FluentMark Editor
+,  Full featured Markdown Editor.
+net.certiv.fluent.dt.feature.feature.jar,FluentMark Editor
+,  Full featured Markdown Editor.
+net.certiv.jdoceditor.feature.feature.group,JDocEditor
+,  [Enter Feature Description here.]
+net.certiv.jdoceditor.feature.feature.jar,JDocEditor
+,  [Enter Feature Description here.]
+net.certiv.ntail.feature.feature.group,NTail
+,  [Enter Feature Description here.]
+net.certiv.ntail.feature.feature.jar,NTail
+,  [Enter Feature Description here.]
+net.certiv.spellchecker.feature.feature.group,Spellchecker
+,  Certiv Analitics
+net.certiv.spellchecker.feature.feature.jar,Spellchecker
+,  Certiv Analitics
+net.certiv.st.dt.feature.feature.group,StringTemplateDT
+,  STDT is an Eclipse editor for StringTemplate
+,  v4 template files.
+net.certiv.st.dt.feature.feature.jar,StringTemplateDT
+,  STDT is an Eclipse editor for StringTemplate
+,  v4 template files.
+net.certiv.tools.feature.feature.group,Certiv Tools
+,  Top-level preference page for the Certiv
+,  plugins.
+net.certiv.tools.feature.feature.jar,Certiv Tools
+,  Top-level preference page for the Certiv
+,  plugins.
+net.certiv.tools.indentguide.feature.feature.group,IndentGuide
+,  IndentGuide adds configurable indent guide
+,  lines in Eclipse text editors.
+net.certiv.tools.indentguide.feature.feature.jar,IndentGuide
+,  IndentGuide adds configurable indent guide
+,  lines in Eclipse text editors.
+net.certiv.xvisitor.dt.feature.feature.group,XVisitorDT
+,  XVisitorDT is an Eclipse editor and builder
+,  for XVisitor grammars.
+net.certiv.xvisitor.dt.feature.feature.jar,XVisitorDT
+,  XVisitorDT is an Eclipse editor and builder
+,  for XVisitor grammars.
+
+]
