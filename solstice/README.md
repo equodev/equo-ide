@@ -4,6 +4,27 @@
 [![Changelog](https://img.shields.io/badge/changelog-here-blue)](CHANGELOG.md)
 [![Javadoc](https://img.shields.io/badge/javadoc-here-blue)](https://javadoc.io/doc/dev.equo.ide/solstice)
 
+If the jars are there, then it should run. You shouldn't have to spend time on manifest files if the `.class` files are on the classpath. To use Solstice OSGi, all you need to do is put the jars on your classpath, then do this:
+
+```java
+var solstice = Solstice.findBundlesOnClasspath();
+solstice.warnAndModifyManifestsToFix();
+
+var props = new LinkedHashMap<String, String>(); // e.g. https://github.com/equodev/equo-ide/blob/2f47b51171c1b2fb2ebe9f93723393649d43172c/solstice/src/main/java/dev/equo/ide/BuildPluginIdeMain.java#L275-L283
+solstice.openShim(props); // or solstice.openAtomos(props); 
+
+solstice.start("org.apache.felix.scr"); // if you're using OSGi-DS, start that first
+solstice.startAllWithLazy(false);       // start all the non-lazy bundles
+solstice.start("org.eclipse.ui.ide.application"); // start any bundles you want
+solstice.startAllWithLazy(true);        // and finally, once your UI has started, start the lazy bundles too
+```
+
+Some other examples
+
+- https://github.com/equodev/equo-ide/blob/main/solstice/src/main/java/dev/equo/ide/BuildPluginIdeMain.java
+- https://github.com/equodev/equo-ide/blob/main/solstice/src/main/java/dev/equo/ide/IdeMainUi.java
+- https://github.com/diffplug/spotless/pull/1524
+
 ### static single-classloader OSGi
 
 OSGi provides a lot of power:
@@ -15,8 +36,10 @@ OSGi provides a lot of power:
 However, this power brings a lot of complexity into the system. You can remove a lot of this complexity by imposing these constraints:
 
 - no dynamic unloading or refreshing of plugins -> less code
-- sorted plugins -> no heisenbugs caused by initialization order
+- sorted plugins eagerly initialized -> no heisenbugs caused by initialization order
 - only one version of a class is allowed to exist in the runtime -> `Class.forName` just works 
+
+That's what Solstice does - removes the complexity by implementing fewer features. If you feel that Soltice implements too little, you can always opt-in to full Atomos Equinox by calling `openAtomos` instead of `openShim`, just make sure that [these Atomos jars](https://github.com/equodev/equo-ide/blob/2f47b51171c1b2fb2ebe9f93723393649d43172c/solstice/build.gradle#L39-L40) are on your classpath since Solstice doesn't bring them by default. But we've been able to get everything in the [`CATALOG.md`](../CATALOG.md) to run without any errors, so it's unlikely that you'll need anything besides Solstice.
 
 ### p2 but just for jars
 
