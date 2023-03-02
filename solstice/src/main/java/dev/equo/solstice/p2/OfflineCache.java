@@ -39,7 +39,7 @@ class OfflineCache {
 	}
 
 	private static final String VERSION = "version";
-	private static final String VERSION_VALUE = "1";
+	private static final String VERSION_VALUE = "2";
 
 	private static final int MAX_FILE_LENGTH = 92;
 	private static final int ABBREVIATED = 40;
