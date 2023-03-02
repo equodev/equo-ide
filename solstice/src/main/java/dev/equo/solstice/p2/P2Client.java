@@ -148,6 +148,20 @@ public class P2Client implements AutoCloseable {
 		return new String(getBytes(url), StandardCharsets.UTF_8);
 	}
 
+	private static byte[] DOCTYPE_HTML = "<!doctype html>".getBytes(StandardCharsets.UTF_8);
+
+	private static boolean contentIsHtml(byte[] content) {
+		if (content.length <= DOCTYPE_HTML.length) {
+			return false;
+		}
+		for (int i = 0; i < DOCTYPE_HTML.length; ++i) {
+			if (content[i] != DOCTYPE_HTML[i]) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	private byte[] getBytes(String url) throws IOException, NotFoundException {
 		if (cachingPolicy.tryOfflineFirst()) {
 			var cached = offlineMetadataCache.get(url);
@@ -168,6 +182,12 @@ public class P2Client implements AutoCloseable {
 					throw new NotFoundException(url);
 				} else {
 					var bytes = response.body().bytes();
+					if (contentIsHtml(bytes)) {
+						if (cachingPolicy.cacheAllowed()) {
+							offlineMetadataCache.put404(url);
+						}
+						throw new NotFoundException(url);
+					}
 					if (cachingPolicy.cacheAllowed()) {
 						offlineMetadataCache.put(url, bytes);
 					}
@@ -216,9 +236,13 @@ public class P2Client implements AutoCloseable {
 			}
 			this.url = url;
 			String metadataTarget;
+			String p2IndexContent = null;
 			try {
-				var p2index = getString(url + "p2.index");
-				metadataTarget = getGroup1(p2index, p2metadata).trim();
+				p2IndexContent = getString(url + "p2.index");
+				metadataTarget = getGroup1(p2IndexContent, p2metadata).trim();
+			} catch (IllegalStateException e) {
+				throw new UnsupportedOperationException(
+						"We could not parse the content at " + url + "p2.index:\n\n" + p2IndexContent, e);
 			} catch (NotFoundException e) {
 				metadataTarget = null;
 			}
@@ -235,7 +259,7 @@ public class P2Client implements AutoCloseable {
 						resolveXml(url, COMPOSITE_XML);
 						guessedXml = COMPOSITE_XML;
 					} catch (CouldNotFindException e2) {
-						triedUrls.addAll(e.triedUrls);
+						triedUrls.addAll(e2.triedUrls);
 					}
 				}
 				if (guessedXml == null) {
