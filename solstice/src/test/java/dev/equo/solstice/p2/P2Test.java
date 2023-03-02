@@ -67,6 +67,7 @@ public class P2Test {
 	public void weirdUpdateSites(Expect expect) throws Exception {
 		listCategories("https://bndtools.jfrog.io/bndtools/update-latest/", expect.scenario("bnd"));
 		listCategories("https://www.certiv.net/updates/", expect.scenario("fluentmark"));
+		listCategories("https://groovy.jfrog.io/artifactory/plugins-release/org/codehaus/groovy/groovy-eclipse-integration/4.8.0/e4.26/", expect.scenario("groovy"));
 	}
 
 	private void listCategories(String url, Expect expect) throws Exception {
