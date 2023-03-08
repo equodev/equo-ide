@@ -78,7 +78,7 @@ public class WorkspaceRegistry {
 		for (File workspace : root.listFiles()) {
 			if (workspace.isDirectory()) {
 				Optional<String> ownerPath = FileMisc.readToken(root, workspace.getName() + OWNER_PATH);
-				if (!ownerPath.isPresent()) {
+				if (ownerPath.isEmpty()) {
 					// if there's no token, delete it
 					deleteWorkspace(workspace, "missing token " + OWNER_PATH + ".");
 				} else {

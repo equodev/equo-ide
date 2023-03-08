@@ -68,13 +68,11 @@ public class P2Model {
 	public void applyNativeFilterIfNoPlatformFilter() {
 		boolean hasAnyPlatformFilter =
 				filters.values().stream()
-						.filter(
+						.anyMatch(
 								filter ->
 										filter.props.containsKey(OSGI_OS)
 												|| filter.props.containsKey(OSGI_WS)
-												|| filter.props.containsKey(OSGI_ARCH))
-						.findAny()
-						.isPresent();
+												|| filter.props.containsKey(OSGI_ARCH));
 		if (!hasAnyPlatformFilter) {
 			addFilterAndValidate("platform-specific-for-running", new P2Model.Filter().platformRunning());
 		}

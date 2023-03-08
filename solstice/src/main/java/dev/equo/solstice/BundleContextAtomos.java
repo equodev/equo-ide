@@ -19,7 +19,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import org.apache.felix.atomos.Atomos;
 import org.eclipse.osgi.service.urlconversion.URLConverter;
 import org.osgi.framework.BundleContext;
@@ -81,7 +80,7 @@ public class BundleContextAtomos implements Atomos.HeaderProvider {
 		if (values.isEmpty()) {
 			map.remove(key);
 		} else {
-			map.put(key, values.stream().collect(Collectors.joining(",")));
+			map.put(key, String.join(",", values));
 		}
 	}
 

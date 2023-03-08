@@ -24,7 +24,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -305,9 +304,7 @@ public class P2Client implements AutoCloseable {
 		final List<String> triedUrls;
 
 		CouldNotFindException(String... triedUrls) {
-			super(
-					"Attempted to find resource at\n"
-							+ Arrays.stream(triedUrls).collect(Collectors.joining("\n")));
+			super("Attempted to find resource at\n" + String.join("\n", triedUrls));
 			this.triedUrls = Arrays.asList(triedUrls);
 		}
 	}

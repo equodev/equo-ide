@@ -72,7 +72,8 @@ public class IdeLockFile {
 
 	long readPidToken() {
 		return FileMisc.readToken(workspaceDir, PID_FILENAME)
-				.map(str -> str.isEmpty() ? NO_TOKEN_FILE : Long.parseLong(str))
+				.filter(str -> !str.isEmpty())
+				.map(Long::parseLong)
 				.orElse(NO_TOKEN_FILE);
 	}
 
