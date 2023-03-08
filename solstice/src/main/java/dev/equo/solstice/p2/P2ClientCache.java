@@ -13,16 +13,29 @@
  *******************************************************************************/
 package dev.equo.solstice.p2;
 
-public enum QueryCache {
+/** The various caching modes that {@link P2Client} supports. */
+public enum P2ClientCache {
 	NONE,
-	ALLOW,
-	FORCE_RECALCULATE;
+	ALLOW_OFFLINE,
+	PREFER_OFFLINE,
+	OFFLINE;
 
-	public boolean allowRead() {
-		return this == ALLOW;
+	boolean tryOfflineFirst() {
+		return this == OFFLINE || this == PREFER_OFFLINE;
 	}
 
-	public boolean allowWrite() {
-		return this == ALLOW || this == FORCE_RECALCULATE;
+	boolean networkAllowed() {
+		return this != OFFLINE;
+	}
+
+	boolean cacheAllowed() {
+		return this != NONE;
+	}
+
+	public static P2ClientCache defaultIfOfflineIsAndForceRecalculateIs(
+			boolean isOffline, boolean forceRecalculate) {
+		return isOffline
+				? P2ClientCache.OFFLINE
+				: (forceRecalculate ? P2ClientCache.ALLOW_OFFLINE : P2ClientCache.PREFER_OFFLINE);
 	}
 }

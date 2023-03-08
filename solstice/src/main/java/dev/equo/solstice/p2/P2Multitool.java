@@ -38,7 +38,7 @@ public class P2Multitool {
 		return numArgs == 1;
 	}
 
-	public void dump(P2Model model, P2Client.Caching caching) throws Exception {
+	public void dump(P2Model model, P2ClientCache caching) throws Exception {
 		if (request) {
 			request(model);
 		} else {

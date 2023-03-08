@@ -13,9 +13,9 @@
  *******************************************************************************/
 package dev.equo.ide.gradle;
 
-import dev.equo.solstice.p2.P2Client;
+import dev.equo.solstice.p2.P2ClientCache;
 import dev.equo.solstice.p2.P2Model;
-import dev.equo.solstice.p2.QueryCache;
+import dev.equo.solstice.p2.P2QueryCache;
 import org.gradle.api.Action;
 import org.gradle.api.Project;
 
@@ -58,19 +58,19 @@ public class P2ModelDsl {
 		model.getFilters().clear();
 	}
 
-	static P2Client.Caching clientCaching(Project project) {
+	static P2ClientCache clientCaching(Project project) {
 		boolean forceRecalculate =
 				EquoIdeGradlePlugin.anyArgEquals(project, CLEAN_FLAG)
 						|| EquoIdeGradlePlugin.anyArgEquals(project, REFRESH_DEPENDENCIES);
-		return P2Client.Caching.defaultIfOfflineIsAndForceRecalculateIs(
+		return P2ClientCache.defaultIfOfflineIsAndForceRecalculateIs(
 				project.getGradle().getStartParameter().isOffline(), forceRecalculate);
 	}
 
-	static QueryCache queryCaching(Project project) {
+	static P2QueryCache queryCaching(Project project) {
 		boolean forceRecalculate =
 				EquoIdeGradlePlugin.anyArgEquals(project, CLEAN_FLAG)
 						|| EquoIdeGradlePlugin.anyArgEquals(project, REFRESH_DEPENDENCIES);
-		return forceRecalculate ? QueryCache.FORCE_RECALCULATE : QueryCache.ALLOW;
+		return forceRecalculate ? P2QueryCache.FORCE_RECALCULATE : P2QueryCache.ALLOW;
 	}
 
 	private static final String CLEAN_FLAG = "--clean";

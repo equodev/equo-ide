@@ -41,6 +41,7 @@ public class Solstice {
 				"org.eclipse.equinox.p2.reconciler.dropins", List.of("org.eclipse.equinox.p2.updatesite"));
 	}
 
+	/** Creates a Solstice instance by finding all available bundles on the classpath. */
 	public static Solstice findBundlesOnClasspath() {
 		Enumeration<URL> manifestURLs =
 				Unchecked.get(
@@ -345,6 +346,10 @@ public class Solstice {
 
 	private Set<SolsticeManifest> activatingBundles = new HashSet<>();
 
+	/**
+	 * Starts all bundles with the given symbolic name, and all of their transitive dependencies as
+	 * well.
+	 */
 	public void start(String symbolicName) {
 		for (var bundle : bundles) {
 			if (bundle.getSymbolicName().equals(symbolicName)) {
@@ -353,6 +358,10 @@ public class Solstice {
 		}
 	}
 
+	/**
+	 * Starts all bundles with the given symbolic name, without starting their transitive
+	 * dependencies.
+	 */
 	public void startWithoutTransitives(String symbolicName) {
 		for (var bundle : bundles) {
 			if (bundle.getSymbolicName().equals(symbolicName)) {
@@ -361,7 +370,7 @@ public class Solstice {
 		}
 	}
 
-	public void start(SolsticeManifest manifest) {
+	private void start(SolsticeManifest manifest) {
 		start(manifest, true);
 	}
 

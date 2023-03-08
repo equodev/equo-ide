@@ -19,8 +19,8 @@ import dev.equo.ide.IdeHook;
 import dev.equo.ide.IdeHookBranding;
 import dev.equo.ide.IdeHookWelcome;
 import dev.equo.solstice.NestedJars;
-import dev.equo.solstice.p2.P2Client;
-import dev.equo.solstice.p2.QueryCache;
+import dev.equo.solstice.p2.P2ClientCache;
+import dev.equo.solstice.p2.P2QueryCache;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -111,11 +111,10 @@ public class LaunchMojo extends AbstractP2MojoWithCatalog {
 				deps.add(new Dependency(new DefaultArtifact(dep), null, null, EXCLUDE_ALL_TRANSITIVES));
 			}
 			boolean isOffline = false;
-			var clientCaching =
-					P2Client.Caching.defaultIfOfflineIsAndForceRecalculateIs(isOffline, clean);
+			var clientCaching = P2ClientCache.defaultIfOfflineIsAndForceRecalculateIs(isOffline, clean);
 			var query =
 					super.prepareModel(ideHooks)
-							.query(clientCaching, clean ? QueryCache.FORCE_RECALCULATE : QueryCache.ALLOW);
+							.query(clientCaching, clean ? P2QueryCache.FORCE_RECALCULATE : P2QueryCache.ALLOW);
 			for (var dep : query.getJarsOnMavenCentral()) {
 				deps.add(new Dependency(new DefaultArtifact(dep), null, null, EXCLUDE_ALL_TRANSITIVES));
 			}

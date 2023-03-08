@@ -41,43 +41,16 @@ public class P2Client implements AutoCloseable {
 	private final Cache metadataResponseCache;
 	private final OkHttpClient metadataClient;
 
-	/** The various caching modes that {@link P2Client} supports. */
-	public enum Caching {
-		OFFLINE,
-		PREFER_OFFLINE,
-		ALLOW_OFFLINE,
-		NO_METADATA_CACHE;
-
-		boolean tryOfflineFirst() {
-			return this == OFFLINE || this == PREFER_OFFLINE;
-		}
-
-		boolean networkAllowed() {
-			return this != OFFLINE;
-		}
-
-		boolean cacheAllowed() {
-			return this != NO_METADATA_CACHE;
-		}
-
-		public static Caching defaultIfOfflineIsAndForceRecalculateIs(
-				boolean isOffline, boolean forceRecalculate) {
-			return isOffline
-					? Caching.OFFLINE
-					: (forceRecalculate ? Caching.ALLOW_OFFLINE : Caching.PREFER_OFFLINE);
-		}
-	}
-
-	private final Caching cachingPolicy;
+	private final P2ClientCache cachingPolicy;
 	private final OfflineCache offlineMetadataCache;
 	private final JarCache jarCache;
 	private final LockFile lock;
 
 	public P2Client() throws IOException {
-		this(Caching.PREFER_OFFLINE);
+		this(P2ClientCache.PREFER_OFFLINE);
 	}
 
-	public P2Client(Caching cachingPolicy) throws IOException {
+	public P2Client(P2ClientCache cachingPolicy) throws IOException {
 		this.cachingPolicy = cachingPolicy;
 		this.jarCache = new JarCache(cachingPolicy);
 		long maxSize = 50L * 1024L * 1024L; // 50 MiB
