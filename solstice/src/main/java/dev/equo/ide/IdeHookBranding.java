@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
 
 @SuppressWarnings("serial")
 public class IdeHookBranding implements IdeHook {
-	private static String DEFAULT_TITLE = "Equo IDE";
+	private static final String DEFAULT_TITLE = "Equo IDE";
 	private String title = DEFAULT_TITLE;
 	private @Nullable File icon;
 	private @Nullable File splash;

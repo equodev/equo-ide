@@ -247,7 +247,7 @@ class ScriptExec {
 	}
 
 	private static class StringPrinter {
-		StringBuilder builder = new StringBuilder();
+		final StringBuilder builder = new StringBuilder();
 
 		void println(String line) {
 			builder.append(line);

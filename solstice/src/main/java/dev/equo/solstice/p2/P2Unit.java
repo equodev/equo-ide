@@ -215,7 +215,7 @@ public class P2Unit implements Comparable<P2Unit> {
 					P2_TYPE_CATEGORY,
 					P2_TYPE_FEATURE);
 
-	private static List<String> EXCLUDED_REQUIRE_PROVIDE_NAMESPACES =
+	private static final List<String> EXCLUDED_REQUIRE_PROVIDE_NAMESPACES =
 			Arrays.asList("org.eclipse.equinox.p2.eclipse.type", "osgi.ee");
 
 	/** Sorted alphabetically based on id, and then based on version with greater versions first. */

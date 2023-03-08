@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import javax.annotation.Nullable;
 
 public class IdeLockFile {
-	private File workspaceDir;
+	private final File workspaceDir;
 
 	private IdeLockFile(File workspaceDir) {
 		this.workspaceDir = workspaceDir;

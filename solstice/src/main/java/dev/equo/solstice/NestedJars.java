@@ -72,7 +72,7 @@ public abstract class NestedJars {
 		return coords;
 	}
 
-	public static enum CoordFormat {
+	public enum CoordFormat {
 		GRADLE,
 		MAVEN;
 

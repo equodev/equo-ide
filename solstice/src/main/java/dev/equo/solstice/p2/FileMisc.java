@@ -33,7 +33,7 @@ class FileMisc {
 					if (f.isDirectory()) {
 						Files.walkFileTree(
 								f.toPath(),
-								new SimpleFileVisitor<Path>() {
+								new SimpleFileVisitor<>() {
 									@Override
 									public FileVisitResult visitFile(Path file, BasicFileAttributes attrs)
 											throws IOException {
@@ -63,7 +63,7 @@ class FileMisc {
 			if (!token.isFile()) {
 				return Optional.empty();
 			} else {
-				return Optional.of(new String(Files.readAllBytes(token.toPath()), StandardCharsets.UTF_8));
+				return Optional.of(Files.readString(token.toPath()));
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -77,19 +77,11 @@ class FileMisc {
 					"Need to create directory first! " + dir.getAbsolutePath());
 		}
 		File token = new File(dir, name);
-		retry(
-				token,
-				f -> {
-					Files.write(f.toPath(), value.getBytes(StandardCharsets.UTF_8));
-				});
+		retry(token, f -> Files.write(f.toPath(), value.getBytes(StandardCharsets.UTF_8)));
 	}
 
 	static void mkdirs(File file) {
-		retry(
-				file,
-				dir -> {
-					Files.createDirectories(dir.toPath());
-				});
+		retry(file, dir -> Files.createDirectories(dir.toPath()));
 	}
 
 	/**

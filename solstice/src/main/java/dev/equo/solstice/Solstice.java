@@ -223,9 +223,8 @@ public class Solstice {
 				});
 		var missingBundles = calculateMissingBundles(bySymbolicName.keySet());
 		missingBundles.forEach(
-				(missing, neededBy) -> {
-					logger.warn("Missing required bundle " + missing + " needed by " + neededBy);
-				});
+				(missing, neededBy) ->
+						logger.warn("Missing required bundle " + missing + " needed by " + neededBy));
 		var missingPackages = calculateMissingPackages(byExportedPackage.keySet());
 		missingPackages.forEach(
 				(missing, neededBy) -> {
@@ -344,7 +343,7 @@ public class Solstice {
 		}
 	}
 
-	private Set<SolsticeManifest> activatingBundles = new HashSet<>();
+	private final Set<SolsticeManifest> activatingBundles = new HashSet<>();
 
 	/**
 	 * Starts all bundles with the given symbolic name, and all of their transitive dependencies as

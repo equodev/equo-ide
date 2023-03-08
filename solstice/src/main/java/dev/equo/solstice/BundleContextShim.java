@@ -196,7 +196,7 @@ public class BundleContextShim extends ServiceRegistry {
 				}
 			};
 
-	Capability.SupersetMap<ShimBundle> capabilities = new Capability.SupersetMap<>();
+	final Capability.SupersetMap<ShimBundle> capabilities = new Capability.SupersetMap<>();
 
 	final FrameworkWiring frameworkWiring =
 			new Unimplemented.FrameworkWiring() {

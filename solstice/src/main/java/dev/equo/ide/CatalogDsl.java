@@ -102,7 +102,7 @@ public class CatalogDsl {
 	}
 
 	public static class TransitiveAwareList<T extends CatalogDsl> {
-		private TreeMap<Catalog, CatalogDsl> catalogEntries = new TreeMap<>();
+		private final TreeMap<Catalog, CatalogDsl> catalogEntries = new TreeMap<>();
 
 		public void add(T dsl) {
 			var existing = catalogEntries.get(dsl.catalog);

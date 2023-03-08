@@ -91,14 +91,11 @@ public class CacheLocations {
 		return defOverride(ROOT + "/p2-queries", override_p2Queries);
 	}
 
-	public static File override_p2Queries;
+	public static File override_p2Queries = null;
 
 	private static File defOverride(String userHomeRelative, File override) {
 		return Optional.ofNullable(override)
-				.orElseGet(
-						() -> {
-							return userHome().resolve(userHomeRelative).toFile();
-						});
+				.orElseGet(() -> userHome().resolve(userHomeRelative).toFile());
 	}
 
 	private static Path userHome() {

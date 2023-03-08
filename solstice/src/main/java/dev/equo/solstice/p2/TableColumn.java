@@ -48,7 +48,7 @@ class TableColumn {
 
 	/** An object which can extract data with which to populate its column. */
 	public <T> Data<T> with(Function<T, String> getter) {
-		return new Data<T>(this, getter);
+		return new Data<>(this, getter);
 	}
 
 	/** Represents a Data-driven column. */

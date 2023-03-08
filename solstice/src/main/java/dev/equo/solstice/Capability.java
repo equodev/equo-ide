@@ -70,7 +70,7 @@ public class Capability implements Comparable<Capability> {
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
-		return o instanceof Capability ? compareTo((Capability) o) == 0 : false;
+		return o instanceof Capability && compareTo((Capability) o) == 0;
 	}
 
 	@Override

@@ -100,17 +100,13 @@ public class P2Client implements AutoCloseable {
 			} else {
 				var children = parseComposite(resolveXml(dir.url, dir.metadataName));
 				for (var child : children) {
-					try {
-						if (child.startsWith("https://") || child.startsWith("http://")) {
-							queue.push(new Folder(child + "/"));
-						} else {
-							if (child.startsWith("file:")) {
-								child = child.substring("file:".length());
-							}
-							queue.push(new Folder(dir.url + child + "/"));
+					if (child.startsWith("https://") || child.startsWith("http://")) {
+						queue.push(new Folder(child + "/"));
+					} else {
+						if (child.startsWith("file:")) {
+							child = child.substring("file:".length());
 						}
-					} catch (NotFoundException e) {
-						addUnits.accept(new Folder(dir.url + child + "/", CONTENT_XML));
+						queue.push(new Folder(dir.url + child + "/"));
 					}
 				}
 			}
@@ -121,7 +117,7 @@ public class P2Client implements AutoCloseable {
 		return new String(getBytes(url), StandardCharsets.UTF_8);
 	}
 
-	private static byte[] DOCTYPE_HTML = "<!doctype html>".getBytes(StandardCharsets.UTF_8);
+	private static final byte[] DOCTYPE_HTML = "<!doctype html>".getBytes(StandardCharsets.UTF_8);
 
 	private static boolean contentIsHtml(byte[] content) {
 		if (content.length <= DOCTYPE_HTML.length) {

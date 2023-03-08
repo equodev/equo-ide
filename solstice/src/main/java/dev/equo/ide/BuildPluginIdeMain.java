@@ -265,7 +265,7 @@ public class BuildPluginIdeMain {
 
 		IdeHook.InstantiatedList ideHooks = ideHooksParsed.instantiate();
 		var lockFileHook = ideHooks.find(IdeHookLockFile.Instantiated.class);
-		boolean isClean = lockFileHook == null ? false : lockFileHook.isClean();
+		boolean isClean = lockFileHook == null && lockFileHook.isClean();
 		if (!initOnly) {
 			ideHooks.forEach(IdeHookInstantiated::isClean, isClean);
 			var display = Display.getDefault();

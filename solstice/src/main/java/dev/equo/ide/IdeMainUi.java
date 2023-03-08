@@ -61,9 +61,8 @@ class IdeMainUi {
 		}
 		var display = PlatformUI.createDisplay();
 		ideHooks.setErrorLogger(
-				(hook, exception) -> {
-					StatusManager.getManager().handle(Status.error("IdeHook failure " + hook, exception));
-				});
+				(hook, exception) ->
+						StatusManager.getManager().handle(Status.error("IdeHook failure " + hook, exception)));
 
 		// processor must be created before we start event loop
 		var processor = new DelayedEventsProcessor(display);

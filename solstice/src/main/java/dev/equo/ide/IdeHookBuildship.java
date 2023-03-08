@@ -17,8 +17,8 @@ import java.io.File;
 
 @SuppressWarnings("serial")
 public class IdeHookBuildship implements IdeHook {
-	File rootDir;
-	boolean isOffline;
+	final File rootDir;
+	final boolean isOffline;
 
 	public IdeHookBuildship(File rootDir, boolean isOffline) {
 		this.rootDir = rootDir;

@@ -23,8 +23,8 @@ class IdeHookLockFile implements IdeHook {
 		return new IdeHookLockFile(workspaceDir, classpath);
 	}
 
-	private File workspaceDir;
-	private ArrayList<File> classpath;
+	private final File workspaceDir;
+	private final ArrayList<File> classpath;
 
 	private IdeHookLockFile(File workspaceDir, ArrayList<File> classpath) {
 		this.workspaceDir = workspaceDir;

@@ -24,8 +24,8 @@ public class P2QueryResult implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private List<String> mavenCoordinates;
-	private List<File> downloadedP2Jars;
+	private final List<String> mavenCoordinates;
+	private final List<File> downloadedP2Jars;
 
 	P2QueryResult(P2Query query, P2ClientCache cachingPolicy) {
 		this.mavenCoordinates = new ArrayList<>(query.getJarsOnMavenCentral());
