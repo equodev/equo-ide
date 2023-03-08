@@ -3,6 +3,10 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+### Added
+* `Solstice.startWithoutTransitives()` ([#102](https://github.com/equodev/equo-ide/pull/102))
+  * `QueryCache` renamed to `P2QueryCache`
+  * `P2Client.Caching` renamed to `P2ClientCache`
 
 ## [0.17.0] - 2023-02-26
 ### Added
