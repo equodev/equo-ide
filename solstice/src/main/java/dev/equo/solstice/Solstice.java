@@ -407,7 +407,7 @@ public class Solstice {
 			for (var required : manifest.totalRequiredBundles()) {
 				var bundle = bundleByName(required);
 				if (bundle == null) {
-					throw new IllegalArgumentException(manifest + " required missing bundle " + bundle);
+					throw new IllegalArgumentException(manifest + " required missing bundle " + required);
 				} else {
 					start(bundle);
 				}

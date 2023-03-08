@@ -271,7 +271,7 @@ public class ConsoleTable {
 			table.add("id", unit.id);
 			table.add("version", unit.version.toString());
 			var mavenStatus = RepoStatus.forUnit(unit);
-			if (mavenStatus != null) {
+			if (mavenStatus.isOnMavenCentral()) {
 				table.add("maven coordinate", mavenStatus.coordinate());
 				table.add("maven repo", mavenStatus.repo());
 			}
