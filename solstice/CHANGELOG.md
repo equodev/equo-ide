@@ -4,6 +4,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
 ### Added
+- Catalog now includes `groovy`. ([#103](https://github.com/equodev/equo-ide/pull/103))
 - `Solstice.startWithoutTransitives()`. ([#102](https://github.com/equodev/equo-ide/pull/102))
   - `QueryCache` renamed to `P2QueryCache`
   - `P2Client.Caching` renamed to `P2ClientCache`

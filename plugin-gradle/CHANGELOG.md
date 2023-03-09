@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+### Added
+- Gradle DSL now supports `groovy`. ([#103](https://github.com/equodev/equo-ide/pull/103))
 
 ## [0.16.0] - 2023-02-26
 ### Changed
