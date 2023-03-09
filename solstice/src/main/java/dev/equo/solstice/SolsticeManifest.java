@@ -287,7 +287,12 @@ public class SolsticeManifest {
 			return null;
 		}
 		var idx = host.indexOf(';');
-		return idx == -1 ? host : host.substring(0, idx);
+		var hostCleaned = idx == -1 ? host : host.substring(0, idx);
+		if (hostCleaned.equals(Constants.SYSTEM_BUNDLE_SYMBOLICNAME)) {
+			return "org.eclipse.osgi";
+		} else {
+			return hostCleaned;
+		}
 	}
 
 	public String getSymbolicName() {
