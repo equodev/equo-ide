@@ -30,6 +30,9 @@ equo-ide:launch
     gradleBuildship
       (no description available)
 
+    groovy
+      (no description available)
+
     initOnly (Default: false)
       User property: initOnly
       Initializes the runtime to check for errors then exits.

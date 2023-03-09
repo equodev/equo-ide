@@ -365,6 +365,9 @@ equo-ide:list
     gradleBuildship
       (no description available)
 
+    groovy
+      (no description available)
+
     installed (Default: false)
       User property: installed
       Lists the jars which were installed.

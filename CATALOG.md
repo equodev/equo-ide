@@ -7,9 +7,10 @@
   - [`cdt`](#cdt) and [`tmTerminal`](#tmterminal)
   - [`rust`](#rust)
   - [`m2e`](#m2e)
+  - [`groovy`](#groovy)
 - [Wishlist](#wishlist)
-  - [Eclipse Groovy Development Tools](#eclipse-groovy)
-  - [Eclipse Web Tools Platform](#eclipse-wtp)
+  - [`wtp`](#wtp)
+  - [`tm4e`](#tm4e) 
   - (PR's welcome!)
 
 ## Available in DSL
@@ -86,19 +87,21 @@ This catalog is a useful reference for the p2 urls, code repositories, and issue
   - https://download.eclipse.org/webtools/downloads/drops/R3.28.0/R-3.28.0-20221120050827/repository/
   - https://download.eclipse.org/lsp4j/updates/releases/0.20.0
 
-## Wishlist
-
-The projects below are not in the catalog yet, but somebody wants them! Feel free to add the plugins you want onto this wishlist. You can also move one of these out of the wishlist and into the Catalog DSL [like so](CONTRIBUTING.md#catalog-dsl).
-
-<a name="eclipse-groovy"></a>
-### Eclipse Groovy Development Tools
+### `groovy`
 
 - Latest release https://groovy.jfrog.io/artifactory/plugins-release/org/codehaus/groovy/groovy-eclipse-integration/4.8.0/e4.26/
   - Find other URLs via https://github.com/groovy/groovy-eclipse/wiki/4.8.0-Release-Notes#update-sites
 - Code & issues https://github.com/groovy/groovy-eclipse
 
-### Eclipse Web Tools Platform
-- Latest release https://download.eclipse.org/webtools/repository/2022-12/
-- Code & issues ?
+## Wishlist
 
-<a name="eclipse-m2e"></a>
+The projects below are not in the catalog yet, but somebody wants them! Feel free to add the plugins you want onto this wishlist. You can also move one of these out of the wishlist and into the Catalog DSL [like so](CONTRIBUTING.md#catalog-dsl).
+
+### `wtp`
+- Latest release https://download.eclipse.org/webtools/repository/2022-12/
+- Code & issues https://www.eclipse.org/webtools/
+
+### `tm4e`
+
+- Latest release https://download.eclipse.org/tm4e/releases/0.6.2/
+- Code & issues https://github.com/eclipse/tm4e
