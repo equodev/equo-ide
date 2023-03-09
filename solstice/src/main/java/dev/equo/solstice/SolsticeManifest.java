@@ -216,9 +216,9 @@ public class SolsticeManifest {
 	}
 
 	private static class CapabilityParsed {
-		String namespace;
-		Map<String, String> attributes = new TreeMap<>();
-		Map<String, String> directives = new TreeMap<>();
+		final String namespace;
+		final Map<String, String> attributes = new TreeMap<>();
+		final Map<String, String> directives = new TreeMap<>();
 
 		public CapabilityParsed(ManifestElement element) {
 			namespace = element.getValue();
@@ -287,7 +287,12 @@ public class SolsticeManifest {
 			return null;
 		}
 		var idx = host.indexOf(';');
-		return idx == -1 ? host : host.substring(0, idx);
+		var hostCleaned = idx == -1 ? host : host.substring(0, idx);
+		if (hostCleaned.equals(Constants.SYSTEM_BUNDLE_SYMBOLICNAME)) {
+			return "org.eclipse.osgi";
+		} else {
+			return hostCleaned;
+		}
 	}
 
 	public String getSymbolicName() {
@@ -372,8 +377,7 @@ public class SolsticeManifest {
 		if (fragments.isEmpty()) {
 			return Collections.unmodifiableList(getter.apply(this));
 		} else {
-			var total = new ArrayList<String>();
-			total.addAll(getter.apply(this));
+			var total = new ArrayList<String>(getter.apply(this));
 			for (var fragment : fragments) {
 				List<String> toAdd = getter.apply(fragment);
 				for (String e : toAdd) {

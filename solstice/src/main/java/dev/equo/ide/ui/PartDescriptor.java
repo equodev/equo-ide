@@ -24,9 +24,9 @@ import org.eclipse.ui.PlatformUI;
 
 /** Creates Eclipse parts using only code, no metadata. */
 public class PartDescriptor {
-	private Consumer<Composite> coat;
+	private final Consumer<Composite> coat;
 	private ImageDescriptor tabIcon;
-	private String tabName;
+	private final String tabName;
 	private String toolTipText;
 
 	public static PartDescriptor create(String tabName, Consumer<Composite> coat) {

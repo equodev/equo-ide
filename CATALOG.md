@@ -93,7 +93,7 @@ The projects below are not in the catalog yet, but somebody wants them! Feel fre
 <a name="eclipse-groovy"></a>
 ### Eclipse Groovy Development Tools
 
-- Latest release https://dist.springsource.org/release/GRECLIPSE/4.8.0/e4.26
+- Latest release https://groovy.jfrog.io/artifactory/plugins-release/org/codehaus/groovy/groovy-eclipse-integration/4.8.0/e4.26/
   - Find other URLs via https://github.com/groovy/groovy-eclipse/wiki/4.8.0-Release-Notes#update-sites
 - Code & issues https://github.com/groovy/groovy-eclipse
 

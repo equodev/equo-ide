@@ -11,22 +11,18 @@
  * Contributors:
  *     EquoTech, Inc. - initial API and implementation
  *******************************************************************************/
-package dev.equo.ide;
+package dev.equo.solstice.p2;
 
-import java.io.File;
+public enum P2QueryCache {
+	NONE,
+	ALLOW,
+	FORCE_RECALCULATE;
 
-@SuppressWarnings("serial")
-public class IdeHookBuildship implements IdeHook {
-	final File rootDir;
-	final boolean isOffline;
-
-	public IdeHookBuildship(File rootDir, boolean isOffline) {
-		this.rootDir = rootDir;
-		this.isOffline = isOffline;
+	public boolean allowRead() {
+		return this == ALLOW;
 	}
 
-	@Override
-	public IdeHookInstantiated instantiate() throws Exception {
-		return IdeHook.usingReflection("dev.equo.ide.BuildshipImpl", this);
+	public boolean allowWrite() {
+		return this == ALLOW || this == FORCE_RECALCULATE;
 	}
 }

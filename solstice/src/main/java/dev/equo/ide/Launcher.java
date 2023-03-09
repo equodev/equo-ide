@@ -90,11 +90,7 @@ public class Launcher {
 		var outPumper = new StreamPumper(process, process.getInputStream(), System.out);
 		var errPumper = new StreamPumper(process, process.getErrorStream(), System.err);
 		if (monitorProcess != null) {
-			new Thread(
-							() -> {
-								monitorProcess.accept(process);
-							})
-					.start();
+			new Thread(() -> monitorProcess.accept(process)).start();
 		}
 		int exitCode = process.waitFor();
 		process.getOutputStream().flush();

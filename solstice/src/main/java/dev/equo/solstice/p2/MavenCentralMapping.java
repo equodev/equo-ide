@@ -66,8 +66,6 @@ class MavenCentralMapping {
 			return ECF + ":" + bundleId;
 		} else if (bundleId.startsWith(OSGI)) {
 			return OSGI + ":" + bundleId;
-		} else if (bundleId.endsWith(".feature")) {
-			return null;
 		} else if (bundleId.startsWith("org.eclipse.ant")
 				|| bundleId.startsWith("org.eclipse.core")
 				|| bundleId.startsWith("org.eclipse.compare")

@@ -27,7 +27,7 @@ import org.osgi.framework.InvalidSyntaxException;
 
 /** In-memory store of all p2 metadata, especially provides/requires dependency information. */
 public class P2Session {
-	List<P2Unit> units = new ArrayList<>();
+	final List<P2Unit> units = new ArrayList<>();
 
 	/** Adds every {@link P2Unit} from the given url into this session. */
 	public void populateFrom(P2Client client, String url) throws Exception {

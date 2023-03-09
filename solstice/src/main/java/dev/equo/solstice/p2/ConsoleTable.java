@@ -47,13 +47,7 @@ public class ConsoleTable {
 			for (var excludeSuffix : filter.getValue().getExcludeSuffix()) {
 				table.addRow("  excludeSuffix", excludeSuffix);
 			}
-			filter
-					.getValue()
-					.getProps()
-					.forEach(
-							(key, value) -> {
-								table.addRow("  " + key, value);
-							});
+			filter.getValue().getProps().forEach((key, value) -> table.addRow("  " + key, value));
 		}
 		return table.toString(format);
 	}
@@ -253,12 +247,13 @@ public class ConsoleTable {
 			if (format == Format.ascii && widestWidth > MAX_WIDTH) {
 				compress();
 			}
-			String result = Table.getTable(format, headers, rows.toArray(new String[0][]));
+			StringBuilder result =
+					new StringBuilder(Table.getTable(format, headers, rows.toArray(new String[0][])));
 			key.sort(Comparator.naturalOrder());
 			for (String k : key) {
-				result = result + LEGEND.get(DICTIONARY.indexOf(k)) + " " + k + "\n";
+				result.append(LEGEND.get(DICTIONARY.indexOf(k))).append(" ").append(k).append("\n");
 			}
-			return result;
+			return result.toString();
 		}
 	}
 
@@ -275,11 +270,9 @@ public class ConsoleTable {
 			}
 			table.add("id", unit.id);
 			table.add("version", unit.version.toString());
-			var mavenStatus = RepoStatus.forUnit(unit);
-			if (mavenStatus != null) {
-				table.add("maven coordinate", mavenStatus.coordinate());
-				table.add("maven repo", mavenStatus.repo());
-			}
+			var repoStatus = RepoStatus.forUnit(unit);
+			table.add("maven coordinate", repoStatus.coordinate());
+			table.add("maven repo", repoStatus.repo());
 			if (unit.filter != null) {
 				table.add("filter", unit.filter.toString());
 			}
@@ -309,7 +302,7 @@ public class ConsoleTable {
 	static class WordWrapTable {
 		private static final int MAX_VALUE_LEN = 50;
 
-		final List<Pair> pairs = new ArrayList<Pair>();
+		final List<Pair> pairs = new ArrayList<>();
 		final String wrapIndent = "  ";
 
 		public void add(String key, String value) {
@@ -375,8 +368,8 @@ public class ConsoleTable {
 	}
 
 	private static class Pair {
-		String key;
-		String value;
+		final String key;
+		final String value;
 
 		Pair(String key, String value) {
 			this.key = key;

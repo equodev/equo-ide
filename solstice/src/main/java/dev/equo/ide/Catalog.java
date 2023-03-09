@@ -17,7 +17,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 public class Catalog implements Comparable<Catalog> {
-	private static String V = "${VERSION}";
+	private static final String V = "${VERSION}";
 	public static final Catalog PLATFORM =
 			new Catalog(
 					"platform",

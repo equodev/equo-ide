@@ -68,13 +68,11 @@ public class P2Model {
 	public void applyNativeFilterIfNoPlatformFilter() {
 		boolean hasAnyPlatformFilter =
 				filters.values().stream()
-						.filter(
+						.anyMatch(
 								filter ->
 										filter.props.containsKey(OSGI_OS)
 												|| filter.props.containsKey(OSGI_WS)
-												|| filter.props.containsKey(OSGI_ARCH))
-						.findAny()
-						.isPresent();
+												|| filter.props.containsKey(OSGI_ARCH));
 		if (!hasAnyPlatformFilter) {
 			addFilterAndValidate("platform-specific-for-running", new P2Model.Filter().platformRunning());
 		}
@@ -90,7 +88,7 @@ public class P2Model {
 		return deepCopy;
 	}
 
-	public P2Query queryRaw(P2Client.Caching cachingPolicy) throws Exception {
+	public P2Query queryRaw(P2ClientCache cachingPolicy) throws Exception {
 		validateFilters();
 		var session = new P2Session();
 		try (var client = new P2Client(cachingPolicy)) {
@@ -115,7 +113,7 @@ public class P2Model {
 		return query;
 	}
 
-	public P2QueryResult query(P2Client.Caching clientCachingPolicy, QueryCache queryCachingPolicy) {
+	public P2QueryResult query(P2ClientCache clientCachingPolicy, P2QueryCache queryCachingPolicy) {
 		if (queryCachingPolicy.allowRead()) {
 			QueryCacheOnDisk onDisk = new QueryCacheOnDisk(CacheLocations.p2Queries(), this);
 			var queryResult = onDisk.get();

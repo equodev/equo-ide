@@ -14,7 +14,7 @@
 package dev.equo.ide.gradle;
 
 import dev.equo.solstice.p2.ConsoleTable;
-import dev.equo.solstice.p2.P2Client;
+import dev.equo.solstice.p2.P2ClientCache;
 import dev.equo.solstice.p2.P2Multitool;
 import java.util.Collection;
 import java.util.EnumSet;
@@ -28,7 +28,7 @@ import org.gradle.api.tasks.options.OptionValues;
 
 public abstract class EquoListTask extends DefaultTask {
 	@Internal
-	public abstract Property<P2Client.Caching> getClientCaching();
+	public abstract Property<P2ClientCache> getClientCaching();
 
 	@Internal
 	public abstract Property<EquoIdeExtension> getExtension();

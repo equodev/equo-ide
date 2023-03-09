@@ -170,7 +170,7 @@ public class BundleContextShim extends ServiceRegistry {
 				@Override
 				public Bundle[] getBundles(String symbolicName, String versionRange) {
 					var bundle = bundleForSymbolicName(symbolicName);
-					return (bundle == null) ? new Bundle[0] : new Bundle[] {bundle};
+					return (bundle == null) ? null : new Bundle[] {bundle};
 				}
 
 				@Override
@@ -181,7 +181,7 @@ public class BundleContextShim extends ServiceRegistry {
 							return getBundles(fragmentHost, null);
 						}
 					}
-					return new Bundle[0];
+					return null;
 				}
 
 				@Override
@@ -196,7 +196,7 @@ public class BundleContextShim extends ServiceRegistry {
 				}
 			};
 
-	Capability.SupersetMap<ShimBundle> capabilities = new Capability.SupersetMap<>();
+	final Capability.SupersetMap<ShimBundle> capabilities = new Capability.SupersetMap<>();
 
 	final FrameworkWiring frameworkWiring =
 			new Unimplemented.FrameworkWiring() {

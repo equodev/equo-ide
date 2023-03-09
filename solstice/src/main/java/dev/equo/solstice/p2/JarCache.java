@@ -23,9 +23,9 @@ import okio.Okio;
 class JarCache {
 	final File bundlePool = CacheLocations.p2bundlePool();
 	final OkHttpClient client = new OkHttpClient.Builder().build();
-	final P2Client.Caching cachingPolicy;
+	final P2ClientCache cachingPolicy;
 
-	JarCache(P2Client.Caching cachingPolicy) throws IOException {
+	JarCache(P2ClientCache cachingPolicy) {
 		this.cachingPolicy = cachingPolicy;
 		FileMisc.mkdirs(bundlePool);
 	}

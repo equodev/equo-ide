@@ -24,7 +24,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -41,43 +40,16 @@ public class P2Client implements AutoCloseable {
 	private final Cache metadataResponseCache;
 	private final OkHttpClient metadataClient;
 
-	/** The various caching modes that {@link P2Client} supports. */
-	public enum Caching {
-		OFFLINE,
-		PREFER_OFFLINE,
-		ALLOW_OFFLINE,
-		NO_METADATA_CACHE;
-
-		boolean tryOfflineFirst() {
-			return this == OFFLINE || this == PREFER_OFFLINE;
-		}
-
-		boolean networkAllowed() {
-			return this != OFFLINE;
-		}
-
-		boolean cacheAllowed() {
-			return this != NO_METADATA_CACHE;
-		}
-
-		public static Caching defaultIfOfflineIsAndForceRecalculateIs(
-				boolean isOffline, boolean forceRecalculate) {
-			return isOffline
-					? Caching.OFFLINE
-					: (forceRecalculate ? Caching.ALLOW_OFFLINE : Caching.PREFER_OFFLINE);
-		}
-	}
-
-	private final Caching cachingPolicy;
+	private final P2ClientCache cachingPolicy;
 	private final OfflineCache offlineMetadataCache;
 	private final JarCache jarCache;
 	private final LockFile lock;
 
 	public P2Client() throws IOException {
-		this(Caching.PREFER_OFFLINE);
+		this(P2ClientCache.PREFER_OFFLINE);
 	}
 
-	public P2Client(Caching cachingPolicy) throws IOException {
+	public P2Client(P2ClientCache cachingPolicy) throws IOException {
 		this.cachingPolicy = cachingPolicy;
 		this.jarCache = new JarCache(cachingPolicy);
 		long maxSize = 50L * 1024L * 1024L; // 50 MiB
@@ -127,17 +99,13 @@ public class P2Client implements AutoCloseable {
 			} else {
 				var children = parseComposite(resolveXml(dir.url, dir.metadataName));
 				for (var child : children) {
-					try {
-						if (child.startsWith("https://") || child.startsWith("http://")) {
-							queue.push(new Folder(child + "/"));
-						} else {
-							if (child.startsWith("file:")) {
-								child = child.substring("file:".length());
-							}
-							queue.push(new Folder(dir.url + child + "/"));
+					if (child.startsWith("https://") || child.startsWith("http://")) {
+						queue.push(new Folder(child + "/"));
+					} else {
+						if (child.startsWith("file:")) {
+							child = child.substring("file:".length());
 						}
-					} catch (NotFoundException e) {
-						addUnits.accept(new Folder(dir.url + child + "/", CONTENT_XML));
+						queue.push(new Folder(dir.url + child + "/"));
 					}
 				}
 			}
@@ -146,6 +114,20 @@ public class P2Client implements AutoCloseable {
 
 	private String getString(String url) throws IOException, NotFoundException {
 		return new String(getBytes(url), StandardCharsets.UTF_8);
+	}
+
+	private static final byte[] DOCTYPE_HTML = "<!doctype html>".getBytes(StandardCharsets.UTF_8);
+
+	private static boolean contentIsHtml(byte[] content) {
+		if (content.length <= DOCTYPE_HTML.length) {
+			return false;
+		}
+		for (int i = 0; i < DOCTYPE_HTML.length; ++i) {
+			if (content[i] != DOCTYPE_HTML[i]) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	private byte[] getBytes(String url) throws IOException, NotFoundException {
@@ -168,6 +150,12 @@ public class P2Client implements AutoCloseable {
 					throw new NotFoundException(url);
 				} else {
 					var bytes = response.body().bytes();
+					if (contentIsHtml(bytes)) {
+						if (cachingPolicy.cacheAllowed()) {
+							offlineMetadataCache.put404(url);
+						}
+						throw new NotFoundException(url);
+					}
 					if (cachingPolicy.cacheAllowed()) {
 						offlineMetadataCache.put(url, bytes);
 					}
@@ -216,9 +204,13 @@ public class P2Client implements AutoCloseable {
 			}
 			this.url = url;
 			String metadataTarget;
+			String p2IndexContent = null;
 			try {
-				var p2index = getString(url + "p2.index");
-				metadataTarget = getGroup1(p2index, p2metadata).trim();
+				p2IndexContent = getString(url + "p2.index");
+				metadataTarget = getGroup1(p2IndexContent, p2metadata).trim();
+			} catch (IllegalStateException e) {
+				throw new UnsupportedOperationException(
+						"We could not parse the content at " + url + "p2.index:\n\n" + p2IndexContent, e);
 			} catch (NotFoundException e) {
 				metadataTarget = null;
 			}
@@ -235,7 +227,7 @@ public class P2Client implements AutoCloseable {
 						resolveXml(url, COMPOSITE_XML);
 						guessedXml = COMPOSITE_XML;
 					} catch (CouldNotFindException e2) {
-						triedUrls.addAll(e.triedUrls);
+						triedUrls.addAll(e2.triedUrls);
 					}
 				}
 				if (guessedXml == null) {
@@ -312,9 +304,7 @@ public class P2Client implements AutoCloseable {
 		final List<String> triedUrls;
 
 		CouldNotFindException(String... triedUrls) {
-			super(
-					"Attempted to find resource at\n"
-							+ Arrays.stream(triedUrls).collect(Collectors.joining("\n")));
+			super("Attempted to find resource at\n" + String.join("\n", triedUrls));
 			this.triedUrls = Arrays.asList(triedUrls);
 		}
 	}

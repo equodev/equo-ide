@@ -41,6 +41,7 @@ public class Solstice {
 				"org.eclipse.equinox.p2.reconciler.dropins", List.of("org.eclipse.equinox.p2.updatesite"));
 	}
 
+	/** Creates a Solstice instance by finding all available bundles on the classpath. */
 	public static Solstice findBundlesOnClasspath() {
 		Enumeration<URL> manifestURLs =
 				Unchecked.get(
@@ -222,9 +223,8 @@ public class Solstice {
 				});
 		var missingBundles = calculateMissingBundles(bySymbolicName.keySet());
 		missingBundles.forEach(
-				(missing, neededBy) -> {
-					logger.warn("Missing required bundle " + missing + " needed by " + neededBy);
-				});
+				(missing, neededBy) ->
+						logger.warn("Missing required bundle " + missing + " needed by " + neededBy));
 		var missingPackages = calculateMissingPackages(byExportedPackage.keySet());
 		missingPackages.forEach(
 				(missing, neededBy) -> {
@@ -343,8 +343,12 @@ public class Solstice {
 		}
 	}
 
-	private Set<SolsticeManifest> activatingBundles = new HashSet<>();
+	private final Set<SolsticeManifest> activatingBundles = new HashSet<>();
 
+	/**
+	 * Starts all bundles with the given symbolic name, and all of their transitive dependencies as
+	 * well.
+	 */
 	public void start(String symbolicName) {
 		for (var bundle : bundles) {
 			if (bundle.getSymbolicName().equals(symbolicName)) {
@@ -353,7 +357,23 @@ public class Solstice {
 		}
 	}
 
-	public void start(SolsticeManifest manifest) {
+	/**
+	 * Starts all bundles with the given symbolic name, without starting their transitive
+	 * dependencies.
+	 */
+	public void startWithoutTransitives(String symbolicName) {
+		for (var bundle : bundles) {
+			if (bundle.getSymbolicName().equals(symbolicName)) {
+				start(bundle, false);
+			}
+		}
+	}
+
+	private void start(SolsticeManifest manifest) {
+		start(manifest, true);
+	}
+
+	private void start(SolsticeManifest manifest, boolean withTransitives) {
 		boolean newAddition = activatingBundles.add(manifest);
 		if (!newAddition) {
 			return;
@@ -361,34 +381,36 @@ public class Solstice {
 		logger.info("prepare {}", manifest);
 		pkgs.addAll(manifest.totalPkgExports());
 		caps.addAll(manifest.capProvides);
-		String pkg;
-		while ((pkg = missingPkg(manifest)) != null) {
-			var bundles = unactivatedBundlesForPkg(pkg);
-			if (bundles.isEmpty()) {
-				throw new IllegalArgumentException(manifest + " imports missing package " + pkg);
-			} else {
-				for (var bundle : bundles) {
-					start(bundle);
+		if (withTransitives) {
+			String pkg;
+			while ((pkg = missingPkg(manifest)) != null) {
+				var bundles = unactivatedBundlesForPkg(pkg);
+				if (bundles.isEmpty()) {
+					throw new IllegalArgumentException(manifest + " imports missing package " + pkg);
+				} else {
+					for (var bundle : bundles) {
+						start(bundle);
+					}
 				}
 			}
-		}
-		Capability cap;
-		while ((cap = missingCap(manifest)) != null) {
-			var bundles = unactivatedBundlesForCap(cap);
-			if (bundles.isEmpty()) {
-				throw new IllegalArgumentException(manifest + " requires missing capability " + cap);
-			} else {
-				for (var bundle : bundles) {
-					start(bundle);
+			Capability cap;
+			while ((cap = missingCap(manifest)) != null) {
+				var bundles = unactivatedBundlesForCap(cap);
+				if (bundles.isEmpty()) {
+					throw new IllegalArgumentException(manifest + " requires missing capability " + cap);
+				} else {
+					for (var bundle : bundles) {
+						start(bundle);
+					}
 				}
 			}
-		}
-		for (var required : manifest.totalRequiredBundles()) {
-			var bundle = bundleByName(required);
-			if (bundle == null) {
-				throw new IllegalArgumentException(manifest + " required missing bundle " + bundle);
-			} else {
-				start(bundle);
+			for (var required : manifest.totalRequiredBundles()) {
+				var bundle = bundleByName(required);
+				if (bundle == null) {
+					throw new IllegalArgumentException(manifest + " required missing bundle " + required);
+				} else {
+					start(bundle);
+				}
 			}
 		}
 		// this happens when multiple with same version

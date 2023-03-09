@@ -28,11 +28,11 @@ import java.util.function.Predicate;
  * 11 of the entries being null = 5% wastage. Not bad.
  */
 class ListenerList<T> implements Iterable<T> {
-	private ArrayList<T> backing = new ArrayList<>();
+	private final ArrayList<T> backing = new ArrayList<>();
 
 	@Override
 	public Iterator<T> iterator() {
-		return new Iterator<T>() {
+		return new Iterator<>() {
 			int idx = 0;
 			// snapshot the backing size so that we don't iterate over entries which get added after we
 			// started

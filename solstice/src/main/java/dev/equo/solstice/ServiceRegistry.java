@@ -318,7 +318,7 @@ abstract class ServiceRegistry extends BundleContextImpl {
 		}
 	}
 
-	static AtomicLong globalId = new AtomicLong();
+	static final AtomicLong globalId = new AtomicLong();
 
 	abstract class AbstractServiceReference<S>
 			implements ServiceReference<S>, ServiceRegistration<S> {

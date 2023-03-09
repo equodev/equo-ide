@@ -28,22 +28,23 @@ import java.util.stream.Collectors;
  * can be installed from maven or directly from p2 if necessary.
  */
 public class P2Query {
-	private P2Session session;
+	private final P2Session session;
 
 	P2Query(P2Session session) {
 		this.session = session;
 	}
 
-	private TreeSet<String> exclude = new TreeSet<>();
-	private TreeSet<String> excludePrefix = new TreeSet<>();
-	private TreeSet<String> excludeSuffix = new TreeSet<>();
+	private final TreeSet<String> exclude = new TreeSet<>();
+	private final TreeSet<String> excludePrefix = new TreeSet<>();
+	private final TreeSet<String> excludeSuffix = new TreeSet<>();
 
-	private TreeMap<String, String> filterProps = new TreeMap<>();
+	private final TreeMap<String, String> filterProps = new TreeMap<>();
 
-	private TreeMap<String, P2Unit> installed = new TreeMap<>();
-	private TreeMap<P2Session.Requirement, Set<P2Unit>> optionalSoMaybeNotInstalled = new TreeMap<>();
-	private TreeMap<P2Session.Requirement, Set<P2Unit>> unmetRequirements = new TreeMap<>();
-	private TreeSet<P2Session.Requirement> ambiguousRequirements = new TreeSet<>();
+	private final TreeMap<String, P2Unit> installed = new TreeMap<>();
+	private final TreeMap<P2Session.Requirement, Set<P2Unit>> optionalSoMaybeNotInstalled =
+			new TreeMap<>();
+	private final TreeMap<P2Session.Requirement, Set<P2Unit>> unmetRequirements = new TreeMap<>();
+	private final TreeSet<P2Session.Requirement> ambiguousRequirements = new TreeSet<>();
 
 	private void assertNotUsed() {
 		if (!installed.isEmpty()) {

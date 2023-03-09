@@ -204,23 +204,23 @@ class Table {
 
 		boolean toggle = true;
 
-		while (data.length() < maxLength) {
+		StringBuilder dataBuilder = new StringBuilder(data);
+		while (dataBuilder.length() < maxLength) {
 			if (align == Table.Align.LEFT) {
-				data = data + " ";
+				dataBuilder.append(" ");
 			} else if (align == Table.Align.RIGHT) {
-				data = " " + data;
+				dataBuilder.insert(0, " ");
 			} else if (align == Table.Align.CENTER) {
 				if (toggle) {
-					data = " " + data;
+					dataBuilder.insert(0, " ");
 					toggle = false;
 				} else {
-					data = data + " ";
+					dataBuilder.append(" ");
 					toggle = true;
 				}
 			}
 		}
-
-		return data;
+		return dataBuilder.toString();
 	}
 
 	/**
@@ -274,12 +274,12 @@ class Table {
 	}
 
 	private static List<Integer> getMaxColLengths(int colCount, String[] header, String[][] data) {
-		List<Integer> colMaxLenList = new ArrayList<Integer>(colCount);
+		List<Integer> colMaxLenList = new ArrayList<>(colCount);
 		List<String> colData = null;
 		int maxLength;
 
 		for (int i = 0; i < colCount; i++) {
-			colData = new ArrayList<String>();
+			colData = new ArrayList<>();
 
 			if (header != null && i < header.length) {
 				colData.add(header[i]);

@@ -13,18 +13,11 @@
  *******************************************************************************/
 package dev.equo.solstice;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
 class Dictionaries {
-	@SafeVarargs
-	static <T> Enumeration<T> enumeration(T... values) {
-		return Collections.enumeration(Arrays.asList(values));
-	}
-
 	private static class EmptyDictionary<K, V> extends Dictionary<K, V> {
 		private final Hashtable<K, V> backing = new Hashtable<>();
 
@@ -85,13 +78,6 @@ class Dictionaries {
 	public static <K, V> Dictionary<K, V> of(K k, V v) {
 		var table = new Hashtable<K, V>();
 		table.put(k, v);
-		return table;
-	}
-
-	public static <K, V> Dictionary<K, V> of(K k1, V v1, K k2, V v2) {
-		var table = new Hashtable<K, V>();
-		table.put(k1, v1);
-		table.put(k2, v2);
 		return table;
 	}
 

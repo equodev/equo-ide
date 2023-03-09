@@ -29,22 +29,22 @@ package dev.equo.solstice.p2;
  */
 public class RepoStatus implements Comparable<RepoStatus> {
 	/** This unit is available on some maven server, determined after this token. */
-	public static String MAVEN_ = "maven ";
+	public static final String MAVEN_ = "maven ";
 
 	/**
 	 * This unit is available on Maven Central because of a property {@code maven-repository =
 	 * eclipse.maven.central.mirror}
 	 */
-	public static String MAVEN_CENTRAL = MAVEN_ + "central";
+	public static final String MAVEN_CENTRAL = MAVEN_ + "central";
 
 	/**
 	 * This unit is probably available on Maven Central because of the logic in <a
 	 * href="https://github.com/equodev/equo-ide/blob/main/solstice/src/main/java/dev/equo/solstice/p2/MavenCentralMapping.java">MavenCentralMapping.java</a>
 	 */
-	public static String MAVEN_CENTRAL_INFERRED = MAVEN_ + "central?";
+	public static final String MAVEN_CENTRAL_INFERRED = MAVEN_ + "central?";
 
 	/** This unit is only available in p2. */
-	public static String P2_ = "p2 ";
+	public static final String P2_ = "p2 ";
 
 	private final String coordinate;
 	private final String repo;

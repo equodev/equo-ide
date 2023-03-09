@@ -18,7 +18,6 @@ import java.io.InputStream;
 import java.util.Collection;
 import java.util.Dictionary;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.BundleException;
 import org.osgi.framework.BundleListener;
 import org.osgi.framework.Filter;
 import org.osgi.framework.FrameworkListener;
@@ -47,13 +46,12 @@ class BundleContextDelegate implements BundleContext {
 	}
 
 	@Override
-	public org.osgi.framework.Bundle installBundle(String location, InputStream input)
-			throws BundleException {
+	public org.osgi.framework.Bundle installBundle(String location, InputStream input) {
 		return delegate.installBundle(location, input);
 	}
 
 	@Override
-	public org.osgi.framework.Bundle installBundle(String location) throws BundleException {
+	public org.osgi.framework.Bundle installBundle(String location) {
 		return delegate.installBundle(location);
 	}
 
@@ -68,8 +66,7 @@ class BundleContextDelegate implements BundleContext {
 	}
 
 	@Override
-	public void addServiceListener(ServiceListener listener, String filter)
-			throws InvalidSyntaxException {
+	public void addServiceListener(ServiceListener listener, String filter) {
 		delegate.addServiceListener(listener, filter);
 	}
 

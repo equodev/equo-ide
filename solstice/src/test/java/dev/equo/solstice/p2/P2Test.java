@@ -21,7 +21,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 @ExtendWith({SnapshotExtension.class})
 public class P2Test {
-	private P2Session populateSession(P2Client.Caching caching) throws Exception {
+	private P2Session populateSession(P2ClientCache caching) throws Exception {
 		var session = new P2Session();
 		try (var client = new P2Client(caching)) {
 			session.populateFrom(client, "https://download.eclipse.org/eclipse/updates/4.25/");
@@ -31,11 +31,11 @@ public class P2Test {
 
 	@Test
 	public void queryOffline(Expect expect) throws Exception {
-		queryImpl(expect, P2Client.Caching.ALLOW_OFFLINE);
-		queryImpl(expect, P2Client.Caching.OFFLINE);
+		queryImpl(expect, P2ClientCache.ALLOW_OFFLINE);
+		queryImpl(expect, P2ClientCache.OFFLINE);
 	}
 
-	private void queryImpl(Expect expect, P2Client.Caching caching) throws Exception {
+	private void queryImpl(Expect expect, P2ClientCache caching) throws Exception {
 		var session = populateSession(caching);
 		var query = session.query();
 		query.exclude("a.jre.javase");
@@ -48,7 +48,7 @@ public class P2Test {
 
 	@Test
 	public void queryPlatformSpecific(Expect expect) throws Exception {
-		var session = populateSession(P2Client.Caching.PREFER_OFFLINE);
+		var session = populateSession(P2ClientCache.PREFER_OFFLINE);
 		var query = session.query();
 		query.install("org.eclipse.swt");
 		expect
@@ -61,5 +61,25 @@ public class P2Test {
 		expect
 				.scenario("mac-only")
 				.toMatchSnapshot(ConsoleTable.mavenStatus(macQuery.getJars(), ConsoleTable.Format.ascii));
+	}
+
+	@Test
+	public void weirdUpdateSites(Expect expect) throws Exception {
+		listCategories("https://bndtools.jfrog.io/bndtools/update-latest/", expect.scenario("bnd"));
+		listCategories("https://www.certiv.net/updates/", expect.scenario("fluentmark"));
+		listCategories(
+				"https://groovy.jfrog.io/artifactory/plugins-release/org/codehaus/groovy/groovy-eclipse-integration/4.8.0/e4.26/",
+				expect.scenario("groovy"));
+	}
+
+	private void listCategories(String url, Expect expect) throws Exception {
+		var session = new P2Session();
+		try (var client = new P2Client(P2ClientCache.PREFER_OFFLINE)) {
+			session.populateFrom(client, url);
+		}
+		var query = session.query();
+		query.addAllUnits();
+		expect.toMatchSnapshot(
+				ConsoleTable.nameAndDescription(query.getFeatures(), ConsoleTable.Format.csv));
 	}
 }
