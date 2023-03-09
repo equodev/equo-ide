@@ -100,7 +100,8 @@ public abstract class NestedJars {
 		var cp = manifest.getMainAttributes().getValue(CLASSPATH);
 		if (cp != null) {
 			var lines = cp.split(",");
-			for (var line : lines) {
+			for (var lineRaw : lines) {
+				var line = lineRaw.trim();
 				if (line.startsWith("../")) {
 					LoggerFactory.getLogger(NestedJars.class)
 							.warn("Ignoring unexpected nested jar " + line + " inside " + jarUrl);
@@ -203,7 +204,8 @@ public abstract class NestedJars {
 
 		if (!entries.isEmpty()) {
 			var msg = new StringBuilder();
-			msg.append("The following nested jars are missing:\n");
+			msg.append(
+					"The following nested jars are missing from " + nestedJarFolder.getAbsolutePath() + "\n");
 			for (var entry : entries) {
 				msg.append("  ");
 				msg.append(entry.getKey().toExternalForm());
