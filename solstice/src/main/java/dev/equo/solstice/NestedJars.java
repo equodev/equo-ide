@@ -38,9 +38,6 @@ import org.slf4j.LoggerFactory;
 /**
  * Unwraps nested bundles to be friendly to a normal classloader, see <a
  * href="https://github.com/equodev/equo-ide/pull/7">equodev/equo-ide#7</a>
- *
- * <p>Known limitation: if the nested bundle has no {@code META-INF/MANIFEST.MF}, then {@link
- * #confirmAllNestedJarsArePresentOnClasspath(File)} will fail erroneously.
  */
 public abstract class NestedJars {
 	/** Reads the version of the Solstice jar from the classpath. */
@@ -181,27 +178,25 @@ public abstract class NestedJars {
 
 	public void confirmAllNestedJarsArePresentOnClasspath(File nestedJarFolder) {
 		var entries = extractAllNestedJars(nestedJarFolder);
-		Enumeration<URL> manifests =
-				Unchecked.get(
-						() -> NestedJars.class.getClassLoader().getResources(SolsticeManifest.MANIFEST_PATH));
-		while (manifests.hasMoreElements()) {
-			var fullUrl = manifests.nextElement().toExternalForm();
-			var jarUrl =
-					fullUrl.substring(0, fullUrl.length() - SolsticeManifest.SLASH_MANIFEST_PATH.length());
-			if (!jarUrl.endsWith("!")) {
-				throw new IllegalArgumentException("Expected " + jarUrl + " to end with !");
-			}
-			if (!jarUrl.startsWith(JAR_COLON_FILE_COLON)) {
-				throw new IllegalArgumentException(
-						"Expected " + jarUrl + " to start with " + JAR_COLON_FILE_COLON);
-			}
-			var jarFile =
-					new File(
-							jarUrl.substring(
-									JAR_COLON_FILE_COLON.length(), jarUrl.length() - 1)); // -1 removes the !
-			entries.removeIf(e -> e.getValue().equals(jarFile));
-		}
-
+		entries.removeIf(
+				entry -> {
+					if (entry.getValue().exists()) {
+						try (var jarFile = new JarFile(entry.getValue())) {
+							var firstResource = jarFile.entries().nextElement().getName();
+							var onTheClasspath = NestedJars.class.getClassLoader().getResources(firstResource);
+							while (onTheClasspath.hasMoreElements()) {
+								var url = onTheClasspath.nextElement().toExternalForm();
+								if (url.startsWith(
+										JAR_COLON_FILE_COLON + entry.getValue().getAbsolutePath() + "!")) {
+									return true;
+								}
+							}
+						} catch (IOException e) {
+							throw Unchecked.wrap(e);
+						}
+					}
+					return false;
+				});
 		if (!entries.isEmpty()) {
 			var msg = new StringBuilder();
 			msg.append(
