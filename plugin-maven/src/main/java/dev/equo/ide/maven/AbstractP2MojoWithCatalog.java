@@ -95,6 +95,14 @@ public abstract class AbstractP2MojoWithCatalog extends AbstractP2Mojo {
 		}
 	}
 
+	@Parameter private Groovy groovy;
+
+	public static class Groovy extends MavenCatalogDsl {
+		public Groovy() {
+			super(Catalog.GROOVY);
+		}
+	}
+
 	public static class MavenCatalogDsl extends CatalogDsl {
 		protected MavenCatalogDsl(Catalog catalog) {
 			super(catalog);
@@ -124,7 +132,7 @@ public abstract class AbstractP2MojoWithCatalog extends AbstractP2Mojo {
 				new CatalogDsl.TransitiveAwareList<>();
 		// NB: each entry must be after all of its transitive dependencies
 		// e.g. jdt must be after platform
-		Stream.of(platform, jdt, gradleBuildship, pde, m2e, kotlin, tmTerminal, cdt, rust)
+		Stream.of(platform, jdt, gradleBuildship, pde, m2e, kotlin, tmTerminal, cdt, rust, groovy)
 				.filter(Objects::nonNull)
 				.forEach(
 						dsl -> {

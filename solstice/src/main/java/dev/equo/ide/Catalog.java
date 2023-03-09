@@ -115,6 +115,25 @@ public class Catalog implements Comparable<Catalog> {
 					List.of("org.eclipse.corrosion.product", "org.eclipse.corrosion.feature.feature.group"),
 					TM_TERMINAL);
 
+	public static final Catalog GROOVY =
+			new Catalog(
+					"groovy",
+					"https://groovy.jfrog.io/artifactory/plugins-release/org/codehaus/groovy/groovy-eclipse-integration/"
+							+ V,
+					"4.8.0/e4.26",
+					List.of(
+							"org.codehaus.groovy.compilerless.feature.feature.group",
+							"org.codehaus.groovy40.feature.feature.group"
+							// there's also groovy30 and groovy25 which have the same name but different versions
+							// and
+							// our p2 can't handle multiple versions. as it stands we always get the latest one,
+							// groovy40
+							//
+							// someday we also might want to add
+							// org.codehaus.groovy.m2eclipse.feature.feature.group
+							),
+					PLATFORM);
+
 	private final String name;
 	private final String p2urlTemplate;
 	private final String latestVersion;

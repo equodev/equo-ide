@@ -164,6 +164,20 @@ public class P2ModelDslWithCatalog extends P2ModelDsl {
 		rust(null);
 	}
 
+	public static class Groovy extends GradleCatalogDsl {
+		public Groovy(String urlOverride, Project project) {
+			super(Catalog.GROOVY, urlOverride);
+		}
+	}
+
+	public void groovy(String urlOverride) {
+		add(new Groovy(urlOverride, project));
+	}
+
+	public void groovy() {
+		groovy(null);
+	}
+
 	public static class GradleCatalogDsl extends CatalogDsl {
 		protected GradleCatalogDsl(Catalog catalog, String urlOverride) {
 			super(catalog);
