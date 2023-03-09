@@ -4,9 +4,11 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
 ### Added
-* `Solstice.startWithoutTransitives()` ([#102](https://github.com/equodev/equo-ide/pull/102))
-  * `QueryCache` renamed to `P2QueryCache`
-  * `P2Client.Caching` renamed to `P2ClientCache`
+- `Solstice.startWithoutTransitives()`. ([#102](https://github.com/equodev/equo-ide/pull/102))
+  - `QueryCache` renamed to `P2QueryCache`
+  - `P2Client.Caching` renamed to `P2ClientCache`
+### Fixed
+- Correct the shim implementation of `PackageAdmin.getBundles` and `.getHosts` to return null rather than an empty array. ([#102](https://github.com/equodev/equo-ide/pull/102))
 
 ## [0.17.0] - 2023-02-26
 ### Added
