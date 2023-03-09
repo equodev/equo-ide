@@ -9,7 +9,8 @@
   - [`m2e`](#m2e)
   - [`groovy`](#groovy)
 - [Wishlist](#wishlist)
-  - [Eclipse Web Tools Platform](#eclipse-wtp)
+  - [`wtp`](#wtp)
+  - [`tm4e`](#tm4e) 
   - (PR's welcome!)
 
 ## Available in DSL
@@ -96,8 +97,11 @@ This catalog is a useful reference for the p2 urls, code repositories, and issue
 
 The projects below are not in the catalog yet, but somebody wants them! Feel free to add the plugins you want onto this wishlist. You can also move one of these out of the wishlist and into the Catalog DSL [like so](CONTRIBUTING.md#catalog-dsl).
 
-### Eclipse Web Tools Platform
+### `wtp`
 - Latest release https://download.eclipse.org/webtools/repository/2022-12/
-- Code & issues ?
+- Code & issues https://www.eclipse.org/webtools/
 
-<a name="eclipse-m2e"></a>
+### `tm4e`
+
+- Latest release https://download.eclipse.org/tm4e/releases/0.6.2/
+- Code & issues https://github.com/eclipse/tm4e
