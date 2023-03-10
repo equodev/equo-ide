@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+
+## [0.18.0] - 2023-03-10
 ### Added
 - Catalog now includes `groovy`. ([#103](https://github.com/equodev/equo-ide/pull/103))
 - `Solstice.startWithoutTransitives()`. ([#102](https://github.com/equodev/equo-ide/pull/102))
