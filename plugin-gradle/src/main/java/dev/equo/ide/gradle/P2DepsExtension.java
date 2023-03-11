@@ -14,9 +14,11 @@
 package dev.equo.ide.gradle;
 
 import dev.equo.ide.IdeHook;
+import dev.equo.solstice.NestedJars;
 import dev.equo.solstice.p2.P2Model;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 import org.gradle.api.Action;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
@@ -57,6 +59,16 @@ public class P2DepsExtension {
 			}
 			// and the p2 ones
 			project.getDependencies().add(config, project.files(query.getJarsNotOnMavenCentral()));
+			// add all nested jars
+			var nestedJars = NestedJars.inFiles(query.getJarsNotOnMavenCentral());
+			project
+					.getDependencies()
+					.add(
+							config,
+							project.files(
+									nestedJars.extractAllNestedJars().stream()
+											.map(e -> e.getValue())
+											.collect(Collectors.toList())));
 		}
 	}
 }
