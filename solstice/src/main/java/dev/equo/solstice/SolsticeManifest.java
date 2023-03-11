@@ -96,6 +96,7 @@ public class SolsticeManifest {
 		symbolicName = symbolicNameRaw.isEmpty() ? null : symbolicNameRaw.get(0);
 
 		requiredBundles = parseAndStrip(Constants.REQUIRE_BUNDLE);
+		requiredBundles.replaceAll(SolsticeManifest::handleSystemBundle);
 
 		pkgExports = parseAndStrip(Constants.EXPORT_PACKAGE);
 		pkgImports = parseAndStrip(Constants.IMPORT_PACKAGE);
@@ -288,11 +289,13 @@ public class SolsticeManifest {
 		}
 		var idx = host.indexOf(';');
 		var hostCleaned = idx == -1 ? host : host.substring(0, idx);
-		if (hostCleaned.equals(Constants.SYSTEM_BUNDLE_SYMBOLICNAME)) {
-			return "org.eclipse.osgi";
-		} else {
-			return hostCleaned;
-		}
+		return handleSystemBundle(hostCleaned);
+	}
+
+	static String handleSystemBundle(String symbolicName) {
+		return symbolicName.equals(Constants.SYSTEM_BUNDLE_SYMBOLICNAME)
+				? "org.eclipse.osgi"
+				: symbolicName;
 	}
 
 	public String getSymbolicName() {

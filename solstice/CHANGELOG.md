@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+### Fixed
+- Handle `system.bundle` in `Require-Bundle`.
 
 ## [0.18.0] - 2023-03-10
 ### Added
