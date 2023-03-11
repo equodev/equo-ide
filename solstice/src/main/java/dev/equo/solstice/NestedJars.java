@@ -13,6 +13,7 @@
  *******************************************************************************/
 package dev.equo.solstice;
 
+import dev.equo.solstice.p2.CacheLocations;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -160,6 +161,11 @@ public abstract class NestedJars {
 	}
 
 	protected abstract List<URL> listNestedJars();
+
+	/** Extracts nested jars into {@link dev.equo.solstice.p2.CacheLocations#nestedJars()}. */
+	public List<Map.Entry<URL, File>> extractAllNestedJars() {
+		return extractAllNestedJars(CacheLocations.nestedJars());
+	}
 
 	public List<Map.Entry<URL, File>> extractAllNestedJars(File nestedJarFolder) {
 		var files = new ArrayList<Map.Entry<URL, File>>();

@@ -3,9 +3,11 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+### Added
+- `NestedJars.extractAllNestedJars()` which extracts into `~/.equo/nested-jars`.  ([#104](https://github.com/equodev/equo-ide/pull/104))
 ### Fixed
-- Handle `system.bundle` in `Require-Bundle`.
-- `ShimIdeBootstrapServices` is now compatible with older Eclipse versions.
+- Handle `system.bundle` in `Require-Bundle`.  ([#104](https://github.com/equodev/equo-ide/pull/104))
+- `ShimIdeBootstrapServices` is now compatible with older Eclipse versions.  ([#104](https://github.com/equodev/equo-ide/pull/104))
 
 ## [0.18.0] - 2023-03-10
 ### Added

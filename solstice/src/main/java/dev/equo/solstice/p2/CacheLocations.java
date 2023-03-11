@@ -26,6 +26,7 @@ import java.util.Optional;
  *   <li>{@link #p2bundlePool()}
  *   <li>{@link #ideWorkspaces()}
  *   <li>{@link #p2Queries()}
+ *   <li>{@link #nestedJars()}
  * </ul>
  *
  * <p>All these values can be overridden by setting the value of the `public static
@@ -39,6 +40,7 @@ import java.util.Optional;
  *   <li>{@code equo_override_p2bundlePool}
  *   <li>{@code equo_override_ideWorkspaces}
  *   <li>{@code equo_override_p2Queries}
+ *   <li>{@code equo_override_nestedJars}
  * </ul>
  */
 public class CacheLocations {
@@ -92,6 +94,13 @@ public class CacheLocations {
 	}
 
 	public static File override_p2Queries = null;
+
+	/** Directory used to cache p2 queries: `~/.equo/nested-jars` */
+	public static File nestedJars() {
+		return defOverride(ROOT + "/nested-jars", override_nestedJars);
+	}
+
+	public static File override_nestedJars = null;
 
 	private static File defOverride(String userHomeRelative, File override) {
 		return Optional.ofNullable(override)
