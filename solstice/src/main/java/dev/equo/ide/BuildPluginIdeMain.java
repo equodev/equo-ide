@@ -31,7 +31,7 @@ import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
-import org.eclipse.osgi.service.datalocation.Location;
+import org.eclipse.osgi.internal.location.EquinoxLocations;
 import org.eclipse.swt.widgets.Display;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
@@ -274,13 +274,15 @@ public class BuildPluginIdeMain {
 
 		var props = new LinkedHashMap<String, String>();
 		props.put(Constants.FRAMEWORK_STORAGE_CLEAN, Constants.FRAMEWORK_STORAGE_CLEAN_ONFIRSTINIT);
-		props.put(Location.INSTANCE_AREA_TYPE, new File(installDir, "instance").getAbsolutePath());
-		props.put(Location.INSTALL_AREA_TYPE, new File(installDir, "install").getAbsolutePath());
-		props.put(Location.CONFIGURATION_AREA_TYPE, new File(installDir, "config").getAbsolutePath());
-		props.put(Location.USER_AREA_TYPE, new File(installDir, "user").getAbsolutePath());
+		props.put(
+				EquinoxLocations.PROP_INSTANCE_AREA, new File(installDir, "instance").getAbsolutePath());
+		props.put(
+				EquinoxLocations.PROP_INSTALL_AREA, new File(installDir, "install").getAbsolutePath());
+		props.put(EquinoxLocations.PROP_CONFIG_AREA, new File(installDir, "config").getAbsolutePath());
+		props.put(EquinoxLocations.PROP_USER_AREA, new File(installDir, "user").getAbsolutePath());
 		File eclipseHome = new File(installDir, "eclipse-home");
-		props.put(Location.ECLIPSE_HOME_LOCATION_TYPE, eclipseHome.getAbsolutePath());
-		System.setProperty(Location.ECLIPSE_HOME_LOCATION_TYPE, eclipseHome.toURI().toString());
+		props.put(EquinoxLocations.PROP_HOME_LOCATION_AREA, eclipseHome.getAbsolutePath());
+		System.setProperty(EquinoxLocations.PROP_HOME_LOCATION_AREA, eclipseHome.toURI().toString());
 		if (useAtomos) {
 			props.put("atomos.content.start", "false");
 			solstice.openAtomos(props);

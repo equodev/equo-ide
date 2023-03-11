@@ -20,6 +20,8 @@ import java.net.URI;
 import java.net.URL;
 import java.nio.file.Files;
 import java.util.Collection;
+import java.util.Dictionary;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.MissingResourceException;
@@ -28,7 +30,6 @@ import java.util.ResourceBundle;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.SAXParserFactory;
 import org.eclipse.core.internal.runtime.CommonMessages;
-import org.eclipse.osgi.internal.location.BasicLocation;
 import org.eclipse.osgi.internal.location.EquinoxLocations;
 import org.eclipse.osgi.service.datalocation.Location;
 import org.eclipse.osgi.service.debug.DebugOptions;
@@ -98,13 +99,14 @@ public class ShimIdeBootstrapServices {
 		// - [ ] org.eclipse.osgi.service.urlconversion.URLConverter
 		context.registerService(
 				DebugOptions.class, context.container.getConfiguration().getDebugOptions(), null);
-		var instanceDir =
-				Unchecked.get(() -> new File(new URI(context.getProperty(Location.INSTANCE_AREA_TYPE))));
-		context.registerService(
-				URLConverter.class,
-				new JarUrlResolver(new File(instanceDir, "JarUrlResolver")),
-				Dictionaries.of("protocol", "jar"));
-
+		var instanceArea = context.getProperty(EquinoxLocations.PROP_INSTANCE_AREA);
+		if (instanceArea != null) {
+			var instanceDir = Unchecked.get(() -> new File(new URI(instanceArea)));
+			context.registerService(
+					URLConverter.class,
+					new JarUrlResolver(new File(instanceDir, "JarUrlResolver")),
+					Dictionaries.of("protocol", "jar"));
+		}
 		// - [ ] org.eclipse.osgi.service.localization.BundleLocalization
 		context.registerService(
 				BundleLocalization.class,
@@ -151,18 +153,58 @@ public class ShimIdeBootstrapServices {
 				EquinoxLocations.PROP_HOME_LOCATION_AREA);
 	}
 
-	private static void registerLocations(BundleContext bc, EquinoxLocations locs) {
-		registerLocation(bc, locs.getUserLocation(), EquinoxLocations.PROP_USER_AREA);
-		registerLocation(bc, locs.getInstanceLocation(), EquinoxLocations.PROP_INSTANCE_AREA);
-		registerLocation(bc, locs.getConfigurationLocation(), EquinoxLocations.PROP_CONFIG_AREA);
-		registerLocation(bc, locs.getInstallLocation(), EquinoxLocations.PROP_INSTALL_AREA);
-		registerLocation(bc, locs.getEclipseHomeLocation(), EquinoxLocations.PROP_HOME_LOCATION_AREA);
+	private static void registerLocations(BundleContext bc, EquinoxLocations equinoxLocations) {
+		Dictionary<String, Object> locationProperties = new Hashtable<>(1);
+		Location location = equinoxLocations.getUserLocation();
+		if (location != null) {
+			locationProperties.put("type", EquinoxLocations.PROP_USER_AREA); // $NON-NLS-1$
+			register(bc, Location.class, location, locationProperties);
+		}
+		location = equinoxLocations.getInstanceLocation();
+		if (location != null) {
+			locationProperties.put("type", EquinoxLocations.PROP_INSTANCE_AREA); // $NON-NLS-1$
+			register(bc, Location.class, location, locationProperties);
+		}
+		location = equinoxLocations.getConfigurationLocation();
+		if (location != null) {
+			locationProperties.put("type", EquinoxLocations.PROP_CONFIG_AREA); // $NON-NLS-1$
+			register(bc, Location.class, location, locationProperties);
+		}
+		location = equinoxLocations.getInstallLocation();
+		if (location != null) {
+			locationProperties.put("type", EquinoxLocations.PROP_INSTALL_AREA); // $NON-NLS-1$
+			register(bc, Location.class, location, locationProperties);
+		}
+
+		location = equinoxLocations.getEclipseHomeLocation();
+		if (location != null) {
+			locationProperties.put("type", EquinoxLocations.PROP_HOME_LOCATION_AREA); // $NON-NLS-1$
+			register(bc, Location.class, location, locationProperties);
+		}
 	}
 
-	private static void registerLocation(BundleContext bc, BasicLocation location, String type) {
-		if (location != null) {
-			location.register(bc);
+	private static void register(
+			BundleContext context,
+			Class<?> serviceClass,
+			Object service,
+			Dictionary<String, Object> properties) {
+		register(context, serviceClass.getName(), service, true, properties);
+	}
+
+	private static void register(
+			BundleContext context,
+			String serviceClass,
+			Object service,
+			boolean setRanking,
+			Dictionary<String, Object> properties) {
+		if (properties == null) properties = new Hashtable<>();
+		if (setRanking) {
+			properties.put(Constants.SERVICE_RANKING, Integer.valueOf(Integer.MAX_VALUE));
 		}
+		properties.put(
+				Constants.SERVICE_PID,
+				context.getBundle().getBundleId() + "." + service.getClass().getName()); // $NON-NLS-1$
+		context.registerService(serviceClass, service, properties);
 	}
 
 	static class JarUrlResolver implements URLConverter {
