@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+
+## [0.19.0] - 2023-03-12
 ### Added
 - `NestedJars.extractAllNestedJars()` which extracts into `~/.equo/nested-jars`. ([#104](https://github.com/equodev/equo-ide/pull/104))
 ### Fixed
