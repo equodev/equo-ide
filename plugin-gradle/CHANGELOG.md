@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+
+## [0.17.1] - 2023-03-12
 ### Fixed
 - `dev.equo.p2deps` now puts the nested jars inside of p2 dependencies onto the classpath. ([#104](https://github.com/equodev/equo-ide/pull/104))
 - ClassPath order when launching with nested jars now respects the order of `Bundle-ClassPath` entries. ([#104](https://github.com/equodev/equo-ide/pull/104))
