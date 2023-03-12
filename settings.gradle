@@ -14,7 +14,7 @@ pluginManagement {
 		// https://www.benediktritter.de/maven-plugin-development/#release-history
 		id 'de.benediktritter.maven-plugin-development' version '0.4.1'
 		// https://github.com/equodev/equo-ide/blob/main/plugin-gradle/CHANGELOG.md
-		id 'dev.equo.p2deps'                            version '0.16.0'
+		id 'dev.equo.p2deps'                            version '0.17.0'
 		// https://github.com/gradle-nexus/publish-plugin/releases
 		id 'io.github.gradle-nexus.publish-plugin'      version '1.2.0'
 	}
