@@ -19,6 +19,7 @@ on:
         options:
           - plugin-gradle
           - plugin-maven
+          - solstice
           - all
 jobs:
   build:
@@ -53,3 +54,7 @@ jobs:
         if: "${{ github.event.inputs.to_publish == 'plugin-maven' }}"
         run: |
           ./gradlew :plugin-maven:changelogPush -Prelease=true --stacktrace --warning-mode all
+      - name: publish just solstice
+        if: "${{ github.event.inputs.to_publish == 'solstice' }}"
+        run: |
+          ./gradlew :solstice:changelogPush -Prelease=true --stacktrace --warning-mode all
