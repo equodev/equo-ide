@@ -297,7 +297,8 @@ public class Solstice {
 				}
 			}
 		}
-		return false;
+		// nested jar package exports are entirely internal to their containing bundle
+		return !NestedJars.onClassPath().isNestedJar(thisManifest);
 	}
 
 	private void assertContextInitialized(boolean isInitialized) {

@@ -9,6 +9,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 - Handle `system.bundle` in `Require-Bundle`. ([#104](https://github.com/equodev/equo-ide/pull/104))
 - `ShimIdeBootstrapServices` is now compatible with older Eclipse versions. ([#104](https://github.com/equodev/equo-ide/pull/104))
 - ClassPath order when launching with nested jars now respects the order of `Bundle-ClassPath` entries. ([#104](https://github.com/equodev/equo-ide/pull/104))
+- `Solstice.warnAndModifyManifestsToFix` no longer warns about nested jars which export the same packages as their containing bundle. ([#104](https://github.com/equodev/equo-ide/pull/104))
 
 ## [0.18.0] - 2023-03-10
 ### Added
