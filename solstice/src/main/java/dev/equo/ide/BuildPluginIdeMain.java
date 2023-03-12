@@ -87,11 +87,11 @@ public class BuildPluginIdeMain {
 			Objects.requireNonNull(showConsoleFlag);
 			Objects.requireNonNull(cleanFlag);
 
+			var classpathSorted = Launcher.copyAndSortClasspath(classpath);
 			var nestedJarFolder = new File(workspaceDir, NestedJars.DIR);
-			for (var nested : NestedJars.inFiles(classpath).extractAllNestedJars(nestedJarFolder)) {
+			for (var nested : NestedJars.inFiles(classpathSorted).extractAllNestedJars()) {
 				classpath.add(nested.getValue());
 			}
-			var classpathSorted = Launcher.copyAndSortClasspath(classpath);
 
 			if (lockFile.hasClasspath() && !classpathSorted.equals(lockFile.readClasspath())) {
 				System.out.println("WARNING! The classpath has changed since this IDE was setup.");
