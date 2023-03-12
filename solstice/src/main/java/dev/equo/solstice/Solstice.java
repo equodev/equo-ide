@@ -172,6 +172,10 @@ public class Solstice {
 	 */
 	public void warnAndModifyManifestsToFix() {
 		Logger logger = LoggerFactory.getLogger(Solstice.class);
+		warnAndModifyManifestsToFix(logger);
+	}
+
+	public void warnAndModifyManifestsToFix(Logger logger) {
 		var bySymbolicName = bySymbolicName();
 
 		var missingMap = knownMissingBundleDependencies();
@@ -293,7 +297,8 @@ public class Solstice {
 				}
 			}
 		}
-		return false;
+		// nested jar package exports are entirely internal to their containing bundle
+		return !NestedJars.onClassPath().isNestedJar(thisManifest);
 	}
 
 	private void assertContextInitialized(boolean isInitialized) {

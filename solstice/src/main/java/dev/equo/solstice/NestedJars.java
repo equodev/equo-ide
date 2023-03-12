@@ -13,6 +13,7 @@
  *******************************************************************************/
 package dev.equo.solstice;
 
+import dev.equo.solstice.p2.CacheLocations;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -27,8 +28,10 @@ import java.util.Base64;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
@@ -110,30 +113,98 @@ public abstract class NestedJars {
 		}
 	}
 
-	public static NestedJars onClassPath() {
-		return new NestedJars() {
-			@Override
-			protected List<URL> listNestedJars() {
-				List<URL> nestedJars = new ArrayList<>();
-				Enumeration<URL> manifests =
-						Unchecked.get(
-								() ->
-										NestedJars.class.getClassLoader().getResources(SolsticeManifest.MANIFEST_PATH));
-				while (manifests.hasMoreElements()) {
-					var manifestUrl = manifests.nextElement();
-					var fullUrl = manifestUrl.toExternalForm();
-					var jarUrl =
-							fullUrl.substring(
-									0, fullUrl.length() - SolsticeManifest.SLASH_MANIFEST_PATH.length());
-					try (InputStream stream = manifestUrl.openStream()) {
-						addNestedJarsFromManifest(nestedJars, jarUrl, stream);
-					} catch (IOException e) {
-						throw Unchecked.wrap(e);
-					}
+	public static OnClassPath onClassPath() {
+		if (onClassPath == null) {
+			onClassPath = new OnClassPath();
+		}
+		return onClassPath;
+	}
+
+	private static OnClassPath onClassPath;
+
+	public static class OnClassPath extends NestedJars {
+		private OnClassPath() {}
+
+		@Override
+		protected List<URL> listNestedJars() {
+			var nestedJars = new ArrayList<URL>();
+			Enumeration<URL> manifests =
+					Unchecked.get(
+							() -> NestedJars.class.getClassLoader().getResources(SolsticeManifest.MANIFEST_PATH));
+			while (manifests.hasMoreElements()) {
+				var manifestUrl = manifests.nextElement();
+				var fullUrl = manifestUrl.toExternalForm();
+				var jarUrl =
+						fullUrl.substring(0, fullUrl.length() - SolsticeManifest.SLASH_MANIFEST_PATH.length());
+				try (InputStream stream = manifestUrl.openStream()) {
+					addNestedJarsFromManifest(nestedJars, jarUrl, stream);
+				} catch (IOException e) {
+					throw Unchecked.wrap(e);
 				}
-				return nestedJars;
 			}
-		};
+			return nestedJars;
+		}
+
+		private static final String JAR_COLON_FILE_COLON = "jar:file:";
+		private Set<File> nestedJarsOnClasspath;
+
+		public void confirmAllNestedJarsArePresentOnClasspath(File nestedJarFolder) {
+			nestedJarsOnClasspath = new HashSet<>();
+			var entries = extractAllNestedJars(nestedJarFolder);
+			entries.removeIf(
+					entry -> {
+						if (entry.getValue().exists()) {
+							try (var jarFile = new JarFile(entry.getValue())) {
+								var firstResource = jarFile.entries().nextElement().getName();
+								var onTheClasspath = NestedJars.class.getClassLoader().getResources(firstResource);
+								while (onTheClasspath.hasMoreElements()) {
+									var url = onTheClasspath.nextElement().toExternalForm();
+									if (url.startsWith(
+											JAR_COLON_FILE_COLON + entry.getValue().getAbsolutePath() + "!")) {
+										nestedJarsOnClasspath.add(entry.getValue());
+										return true;
+									}
+								}
+							} catch (IOException e) {
+								throw Unchecked.wrap(e);
+							}
+						}
+						return false;
+					});
+			if (!entries.isEmpty()) {
+				var msg = new StringBuilder();
+				msg.append(
+						"The following nested jars are missing from "
+								+ nestedJarFolder.getAbsolutePath()
+								+ "\n");
+				for (var entry : entries) {
+					msg.append("  ");
+					msg.append(entry.getKey().toExternalForm());
+					msg.append('\n');
+				}
+				if (warnOnly) {
+					System.err.println(msg);
+				} else {
+					throw new IllegalStateException(msg.toString());
+				}
+			}
+		}
+
+		public boolean isNestedJar(SolsticeManifest manifest) {
+			if (nestedJarsOnClasspath == null) {
+				throw new IllegalStateException(
+						"You must call `confirmAllNestedJarsArePresentOnClasspath` first.");
+			}
+			if (manifest.getJarUrl().startsWith(JAR_COLON_FILE_COLON)
+					&& manifest.getJarUrl().endsWith("!")) {
+				var innerUrl =
+						manifest
+								.getJarUrl()
+								.substring(JAR_COLON_FILE_COLON.length(), manifest.getJarUrl().length() - 1);
+				return nestedJarsOnClasspath.contains(new File(innerUrl));
+			}
+			return false;
+		}
 	}
 
 	public static NestedJars inFiles(Iterable<File> files) {
@@ -161,6 +232,11 @@ public abstract class NestedJars {
 
 	protected abstract List<URL> listNestedJars();
 
+	/** Extracts nested jars into {@link dev.equo.solstice.p2.CacheLocations#nestedJars()}. */
+	public List<Map.Entry<URL, File>> extractAllNestedJars() {
+		return extractAllNestedJars(CacheLocations.nestedJars());
+	}
+
 	public List<Map.Entry<URL, File>> extractAllNestedJars(File nestedJarFolder) {
 		var files = new ArrayList<Map.Entry<URL, File>>();
 		for (var url : listNestedJars()) {
@@ -172,46 +248,6 @@ public abstract class NestedJars {
 		}
 		files.sort(Comparator.comparing(e -> e.getKey().getPath()));
 		return files;
-	}
-
-	private static final String JAR_COLON_FILE_COLON = "jar:file:";
-
-	public void confirmAllNestedJarsArePresentOnClasspath(File nestedJarFolder) {
-		var entries = extractAllNestedJars(nestedJarFolder);
-		entries.removeIf(
-				entry -> {
-					if (entry.getValue().exists()) {
-						try (var jarFile = new JarFile(entry.getValue())) {
-							var firstResource = jarFile.entries().nextElement().getName();
-							var onTheClasspath = NestedJars.class.getClassLoader().getResources(firstResource);
-							while (onTheClasspath.hasMoreElements()) {
-								var url = onTheClasspath.nextElement().toExternalForm();
-								if (url.startsWith(
-										JAR_COLON_FILE_COLON + entry.getValue().getAbsolutePath() + "!")) {
-									return true;
-								}
-							}
-						} catch (IOException e) {
-							throw Unchecked.wrap(e);
-						}
-					}
-					return false;
-				});
-		if (!entries.isEmpty()) {
-			var msg = new StringBuilder();
-			msg.append(
-					"The following nested jars are missing from " + nestedJarFolder.getAbsolutePath() + "\n");
-			for (var entry : entries) {
-				msg.append("  ");
-				msg.append(entry.getKey().toExternalForm());
-				msg.append('\n');
-			}
-			if (warnOnly) {
-				System.err.println(msg);
-			} else {
-				throw new IllegalStateException(msg.toString());
-			}
-		}
 	}
 
 	private static boolean warnOnly = false;
