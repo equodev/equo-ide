@@ -153,30 +153,39 @@ public class ShimIdeBootstrapServices {
 				EquinoxLocations.PROP_HOME_LOCATION_AREA);
 	}
 
+	private static Location getLocation(EquinoxLocations equinoxLocations, String name) {
+		try {
+			var method = equinoxLocations.getClass().getMethod(name);
+			return (Location) method.invoke(equinoxLocations);
+		} catch (Exception e) {
+			throw Unchecked.wrap(e);
+		}
+	}
+
 	private static void registerLocations(BundleContext bc, EquinoxLocations equinoxLocations) {
 		Dictionary<String, Object> locationProperties = new Hashtable<>(1);
-		Location location = equinoxLocations.getUserLocation();
+		Location location = getLocation(equinoxLocations, "getUserLocation");
 		if (location != null) {
 			locationProperties.put("type", EquinoxLocations.PROP_USER_AREA); // $NON-NLS-1$
 			register(bc, Location.class, location, locationProperties);
 		}
-		location = equinoxLocations.getInstanceLocation();
+		location = getLocation(equinoxLocations, "getInstanceLocation");
 		if (location != null) {
 			locationProperties.put("type", EquinoxLocations.PROP_INSTANCE_AREA); // $NON-NLS-1$
 			register(bc, Location.class, location, locationProperties);
 		}
-		location = equinoxLocations.getConfigurationLocation();
+		location = getLocation(equinoxLocations, "getConfigurationLocation");
 		if (location != null) {
 			locationProperties.put("type", EquinoxLocations.PROP_CONFIG_AREA); // $NON-NLS-1$
 			register(bc, Location.class, location, locationProperties);
 		}
-		location = equinoxLocations.getInstallLocation();
+		location = getLocation(equinoxLocations, "getInstallLocation");
 		if (location != null) {
 			locationProperties.put("type", EquinoxLocations.PROP_INSTALL_AREA); // $NON-NLS-1$
 			register(bc, Location.class, location, locationProperties);
 		}
 
-		location = equinoxLocations.getEclipseHomeLocation();
+		location = getLocation(equinoxLocations, "getEclipseHomeLocation");
 		if (location != null) {
 			locationProperties.put("type", EquinoxLocations.PROP_HOME_LOCATION_AREA); // $NON-NLS-1$
 			register(bc, Location.class, location, locationProperties);
