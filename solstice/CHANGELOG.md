@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+
+## [0.19.1] - 2023-03-12
 ### Fixed
 - Make `ShimIdeBootstrapServices` more resilient to older versions of Equinox. ([#105](https://github.com/equodev/equo-ide/pull/105))
 
