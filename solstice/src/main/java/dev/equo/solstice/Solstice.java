@@ -172,6 +172,10 @@ public class Solstice {
 	 */
 	public void warnAndModifyManifestsToFix() {
 		Logger logger = LoggerFactory.getLogger(Solstice.class);
+		warnAndModifyManifestsToFix(logger);
+	}
+
+	public void warnAndModifyManifestsToFix(Logger logger) {
 		var bySymbolicName = bySymbolicName();
 
 		var missingMap = knownMissingBundleDependencies();
