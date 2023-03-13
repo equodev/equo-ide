@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+### Fixed
+- More workarounds for errant Eclipse artifacts in `4.23`. ([#108](https://github.com/equodev/equo-ide/pull/107) fixes [#106](https://github.com/equodev/equo-ide/issues/106))
 
 ## [0.19.2] - 2023-03-13
 ### Fixed
