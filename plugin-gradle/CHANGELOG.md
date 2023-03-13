@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+
+## [0.18.0] - 2023-03-13
 ### Added
 - `gradleBuildship()` no longer performs an auto-import by default, you have to do `gradleBuildship().autoImport('.')` which means you can also do `../` or whatever you would like. ([#112](https://github.com/equodev/equo-ide/pull/112))
 ### Fixed
