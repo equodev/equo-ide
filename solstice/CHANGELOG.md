@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+
+## [1.0.2] - 2023-03-13
 ### Fixed
 - `BuildPluginIdeMain` wasn't adding nested jars onto the classpath of the launched application, oops. ([#113](https://github.com/equodev/equo-ide/pull/113))
 - The gogo shell (gosh) finally stopped yelling about "message of the day". ([#113](https://github.com/equodev/equo-ide/pull/113))
