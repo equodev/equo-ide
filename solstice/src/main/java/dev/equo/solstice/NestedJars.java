@@ -48,7 +48,7 @@ public abstract class NestedJars {
 		var solsticeJar =
 				NestedJars.class.getResource(NestedJars.class.getSimpleName() + ".class").toString();
 		if (!solsticeJar.startsWith("jar")) {
-			throw new IllegalArgumentException("");
+			return "SNAPSHOT-";
 		}
 		try {
 			var url = new URL(solsticeJar);
