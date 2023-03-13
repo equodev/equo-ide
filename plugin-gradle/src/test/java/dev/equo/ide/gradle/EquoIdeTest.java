@@ -71,8 +71,8 @@ public class EquoIdeTest extends GradleHarness {
 						"repositories { mavenCentral() }",
 						"equoIde {",
 						"  p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'",
-						"  install 'org.eclipse.swt'",
-						"  install 'org.eclipse.equinox.common'",
+						"  install 'org.apache.felix.scr'",
+						"  install 'org.eclipse.ui.ide.application'",
 						"  useAtomos = false",
 						"}");
 		runAndAssert("equoIde", "--init-only", "--use-atomos=false")
@@ -85,8 +85,8 @@ public class EquoIdeTest extends GradleHarness {
 						"repositories { mavenCentral() }",
 						"equoIde {",
 						"  p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'",
-						"  install 'org.eclipse.swt'",
-						"  install 'org.eclipse.equinox.common'",
+						"  install 'org.apache.felix.scr'",
+						"  install 'org.eclipse.ui.ide.application'",
 						"  useAtomos = false",
 						"}");
 		runAndAssert("equoIde", "--init-only", "--use-atomos=true")
