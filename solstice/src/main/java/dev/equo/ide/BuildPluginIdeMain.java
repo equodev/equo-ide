@@ -90,7 +90,7 @@ public class BuildPluginIdeMain {
 			var classpathSorted = Launcher.copyAndSortClasspath(classpath);
 			var nestedJarFolder = new File(workspaceDir, NestedJars.DIR);
 			for (var nested : NestedJars.inFiles(classpathSorted).extractAllNestedJars(nestedJarFolder)) {
-				classpath.add(nested.getValue());
+				classpathSorted.add(nested.getValue());
 			}
 
 			if (lockFile.hasClasspath() && !classpathSorted.equals(lockFile.readClasspath())) {
