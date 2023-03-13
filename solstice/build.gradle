@@ -2,11 +2,6 @@ ext.maven_name='Solstice'
 ext.maven_artifact = 'solstice'
 ext.maven_desc='Single-classloader implementation of the Eclipse plugin registry and OSGi (including Declarative Services)'
 
-apply plugin: 'com.diffplug.spotless-changelog'
-spotlessChangelog {
-	forceNextVersion '1.0.0'
-}
-
 apply from: 干.file('changelog.gradle')
 apply plugin: 'java-library'
 sourceCompatibility = java_compat
