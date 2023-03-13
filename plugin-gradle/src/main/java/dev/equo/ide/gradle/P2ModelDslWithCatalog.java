@@ -36,12 +36,12 @@ public class P2ModelDslWithCatalog extends P2ModelDsl {
 		}
 	}
 
-	public void platform(String urlOverride) {
-		add(new Platform(urlOverride));
+	public Platform platform(String urlOverride) {
+		return add(new Platform(urlOverride));
 	}
 
-	public void platform() {
-		platform(null);
+	public Platform platform() {
+		return platform(null);
 	}
 
 	public static class Jdt extends GradleCatalogDsl {
@@ -50,12 +50,12 @@ public class P2ModelDslWithCatalog extends P2ModelDsl {
 		}
 	}
 
-	public void jdt(String urlOverride) {
-		add(new Jdt(urlOverride));
+	public Jdt jdt(String urlOverride) {
+		return add(new Jdt(urlOverride));
 	}
 
-	public void jdt() {
-		jdt(null);
+	public Jdt jdt() {
+		return jdt(null);
 	}
 
 	public static class GradleBuildship extends GradleCatalogDsl {
@@ -67,7 +67,7 @@ public class P2ModelDslWithCatalog extends P2ModelDsl {
 			this.project = project;
 		}
 
-		public void autoImport(Object path) {
+		public GradleBuildship autoImport(Object path) {
 			dirToAutoImport = project.file(path);
 			var wrapper = new File(dirToAutoImport, "gradle/wrapper/gradle-wrapper.jar");
 			if (!wrapper.exists()) {
@@ -77,6 +77,7 @@ public class P2ModelDslWithCatalog extends P2ModelDsl {
 								+ " will fail because there is no gradle wrapper at "
 								+ wrapper.getAbsolutePath());
 			}
+			return this;
 		}
 
 		@Override
@@ -105,12 +106,12 @@ public class P2ModelDslWithCatalog extends P2ModelDsl {
 		}
 	}
 
-	public void pde(String urlOverride) {
-		add(new Pde(urlOverride, project));
+	public Pde pde(String urlOverride) {
+		return add(new Pde(urlOverride, project));
 	}
 
-	public void pde() {
-		pde(null);
+	public Pde pde() {
+		return pde(null);
 	}
 
 	public static class M2E extends GradleCatalogDsl {
@@ -119,12 +120,12 @@ public class P2ModelDslWithCatalog extends P2ModelDsl {
 		}
 	}
 
-	public void m2e(String urlOverride) {
-		add(new M2E(urlOverride, project));
+	public M2E m2e(String urlOverride) {
+		return add(new M2E(urlOverride, project));
 	}
 
-	public void m2e() {
-		m2e(null);
+	public M2E m2e() {
+		return m2e(null);
 	}
 
 	public static class Kotlin extends GradleCatalogDsl {
@@ -133,12 +134,12 @@ public class P2ModelDslWithCatalog extends P2ModelDsl {
 		}
 	}
 
-	public void kotlin(String urlOverride) {
-		add(new Kotlin(urlOverride, project));
+	public Kotlin kotlin(String urlOverride) {
+		return add(new Kotlin(urlOverride, project));
 	}
 
-	public void kotlin() {
-		kotlin(null);
+	public Kotlin kotlin() {
+		return kotlin(null);
 	}
 
 	public static class TmTerminal extends GradleCatalogDsl {
@@ -147,12 +148,12 @@ public class P2ModelDslWithCatalog extends P2ModelDsl {
 		}
 	}
 
-	public void tmTerminal(String urlOverride) {
-		add(new TmTerminal(urlOverride, project));
+	public TmTerminal tmTerminal(String urlOverride) {
+		return add(new TmTerminal(urlOverride, project));
 	}
 
-	public void tmTerminal() {
-		tmTerminal(null);
+	public TmTerminal tmTerminal() {
+		return tmTerminal(null);
 	}
 
 	public static class Cdt extends GradleCatalogDsl {
@@ -161,12 +162,12 @@ public class P2ModelDslWithCatalog extends P2ModelDsl {
 		}
 	}
 
-	public void cdt(String urlOverride) {
-		add(new Cdt(urlOverride, project));
+	public Cdt cdt(String urlOverride) {
+		return add(new Cdt(urlOverride, project));
 	}
 
-	public void cdt() {
-		cdt(null);
+	public Cdt cdt() {
+		return cdt(null);
 	}
 
 	public static class Rust extends GradleCatalogDsl {
@@ -175,12 +176,12 @@ public class P2ModelDslWithCatalog extends P2ModelDsl {
 		}
 	}
 
-	public void rust(String urlOverride) {
-		add(new Rust(urlOverride, project));
+	public Rust rust(String urlOverride) {
+		return add(new Rust(urlOverride, project));
 	}
 
-	public void rust() {
-		rust(null);
+	public Rust rust() {
+		return rust(null);
 	}
 
 	public static class Groovy extends GradleCatalogDsl {
@@ -189,12 +190,12 @@ public class P2ModelDslWithCatalog extends P2ModelDsl {
 		}
 	}
 
-	public void groovy(String urlOverride) {
-		add(new Groovy(urlOverride, project));
+	public Groovy groovy(String urlOverride) {
+		return add(new Groovy(urlOverride, project));
 	}
 
-	public void groovy() {
-		groovy(null);
+	public Groovy groovy() {
+		return groovy(null);
 	}
 
 	public static class GradleCatalogDsl extends CatalogDsl {
