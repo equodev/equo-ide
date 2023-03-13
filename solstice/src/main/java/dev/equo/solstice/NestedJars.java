@@ -44,16 +44,20 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class NestedJars {
 	/** Reads the version of the Solstice jar from the classpath. */
-	public static String solsticeVersion() throws IOException {
+	public static String solsticeVersion() {
 		var solsticeJar =
 				NestedJars.class.getResource(NestedJars.class.getSimpleName() + ".class").toString();
 		if (!solsticeJar.startsWith("jar")) {
 			throw new IllegalArgumentException("");
 		}
-		var url = new URL(solsticeJar);
-		var jarConnection = (JarURLConnection) url.openConnection();
-		var manifest = jarConnection.getManifest();
-		return manifest.getMainAttributes().getValue("Implementation-Version");
+		try {
+			var url = new URL(solsticeJar);
+			var jarConnection = (JarURLConnection) url.openConnection();
+			var manifest = jarConnection.getManifest();
+			return manifest.getMainAttributes().getValue("Implementation-Version");
+		} catch (IOException e) {
+			throw Unchecked.wrap(e);
+		}
 	}
 
 	/**

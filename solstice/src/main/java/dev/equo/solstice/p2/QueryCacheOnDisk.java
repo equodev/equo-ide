@@ -13,6 +13,7 @@
  *******************************************************************************/
 package dev.equo.solstice.p2;
 
+import dev.equo.solstice.NestedJars;
 import dev.equo.solstice.SerializableMisc;
 import java.io.File;
 import java.util.Optional;
@@ -24,7 +25,7 @@ class QueryCacheOnDisk {
 
 	QueryCacheOnDisk(File rootDir, P2Model model) {
 		this.rootDir = rootDir;
-		this.key = String.valueOf(model.hashCode());
+		this.key = NestedJars.solsticeVersion() + model.hashCode();
 		if (!FileMisc.readToken(rootDir, VERSION).equals(Optional.of(VERSION_VALUE))) {
 			if (rootDir.exists()) {
 				FileMisc.delete(rootDir);
