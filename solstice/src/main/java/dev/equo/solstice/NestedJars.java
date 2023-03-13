@@ -149,7 +149,6 @@ public abstract class NestedJars {
 			return nestedJars;
 		}
 
-		private static final String JAR_COLON_FILE_COLON = "jar:file:";
 		private Set<File> nestedJarsOnClasspath;
 
 		public void confirmAllNestedJarsArePresentOnClasspath(File nestedJarFolder) {
@@ -159,12 +158,12 @@ public abstract class NestedJars {
 					entry -> {
 						if (entry.getValue().exists()) {
 							try (var jarFile = new JarFile(entry.getValue())) {
+								String targetPrefix = "jar:" + entry.getValue().toURI() + "!";
 								var firstResource = jarFile.entries().nextElement().getName();
 								var onTheClasspath = NestedJars.class.getClassLoader().getResources(firstResource);
 								while (onTheClasspath.hasMoreElements()) {
 									var url = onTheClasspath.nextElement().toExternalForm();
-									if (url.startsWith(
-											JAR_COLON_FILE_COLON + entry.getValue().getAbsolutePath() + "!")) {
+									if (url.startsWith(targetPrefix)) {
 										nestedJarsOnClasspath.add(entry.getValue());
 										return true;
 									}
@@ -193,6 +192,8 @@ public abstract class NestedJars {
 				}
 			}
 		}
+
+		private static final String JAR_COLON_FILE_COLON = "jar:file:";
 
 		public boolean isNestedJar(SolsticeManifest manifest) {
 			if (nestedJarsOnClasspath == null) {
