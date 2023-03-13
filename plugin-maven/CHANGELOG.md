@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+
+## [0.16.5] - 2023-03-13
 ### Fixed
 - IDE launched wasn't handling nested jars correctly on Windows. ([#114](https://github.com/equodev/equo-ide/pull/114))
 
