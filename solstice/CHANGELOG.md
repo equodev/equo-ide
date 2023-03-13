@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+
+## [1.0.0] - 2023-03-13
 ### Changes
 - The offline query cache now includes the Solstice version in the key. ([#108](https://github.com/equodev/equo-ide/pull/108))
 ### Fixed
