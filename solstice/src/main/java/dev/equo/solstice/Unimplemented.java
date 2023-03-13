@@ -13,7 +13,10 @@
  *******************************************************************************/
 package dev.equo.solstice;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -33,14 +36,16 @@ class Unimplemented {
 	}
 
 	static RuntimeException onPurpose(String reason) {
-		return new UnsupportedOperationException(reason);
-		//		try {
-		//			throw new UnsupportedOperationException(reason);
-		//		} catch (UnsupportedOperationException e) {
-		//			e.printStackTrace();
-		//			System.exit(1);
-		//			return e;
-		//		}
+		try {
+			throw new UnsupportedOperationException(reason);
+		} catch (UnsupportedOperationException e) {
+			var bytes = new ByteArrayOutputStream();
+			var stream = new PrintStream(bytes, true, StandardCharsets.UTF_8);
+			e.printStackTrace(stream);
+			stream.close();
+			return new UnsupportedOperationException(bytes.toString(StandardCharsets.UTF_8));
+		}
+		// System.exit(1);
 	}
 
 	static class PackageAdmin implements org.osgi.service.packageadmin.PackageAdmin {

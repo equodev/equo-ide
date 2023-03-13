@@ -90,7 +90,7 @@ public class BuildPluginIdeMain {
 			var classpathSorted = Launcher.copyAndSortClasspath(classpath);
 			var nestedJarFolder = new File(workspaceDir, NestedJars.DIR);
 			for (var nested : NestedJars.inFiles(classpathSorted).extractAllNestedJars(nestedJarFolder)) {
-				classpath.add(nested.getValue());
+				classpathSorted.add(nested.getValue());
 			}
 
 			if (lockFile.hasClasspath() && !classpathSorted.equals(lockFile.readClasspath())) {
@@ -265,7 +265,7 @@ public class BuildPluginIdeMain {
 
 		IdeHook.InstantiatedList ideHooks = ideHooksParsed.instantiate();
 		var lockFileHook = ideHooks.find(IdeHookLockFile.Instantiated.class);
-		boolean isClean = lockFileHook == null && lockFileHook.isClean();
+		boolean isClean = lockFileHook == null || lockFileHook.isClean();
 		if (!initOnly) {
 			ideHooks.forEach(IdeHookInstantiated::isClean, isClean);
 			var display = Display.getDefault();
@@ -273,6 +273,7 @@ public class BuildPluginIdeMain {
 		}
 
 		var props = new LinkedHashMap<String, String>();
+		props.put("gosh.args", "--quiet --noshutdown");
 		props.put(Constants.FRAMEWORK_STORAGE_CLEAN, Constants.FRAMEWORK_STORAGE_CLEAN_ONFIRSTINIT);
 		props.put(
 				EquinoxLocations.PROP_INSTANCE_AREA, new File(installDir, "instance").getAbsolutePath());
