@@ -3,6 +3,9 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+### Fixed
+- Locations registered in `ShimIdeBootstrapServices` have `url` property to keep Eclipse 4.25+ happy. ([#107](https://github.com/equodev/equo-ide/pull/107))
+- Workaround some errant Eclipse artifacts in `4.23`. ([#106](https://github.com/equodev/equo-ide/issues/106))
 
 ## [0.16.1] - 2023-03-12
 ### Fixed

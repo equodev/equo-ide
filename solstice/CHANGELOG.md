@@ -3,6 +3,10 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+### Changes
+- The offline query cache now includes the Solstice version in the key. ([#108](https://github.com/equodev/equo-ide/pull/108))
+### Fixed
+- More workarounds for errant Eclipse artifacts in `4.23`. ([#108](https://github.com/equodev/equo-ide/pull/108) fixes [#106](https://github.com/equodev/equo-ide/issues/106))
 
 ## [0.19.2] - 2023-03-13
 ### Fixed

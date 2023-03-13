@@ -375,7 +375,8 @@ public class Solstice {
 			}
 		}
 		if (numStarted == 0) {
-			throw new IllegalArgumentException("No bundle with name " + symbolicName);
+			throw new IllegalArgumentException(
+					"Cannot start because no bundle with name " + symbolicName);
 		}
 	}
 
