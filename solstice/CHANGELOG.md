@@ -4,8 +4,9 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
 ### Fixed
-- `Solstice.start(String)` now throws an exception if there was no bundle with that name.
-- Locations registered in `ShimIdeBootstrapServices` have `url` property to keep Eclipse 4.25+ happy.
+- `Solstice.start(String)` now throws an exception if there was no bundle with that name. ([#107](https://github.com/equodev/equo-ide/pull/107))
+- Locations registered in `ShimIdeBootstrapServices` have `url` property to keep Eclipse 4.25+ happy. ([#107](https://github.com/equodev/equo-ide/pull/107))
+- Workaround some errant Eclipse artifacts in `4.23`. ([#107](https://github.com/equodev/equo-ide/pull/107) fixes [#106](https://github.com/equodev/equo-ide/issues/106))
 
 ## [0.19.1] - 2023-03-12
 ### Fixed
