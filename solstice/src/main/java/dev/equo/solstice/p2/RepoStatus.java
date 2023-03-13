@@ -82,6 +82,15 @@ public class RepoStatus implements Comparable<RepoStatus> {
 		var artifact = unit.properties.get(P2Unit.MAVEN_ARTIFACT_ID);
 		var version = unit.properties.get(P2Unit.MAVEN_VERSION);
 		if (group != null && artifact != null && version != null) {
+			if (unit.getId().equals("org.eclipse.equinox.preferences")
+					&& unit.getVersion().toString().equals("3.10.0.v20220503-1634")) {
+				// See https://github.com/eclipse-equinox/equinox.bundles/issues/54
+				return new RepoStatus(group + ":" + artifact + ":3.10.1", MAVEN_CENTRAL);
+			} else if (unit.getId().equals("org.eclipse.osgi.util")
+					&& unit.getVersion().toString().equals("3.7.0.v20220427-2144")) {
+				// See https://github.com/eclipse-equinox/equinox.framework/issues/70
+				return new RepoStatus(group + ":" + artifact + ":3.7.1", MAVEN_CENTRAL);
+			}
 			var repo = unit.properties.get(P2Unit.MAVEN_REPOSITORY);
 			if (MavenCentralMapping.MIRROR.equals(repo)) {
 				return new RepoStatus(group + ":" + artifact + ":" + version, MAVEN_CENTRAL);
