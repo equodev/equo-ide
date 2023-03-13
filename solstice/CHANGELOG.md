@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+### Fixed
+- `NestedJars.confirmAllNestedJarsArePresentOnClasspath` wasn't adding nested jars onto the classpath of the launched application, oops. ([#114](https://github.com/equodev/equo-ide/pull/114))
 
 ## [1.0.2] - 2023-03-13
 ### Fixed
