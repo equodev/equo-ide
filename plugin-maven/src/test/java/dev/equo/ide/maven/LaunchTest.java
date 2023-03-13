@@ -49,6 +49,7 @@ public class LaunchTest extends MavenHarness {
 						+ "</p2repos>\n"
 						+ "<installs>\n"
 						+ "  <install>org.apache.felix.scr</install>\n"
+						+ "  <install>org.eclipse.platform</install>\n"
 						+ "  <install>org.eclipse.ui.ide.application</install>\n"
 						+ "</installs>");
 		var output = mvnw("equo-ide:launch -DinitOnly -DuseAtomos=" + useAtomos);

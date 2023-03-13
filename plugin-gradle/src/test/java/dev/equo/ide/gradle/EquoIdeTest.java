@@ -86,6 +86,7 @@ public class EquoIdeTest extends GradleHarness {
 						"equoIde {",
 						"  p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'",
 						"  install 'org.apache.felix.scr'",
+						"  install 'org.eclipse.platform'",
 						"  install 'org.eclipse.ui.ide.application'",
 						"  useAtomos = false",
 						"}");
