@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+### Fixed
+- `Solstice.start(String)` now throws an exception if there was no bundle with that name.
 
 ## [0.19.1] - 2023-03-12
 ### Fixed

@@ -355,11 +355,7 @@ public class Solstice {
 	 * well.
 	 */
 	public void start(String symbolicName) {
-		for (var bundle : bundles) {
-			if (bundle.getSymbolicName().equals(symbolicName)) {
-				start(bundle);
-			}
-		}
+		start(symbolicName, true);
 	}
 
 	/**
@@ -367,10 +363,19 @@ public class Solstice {
 	 * dependencies.
 	 */
 	public void startWithoutTransitives(String symbolicName) {
+		start(symbolicName, false);
+	}
+
+	private void start(String symbolicName, boolean withTransitives) {
+		int numStarted = 0;
 		for (var bundle : bundles) {
 			if (bundle.getSymbolicName().equals(symbolicName)) {
-				start(bundle, false);
+				++numStarted;
+				start(bundle, withTransitives);
 			}
+		}
+		if (numStarted == 0) {
+			throw new IllegalArgumentException("No bundle with name " + symbolicName);
 		}
 	}
 
