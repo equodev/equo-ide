@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+### Fixed
+- `BuildPluginIdeMain` was using the central cache directory instead of the IDE-specific directory, oops. ([#111](https://github.com/equodev/equo-ide/pull/111))
 
 ## [1.0.0] - 2023-03-13
 ### Changes

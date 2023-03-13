@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+### Fixed
+- IDE would fail to launch due to a bug in nested jar extraction. ([#111](https://github.com/equodev/equo-ide/pull/111))
 
 ## [0.17.2] - 2023-03-13
 ### Fixed
