@@ -17,8 +17,10 @@ import dev.equo.ide.Catalog;
 import dev.equo.ide.CatalogDsl;
 import dev.equo.ide.IdeHook;
 import dev.equo.ide.IdeHookBuildship;
+import java.io.File;
 import java.util.List;
 import org.gradle.api.Action;
+import org.gradle.api.GradleException;
 import org.gradle.api.Project;
 
 public class P2ModelDslWithCatalog extends P2ModelDsl {
@@ -57,27 +59,44 @@ public class P2ModelDslWithCatalog extends P2ModelDsl {
 	}
 
 	public static class GradleBuildship extends GradleCatalogDsl {
-		private IdeHookBuildship ideHook;
+		private final Project project;
+		private File dirToAutoImport;
 
 		public GradleBuildship(String urlOverride, Project project) {
 			super(Catalog.GRADLE_BUILDSHIP, urlOverride);
-			ideHook =
-					new IdeHookBuildship(
-							project.getProjectDir(), project.getGradle().getStartParameter().isOffline());
+			this.project = project;
+		}
+
+		public void autoImport(Object path) {
+			dirToAutoImport = project.file(path);
+			var wrapper = new File(dirToAutoImport, "gradle/wrapper/gradle-wrapper.jar");
+			if (!wrapper.exists()) {
+				throw new GradleException(
+						"autoImport of "
+								+ dirToAutoImport
+								+ " will fail because there is no gradle wrapper at "
+								+ wrapper.getAbsolutePath());
+			}
 		}
 
 		@Override
 		protected List<IdeHook> ideHooks() {
-			return List.of(ideHook);
+			if (dirToAutoImport == null) {
+				return List.of();
+			} else {
+				return List.of(
+						new IdeHookBuildship(
+								dirToAutoImport, project.getGradle().getStartParameter().isOffline()));
+			}
 		}
 	}
 
-	public void gradleBuildship(String urlOverride) {
-		add(new GradleBuildship(urlOverride, project));
+	public GradleBuildship gradleBuildship(String urlOverride) {
+		return add(new GradleBuildship(urlOverride, project));
 	}
 
-	public void gradleBuildship() {
-		gradleBuildship(null);
+	public GradleBuildship gradleBuildship() {
+		return gradleBuildship(null);
 	}
 
 	public static class Pde extends GradleCatalogDsl {
@@ -185,13 +204,15 @@ public class P2ModelDslWithCatalog extends P2ModelDsl {
 		}
 	}
 
-	private <T extends GradleCatalogDsl> void add(T dsl) {
+	private <T extends GradleCatalogDsl> T add(T dsl) {
 		add(dsl, unused -> {});
+		return dsl;
 	}
 
-	private <T extends GradleCatalogDsl> void add(T dsl, Action<? super T> action) {
+	private <T extends GradleCatalogDsl> T add(T dsl, Action<? super T> action) {
 		action.execute(dsl);
 		catalog.add(dsl);
+		return dsl;
 	}
 
 	final CatalogDsl.TransitiveAwareList<GradleCatalogDsl> catalog =
