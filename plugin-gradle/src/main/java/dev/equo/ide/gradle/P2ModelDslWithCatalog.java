@@ -17,8 +17,10 @@ import dev.equo.ide.Catalog;
 import dev.equo.ide.CatalogDsl;
 import dev.equo.ide.IdeHook;
 import dev.equo.ide.IdeHookBuildship;
+import java.io.File;
 import java.util.List;
 import org.gradle.api.Action;
+import org.gradle.api.GradleException;
 import org.gradle.api.Project;
 
 public class P2ModelDslWithCatalog extends P2ModelDsl {
@@ -34,12 +36,12 @@ public class P2ModelDslWithCatalog extends P2ModelDsl {
 		}
 	}
 
-	public void platform(String urlOverride) {
-		add(new Platform(urlOverride));
+	public Platform platform(String urlOverride) {
+		return add(new Platform(urlOverride));
 	}
 
-	public void platform() {
-		platform(null);
+	public Platform platform() {
+		return platform(null);
 	}
 
 	public static class Jdt extends GradleCatalogDsl {
@@ -48,36 +50,54 @@ public class P2ModelDslWithCatalog extends P2ModelDsl {
 		}
 	}
 
-	public void jdt(String urlOverride) {
-		add(new Jdt(urlOverride));
+	public Jdt jdt(String urlOverride) {
+		return add(new Jdt(urlOverride));
 	}
 
-	public void jdt() {
-		jdt(null);
+	public Jdt jdt() {
+		return jdt(null);
 	}
 
 	public static class GradleBuildship extends GradleCatalogDsl {
-		private IdeHookBuildship ideHook;
+		private final Project project;
+		private File dirToAutoImport;
 
 		public GradleBuildship(String urlOverride, Project project) {
 			super(Catalog.GRADLE_BUILDSHIP, urlOverride);
-			ideHook =
-					new IdeHookBuildship(
-							project.getProjectDir(), project.getGradle().getStartParameter().isOffline());
+			this.project = project;
+		}
+
+		public GradleBuildship autoImport(Object path) {
+			dirToAutoImport = project.file(path);
+			var wrapper = new File(dirToAutoImport, "gradle/wrapper/gradle-wrapper.jar");
+			if (!wrapper.exists()) {
+				throw new GradleException(
+						"autoImport of "
+								+ dirToAutoImport
+								+ " will fail because there is no gradle wrapper at "
+								+ wrapper.getAbsolutePath());
+			}
+			return this;
 		}
 
 		@Override
 		protected List<IdeHook> ideHooks() {
-			return List.of(ideHook);
+			if (dirToAutoImport == null) {
+				return List.of();
+			} else {
+				return List.of(
+						new IdeHookBuildship(
+								dirToAutoImport, project.getGradle().getStartParameter().isOffline()));
+			}
 		}
 	}
 
-	public void gradleBuildship(String urlOverride) {
-		add(new GradleBuildship(urlOverride, project));
+	public GradleBuildship gradleBuildship(String urlOverride) {
+		return add(new GradleBuildship(urlOverride, project));
 	}
 
-	public void gradleBuildship() {
-		gradleBuildship(null);
+	public GradleBuildship gradleBuildship() {
+		return gradleBuildship(null);
 	}
 
 	public static class Pde extends GradleCatalogDsl {
@@ -86,12 +106,12 @@ public class P2ModelDslWithCatalog extends P2ModelDsl {
 		}
 	}
 
-	public void pde(String urlOverride) {
-		add(new Pde(urlOverride, project));
+	public Pde pde(String urlOverride) {
+		return add(new Pde(urlOverride, project));
 	}
 
-	public void pde() {
-		pde(null);
+	public Pde pde() {
+		return pde(null);
 	}
 
 	public static class M2E extends GradleCatalogDsl {
@@ -100,12 +120,12 @@ public class P2ModelDslWithCatalog extends P2ModelDsl {
 		}
 	}
 
-	public void m2e(String urlOverride) {
-		add(new M2E(urlOverride, project));
+	public M2E m2e(String urlOverride) {
+		return add(new M2E(urlOverride, project));
 	}
 
-	public void m2e() {
-		m2e(null);
+	public M2E m2e() {
+		return m2e(null);
 	}
 
 	public static class Kotlin extends GradleCatalogDsl {
@@ -114,12 +134,12 @@ public class P2ModelDslWithCatalog extends P2ModelDsl {
 		}
 	}
 
-	public void kotlin(String urlOverride) {
-		add(new Kotlin(urlOverride, project));
+	public Kotlin kotlin(String urlOverride) {
+		return add(new Kotlin(urlOverride, project));
 	}
 
-	public void kotlin() {
-		kotlin(null);
+	public Kotlin kotlin() {
+		return kotlin(null);
 	}
 
 	public static class TmTerminal extends GradleCatalogDsl {
@@ -128,12 +148,12 @@ public class P2ModelDslWithCatalog extends P2ModelDsl {
 		}
 	}
 
-	public void tmTerminal(String urlOverride) {
-		add(new TmTerminal(urlOverride, project));
+	public TmTerminal tmTerminal(String urlOverride) {
+		return add(new TmTerminal(urlOverride, project));
 	}
 
-	public void tmTerminal() {
-		tmTerminal(null);
+	public TmTerminal tmTerminal() {
+		return tmTerminal(null);
 	}
 
 	public static class Cdt extends GradleCatalogDsl {
@@ -142,12 +162,12 @@ public class P2ModelDslWithCatalog extends P2ModelDsl {
 		}
 	}
 
-	public void cdt(String urlOverride) {
-		add(new Cdt(urlOverride, project));
+	public Cdt cdt(String urlOverride) {
+		return add(new Cdt(urlOverride, project));
 	}
 
-	public void cdt() {
-		cdt(null);
+	public Cdt cdt() {
+		return cdt(null);
 	}
 
 	public static class Rust extends GradleCatalogDsl {
@@ -156,12 +176,12 @@ public class P2ModelDslWithCatalog extends P2ModelDsl {
 		}
 	}
 
-	public void rust(String urlOverride) {
-		add(new Rust(urlOverride, project));
+	public Rust rust(String urlOverride) {
+		return add(new Rust(urlOverride, project));
 	}
 
-	public void rust() {
-		rust(null);
+	public Rust rust() {
+		return rust(null);
 	}
 
 	public static class Groovy extends GradleCatalogDsl {
@@ -170,12 +190,12 @@ public class P2ModelDslWithCatalog extends P2ModelDsl {
 		}
 	}
 
-	public void groovy(String urlOverride) {
-		add(new Groovy(urlOverride, project));
+	public Groovy groovy(String urlOverride) {
+		return add(new Groovy(urlOverride, project));
 	}
 
-	public void groovy() {
-		groovy(null);
+	public Groovy groovy() {
+		return groovy(null);
 	}
 
 	public static class GradleCatalogDsl extends CatalogDsl {
@@ -185,13 +205,15 @@ public class P2ModelDslWithCatalog extends P2ModelDsl {
 		}
 	}
 
-	private <T extends GradleCatalogDsl> void add(T dsl) {
+	private <T extends GradleCatalogDsl> T add(T dsl) {
 		add(dsl, unused -> {});
+		return dsl;
 	}
 
-	private <T extends GradleCatalogDsl> void add(T dsl, Action<? super T> action) {
+	private <T extends GradleCatalogDsl> T add(T dsl, Action<? super T> action) {
 		action.execute(dsl);
 		catalog.add(dsl);
+		return dsl;
 	}
 
 	final CatalogDsl.TransitiveAwareList<GradleCatalogDsl> catalog =

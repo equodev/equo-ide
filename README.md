@@ -34,6 +34,7 @@ plugins {
 }
 equoIde { // launch with gradlew equoIde
   jdt()
+  gradleBuildship().autoImport('.')
 }
 ```
 
