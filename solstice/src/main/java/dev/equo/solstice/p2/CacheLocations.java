@@ -102,6 +102,15 @@ public class CacheLocations {
 
 	public static File override_nestedJars = null;
 
+	/**
+	 * Directory used to hold jars which have had their signature stripped: `~/.equo/stripped-jars`
+	 */
+	public static File strippedJars() {
+		return defOverride(ROOT + "/stripped-jars", override_strippedJars);
+	}
+
+	public static File override_strippedJars = null;
+
 	private static File defOverride(String userHomeRelative, File override) {
 		return Optional.ofNullable(override)
 				.orElseGet(() -> userHome().resolve(userHomeRelative).toFile());
