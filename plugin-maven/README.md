@@ -41,13 +41,13 @@ Use it like this with `mvn equo-ide:launch`
 ## Task listing
 
 - `equo-ide:launch` to launch
-  - `equoIde -Dclean` wipes all workspace settings and state before rebuilding and launching.
+  - `-Dclean` wipes all workspace settings and state before rebuilding and launching.
     - (also revalidates cached p2 data)
-  - `equoIde -DshowConsole` pipes console output of launched IDE to the build console.
-  - `equoIde -DinitOnly` initializes the runtime to check for errors then exits.
-  - `equoIde -DdebugClasspath=[names|paths]` dumps the classpath (in order) without starting the application.
-  - `equoIde -DdebugIde` blocks IDE startup and prints instructions to help you attach a remote debugger.
-  - `equoIde -DuseAtomos=[true|false]` determines whether to use Atomos
+  - `-DshowConsole` pipes console output of launched IDE to the build console.
+  - `-DinitOnly` initializes the runtime to check for errors then exits.
+  - `-DdebugClasspath=[names|paths]` dumps the classpath (in order) without starting the application.
+  - `-DdebugIde` blocks IDE startup and prints instructions to help you attach a remote debugger.
+  - `-DuseAtomos=[true|false]` determines whether to use Atomos
 - `equo-ide:list` to debug IDE dependencies ([p2 multitool](../P2_MULTITOOL.md))
 
 ## User plugins
