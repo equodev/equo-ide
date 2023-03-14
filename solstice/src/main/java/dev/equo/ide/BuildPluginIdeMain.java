@@ -19,6 +19,7 @@ import dev.equo.solstice.SerializableMisc;
 import dev.equo.solstice.ShimIdeBootstrapServices;
 import dev.equo.solstice.Solstice;
 import dev.equo.solstice.SolsticeManifest;
+import dev.equo.solstice.StrippedJars;
 import dev.equo.solstice.p2.WorkspaceRegistry;
 import java.io.File;
 import java.io.IOException;
@@ -92,6 +93,7 @@ public class BuildPluginIdeMain {
 			for (var nested : NestedJars.inFiles(classpathSorted).extractAllNestedJars(nestedJarFolder)) {
 				classpathSorted.add(nested.getValue());
 			}
+			StrippedJars.strip(classpathSorted);
 
 			if (lockFile.hasClasspath() && !classpathSorted.equals(lockFile.readClasspath())) {
 				System.out.println("WARNING! The classpath has changed since this IDE was setup.");
