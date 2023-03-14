@@ -56,7 +56,7 @@ tasks.named('test') {
 }
 apply from: 干.file('snapshot-testing.gradle')
 
-def PLUGIN_SHIMS = ['welcome', 'buildship']
+def PLUGIN_SHIMS = ['welcome', 'buildship', 'm2e']
 for (shim in PLUGIN_SHIMS) {
 	sourceSets.register(shim) {
 		compileClasspath += sourceSets.main.output
@@ -102,6 +102,9 @@ p2deps {
 	}
 	into 'buildshipCompileOnly', {
 		gradleBuildship()
+	}
+	into 'm2eCompileOnly', {
+		m2e()
 	}
 }
 
