@@ -274,6 +274,7 @@ public class BuildPluginIdeMain {
 
 		var props = new LinkedHashMap<String, String>();
 		props.put("gosh.args", "--quiet --noshutdown");
+		props.put("osgi.nl", "en_US");
 		props.put(Constants.FRAMEWORK_STORAGE_CLEAN, Constants.FRAMEWORK_STORAGE_CLEAN_ONFIRSTINIT);
 		props.put(
 				EquinoxLocations.PROP_INSTANCE_AREA, new File(installDir, "instance").getAbsolutePath());

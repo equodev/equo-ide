@@ -14,11 +14,14 @@
 package dev.equo.ide;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.m2e.core.MavenPlugin;
 import org.eclipse.m2e.core.project.LocalProjectScanner;
+import org.eclipse.m2e.core.project.MavenProjectInfo;
 import org.eclipse.m2e.core.project.ProjectImportConfiguration;
 import org.eclipse.m2e.core.ui.internal.wizards.ImportMavenProjectsJob;
 import org.eclipse.ui.IWorkingSet;
@@ -73,22 +76,33 @@ class M2EImpl implements IdeHookInstantiated {
 		var discoverMonitor = monitor.slice(20);
 		var importMonitor = monitor.slice(80);
 
-		var c = LocalProjectScanner.class;
 		boolean basedirRemameRequired = false;
 		var scanner =
 				new LocalProjectScanner(
+						data.rootDir,
 						List.of(data.rootDir.getAbsolutePath()),
 						basedirRemameRequired,
 						MavenPlugin.getMavenModelManager());
 		scanner.run(discoverMonitor);
-		scanner.getProjects();
 
 		var importConfiguration = new ProjectImportConfiguration();
 		var workingSets = List.<IWorkingSet>of();
-		var job = new ImportMavenProjectsJob(scanner.getProjects(), workingSets, importConfiguration);
+
+		var projects = new HashSet<MavenProjectInfo>();
+		for (var p : scanner.getProjects()) {
+			addAll(p, projects);
+		}
+		var job = new ImportMavenProjectsJob(projects, workingSets, importConfiguration);
 		var status = job.runInWorkspace(importMonitor);
 		if (!status.isOK()) {
 			throw new InvocationTargetException(new CoreException(status));
+		}
+	}
+
+	private void addAll(MavenProjectInfo proj, Collection<MavenProjectInfo> projects) {
+		projects.add(proj);
+		for (var child : proj.getProjects()) {
+			addAll(child, projects);
 		}
 	}
 }
