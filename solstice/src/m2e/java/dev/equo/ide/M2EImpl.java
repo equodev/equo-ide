@@ -13,6 +13,7 @@
  *******************************************************************************/
 package dev.equo.ide;
 
+import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.HashSet;
@@ -20,6 +21,7 @@ import java.util.List;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.m2e.core.MavenPlugin;
+import org.eclipse.m2e.core.embedder.MavenModelManager;
 import org.eclipse.m2e.core.project.LocalProjectScanner;
 import org.eclipse.m2e.core.project.MavenProjectInfo;
 import org.eclipse.m2e.core.project.ProjectImportConfiguration;
@@ -70,18 +72,39 @@ class M2EImpl implements IdeHookInstantiated {
 		Workbench.getInstance().getActiveWorkbenchWindow().run(true, true, this::doImport);
 	}
 
+	private LocalProjectScanner instantiateScanner() {
+		boolean basedirRemameRequired = false;
+		var list = List.of(data.rootDir.getAbsolutePath());
+		try {
+			try {
+				// 2.1.2 (Java 17+)
+				var c =
+						LocalProjectScanner.class.getConstructor(
+								List.class, boolean.class, MavenModelManager.class);
+				return c.newInstance(list, basedirRemameRequired, MavenPlugin.getMavenModelManager());
+			} catch (NoSuchMethodException e) {
+				// 1.20.1 (Java 11+)
+				var c =
+						LocalProjectScanner.class.getConstructor(
+								File.class, List.class, boolean.class, MavenModelManager.class);
+				return c.newInstance(
+						data.rootDir, list, basedirRemameRequired, MavenPlugin.getMavenModelManager());
+			}
+		} catch (InvocationTargetException
+				| InstantiationException
+				| IllegalAccessException
+				| NoSuchMethodException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
 	private void doImport(IProgressMonitor monitor)
 			throws InvocationTargetException, InterruptedException {
 		System.out.println("M2E doImport " + data.rootDir);
 		var discoverMonitor = monitor.slice(20);
 		var importMonitor = monitor.slice(80);
 
-		boolean basedirRemameRequired = false;
-		var scanner =
-				new LocalProjectScanner(
-						List.of(data.rootDir.getAbsolutePath()),
-						basedirRemameRequired,
-						MavenPlugin.getMavenModelManager());
+		var scanner = instantiateScanner();
 		scanner.run(discoverMonitor);
 
 		var importConfiguration = new ProjectImportConfiguration();

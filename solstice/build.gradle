@@ -104,7 +104,7 @@ p2deps {
 		gradleBuildship()
 	}
 	into 'm2eCompileOnly', {
-		m2e()
+		m2e('1.20.1')
 	}
 }
 
