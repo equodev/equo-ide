@@ -104,7 +104,7 @@ p2deps {
 		gradleBuildship()
 	}
 	into 'm2eCompileOnly', {
-		m2e('1.20.1') // oldest version which supports java 11
+		m2e()
 	}
 }
 

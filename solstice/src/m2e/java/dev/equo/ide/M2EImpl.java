@@ -79,7 +79,6 @@ class M2EImpl implements IdeHookInstantiated {
 		boolean basedirRemameRequired = false;
 		var scanner =
 				new LocalProjectScanner(
-						data.rootDir,
 						List.of(data.rootDir.getAbsolutePath()),
 						basedirRemameRequired,
 						MavenPlugin.getMavenModelManager());

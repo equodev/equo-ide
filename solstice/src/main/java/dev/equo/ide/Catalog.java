@@ -58,7 +58,7 @@ public class Catalog implements Comparable<Catalog> {
 			new Catalog(
 					"m2e",
 					"https://download.eclipse.org/technology/m2e/releases/" + V,
-					v11("1.20.1").v(17, "2.2.1"),
+					v11("1.20.1").v(17, "2.1.2"),
 					List.of("org.eclipse.m2e.feature.feature.group"),
 					JDT,
 					WST,
