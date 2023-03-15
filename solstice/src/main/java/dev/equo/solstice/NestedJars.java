@@ -14,6 +14,7 @@
 package dev.equo.solstice;
 
 import dev.equo.solstice.p2.CacheLocations;
+import dev.equo.solstice.p2.P2QueryResult;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -35,6 +36,7 @@ import java.util.Set;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
+import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import org.slf4j.LoggerFactory;
 
@@ -60,15 +62,50 @@ public abstract class NestedJars {
 		}
 	}
 
+	@Deprecated
+	public static Collection<String> transitiveDeps(boolean useAtomos, CoordFormat format) {
+		return transitiveDeps(useAtomos, format, null);
+	}
+
 	/**
 	 * Returns the full maven coordinates of Solstice's transitive dependencies in
 	 * `group:artifact:version` form.
 	 */
-	public static Collection<String> transitiveDeps(boolean useAtomos, CoordFormat format) {
+	public static Collection<String> transitiveDeps(
+			boolean useAtomos, CoordFormat format, P2QueryResult query) {
+		boolean needsApi = true;
+		boolean needsSimple = true;
+		if (query != null) {
+			query.getJarsOnMavenCentral().stream();
+			query.getJarsNotOnMavenCentral().stream().map(File::getName);
+			var iter =
+					Stream.concat(
+									query.getJarsOnMavenCentral().stream(),
+									query.getJarsNotOnMavenCentral().stream().map(File::getName))
+							.iterator();
+			while (iter.hasNext()) {
+				String name = iter.next();
+				if (name.contains("slf4j")) {
+					System.out.println("## SLF4J coord " + name);
+					if (name.contains("slf4j-api") || name.contains("slf4j.api")) {
+						needsApi = false;
+					} else {
+						needsSimple = false;
+					}
+				} else if (name.contains("logback-classic")) {
+					needsSimple = false;
+				}
+			}
+		}
+		System.out.println("## SLF4J needsApi=" + needsApi + " needsSimple=" + needsSimple);
 		var coords = new ArrayList<String>();
 		String VER_SLF4J = "1.7.36";
-		coords.add(format.format("org.slf4j", "slf4j-api", VER_SLF4J, null));
-		coords.add(format.format("org.slf4j", "slf4j-simple", VER_SLF4J, null));
+		if (needsApi) {
+			coords.add(format.format("org.slf4j", "slf4j-api", VER_SLF4J, null));
+		}
+		if (needsSimple) {
+			coords.add(format.format("org.slf4j", "slf4j-simple", VER_SLF4J, null));
+		}
 		if (useAtomos) {
 			coords.add(format.format("org.apache.felix", "org.apache.felix.atomos", "1.0.0", null));
 			coords.add(format.format("org.apache.felix.atomos", "osgi.core", "8.0.0", "AtomosEquinox"));
