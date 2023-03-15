@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+### Added
+- Added `SignedJars` which can strip signatures when necessary (e.g. a signed Eclipse jar contributing classes to the same package as one of its nested jars). ([#116](https://github.com/equodev/equo-ide/pull/116))
 
 ## [1.0.3] - 2023-03-13
 ### Fixed

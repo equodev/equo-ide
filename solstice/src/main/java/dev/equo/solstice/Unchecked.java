@@ -13,7 +13,25 @@
  *******************************************************************************/
 package dev.equo.solstice;
 
+import java.util.function.Predicate;
+
 class Unchecked {
+	static boolean anyMatches(Throwable t, Predicate<Throwable> toMatch) {
+		if (toMatch.test(t)) {
+			return true;
+		}
+		for (var s : t.getSuppressed()) {
+			if (anyMatches(s, toMatch)) {
+				return true;
+			}
+		}
+		if (t.getCause() != null) {
+			return anyMatches(t.getCause(), toMatch);
+		} else {
+			return false;
+		}
+	}
+
 	static Class<?> classForName(String className) {
 		try {
 			return Class.forName(className);

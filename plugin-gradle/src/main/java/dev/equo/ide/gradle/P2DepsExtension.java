@@ -14,11 +14,14 @@
 package dev.equo.ide.gradle;
 
 import dev.equo.ide.IdeHook;
+import dev.equo.ide.Launcher;
 import dev.equo.solstice.NestedJars;
+import dev.equo.solstice.SignedJars;
 import dev.equo.solstice.p2.P2Model;
+import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 import org.gradle.api.Action;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
@@ -46,7 +49,7 @@ public class P2DepsExtension {
 
 	private final Map<String, P2Model> configurations = new HashMap<>();
 
-	void configure() throws Exception {
+	void configure() {
 		var clientCaching = P2ModelDsl.clientCaching(project);
 		var queryCaching = P2ModelDsl.queryCaching(project);
 		for (Map.Entry<String, P2Model> entry : configurations.entrySet()) {
@@ -58,17 +61,15 @@ public class P2DepsExtension {
 				dep.setTransitive(false);
 			}
 			// and the p2 ones
-			project.getDependencies().add(config, project.files(query.getJarsNotOnMavenCentral()));
-			// add all nested jars
-			var nestedJars = NestedJars.inFiles(query.getJarsNotOnMavenCentral());
-			project
-					.getDependencies()
-					.add(
-							config,
-							project.files(
-									nestedJars.extractAllNestedJars().stream()
-											.map(e -> e.getValue())
-											.collect(Collectors.toList())));
+			var nonMavenClasspath = new ArrayList<File>();
+			nonMavenClasspath.addAll(query.getJarsNotOnMavenCentral());
+			var classpathSorted = Launcher.copyAndSortClasspath(nonMavenClasspath);
+			SignedJars.stripIfNecessary(classpathSorted);
+			for (var nested : NestedJars.inFiles(classpathSorted).extractAllNestedJars()) {
+				classpathSorted.add(nested.getValue());
+			}
+			SignedJars.stripIfNecessary(classpathSorted);
+			project.getDependencies().add(config, project.files(classpathSorted));
 		}
 	}
 }
