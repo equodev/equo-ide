@@ -139,6 +139,9 @@ public class ShimIdeBootstrapServices {
 				Dictionaries.empty());
 
 		// - [ ] XML parsing
+		System.setProperty( // fixes https://github.com/equodev/equo-ide/issues/118
+				"javax.xml.parsers.DocumentBuilderFactory",
+				"com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl");
 		context.registerService(SAXParserFactory.class, new XMLFactory<>(true), null);
 		context.registerService(DocumentBuilderFactory.class, new XMLFactory<>(false), null);
 	}
@@ -265,10 +268,16 @@ public class ShimIdeBootstrapServices {
 		@SuppressWarnings("unchecked")
 		@Override
 		public T getService(Bundle bundle, ServiceRegistration<T> registration) {
-			if (isSax) {
-				return (T) SAXParserFactory.newInstance();
-			} else {
-				return (T) DocumentBuilderFactory.newInstance();
+			try {
+				if (isSax) {
+					var factory = SAXParserFactory.newDefaultInstance();
+					return (T) factory;
+				} else {
+					var factory = DocumentBuilderFactory.newDefaultInstance();
+					return (T) factory;
+				}
+			} catch (Exception e) {
+				throw Unchecked.wrap(e);
 			}
 		}
 
