@@ -13,7 +13,6 @@
  *******************************************************************************/
 package dev.equo.solstice;
 
-import dev.equo.solstice.p2.CacheLocations;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -22,6 +21,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
@@ -39,6 +39,8 @@ import java.util.zip.ZipOutputStream;
  *
  * <p>If you encounter the unusual situation where a jar needs to have its signature stripped due to
  * its nested jars, feel free to submit a PR to update the <code>needsStrip</code> variable.
+ *
+ * <p>You can also check out the main below to debug signing issues in a given package.
  */
 public class StrippedJars {
 	private static final List<String> needsStrip =
@@ -46,14 +48,15 @@ public class StrippedJars {
 					"org.eclipse.m2e.maven.indexer_1.18.1.20211011-2139.jar",
 					"org.eclipse.m2e.maven.indexer_1.18.1.20211011-2139.jar__lucene-core-5.5.5.jar__fHOSNXkw66HmcZm23lqBVA--.jar");
 
+	static File strippedFile(File f) {
+		return new File(f.getAbsolutePath() + "-stripped-sig.jar");
+	}
+
 	public static void strip(ArrayList<File> file) {
-		if (!CacheLocations.strippedJars().isDirectory()) {
-			CacheLocations.strippedJars().mkdirs();
-		}
 		file.replaceAll(
 				f -> {
 					if (needsStrip.contains(f.getName())) {
-						File strippedJar = new File(CacheLocations.strippedJars(), f.getName());
+						File strippedJar = strippedFile(f);
 						try {
 							var strippedBytes = strip(f);
 							if (!strippedJar.exists() || strippedJar.length() != strippedBytes.length) {
@@ -96,5 +99,28 @@ public class StrippedJars {
 			}
 		}
 		return output.toByteArray();
+	}
+
+	public static void main(String[] args) throws IOException {
+		String troublePackage = "org.apache.lucene.document.";
+		// get the classpath with
+		//   mvn equo-ide:launch -DdebugClasspath=paths
+		//   gradlew equoIde --debug-classpath=paths
+		var cp = new File("/Users/ntwigg/Downloads/cp.txt");
+		var lines = Files.readAllLines(cp.toPath());
+
+		var troubleF = troublePackage.replace('.', '/');
+		var troubleB = troublePackage.replace('.', '\\');
+		for (var line : lines) {
+			try (JarFile f = new JarFile(new File(line))) {
+				boolean containsPkg =
+						f.stream()
+								.anyMatch(
+										e -> e.getName().startsWith(troubleF) || e.getName().startsWith(troubleB));
+				if (containsPkg) {
+					System.out.println(line + " contains " + troublePackage);
+				}
+			}
+		}
 	}
 }
