@@ -44,12 +44,12 @@ This catalog is a useful reference for the p2 urls, code repositories, and issue
 
 ### `jdt`
 
-- Latest release https://download.eclipse.org/eclipse/updates/4.26/
+- Latest release https://download.eclipse.org/eclipse/updates/4.27/
 - Code & issues https://github.com/eclipse-jdt
 
 ### `pde`
 
-- Latest release https://download.eclipse.org/eclipse/updates/4.26/
+- Latest release https://download.eclipse.org/eclipse/updates/4.27/
 - Code & issues https://github.com/eclipse-pde
 
 <a name="gradle-buildship"></a>
@@ -66,12 +66,12 @@ This catalog is a useful reference for the p2 urls, code repositories, and issue
 
 ### `cdt`
 
-- Latest release https://download.eclipse.org/tools/cdt/releases/11.0/cdt-11.0.0/
+- Latest release https://download.eclipse.org/tools/cdt/releases/11.1/cdt-11.1.0/
 - Code & issues https://github.com/eclipse-cdt
 
 ### `tmTerminal`
 
-- Latest release https://download.eclipse.org/tools/cdt/releases/11.0/cdt-11.0.0/
+- Latest release https://download.eclipse.org/tools/cdt/releases/11.1/cdt-11.1.0/
 - Code & issues https://github.com/eclipse-cdt
 
 ### `rust`

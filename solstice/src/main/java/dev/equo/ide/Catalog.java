@@ -28,7 +28,7 @@ public class Catalog implements Comparable<Catalog> {
 			new Catalog(
 					"platform",
 					"https://download.eclipse.org/eclipse/updates/" + V,
-					jre11("4.26"),
+					jre11("4.27"),
 					List.of("org.eclipse.platform.ide.categoryIU"));
 	public static final Catalog JDT =
 			new Catalog(
@@ -46,7 +46,7 @@ public class Catalog implements Comparable<Catalog> {
 			new Catalog(
 					"lsp4j",
 					"https://download.eclipse.org/lsp4j/updates/releases/" + V,
-					jre11("0.20.0"),
+					jre11("0.20.0"), // TODO: waiting on WST 3.29
 					List.of());
 
 	/** Pure transitive of m2e and others */
@@ -54,7 +54,7 @@ public class Catalog implements Comparable<Catalog> {
 			new Catalog(
 					"wst",
 					"https://download.eclipse.org/webtools/downloads/drops/" + V + "/repository/",
-					jre11("R3.28.0/R-3.28.0-20221120050827"),
+					jre11("R3.28.0/R-3.28.0-20221120050827"), // TODO: 3.29 is still in RC
 					List.of());
 
 	public static final Catalog M2E =
@@ -65,7 +65,7 @@ public class Catalog implements Comparable<Catalog> {
 					List.of("org.eclipse.m2e.feature.feature.group"),
 					JDT,
 					WST,
-					LSP4J) {
+					LSP4J) { // TODO: waiting on WST 3.29
 				@Override
 				public Map<String, P2Model.Filter> getFiltersFor(@Nullable String override) {
 					return Map.of(
@@ -99,8 +99,8 @@ public class Catalog implements Comparable<Catalog> {
 	public static final Catalog TM_TERMINAL =
 			new Catalog(
 					"tmTerminal",
-					"https://download.eclipse.org/tools/cdt/releases/11.0/cdt-" + V,
-					jre11("11.0.0"),
+					"https://download.eclipse.org/tools/cdt/releases/" + V,
+					jre11("11.1/cdt-11.1.0"),
 					List.of(
 							"org.eclipse.tm.terminal.feature.feature.group",
 							"org.eclipse.tm.terminal.view.feature.feature.group"),
@@ -145,7 +145,7 @@ public class Catalog implements Comparable<Catalog> {
 					"groovy",
 					"https://groovy.jfrog.io/artifactory/plugins-release/org/codehaus/groovy/groovy-eclipse-integration/"
 							+ V,
-					jre11("4.8.0/e4.26"),
+					jre11("4.8.0/e4.26"), // TODO: waiting on 4.9.0
 					List.of(
 							"org.codehaus.groovy.compilerless.feature.feature.group",
 							"org.codehaus.groovy40.feature.feature.group"
