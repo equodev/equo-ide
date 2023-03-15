@@ -49,7 +49,7 @@ public class P2DepsExtension {
 
 	private final Map<String, P2Model> configurations = new HashMap<>();
 
-	void configure() throws Exception {
+	void configure() {
 		var clientCaching = P2ModelDsl.clientCaching(project);
 		var queryCaching = P2ModelDsl.queryCaching(project);
 		for (Map.Entry<String, P2Model> entry : configurations.entrySet()) {
@@ -64,6 +64,7 @@ public class P2DepsExtension {
 			var nonMavenClasspath = new ArrayList<File>();
 			nonMavenClasspath.addAll(query.getJarsNotOnMavenCentral());
 			var classpathSorted = Launcher.copyAndSortClasspath(nonMavenClasspath);
+			StrippedJars.strip(classpathSorted);
 			for (var nested : NestedJars.inFiles(classpathSorted).extractAllNestedJars()) {
 				classpathSorted.add(nested.getValue());
 			}
