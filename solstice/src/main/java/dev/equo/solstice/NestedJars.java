@@ -86,7 +86,6 @@ public abstract class NestedJars {
 			while (iter.hasNext()) {
 				String name = iter.next();
 				if (name.contains("slf4j")) {
-					System.out.println("## SLF4J coord " + name);
 					if (name.contains("slf4j-api") || name.contains("slf4j.api")) {
 						needsApi = false;
 					} else {
@@ -97,7 +96,6 @@ public abstract class NestedJars {
 				}
 			}
 		}
-		System.out.println("## SLF4J needsApi=" + needsApi + " needsSimple=" + needsSimple);
 		var coords = new ArrayList<String>();
 		String VER_SLF4J = "1.7.36";
 		if (needsApi) {
