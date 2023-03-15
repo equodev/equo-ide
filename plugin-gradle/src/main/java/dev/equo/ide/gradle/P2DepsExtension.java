@@ -16,7 +16,7 @@ package dev.equo.ide.gradle;
 import dev.equo.ide.IdeHook;
 import dev.equo.ide.Launcher;
 import dev.equo.solstice.NestedJars;
-import dev.equo.solstice.StrippedJars;
+import dev.equo.solstice.SignedJars;
 import dev.equo.solstice.p2.P2Model;
 import java.io.File;
 import java.util.ArrayList;
@@ -64,11 +64,11 @@ public class P2DepsExtension {
 			var nonMavenClasspath = new ArrayList<File>();
 			nonMavenClasspath.addAll(query.getJarsNotOnMavenCentral());
 			var classpathSorted = Launcher.copyAndSortClasspath(nonMavenClasspath);
-			StrippedJars.strip(classpathSorted);
+			SignedJars.stripIfNecessary(classpathSorted);
 			for (var nested : NestedJars.inFiles(classpathSorted).extractAllNestedJars()) {
 				classpathSorted.add(nested.getValue());
 			}
-			StrippedJars.strip(classpathSorted);
+			SignedJars.stripIfNecessary(classpathSorted);
 			project.getDependencies().add(config, project.files(classpathSorted));
 		}
 	}
