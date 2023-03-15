@@ -4,7 +4,7 @@
 [![Maven Plugin](https://img.shields.io/maven-central/v/dev.equo.ide/equo-ide-maven-plugin?color=blue&label=maven%20plugin)](plugin-maven)
 [![Solstice OSGi](https://img.shields.io/maven-central/v/dev.equo.ide/solstice?color=blue&label=solstice%20OSGi)](solstice)
 
-**PUBLIC BETA! Gradle plugin is production ready, Maven plugin is still WIP. [Join our mailing list](https://equo.dev/ide) to be notified when it's ready.**
+EquoIDE is:
 
 - a build plugin for [Gradle](plugin-gradle) and [Maven](plugin-maven)
 - downloads, configures, and launches an instance of the Eclipse IDE
@@ -22,7 +22,7 @@ user@machine % cd equo-ide
 user@machine equo-ide % ./gradlew equoIde
 ```
 
-This will launch and IDE and take you to our [`CONTRIBUTING.md`](CONTRIBUTING.md) which has a deep overview of the features and APIs of this project.
+This will launch an IDE and take you to our [`CONTRIBUTING.md`](CONTRIBUTING.md) which has a deep overview of the features and APIs of this project.
 
 ## Quickstart
 
@@ -46,7 +46,8 @@ or like this in Maven with `mvn equo-ide:launch` ([more info](plugin-maven))
   <artifactId>equo-ide-maven-plugin</artifactId>
   <version>{{ latest version at top of page }}</version>
   <configuration>
-     <jdt/>
+    <jdt/>
+    <m2e><autoImport>${project.basedir}</autoImport></m2e>
   </configuration>
 </plugin>
   ...
@@ -56,4 +57,4 @@ You can see all the plugins we support in [`CATALOG.md`](CATALOG.md), and we als
 
 ## How it works
 
-Much of the complexity of downloading, running, and modifying the Eclipse IDE is caused OSGi and p2. Equo IDE replaces p2 and OSGi with a simple shim called [Solstice](https://github.com/equodev/equo-ide/tree/main/solstice). This makes it easier and faster to build, debug, and run Eclipse-based applications.
+Much of the complexity of downloading, running, and modifying the Eclipse IDE is caused by OSGi and p2. Equo IDE replaces p2 and OSGi with a simple shim called [Solstice](https://github.com/equodev/equo-ide/tree/main/solstice). This makes it easier and faster to build, debug, and run Eclipse-based applications.

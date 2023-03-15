@@ -16,7 +16,10 @@ package dev.equo.ide.maven;
 import dev.equo.ide.Catalog;
 import dev.equo.ide.CatalogDsl;
 import dev.equo.ide.IdeHook;
+import dev.equo.ide.IdeHookM2E;
 import dev.equo.solstice.p2.P2Model;
+import java.io.File;
+import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
 import org.apache.maven.plugins.annotations.Parameter;
@@ -60,6 +63,17 @@ public abstract class AbstractP2MojoWithCatalog extends AbstractP2Mojo {
 	public static class M2E extends MavenCatalogDsl {
 		public M2E() {
 			super(Catalog.M2E);
+		}
+
+		@Parameter private File autoImport;
+
+		@Override
+		protected List<IdeHook> ideHooks() {
+			if (autoImport == null) {
+				return List.of();
+			} else {
+				return List.of(new IdeHookM2E(autoImport));
+			}
 		}
 	}
 

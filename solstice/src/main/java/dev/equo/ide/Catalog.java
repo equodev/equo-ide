@@ -13,8 +13,14 @@
  *******************************************************************************/
 package dev.equo.ide;
 
+import dev.equo.solstice.p2.P2Model;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.annotation.Nullable;
+import org.slf4j.LoggerFactory;
 
 public class Catalog implements Comparable<Catalog> {
 	private static final String V = "${VERSION}";
@@ -22,7 +28,7 @@ public class Catalog implements Comparable<Catalog> {
 			new Catalog(
 					"platform",
 					"https://download.eclipse.org/eclipse/updates/" + V,
-					"4.26",
+					jre11("4.26"),
 					List.of("org.eclipse.platform.ide.categoryIU"));
 	public static final Catalog JDT =
 			new Catalog(
@@ -31,32 +37,51 @@ public class Catalog implements Comparable<Catalog> {
 			new Catalog(
 					"gradleBuildship",
 					"https://download.eclipse.org/buildship/updates/e423/releases/3.x/" + V,
-					"3.1.6.v20220511-1359",
+					jre11("3.1.6.v20220511-1359"),
 					List.of("org.eclipse.buildship.feature.group"),
 					JDT);
 
 	/** Pure transitive of m2e and others */
 	private static final Catalog LSP4J =
 			new Catalog(
-					"lsp4j", "https://download.eclipse.org/lsp4j/updates/releases/" + V, "0.20.0", List.of());
+					"lsp4j",
+					"https://download.eclipse.org/lsp4j/updates/releases/" + V,
+					jre11("0.20.0"),
+					List.of());
 
 	/** Pure transitive of m2e and others */
 	private static final Catalog WST =
 			new Catalog(
 					"wst",
 					"https://download.eclipse.org/webtools/downloads/drops/" + V + "/repository/",
-					"R3.28.0/R-3.28.0-20221120050827",
+					jre11("R3.28.0/R-3.28.0-20221120050827"),
 					List.of());
 
 	public static final Catalog M2E =
 			new Catalog(
 					"m2e",
 					"https://download.eclipse.org/technology/m2e/releases/" + V,
-					"2.1.2",
+					jre11("1.20.1").jre(17, "2.1.2"),
 					List.of("org.eclipse.m2e.feature.feature.group"),
 					JDT,
 					WST,
-					LSP4J);
+					LSP4J) {
+				@Override
+				public Map<String, P2Model.Filter> getFiltersFor(@Nullable String override) {
+					return Map.of(
+							"m2e-nested-jar-has-lucene",
+							P2Model.Filter.create(
+									filter -> {
+										filter.excludePrefix("org.apache.lucene.");
+									}),
+							"slf4j-included",
+							P2Model.Filter.create(
+									filter -> {
+										filter.exclude("slf4j-simple");
+										filter.exclude("slf4j-nop");
+									}));
+				}
+			};
 	public static final Catalog PDE =
 			new Catalog("pde", PLATFORM, List.of("org.eclipse.releng.pde.categoryIU"), JDT);
 
@@ -64,7 +89,7 @@ public class Catalog implements Comparable<Catalog> {
 			new Catalog(
 					"kotlin",
 					"https://files.pkg.jetbrains.space/kotlin/p/kotlin-eclipse/main/" + V,
-					"0.8.21", // 0.8.24 is broken in many
+					jre11("0.8.21"), // 0.8.24 is broken in many
 					// ways
 					List.of(
 							"org.jetbrains.kotlin.feature.feature.group",
@@ -75,7 +100,7 @@ public class Catalog implements Comparable<Catalog> {
 			new Catalog(
 					"tmTerminal",
 					"https://download.eclipse.org/tools/cdt/releases/11.0/cdt-" + V,
-					"11.0.0",
+					jre11("11.0.0"),
 					List.of(
 							"org.eclipse.tm.terminal.feature.feature.group",
 							"org.eclipse.tm.terminal.view.feature.feature.group"),
@@ -111,7 +136,7 @@ public class Catalog implements Comparable<Catalog> {
 			new Catalog(
 					"rust",
 					"https://download.eclipse.org/corrosion/releases/" + V,
-					"1.2.4",
+					jre11("1.2.4"),
 					List.of("org.eclipse.corrosion.product", "org.eclipse.corrosion.feature.feature.group"),
 					TM_TERMINAL);
 
@@ -120,7 +145,7 @@ public class Catalog implements Comparable<Catalog> {
 					"groovy",
 					"https://groovy.jfrog.io/artifactory/plugins-release/org/codehaus/groovy/groovy-eclipse-integration/"
 							+ V,
-					"4.8.0/e4.26",
+					jre11("4.8.0/e4.26"),
 					List.of(
 							"org.codehaus.groovy.compilerless.feature.feature.group",
 							"org.codehaus.groovy40.feature.feature.group"
@@ -136,18 +161,18 @@ public class Catalog implements Comparable<Catalog> {
 
 	private final String name;
 	private final String p2urlTemplate;
-	private final String latestVersion;
+	protected final VmVersion versions;
 	private final List<String> toInstall;
 	private final List<Catalog> requires;
 
 	Catalog(String name, Catalog copyFrom, List<String> toInstall, Catalog... requires) {
-		this(name, copyFrom.p2urlTemplate, copyFrom.latestVersion, toInstall, requires);
+		this(name, copyFrom.p2urlTemplate, copyFrom.versions, toInstall, requires);
 	}
 
 	Catalog(
 			String name,
 			String p2urlTemplate,
-			String latestVersion,
+			VmVersion versions,
 			List<String> toInstall,
 			Catalog... requires) {
 		this.name = name;
@@ -156,7 +181,7 @@ public class Catalog implements Comparable<Catalog> {
 		} else {
 			this.p2urlTemplate = p2urlTemplate + "/";
 		}
-		this.latestVersion = latestVersion;
+		this.versions = versions;
 		this.toInstall = toInstall;
 		this.requires = List.of(requires);
 	}
@@ -175,7 +200,7 @@ public class Catalog implements Comparable<Catalog> {
 
 	public String getUrlForOverride(@Nullable String override) {
 		if (override == null) {
-			return p2urlTemplate.replace(V, latestVersion);
+			return p2urlTemplate.replace(V, versions.getAndWarn(this));
 		} else if (isUrl(override)) {
 			return override;
 		} else {
@@ -185,6 +210,10 @@ public class Catalog implements Comparable<Catalog> {
 
 	public List<String> getTargetsFor(@Nullable String override) {
 		return toInstall;
+	}
+
+	public Map<String, P2Model.Filter> getFiltersFor(@Nullable String override) {
+		return Map.of();
 	}
 
 	public static boolean isUrl(String maybeUrl) {
@@ -207,6 +236,78 @@ public class Catalog implements Comparable<Catalog> {
 			return ((Catalog) obj).name.equals(name);
 		} else {
 			return false;
+		}
+	}
+
+	private static VmVersion jre11(String ver) {
+		return new VmVersion().jre(11, ver);
+	}
+
+	static class VmVersion {
+		private TreeMap<Integer, String> versions = new TreeMap<>();
+
+		public VmVersion jre(int vm, String catalog) {
+			versions.put(vm, catalog);
+			return this;
+		}
+
+		private String get(Catalog catalog) {
+			return versions.floorEntry(JVM_VER).getValue();
+		}
+
+		public String getAndWarn(Catalog catalog) {
+			var entry = versions.floorEntry(JVM_VER);
+			if (entry == null) {
+				var oldest = versions.firstEntry();
+				throw new IllegalArgumentException(
+						"You are running on JRE "
+								+ JVM_VER
+								+ ", but the minimum supported version of "
+								+ catalog.name
+								+ " is "
+								+ oldest.getValue()
+								+ " which requires JRE "
+								+ oldest.getKey()
+								+ "+.");
+			}
+			var latest = versions.lastEntry();
+			if (!entry.equals(latest)) {
+				LoggerFactory.getLogger(Catalog.class)
+						.warn(
+								"You are using "
+										+ catalog.name
+										+ " "
+										+ entry.getValue()
+										+ " which requires JRE "
+										+ entry.getKey()
+										+ ". There is a newer version available, "
+										+ catalog.name
+										+ " "
+										+ latest.getValue()
+										+ ", but it requires JRE "
+										+ latest.getKey()
+										+ " and you are running JRE "
+										+ JVM_VER
+										+ ".");
+			}
+			return entry.getValue();
+		}
+
+		private String latest() {
+			return versions.lastEntry().getValue();
+		}
+	}
+
+	private static final int JVM_VER;
+
+	static {
+		String ver = System.getProperty("java.version");
+		if (ver.startsWith("1.8")) {
+			JVM_VER = 8;
+		} else {
+			Matcher matcher = Pattern.compile("(\\d+)").matcher(ver);
+			matcher.find();
+			JVM_VER = Integer.parseInt(matcher.group(1));
 		}
 	}
 }

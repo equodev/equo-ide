@@ -23,7 +23,7 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
 /** Lists the p2 dependencies of an Eclipse application. */
-@Mojo(name = "list")
+@Mojo(name = "list", aggregator = true)
 public class ListMojo extends AbstractP2MojoWithCatalog {
 	/** Determines output format [ascii|csv] (can be combined with all other commands). */
 	@Parameter(property = "format", defaultValue = "ascii")

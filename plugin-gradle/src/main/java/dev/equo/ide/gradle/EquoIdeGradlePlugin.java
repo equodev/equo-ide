@@ -99,6 +99,10 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 		project.afterEvaluate(
 				unused -> {
 					try {
+						var query =
+								extension
+										.prepareModel()
+										.query(P2ModelDsl.clientCaching(project), P2ModelDsl.queryCaching(project));
 						boolean useAtomosOverrideTrue =
 								anyArgMatching(
 										project,
@@ -106,13 +110,10 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 												arg.startsWith(USE_ATOMOS_FLAG)
 														&& Boolean.parseBoolean(arg.substring(USE_ATOMOS_FLAG.length())));
 						boolean useAtomos = extension.useAtomos || useAtomosOverrideTrue;
-						for (var dep : NestedJars.transitiveDeps(useAtomos, NestedJars.CoordFormat.GRADLE)) {
+						for (var dep :
+								NestedJars.transitiveDeps(useAtomos, NestedJars.CoordFormat.GRADLE, query)) {
 							project.getDependencies().add(EQUO_IDE, dep);
 						}
-						var query =
-								extension
-										.prepareModel()
-										.query(P2ModelDsl.clientCaching(project), P2ModelDsl.queryCaching(project));
 						for (var coordinate : query.getJarsOnMavenCentral()) {
 							ModuleDependency dep =
 									(ModuleDependency) project.getDependencies().add(EQUO_IDE, coordinate);
