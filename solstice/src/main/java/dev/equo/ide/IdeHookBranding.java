@@ -18,13 +18,20 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import javax.annotation.Nullable;
+import org.eclipse.core.internal.runtime.InternalPlatform;
+import org.eclipse.core.runtime.IProduct;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.internal.ide.IDEInternalPreferences;
+import org.eclipse.ui.internal.ide.IDEWorkbenchPlugin;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @SuppressWarnings("serial")
@@ -55,6 +62,8 @@ public class IdeHookBranding implements IdeHook {
 	}
 
 	class Instantiated implements IdeHookInstantiated {
+		Logger logger = LoggerFactory.getLogger(IdeHookBranding.class);
+
 		@Override
 		public void isClean(boolean isClean) throws Exception {
 			if (OS.getRunning().isMac()) {
@@ -85,8 +94,58 @@ public class IdeHookBranding implements IdeHook {
 		}
 
 		@Override
+		public void afterOsgi(BundleContext context) {
+			var internal = InternalPlatform.getDefault();
+			try {
+				var product = internal.getClass().getDeclaredField("product");
+				product.setAccessible(true);
+				product.set(
+						internal,
+						new IProduct() {
+							@Override
+							public String getApplication() {
+								return title;
+							}
+
+							@Override
+							public String getName() {
+								return title;
+							}
+
+							@Override
+							public String getDescription() {
+								return title;
+							}
+
+							@Override
+							public String getId() {
+								return title;
+							}
+
+							@Override
+							public String getProperty(String key) {
+								return null;
+							}
+
+							@Override
+							public Bundle getDefiningBundle() {
+								return Arrays.stream(context.getBundles())
+										.filter(bundle -> bundle.getSymbolicName().equals("dev.equo.ide"))
+										.findFirst()
+										.get();
+							}
+						});
+
+				IPreferenceStore ps = IDEWorkbenchPlugin.getDefault().getPreferenceStore();
+				ps.setValue(IDEInternalPreferences.SHOW_LOCATION_NAME, false);
+				ps.setValue(IDEInternalPreferences.SHOW_PRODUCT_IN_TITLE, true);
+			} catch (Exception e) {
+				logger.warn("problem defining product", e);
+			}
+		}
+
+		@Override
 		public void afterDisplay(Display display) {
-			Display.setAppName(title);
 			var cursor = display.getCursorLocation();
 			var monitors = display.getMonitors();
 			var bestMonitor =
