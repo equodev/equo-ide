@@ -13,11 +13,14 @@
  *******************************************************************************/
 package dev.equo.ide;
 
+import com.diffplug.common.swt.os.OS;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import javax.annotation.Nullable;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.widgets.Display;
@@ -52,6 +55,13 @@ public class IdeHookBranding implements IdeHook {
 	}
 
 	class Instantiated implements IdeHookInstantiated {
+		@Override
+		public void isClean(boolean isClean) throws Exception {
+			if (OS.getRunning().isMac()) {
+				System.setProperty("com.apple.mrj.application.apple.menu.about.name", title);
+			}
+		}
+
 		private Shell splash;
 
 		private Image loadImage(Display display, File file, String defaultResource) {
@@ -110,34 +120,39 @@ public class IdeHookBranding implements IdeHook {
 			while (display.readAndDispatch())
 				// pump the event loop enough to show the branding
 				;
+
+			// now set the application icon
+			Image icon =
+					loadImage(Display.getDefault(), IdeHookBranding.this.icon, "dev/equo/ide/equo_icon.png");
+			var bounds = icon.getBounds();
+			if (bounds.width != bounds.height) {
+				LoggerFactory.getLogger(IdeHookBranding.class)
+						.warn("Icon should be square, but is instead {} by {}", bounds.width, bounds.height);
+			}
+
+			if (OS.getRunning().isMac() || OS.getRunning().isWindows()) {
+				Window.setDefaultImage(icon);
+			} else {
+				var sizes = new int[] {16, 32, 48, 64, 128, 256};
+				Image[] images = new Image[sizes.length];
+				for (int i = 0; i < sizes.length; ++i) {
+					var size = sizes[i];
+					images[i] = new Image(display, size, size);
+					GC gc = new GC(images[i]);
+					gc.setAntialias(SWT.ON);
+					gc.setAdvanced(true);
+					gc.drawImage(icon, 0, 0, bounds.width, bounds.height, 0, 0, size, size);
+					gc.dispose();
+				}
+				icon.dispose();
+				Window.setDefaultImages(images);
+			}
 		}
 
 		@Override
 		public void postStartup() {
 			splash.dispose();
 			splash = null;
-
-			Display.getDefault()
-					.asyncExec(
-							() -> {
-								var display = Display.getCurrent();
-								if (display == null) {
-									// early shutdown
-									return;
-								}
-								Display.setAppName(title);
-								Image icon =
-										loadImage(
-												Display.getDefault(),
-												IdeHookBranding.this.icon,
-												"dev/equo/ide/equo_icon.png");
-								Shell[] shells = display.getShells();
-								for (var shell : shells) {
-									shell.setText(title);
-									shell.setImage(icon);
-									shell.forceActive();
-								}
-							});
 		}
 	}
 }
