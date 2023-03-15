@@ -159,7 +159,7 @@ public class IdeHookBranding implements IdeHook {
 			int imgX = image.getBounds().width;
 			int imgY = image.getBounds().height;
 			splash = new Shell(display, SWT.NO_TRIM | SWT.ON_TOP);
-			splash.setText("Branding");
+			splash.setText(title);
 			splash.setBounds(
 					bestMonitor.x + (bestMonitor.width - imgX / 2) / 2,
 					bestMonitor.y + (bestMonitor.height - imgY / 2) / 2,
@@ -195,6 +195,15 @@ public class IdeHookBranding implements IdeHook {
 		public void postStartup() {
 			splash.dispose();
 			splash = null;
+
+			// setup the task item
+			var taskBar = Display.getDefault().getSystemTaskBar();
+			if (taskBar != null) {
+				var item = taskBar.getItem(null);
+				if (item != null) {
+					item.setText(title);
+				}
+			}
 		}
 	}
 }
