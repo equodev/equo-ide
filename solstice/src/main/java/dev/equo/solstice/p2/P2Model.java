@@ -242,6 +242,11 @@ public class P2Model {
 	}
 
 	public static class Filter {
+		public static Filter create(Consumer<Filter> filter) {
+			var f = new Filter();
+			filter.accept(f);
+			return f;
+		}
 
 		private final TreeSet<String> exclude = new TreeSet<>();
 		private final TreeSet<String> excludePrefix = new TreeSet<>();

@@ -13,7 +13,9 @@
  *******************************************************************************/
 package dev.equo.ide;
 
+import dev.equo.solstice.p2.P2Model;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -63,7 +65,22 @@ public class Catalog implements Comparable<Catalog> {
 					List.of("org.eclipse.m2e.feature.feature.group"),
 					JDT,
 					WST,
-					LSP4J);
+					LSP4J) {
+				@Override
+				public Map<String, P2Model.Filter> getFiltersFor(
+						@org.jetbrains.annotations.Nullable String override) {
+					String version = override == null ? versions.get(this) : override;
+					if ("1.20.1".equals(version)) {
+						return Map.of(
+								"m2e-1.20.1-nested-jar-has-lucene",
+								P2Model.Filter.create(
+										filter -> {
+											filter.exclude("org.apache.lucene.core");
+										}));
+					}
+					return super.getFiltersFor(override);
+				}
+			};
 	public static final Catalog PDE =
 			new Catalog("pde", PLATFORM, List.of("org.eclipse.releng.pde.categoryIU"), JDT);
 
@@ -143,7 +160,7 @@ public class Catalog implements Comparable<Catalog> {
 
 	private final String name;
 	private final String p2urlTemplate;
-	private final VmVersion versions;
+	protected final VmVersion versions;
 	private final List<String> toInstall;
 	private final List<Catalog> requires;
 
@@ -182,7 +199,7 @@ public class Catalog implements Comparable<Catalog> {
 
 	public String getUrlForOverride(@Nullable String override) {
 		if (override == null) {
-			return p2urlTemplate.replace(V, versions.get(this));
+			return p2urlTemplate.replace(V, versions.getAndWarn(this));
 		} else if (isUrl(override)) {
 			return override;
 		} else {
@@ -192,6 +209,10 @@ public class Catalog implements Comparable<Catalog> {
 
 	public List<String> getTargetsFor(@Nullable String override) {
 		return toInstall;
+	}
+
+	public Map<String, P2Model.Filter> getFiltersFor(@Nullable String override) {
+		return Map.of();
 	}
 
 	public static boolean isUrl(String maybeUrl) {
@@ -229,7 +250,11 @@ public class Catalog implements Comparable<Catalog> {
 			return this;
 		}
 
-		public String get(Catalog catalog) {
+		private String get(Catalog catalog) {
+			return versions.floorEntry(JVM_VER).getValue();
+		}
+
+		public String getAndWarn(Catalog catalog) {
 			var entry = versions.floorEntry(JVM_VER);
 			if (entry == null) {
 				var oldest = versions.firstEntry();
@@ -260,7 +285,9 @@ public class Catalog implements Comparable<Catalog> {
 										+ latest.getValue()
 										+ ", but it requires JRE "
 										+ latest.getKey()
-										+ "+.");
+										+ " and you are running JRE "
+										+ JVM_VER
+										+ ".");
 			}
 			return entry.getValue();
 		}

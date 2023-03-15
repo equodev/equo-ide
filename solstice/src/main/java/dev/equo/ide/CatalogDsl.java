@@ -15,6 +15,7 @@ package dev.equo.ide;
 
 import dev.equo.solstice.p2.P2Model;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
 import javax.annotation.Nullable;
@@ -50,6 +51,10 @@ public class CatalogDsl {
 
 	private List<String> installs() {
 		return catalog.getTargetsFor(urlOverride);
+	}
+
+	private Map<String, P2Model.Filter> filters() {
+		return catalog.getFiltersFor(urlOverride);
 	}
 
 	/** Sets the URL and/or version override. */
@@ -147,6 +152,7 @@ public class CatalogDsl {
 			for (CatalogDsl dsl : catalogEntries.values()) {
 				model.addP2Repo(dsl.url());
 				model.getInstall().addAll(dsl.installs());
+				dsl.filters().forEach(model::addFilterAndValidate);
 				hooks.addAll(dsl.ideHooks());
 			}
 		}
