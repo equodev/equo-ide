@@ -42,7 +42,7 @@ import java.util.zip.ZipOutputStream;
  *
  * <p>You can also check out the main below to debug signing issues in a given package.
  */
-public class StrippedJars {
+public class SignedJars {
 	private static final List<String> needsStrip =
 			List.of(
 					"org.eclipse.m2e.maven.indexer_1.18.1.20211011-2139.jar",
@@ -52,13 +52,13 @@ public class StrippedJars {
 		return new File(f.getAbsolutePath() + "-stripped-sig.jar");
 	}
 
-	public static void strip(ArrayList<File> file) {
+	public static void stripIfNecessary(ArrayList<File> file) {
 		file.replaceAll(
 				f -> {
 					if (needsStrip.contains(f.getName())) {
 						File strippedJar = strippedFile(f);
 						try {
-							var strippedBytes = strip(f);
+							var strippedBytes = stripIfNecessary(f);
 							if (!strippedJar.exists() || strippedJar.length() != strippedBytes.length) {
 								Files.write(strippedJar.toPath(), strippedBytes);
 							}
@@ -71,7 +71,7 @@ public class StrippedJars {
 				});
 	}
 
-	private static byte[] strip(File input) throws IOException {
+	private static byte[] stripIfNecessary(File input) throws IOException {
 		ByteArrayOutputStream output = new ByteArrayOutputStream();
 		try (ZipInputStream zipInput =
 						new ZipInputStream(new BufferedInputStream(new FileInputStream(input)));

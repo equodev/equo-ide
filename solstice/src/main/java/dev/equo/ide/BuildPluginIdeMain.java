@@ -17,9 +17,9 @@ import com.diffplug.common.swt.os.OS;
 import dev.equo.solstice.NestedJars;
 import dev.equo.solstice.SerializableMisc;
 import dev.equo.solstice.ShimIdeBootstrapServices;
+import dev.equo.solstice.SignedJars;
 import dev.equo.solstice.Solstice;
 import dev.equo.solstice.SolsticeManifest;
-import dev.equo.solstice.StrippedJars;
 import dev.equo.solstice.p2.WorkspaceRegistry;
 import java.io.File;
 import java.io.IOException;
@@ -89,12 +89,12 @@ public class BuildPluginIdeMain {
 			Objects.requireNonNull(cleanFlag);
 
 			var classpathSorted = Launcher.copyAndSortClasspath(classpath);
-			StrippedJars.strip(classpathSorted);
+			SignedJars.stripIfNecessary(classpathSorted);
 			var nestedJarFolder = new File(workspaceDir, NestedJars.DIR);
 			for (var nested : NestedJars.inFiles(classpathSorted).extractAllNestedJars(nestedJarFolder)) {
 				classpathSorted.add(nested.getValue());
 			}
-			StrippedJars.strip(classpathSorted);
+			SignedJars.stripIfNecessary(classpathSorted);
 
 			if (lockFile.hasClasspath() && !classpathSorted.equals(lockFile.readClasspath())) {
 				System.out.println("WARNING! The classpath has changed since this IDE was setup.");

@@ -160,7 +160,7 @@ public abstract class NestedJars {
 							try (var jarFile = new JarFile(entry.getValue())) {
 								String targetPrefix = "jar:" + entry.getValue().toURI() + "!";
 								String targetPrefixStripped =
-										"jar:" + StrippedJars.strippedFile(entry.getValue()).toURI() + "!";
+										"jar:" + SignedJars.strippedFile(entry.getValue()).toURI() + "!";
 								var firstResource = jarFile.entries().nextElement().getName();
 								var onTheClasspath = NestedJars.class.getClassLoader().getResources(firstResource);
 								while (onTheClasspath.hasMoreElements()) {
