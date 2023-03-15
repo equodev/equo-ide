@@ -3,6 +3,7 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+- Fix branding for title bar and icon. ([#117](https://github.com/equodev/equo-ide/pull/117) fixes [#87](https://github.com/equodev/equo-ide/issues/87))
 
 ## [1.0.1] - 2023-03-13
 ### Fixed
