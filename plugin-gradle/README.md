@@ -4,8 +4,6 @@
 [![Changelog](https://img.shields.io/badge/changelog-here-blue)](CHANGELOG.md)
 [![Javadoc](https://img.shields.io/badge/javadoc-here-blue)](https://javadoc.io/doc/dev.equo.ide/equo-ide-gradle-plugin)
 
-**[Join our mailing list](https://equo.dev/ide) for more updates.**
-
 - a build plugin for Gradle and Maven
 - downloads, configures, and launches an instance of the Eclipse IDE
 - ensures that all of your devs have a zero-effort and perfectly repeatable IDE setup process
@@ -17,14 +15,18 @@ plugins {
   id 'dev.equo.ide' version '{{ latest version at top of page }}'
 }
 equoIde { // launch with gradlew equoIde
-  branding().title('My IDE')
-  branding().icon(file('my_icon.png'))
-  branding().splash(file('my_splash.png'))
-  welcome().openUrl('https://github.com/me/myproject/CONTRIBUTING.md')
   // see https://github.com/equodev/equo-ide/blob/main/CATALOG.md for all available plugins
+  jdt()
   gradleBuildship().autoImport('.') // automatically imports "this" project, could also be '../' or something like that
   // or you can add p2 urls and targets
   // https://github.com/equodev/equo-ide/blob/main/P2_MULTITOOL.md for more info
+  
+  // you can also customize the IDE branding
+  branding().title('My IDE')
+  branding().icon(file('my_icon.png'))
+  branding().splash(file('my_splash.png'))
+  // and make your own plugins, without learning OSGi or p2
+  welcome().openUrl('https://github.com/me/myproject/CONTRIBUTING.md')
 }
 ```
 

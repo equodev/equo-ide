@@ -4,8 +4,6 @@
 [![Changelog](https://img.shields.io/badge/changelog-here-blue)](CHANGELOG.md)
 [![Javadoc](https://img.shields.io/badge/javadoc-here-blue)](https://javadoc.io/doc/dev.equo.ide/equo-ide-maven-plugin)
 
-**[Join our mailing list](https://equo.dev/ide) for more updates.**
-
 - a build plugin for Gradle and Maven
 - downloads, configures, and launches an instance of the Eclipse IDE
 - ensures that all of your devs have a zero-effort and perfectly repeatable IDE setup process
@@ -18,25 +16,25 @@ Use it like this with `mvn equo-ide:launch`
   <artifactId>equo-ide-maven-plugin</artifactId>
   <version>{{ latest version at top of page }}</version>
   <configuration>
+    <!-- see https://github.com/equodev/equo-ide/blob/main/CATALOG.md for all available plugins -->
+    <jdt/>
+    <m2e><autoImport>${project.basedir}</autoImport></m2e>
+    <!-- or you can add specific p2 urls and targets
+         https://github.com/equodev/equo-ide/blob/main/P2_MULTITOOL.md for more info -->
+
+    <!-- you can also customize the IDE branding -->
     <branding>
       <title>My IDE</title>
       <icon>${project.basedir}/my_icon.png</icon>
       <splash>${project.basedir}/my_splash.png</splash>
     </branding>
+     <!-- and make your own plugins, without learning OSGi or p2 -->
     <welcome>
       <openUrl>https://github.com/me/myproject/CONTRIBUTING.md</openUrl>
     </welcome>
-    <!-- see https://github.com/equodev/equo-ide/blob/main/CATALOG.md for all available plugins -->
-    <jdt/>
-    <!-- or you can add specific p2 urls and targets
-         https://github.com/equodev/equo-ide/blob/main/P2_MULTITOOL.md for more info -->
   </configuration>
 </plugin>
 ```
-
-## Coming soon
-
-- Use m2e to import this maven project. ([#18](https://github.com/equodev/equo-ide/issues/18))
 
 ## Task listing
 
