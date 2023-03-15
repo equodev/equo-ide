@@ -45,7 +45,6 @@ class M2EImpl implements IdeHookInstantiated {
 	 */
 	@Override
 	public void isClean(boolean isClean) {
-		System.out.println("M2E isClean=" + isClean);
 		this.isClean = isClean;
 	}
 
@@ -54,7 +53,6 @@ class M2EImpl implements IdeHookInstantiated {
 	/** Called after the OSGi container is created and populated. */
 	@Override
 	public void afterOsgi(BundleContext context) {
-		System.out.println("M2E afterOsgi=" + context);
 		this.context = context;
 	}
 
@@ -100,7 +98,6 @@ class M2EImpl implements IdeHookInstantiated {
 
 	private void doImport(IProgressMonitor monitor)
 			throws InvocationTargetException, InterruptedException {
-		System.out.println("M2E doImport " + data.rootDir);
 		var discoverMonitor = monitor.slice(20);
 		var importMonitor = monitor.slice(80);
 
@@ -119,6 +116,7 @@ class M2EImpl implements IdeHookInstantiated {
 		if (!status.isOK()) {
 			throw new InvocationTargetException(new CoreException(status));
 		}
+		monitor.done();
 	}
 
 	private void addAll(MavenProjectInfo proj, Collection<MavenProjectInfo> projects) {
