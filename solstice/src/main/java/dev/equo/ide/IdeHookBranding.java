@@ -13,14 +13,11 @@
  *******************************************************************************/
 package dev.equo.ide;
 
-import com.diffplug.common.swt.os.OS;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import javax.annotation.Nullable;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.widgets.Display;
@@ -123,56 +120,21 @@ public class IdeHookBranding implements IdeHook {
 			Display.getDefault()
 					.asyncExec(
 							() -> {
-								var logger = LoggerFactory.getLogger(IdeHookBranding.class);
 								var display = Display.getCurrent();
 								if (display == null) {
 									// early shutdown
 									return;
 								}
-								display = Display.getDefault();
 								Display.setAppName(title);
 								Image icon =
-										loadImage(display, IdeHookBranding.this.icon, "dev/equo/ide/equo_icon.png");
-
-								var bounds = icon.getBounds();
-								if (bounds.width != bounds.height) {
-									logger.warn(
-											"Icon should be square, but is instead {} by {}",
-											bounds.width,
-											bounds.height);
-								}
-								var sizes = new int[] {16, 32, 48, 64, 128, 256};
-								Image[] images = new Image[sizes.length];
-								for (int i = 0; i < sizes.length; ++i) {
-									var size = sizes[i];
-									images[i] = new Image(display, size, size);
-									GC gc = new GC(images[i]);
-									gc.setBackground(new Color(0, 0, 0, 0));
-									gc.setAntialias(SWT.ON);
-									gc.drawImage(icon, 0, 0, bounds.width, bounds.height, 0, 0, size, size);
-									gc.dispose();
-								}
-								icon.dispose();
-
-								if (OS.getRunning().isMac()) {
-									try {
-										var dockImageField = display.getClass().getDeclaredField("dockImage");
-										dockImageField.setAccessible(true);
-										var dockImage = dockImageField.get(display);
-										if (dockImage != null) {
-											var release = dockImage.getClass().getDeclaredMethod("release");
-											release.invoke(dockImage);
-											dockImageField.set(display, null);
-										}
-									} catch (Exception e) {
-										logger.warn("problem releasing default mac icon", e);
-									}
-								}
-
+										loadImage(
+												Display.getDefault(),
+												IdeHookBranding.this.icon,
+												"dev/equo/ide/equo_icon.png");
 								Shell[] shells = display.getShells();
 								for (var shell : shells) {
 									shell.setText(title);
-									shell.setImages(images);
+									shell.setImage(icon);
 									shell.forceActive();
 								}
 							});
