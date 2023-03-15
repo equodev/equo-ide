@@ -428,8 +428,14 @@ public class Solstice {
 		try {
 			logger.info("activate {}", manifest);
 			manifest.hydrated.start();
-		} catch (BundleException e) {
+		} catch (Exception e) {
 			logger.warn("error in " + manifest, e);
+			if (Unchecked.anyMatches(
+					e,
+					t -> t instanceof SecurityException && t.getMessage().contains("signer information"))) {
+				logger.warn(
+						"to resolve a signing problem, take a look at https://github.com/equodev/equo-ide/blob/main/solstice/src/main/java/dev/equo/solstice/StrippedJars.java");
+			}
 		}
 	}
 
