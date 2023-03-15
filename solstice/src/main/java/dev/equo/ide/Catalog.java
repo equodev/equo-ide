@@ -73,12 +73,6 @@ public class Catalog implements Comparable<Catalog> {
 							P2Model.Filter.create(
 									filter -> {
 										filter.excludePrefix("org.apache.lucene.");
-									}),
-							"slf4j-included",
-							P2Model.Filter.create(
-									filter -> {
-										filter.exclude("slf4j-simple");
-										filter.exclude("slf4j-nop");
 									}));
 				}
 			};

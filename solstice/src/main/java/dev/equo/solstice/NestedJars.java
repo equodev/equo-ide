@@ -85,6 +85,9 @@ public abstract class NestedJars {
 							.iterator();
 			while (iter.hasNext()) {
 				String name = iter.next();
+				if (name.contains("slf4j-nop")) {
+					continue;
+				}
 				if (name.contains("slf4j")) {
 					if (name.contains("slf4j-api") || name.contains("slf4j.api")) {
 						needsApi = false;

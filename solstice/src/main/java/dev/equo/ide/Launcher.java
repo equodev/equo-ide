@@ -157,7 +157,12 @@ public class Launcher {
 
 	public static ArrayList<File> copyAndSortClasspath(Iterable<File> files) {
 		var copy = new ArrayList<File>();
-		files.forEach(copy::add);
+		for (File f : files) {
+			if (f.getName().startsWith("slf4j-nop")) {
+				continue;
+			}
+			copy.add(f);
+		}
 		copy.sort(
 				Comparator.comparing(File::getName).reversed()); // TODO: reversed() fixes a signing problem
 		return copy;
