@@ -80,22 +80,32 @@ public class Solstice {
 				hostBundle.fragments.add(fragment);
 			}
 		}
+		ensureOrder(
+				"org.eclipse.jdt.core",
+				"org.apache.jasper.glassfish",
+				"Eclipse has multiple jars which define `ICompilationUnit`.");
+		ensureOrder(
+				"org.eclipse.jdt.core.compiler.batch",
+				"org.apache.jasper.glassfish",
+				"Eclipse has multiple jars which define `ICompilationUnit`.");
+		ensureOrder("org.eclipse.osgi", "biz.aQute.bndlib", "bndlib contains org.osgi.service.log");
+	}
 
-		var glassfish = bundleByName(GLASSFISH);
-		var jdtCore = bundleByName(JDT_CORE);
-		if (glassfish != null && jdtCore != null) {
-			if (glassfish.classpathOrder < jdtCore.classpathOrder) {
-				throw new IllegalArgumentException(
-						"Eclipse has multiple jars which define `ICompilationUnit`, and it is important for the classpath order to put "
-								+ JDT_CORE
-								+ " before "
-								+ GLASSFISH);
+	private void ensureOrder(String beforeName, String afterName, String reason) {
+		var before = bundleByName(beforeName);
+		var after = bundleByName(afterName);
+		if (before != null && after != null) {
+			if (before.classpathOrder > after.classpathOrder) {
+				logger.error(
+						"It is a known problem for {} {} to be earlier on the classpath than {} {} because {}",
+						afterName,
+						after.getJarUrl(),
+						beforeName,
+						before.getJarUrl(),
+						reason);
 			}
 		}
 	}
-
-	private static final String GLASSFISH = "org.apache.jasper.glassfish";
-	private static final String JDT_CORE = "org.eclipse.jdt.core";
 
 	public Map<String, List<SolsticeManifest>> bySymbolicName() {
 		return groupBundlesIncludeFragments(

@@ -157,14 +157,20 @@ public class Launcher {
 
 	public static ArrayList<File> copyAndSortClasspath(Iterable<File> files) {
 		var copy = new ArrayList<File>();
+		List<File> addToEnd = new ArrayList<>();
 		for (File f : files) {
 			if (f.getName().startsWith("slf4j-nop")) {
 				continue;
 			}
+			if (f.getName().startsWith("org.apache.jasper.glassfish")
+					|| f.getName().startsWith("biz.aQute.bndlib")) {
+				addToEnd.add(f);
+				continue;
+			}
 			copy.add(f);
 		}
-		copy.sort(
-				Comparator.comparing(File::getName).reversed()); // TODO: reversed() fixes a signing problem
+		copy.sort(Comparator.comparing(File::getName).reversed());
+		copy.addAll(addToEnd);
 		return copy;
 	}
 
