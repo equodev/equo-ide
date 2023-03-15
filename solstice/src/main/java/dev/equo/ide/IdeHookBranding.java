@@ -137,7 +137,9 @@ public class IdeHookBranding implements IdeHook {
 						});
 
 				IPreferenceStore ps = IDEWorkbenchPlugin.getDefault().getPreferenceStore();
+				ps.setValue(IDEInternalPreferences.SHOW_LOCATION, false);
 				ps.setValue(IDEInternalPreferences.SHOW_LOCATION_NAME, false);
+				ps.setValue(IDEInternalPreferences.SHOW_PERSPECTIVE_IN_TITLE, false);
 				ps.setValue(IDEInternalPreferences.SHOW_PRODUCT_IN_TITLE, true);
 			} catch (Exception e) {
 				logger.warn("problem defining product", e);
