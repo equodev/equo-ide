@@ -44,9 +44,7 @@ import java.util.zip.ZipOutputStream;
  */
 public class SignedJars {
 	private static final List<String> needsStrip =
-			List.of(
-					"org.eclipse.m2e.maven.indexer_1.18.1.20211011-2139.jar",
-					"org.eclipse.m2e.maven.indexer_1.18.1.20211011-2139.jar__lucene-core-5.5.5.jar__fHOSNXkw66HmcZm23lqBVA--.jar");
+			List.of("org.eclipse.m2e.maven.indexer_1.18.1.20211011-2139.jar");
 
 	static File strippedFile(File f) {
 		return new File(f.getAbsolutePath() + "-stripped-sig.jar");
