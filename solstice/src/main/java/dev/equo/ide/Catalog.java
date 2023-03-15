@@ -75,7 +75,7 @@ public class Catalog implements Comparable<Catalog> {
 								"m2e-1.20.1-nested-jar-has-lucene",
 								P2Model.Filter.create(
 										filter -> {
-											filter.exclude("org.apache.lucene.core");
+											filter.excludePrefix("org.apache.lucene.");
 										}));
 					}
 					return super.getFiltersFor(override);
