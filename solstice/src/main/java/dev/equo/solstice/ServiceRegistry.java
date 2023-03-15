@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -324,16 +325,20 @@ abstract class ServiceRegistry extends BundleContextImpl {
 			implements ServiceReference<S>, ServiceRegistration<S> {
 		final String[] objectClass;
 		final long id;
-		Dictionary<String, ?> properties;
+		Dictionary<String, Object> properties;
 
 		AbstractServiceReference(String[] objectClass, Dictionary<String, ?> properties) {
 			this.id = globalId.getAndIncrement();
 			this.objectClass = objectClass;
 			if (properties != null) {
-				this.properties = Dictionaries.copy(properties);
+				this.properties = (Dictionary<String, Object>) Dictionaries.copy(properties);
 			} else {
-				this.properties = Dictionaries.empty();
+				this.properties = new Hashtable<>();
 			}
+			this.properties.put(Constants.SERVICE_ID, Long.valueOf(id));
+			this.properties.put(Constants.OBJECTCLASS, objectClass);
+			this.properties.put(Constants.SERVICE_SCOPE, Constants.SCOPE_BUNDLE);
+			this.properties.put(Constants.SERVICE_BUNDLEID, Long.valueOf(0));
 		}
 
 		@Override
@@ -365,7 +370,7 @@ abstract class ServiceRegistry extends BundleContextImpl {
 
 		@Override
 		public synchronized void setProperties(Dictionary<String, ?> properties) {
-			this.properties = properties;
+			this.properties = (Dictionary<String, Object>) properties;
 			notifyListeners(ServiceEvent.MODIFIED, this);
 		}
 

@@ -83,7 +83,7 @@ class Dictionaries {
 
 	public static <K, V> Dictionary<K, V> copy(Dictionary<K, V> in) {
 		if (in.isEmpty()) {
-			return empty();
+			return new Hashtable<>();
 		} else {
 			var table = new Hashtable<K, V>();
 			var keys = in.keys();
