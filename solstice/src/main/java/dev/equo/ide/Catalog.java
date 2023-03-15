@@ -67,18 +67,19 @@ public class Catalog implements Comparable<Catalog> {
 					WST,
 					LSP4J) {
 				@Override
-				public Map<String, P2Model.Filter> getFiltersFor(
-						@org.jetbrains.annotations.Nullable String override) {
-					String version = override == null ? versions.get(this) : override;
-					if ("1.20.1".equals(version)) {
-						return Map.of(
-								"m2e-1.20.1-nested-jar-has-lucene",
-								P2Model.Filter.create(
-										filter -> {
-											filter.excludePrefix("org.apache.lucene.");
-										}));
-					}
-					return super.getFiltersFor(override);
+				public Map<String, P2Model.Filter> getFiltersFor(@Nullable String override) {
+					return Map.of(
+							"m2e-nested-jar-has-lucene",
+							P2Model.Filter.create(
+									filter -> {
+										filter.excludePrefix("org.apache.lucene.");
+									}),
+							"slf4j-included",
+							P2Model.Filter.create(
+									filter -> {
+										filter.exclude("slf4j-simple");
+										filter.exclude("slf4j-nop");
+									}));
 				}
 			};
 	public static final Catalog PDE =
