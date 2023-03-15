@@ -86,6 +86,7 @@ public class IdeHookBranding implements IdeHook {
 
 		@Override
 		public void afterDisplay(Display display) {
+			Display.setAppName(title);
 			var cursor = display.getCursorLocation();
 			var monitors = display.getMonitors();
 			var bestMonitor =
@@ -116,7 +117,6 @@ public class IdeHookBranding implements IdeHook {
 			splash.open();
 			splash.forceActive();
 
-			Display.setAppName(title);
 			while (display.readAndDispatch())
 				// pump the event loop enough to show the branding
 				;
@@ -129,24 +129,7 @@ public class IdeHookBranding implements IdeHook {
 				LoggerFactory.getLogger(IdeHookBranding.class)
 						.warn("Icon should be square, but is instead {} by {}", bounds.width, bounds.height);
 			}
-
-			if (OS.getRunning().isMac() || OS.getRunning().isWindows()) {
-				Window.setDefaultImage(icon);
-			} else {
-				var sizes = new int[] {16, 32, 48, 64, 128, 256};
-				Image[] images = new Image[sizes.length];
-				for (int i = 0; i < sizes.length; ++i) {
-					var size = sizes[i];
-					images[i] = new Image(display, size, size);
-					GC gc = new GC(images[i]);
-					gc.setAntialias(SWT.ON);
-					gc.setAdvanced(true);
-					gc.drawImage(icon, 0, 0, bounds.width, bounds.height, 0, 0, size, size);
-					gc.dispose();
-				}
-				icon.dispose();
-				Window.setDefaultImages(images);
-			}
+			Window.setDefaultImage(icon);
 		}
 
 		@Override
