@@ -140,7 +140,7 @@ public class ShimBundle implements Bundle {
 	///////////////////
 	// Bundle overrides
 	///////////////////
-	int state = INSTALLED;
+	int state;
 
 	private boolean activateHasBeenCalled = false;
 
@@ -150,13 +150,15 @@ public class ShimBundle implements Bundle {
 			return;
 		}
 		activateHasBeenCalled = true;
-		context.delegate.notifyBundleListeners(BundleEvent.STARTING, this);
-		state = STARTING;
-
+		if (state != Bundle.RESOLVED) {
+			state = Bundle.RESOLVED;
+			context.delegate.notifyBundleListeners(BundleEvent.RESOLVED, this);
+		}
 		for (var cap : manifest.capProvides) {
 			context.delegate.capabilities.put(cap, this);
 		}
-
+		state = Bundle.STARTING;
+		context.delegate.notifyBundleListeners(BundleEvent.STARTING, this);
 		if (!BundleContextShim.DONT_ACTIVATE.contains(getSymbolicName()) && activator != null) {
 			try {
 				@SuppressWarnings("unchecked")
@@ -167,8 +169,8 @@ public class ShimBundle implements Bundle {
 				context.delegate.logger.warn("Error in activator of " + getSymbolicName(), e);
 			}
 		}
-		context.delegate.notifyBundleListeners(BundleEvent.STARTED, this);
 		state = ACTIVE;
+		context.delegate.notifyBundleListeners(BundleEvent.STARTED, this);
 	}
 
 	@Override

@@ -120,17 +120,13 @@ public class BundleContextShim extends ServiceRegistry {
 		bundles.add(0, systemBundle);
 
 		for (var b : bundles) {
-			notifyBundleListeners(BundleEvent.INSTALLED, b);
 			b.state = Bundle.INSTALLED;
+			notifyBundleListeners(BundleEvent.INSTALLED, b);
 		}
 		for (var b : bundles) {
-			notifyBundleListeners(BundleEvent.RESOLVED, b);
-			b.state = Bundle.RESOLVED;
-		}
-		for (var b : bundles) {
-			if (b.manifest.lazy) {
-				notifyBundleListeners(BundleEvent.LAZY_ACTIVATION, b);
-				b.state = Bundle.STARTING;
+			if (b.manifest.lazy || b.activator != null) {
+				b.state = Bundle.RESOLVED;
+				notifyBundleListeners(BundleEvent.RESOLVED, b);
 			}
 		}
 	}
