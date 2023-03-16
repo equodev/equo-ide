@@ -21,6 +21,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -114,6 +115,12 @@ public class BundleContextShim extends ServiceRegistry {
 					return bundle;
 				});
 		Objects.requireNonNull(systemBundle);
+		// match the ordering of org.eclipse.osgi's context.getBundles()
+		bundles.sort(Comparator.comparing(ShimBundle::getSymbolicName));
+		var systemIdx = bundles.indexOf(systemBundle);
+		bundles.remove(systemIdx);
+		bundles.add(0, systemBundle);
+
 		for (var b : bundles) {
 			notifyBundleListeners(BundleEvent.INSTALLED, b);
 			b.state = Bundle.INSTALLED;
