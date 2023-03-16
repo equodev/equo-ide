@@ -150,8 +150,8 @@ public class ShimBundle implements Bundle {
 			return;
 		}
 		activateHasBeenCalled = true;
-		state = STARTING;
 		context.delegate.notifyBundleListeners(BundleEvent.STARTING, this);
+		state = STARTING;
 
 		for (var cap : manifest.capProvides) {
 			context.delegate.capabilities.put(cap, this);
@@ -167,8 +167,8 @@ public class ShimBundle implements Bundle {
 				context.delegate.logger.warn("Error in activator of " + getSymbolicName(), e);
 			}
 		}
-		state = ACTIVE;
 		context.delegate.notifyBundleListeners(BundleEvent.STARTED, this);
+		state = ACTIVE;
 	}
 
 	@Override
