@@ -276,11 +276,6 @@ abstract class ServiceRegistry extends BundleContextImpl {
 		public boolean isAssignableTo(Bundle bundle, String className) {
 			return Unchecked.classForName(className).isInstance(service);
 		}
-
-		@Override
-		public String toString() {
-			return service.toString();
-		}
 	}
 
 	class ShimServiceFactoryReference<S> extends AbstractServiceReference<S> {
@@ -316,11 +311,6 @@ abstract class ServiceRegistry extends BundleContextImpl {
 				}
 			}
 			return false;
-		}
-
-		@Override
-		public String toString() {
-			return factory.toString();
 		}
 	}
 
@@ -429,6 +419,11 @@ abstract class ServiceRegistry extends BundleContextImpl {
 		@Override
 		public <A> A adapt(Class<A> type) {
 			throw Unimplemented.onPurpose();
+		}
+
+		@Override
+		public String toString() {
+			return Arrays.toString(objectClass);
 		}
 	}
 }
