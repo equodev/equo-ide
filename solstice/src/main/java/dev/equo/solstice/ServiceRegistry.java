@@ -187,14 +187,7 @@ abstract class ServiceRegistry extends BundleContextImpl {
 
 	@Override
 	public final <S> S getService(ServiceReference<S> reference) {
-		if (reference instanceof ShimServiceReference) {
-			return ((ShimServiceReference<S>) reference).service;
-		} else if (reference instanceof ShimServiceFactoryReference) {
-			var cast = (ShimServiceFactoryReference<S>) reference;
-			return cast.factory.getService(systemBundle(), cast.registration);
-		} else {
-			throw new IllegalArgumentException("Unexpected class " + reference);
-		}
+		return ((AbstractServiceReference<S>) reference).get();
 	}
 
 	@Override
@@ -276,6 +269,11 @@ abstract class ServiceRegistry extends BundleContextImpl {
 		public boolean isAssignableTo(Bundle bundle, String className) {
 			return Unchecked.classForName(className).isInstance(service);
 		}
+
+		@Override
+		protected S get() {
+			return service;
+		}
 	}
 
 	class ShimServiceFactoryReference<S> extends AbstractServiceReference<S> {
@@ -311,6 +309,16 @@ abstract class ServiceRegistry extends BundleContextImpl {
 				}
 			}
 			return false;
+		}
+
+		S value;
+
+		@Override
+		protected synchronized S get() {
+			if (value == null) {
+				value = factory.getService(systemBundle(), registration);
+			}
+			return value;
 		}
 	}
 
@@ -369,6 +377,8 @@ abstract class ServiceRegistry extends BundleContextImpl {
 			this.properties.put(Constants.SERVICE_SCOPE, Constants.SCOPE_BUNDLE);
 			this.properties.put(Constants.SERVICE_BUNDLEID, Long.valueOf(0));
 		}
+
+		protected abstract S get();
 
 		@Override
 		public synchronized Object getProperty(String key) {
