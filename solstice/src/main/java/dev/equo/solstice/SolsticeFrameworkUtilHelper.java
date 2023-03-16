@@ -19,24 +19,32 @@ import org.osgi.framework.connect.FrameworkUtilHelper;
 
 /** Equinox will sometimes use this to determine what bundle a class comes from. */
 public class SolsticeFrameworkUtilHelper implements FrameworkUtilHelper {
-	private static BundleContextShim owner;
+	private static Solstice owner;
 
-	public static void initialize(BundleContextShim owner) {
+	public static void initialize(Solstice owner) {
 		SolsticeFrameworkUtilHelper.owner = owner;
 	}
 
 	@Override
 	public Optional<Bundle> getBundle(Class<?> classFromBundle) {
 		if (owner == null) {
-			// this class is not needed when running under Atomos, otherwise this ought to be a hard error
+			// this class shouldn't be around unless Solstice has been uninitialized, but just in case...
 			return Optional.empty();
 		}
 		var domain = classFromBundle.getProtectionDomain();
 		var source = domain.getCodeSource();
 		if (source == null) {
-			return Optional.of(owner.getBundle(0));
+			return Optional.of(owner.getContext().getBundle(0));
 		}
 		var location = source.getLocation();
-		return Optional.of(owner.bundleForUrl(location));
+		var manifest = owner.bundleForUrl(location);
+		if (manifest == null) {
+			return Optional.of(owner.getContext().getBundle(0));
+		}
+		// if this is a fragment, return the host instead
+		if (manifest.isFragment()) {
+			manifest = owner.bundleByName(manifest.fragmentHost());
+		}
+		return Optional.of(manifest.hydrated);
 	}
 }

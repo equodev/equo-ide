@@ -324,6 +324,7 @@ public class Solstice {
 	}
 
 	public void openAtomos(Map<String, String> props) throws BundleException {
+		SolsticeFrameworkUtilHelper.initialize(this);
 		assertContextInitialized(false);
 		// the spelled-out package is on purpose so that Atomos can remain an optional
 		// component
@@ -333,6 +334,7 @@ public class Solstice {
 	}
 
 	public void openShim(Map<String, String> props) {
+		SolsticeFrameworkUtilHelper.initialize(this);
 		assertContextInitialized(false);
 		context = BundleContextShim.hydrate(this, props);
 	}
@@ -524,6 +526,16 @@ public class Solstice {
 	SolsticeManifest bundleByName(String name) {
 		for (var bundle : bundles) {
 			if (name.equals(bundle.getSymbolicName())) {
+				return bundle;
+			}
+		}
+		return null;
+	}
+
+	SolsticeManifest bundleForUrl(URL source) {
+		String sourceString = "jar:" + source.toExternalForm() + "!";
+		for (var bundle : bundles) {
+			if (sourceString.equals(bundle.getJarUrl())) {
 				return bundle;
 			}
 		}

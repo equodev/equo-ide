@@ -17,7 +17,6 @@ import com.diffplug.common.swt.os.SwtPlatform;
 import dev.equo.solstice.platform.Handler;
 import java.io.File;
 import java.io.InputStream;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -98,7 +97,6 @@ public class BundleContextShim extends ServiceRegistry {
 				});
 		this.storage = new ShimStorage(props, logger);
 		Handler.install(this);
-		SolsticeFrameworkUtilHelper.initialize(this);
 		bundleSet.hydrateFrom(
 				manifest -> {
 					long bundleId;
@@ -147,16 +145,6 @@ public class BundleContextShim extends ServiceRegistry {
 	public ShimBundle bundleForSymbolicName(String name) {
 		for (ShimBundle bundle : bundles) {
 			if (name.equals(bundle.getSymbolicName())) {
-				return bundle;
-			}
-		}
-		return null;
-	}
-
-	public Bundle bundleForUrl(URL source) {
-		String sourceString = "jar:" + source.toExternalForm() + "!";
-		for (ShimBundle bundle : bundles) {
-			if (sourceString.equals(bundle.manifest.getJarUrl())) {
 				return bundle;
 			}
 		}
