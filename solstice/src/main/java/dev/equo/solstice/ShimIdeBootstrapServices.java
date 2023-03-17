@@ -142,6 +142,8 @@ public class ShimIdeBootstrapServices {
 		System.setProperty( // fixes https://github.com/equodev/equo-ide/issues/118
 				"javax.xml.parsers.DocumentBuilderFactory",
 				"com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl");
+		System.setProperty(
+				"javax.xml.parsers.SAXParserFactory", "org.apache.xerces.jaxp.SAXParserFactoryImpl");
 		context.registerService(SAXParserFactory.class, new XMLFactory<>(true), null);
 		context.registerService(DocumentBuilderFactory.class, new XMLFactory<>(false), null);
 	}
@@ -270,7 +272,9 @@ public class ShimIdeBootstrapServices {
 		public T getService(Bundle bundle, ServiceRegistration<T> registration) {
 			try {
 				if (isSax) {
-					var factory = SAXParserFactory.newDefaultInstance();
+					var factory = SAXParserFactory.newInstance();
+					factory.setFeature("http://xml.org/sax/features/namespaces", true);
+					factory.setFeature("http://xml.org/sax/features/validation", false);
 					return (T) factory;
 				} else {
 					var factory = DocumentBuilderFactory.newDefaultInstance();
