@@ -34,9 +34,12 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 import org.eclipse.osgi.internal.location.EquinoxLocations;
 import org.eclipse.swt.widgets.Display;
+import org.osgi.framework.BundleEvent;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
 import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.framework.SynchronousBundleListener;
+import org.slf4j.LoggerFactory;
 
 /**
  * A main method for launching an IDE using Solstice. It has a verbose command line interface which
@@ -278,6 +281,7 @@ public class BuildPluginIdeMain {
 		var props = new LinkedHashMap<String, String>();
 		props.put("gosh.args", "--quiet --noshutdown");
 		props.put("osgi.nl", "en_US");
+		props.put("eclipse.noRegistryFlushing", "true");
 		props.put(Constants.FRAMEWORK_STORAGE_CLEAN, Constants.FRAMEWORK_STORAGE_CLEAN_ONFIRSTINIT);
 		props.put(
 				EquinoxLocations.PROP_INSTANCE_AREA, new File(installDir, "instance").getAbsolutePath());
@@ -295,6 +299,23 @@ public class BuildPluginIdeMain {
 			solstice.openShim(props);
 			ShimIdeBootstrapServices.apply(props, solstice.getContext());
 		}
+		var logger = LoggerFactory.getLogger(BuildPluginIdeMain.class);
+		solstice
+				.getContext()
+				.addBundleListener(
+						new SynchronousBundleListener() {
+							@Override
+							public void bundleChanged(BundleEvent e) {
+								var originIsSame = e.getOrigin() == e.getBundle();
+								logger.warn(
+										"{} bundle {} {} origin {}",
+										Solstice.typeToString(e),
+										e.getBundle().getSymbolicName(),
+										Solstice.stateToString(e.getBundle()),
+										originIsSame ? "same" : e.getOrigin().getSymbolicName());
+							}
+						});
+
 		solstice.start("org.apache.felix.scr");
 		solstice.startAllWithLazy(false);
 		solstice.start("org.eclipse.ui.ide.application");

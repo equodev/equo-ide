@@ -26,7 +26,9 @@ import java.util.TreeSet;
 import java.util.function.Function;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleEvent;
 import org.osgi.framework.BundleException;
+import org.osgi.framework.ServiceEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -540,5 +542,64 @@ public class Solstice {
 			}
 		}
 		return null;
+	}
+
+	public static String typeToString(BundleEvent e) {
+		switch (e.getType()) {
+			case BundleEvent.INSTALLED:
+				return "INSTALLED";
+			case BundleEvent.RESOLVED:
+				return "RESOLVED";
+			case BundleEvent.STARTED:
+				return "STARTED";
+			case BundleEvent.STARTING:
+				return "STARTING";
+			case BundleEvent.STOPPED:
+				return "STOPPED";
+			case BundleEvent.STOPPING:
+				return "STOPPING";
+			case BundleEvent.UNINSTALLED:
+				return "UNINSTALLED";
+			case BundleEvent.UNRESOLVED:
+				return "UNRESOLVED";
+			case BundleEvent.UPDATED:
+				return "UPDATED";
+			default:
+				return "UNKNOWN";
+		}
+	}
+
+	public static String typeToString(ServiceEvent e) {
+		switch (e.getType()) {
+			case ServiceEvent.REGISTERED:
+				return "REGISTERED";
+			case ServiceEvent.UNREGISTERING:
+				return "UNREGISTERING";
+			case ServiceEvent.MODIFIED:
+				return "MODIFIED";
+			case ServiceEvent.MODIFIED_ENDMATCH:
+				return "MODIFIED_ENDMATCH";
+			default:
+				return "UNKNOWN";
+		}
+	}
+
+	public static String stateToString(Bundle e) {
+		switch (e.getState()) {
+			case Bundle.ACTIVE:
+				return "ACTIVE";
+			case Bundle.INSTALLED:
+				return "INSTALLED";
+			case Bundle.RESOLVED:
+				return "RESOLVED";
+			case Bundle.STARTING:
+				return "STARTING";
+			case Bundle.STOPPING:
+				return "STOPPING";
+			case Bundle.UNINSTALLED:
+				return "UNINSTALLED";
+			default:
+				return "UNKNOWN";
+		}
 	}
 }
