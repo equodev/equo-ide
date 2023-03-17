@@ -124,7 +124,7 @@ public class BundleContextShim extends ServiceRegistry {
 			notifyBundleListeners(BundleEvent.INSTALLED, b);
 		}
 		for (var b : bundles) {
-			if (b.manifest.lazy || b.activator != null) {
+			if (b.manifest.lazy || b.activator == null) {
 				b.state = Bundle.RESOLVED;
 				notifyBundleListeners(BundleEvent.RESOLVED, b);
 			}
