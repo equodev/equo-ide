@@ -331,26 +331,6 @@ file:/scratch/jenkins/workspace/bndtools.next/build/generated/features/category.
 ]
 
 
-dev.equo.solstice.p2.P2Test.weirdUpdateSites[fluentmark]=[
-id,name \n description
-20160626-2119.net.certiv,Certiv Tools
-20160626-2320.net.certiv,Certiv Tools
-20160628-0315.net.certiv,Certiv Tools
-20160710-2114.net.certiv,Certiv Tools
-20210404-0417.net.certiv.support,Certiv Tools Support
-20210420-2319.net.certiv.support,Certiv Tools Support
-20210420-2321.net.certiv.support,Certiv Tools Support
-20210420-2325.net.certiv.support,Certiv Tools Support
-20210420-2327.net.certiv.support,Certiv Tools Support
-20210420-2328.certiv.tools,Certiv Tools
-20210420-2329.certiv.tools,Certiv Tools
-20210420-2330.certiv.tools,Certiv Tools
-20210420-2332.certiv.tools,Certiv Tools
-20230220-0508.net.certiv,Certiv Tools
-
-]
-
-
 dev.equo.solstice.p2.P2Test.weirdUpdateSites[groovy]=[
 id,name \n description
 file:/opt/bamboo-home/xml-data/build-dir/GRECLIPSE-E43J8P-JOB1/Site-org.codehaus.groovy.eclipse/target/site/site.xml.org.codehaus.groovy.compilers,More Compilers (optional)
