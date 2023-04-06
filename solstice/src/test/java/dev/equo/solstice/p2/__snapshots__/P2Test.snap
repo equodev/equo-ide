@@ -284,171 +284,63 @@ dev.equo.solstice.p2.P2Test.queryPlatformSpecific[mac-only]=[
 ]
 
 
-dev.equo.solstice.p2.P2Test.weirdUpdateSites[bnd]=[
+dev.equo.solstice.p2.P2Test.weirdUpdateSites[4.28]=[
 id,name \n description
-bndtools.m2e.feature.feature.group,Bndtools m2e
-,  m2e integration for Bndtools
-bndtools.m2e.feature.feature.jar,Bndtools m2e
-,  m2e integration for Bndtools
-bndtools.main.feature.feature.group,Bndtools
-,  OSGi Development Tools for Eclipse based on bnd.
-bndtools.main.feature.feature.jar,Bndtools
-,  OSGi Development Tools for Eclipse based on bnd.
-bndtools.pde.feature.feature.group,Bndtools PDE
-,  PDE integration for Bndtools
-bndtools.pde.feature.feature.jar,Bndtools PDE
-,  PDE integration for Bndtools
+org.eclipse.equinox.target.categoryIU,Equinox Target Components
+,  Features especially useful to install as PDE
+,  runtime targets.
+org.eclipse.platform.ide.categoryIU,Eclipse Platform
+,  Minimum version of Eclipse: no source or API
+,"  documentation, no PDE or JDT."
+org.eclipse.platform.sdk.categoryIU,Eclipse Platform SDK
+,  Minimum version of Eclipse with source and
+,"  documentation, no PDE or JDT."
+org.eclipse.rcp.categoryIU,Eclipse RCP Target Components
+,"  Features to use as PDE runtime target, while"
+,  developing RCP applications.
+org.eclipse.releng.java.languages.categoryIU,Eclipse Java Development Tools
+,  Tools to allow development with Java.
+org.eclipse.releng.pde.categoryIU,Eclipse Plugin Development Tools
+,"  Tools to develop bundles, plugins and features."
+org.eclipse.releng.testsIU,"Eclipse Tests, Tools, Examples, and Extras"
+,"  Collection of Misc. Features, such as unit"
+,"  tests, SWT and e4 tools, examples, and"
+,  compatibility features not shipped as part of
+,"  main SDK, but which some people may desire in"
+,  creating products based on previous versions of
+,  Eclipse.
+org.eclipse.sdk.ide.categoryIU,Eclipse SDK
+,"  The full version of Eclipse, with source and"
+,"  documentation: Platform, JDT and PDE."
 
 ]
 
 
-dev.equo.solstice.p2.P2Test.weirdUpdateSites[fluentmark]=[
+dev.equo.solstice.p2.P2Test.weirdUpdateSites[bnd]=[
 id,name \n description
-net.certiv.antlr.dt.feature.feature.group,AntlrDT
-,  AntlrDT is an Eclipse editor and builder for
-,  ANTLR v4 grammars.
-net.certiv.antlr.dt.feature.feature.jar,AntlrDT
-,  AntlrDT is an Eclipse editor and builder for
-,  ANTLR v4 grammars.
-net.certiv.callgraph.feature.feature.group,CallGraph
-,  Enables graphical exploration of call
-,  hierarchies.
-net.certiv.callgraph.feature.feature.jar,CallGraph
-,  Enables graphical exploration of call
-,  hierarchies.
-net.certiv.codechase.feature.feature.group,CodeChase
-,  A local desktop search engine optimized for
-,  Eclipse developers and the Eclipse work
-,  environment.   Uses:     * search the Eclipse
-,  source jars to see how the platform itself uses
-,  any particular methods and classes     * search
-,  the Eclipse plugins to find specific features in
-,  the plugin.xmls     * search over multiple
-,  workspaces and projects (do not need to be open)
-,      * search local filesystem hierarchies
-,  external to any workspace
-net.certiv.codechase.feature.feature.jar,CodeChase
-,  A local desktop search engine optimized for
-,  Eclipse developers and the Eclipse work
-,  environment.   Uses:     * search the Eclipse
-,  source jars to see how the platform itself uses
-,  any particular methods and classes     * search
-,  the Eclipse plugins to find specific features in
-,  the plugin.xmls     * search over multiple
-,  workspaces and projects (do not need to be open)
-,      * search local filesystem hierarchies
-,  external to any workspace
-net.certiv.dsl.feature.feature.group,DSL Editor Framework
-,  DSL Editor Framework
-net.certiv.dsl.feature.feature.jar,DSL Editor Framework
-,  DSL Editor Framework
-net.certiv.dsl.jdt.feature.feature.group,DSL JDT Support
-,  DSL Editor Framework - JDT Dependencies
-net.certiv.dsl.jdt.feature.feature.jar,DSL JDT Support
-,  DSL Editor Framework - JDT Dependencies
-net.certiv.dsl.spy.feature.feature.group,Dsl Spy
-net.certiv.dsl.spy.feature.feature.jar,Dsl Spy
-net.certiv.feature.feature.group,Certiv Tools
-,  Top-level preference page for the Certiv
-,  plugins.
-net.certiv.feature.feature.jar,Certiv Tools
-,  Top-level preference page for the Certiv
-,  plugins.
-net.certiv.fluent.dt.feature.feature.group,FluentMark Editor
-,  Full featured Markdown Editor.
-net.certiv.fluent.dt.feature.feature.jar,FluentMark Editor
-,  Full featured Markdown Editor.
-net.certiv.jdoceditor.feature.feature.group,JDocEditor
-,  [Enter Feature Description here.]
-net.certiv.jdoceditor.feature.feature.jar,JDocEditor
-,  [Enter Feature Description here.]
-net.certiv.ntail.feature.feature.group,NTail
-,  [Enter Feature Description here.]
-net.certiv.ntail.feature.feature.jar,NTail
-,  [Enter Feature Description here.]
-net.certiv.spellchecker.feature.feature.group,Spellchecker
-,  Certiv Analitics
-net.certiv.spellchecker.feature.feature.jar,Spellchecker
-,  Certiv Analitics
-net.certiv.st.dt.feature.feature.group,StringTemplateDT
-,  STDT is an Eclipse editor for StringTemplate
-,  v4 template files.
-net.certiv.st.dt.feature.feature.jar,StringTemplateDT
-,  STDT is an Eclipse editor for StringTemplate
-,  v4 template files.
-net.certiv.tools.feature.feature.group,Certiv Tools
-,  Top-level preference page for the Certiv
-,  plugins.
-net.certiv.tools.feature.feature.jar,Certiv Tools
-,  Top-level preference page for the Certiv
-,  plugins.
-net.certiv.tools.indentguide.feature.feature.group,IndentGuide
-,  IndentGuide adds configurable indent guide
-,  lines in Eclipse text editors.
-net.certiv.tools.indentguide.feature.feature.jar,IndentGuide
-,  IndentGuide adds configurable indent guide
-,  lines in Eclipse text editors.
-net.certiv.xvisitor.dt.feature.feature.group,XVisitorDT
-,  XVisitorDT is an Eclipse editor and builder
-,  for XVisitor grammars.
-net.certiv.xvisitor.dt.feature.feature.jar,XVisitorDT
-,  XVisitorDT is an Eclipse editor and builder
-,  for XVisitor grammars.
+file:/Users/hargrave/git/bnd-test/org.bndtools.p2/features/category.xml.bndtools.category,Bndtools
+,  OSGi Development Tools for Eclipse based on bnd.
+file:/home/runner/work/bnd/bnd/org.bndtools.p2/features/category.xml.bndtools.category,Bndtools
+,  OSGi Development Tools for Eclipse based on bnd.
+file:/home/vsts/work/1/s/org.bndtools.p2/features/category.xml.bndtools.category,Bndtools
+,  OSGi Development Tools for Eclipse based on bnd.
+file:/scratch/jenkins/workspace/bndtools.master/build/generated/features/main/category.xml.bndtools.category,Bndtools
+file:/scratch/jenkins/workspace/bndtools.next/build/generated/features/category.xml.bndtools.category,Bndtools
+,  OSGi Development Tools for Eclipse based on bnd.
 
 ]
 
 
 dev.equo.solstice.p2.P2Test.weirdUpdateSites[groovy]=[
 id,name \n description
-org.codehaus.groovy.compilerless.feature.feature.group,Groovy-Eclipse Compilerless feature
-,  All of Groovy Eclipse except the actual
-,  Compiler (a specific version of the compiler
-,  must be installed separately).
-org.codehaus.groovy.compilerless.feature.feature.jar,Groovy-Eclipse Compilerless feature
-,  All of Groovy Eclipse except the actual
-,  Compiler (a specific version of the compiler
-,  must be installed separately).
-org.codehaus.groovy.eclipse.feature.feature.group,Eclipse Groovy Development Tools
-,  Provides the main plug-ins to create and work
-,  with Groovy artifacts. It provides a powerful
-,"  editor, code completion, syntax-highlighting,"
-,"  JUnit support, wizards and a seamless"
-,  integration into the Java development
-,  functionality.
-org.codehaus.groovy.eclipse.feature.feature.jar,Eclipse Groovy Development Tools
-,  Provides the main plug-ins to create and work
-,  with Groovy artifacts. It provides a powerful
-,"  editor, code completion, syntax-highlighting,"
-,"  JUnit support, wizards and a seamless"
-,  integration into the Java development
-,  functionality.
-org.codehaus.groovy.headless.feature.feature.group,Groovy-Eclipse Headless feature
-,  Provides a headless version of Groovy-Eclipse
-,  suitable for the use during headless builds.
-org.codehaus.groovy.headless.feature.feature.jar,Groovy-Eclipse Headless feature
-,  Provides a headless version of Groovy-Eclipse
-,  suitable for the use during headless builds.
-org.codehaus.groovy.jdt.patch.feature.group,Eclipse JDT Core patch for Groovy
-,  This JDT Core patch provides Groovy
-,  integration with the JDT and the Java compiler.
-org.codehaus.groovy.jdt.patch.feature.jar,Eclipse JDT Core patch for Groovy
-,  This JDT Core patch provides Groovy
-,  integration with the JDT and the Java compiler.
-org.codehaus.groovy.m2eclipse.feature.feature.group,Groovy-Eclipse M2E integration
-,  Maven (m2e) integration for Groovy projects
-org.codehaus.groovy.m2eclipse.feature.feature.jar,Groovy-Eclipse M2E integration
-,  Maven (m2e) integration for Groovy projects
-org.codehaus.groovy25.feature.feature.group,Groovy Compiler 2.5
-,  Provides the 2.5 version of the Groovy compiler
-org.codehaus.groovy25.feature.feature.jar,Groovy Compiler 2.5
-,  Provides the 2.5 version of the Groovy compiler
-org.codehaus.groovy30.feature.feature.group,Groovy Compiler 3.0
-,  Provides the 3.0 version of the Groovy compiler
-org.codehaus.groovy30.feature.feature.jar,Groovy Compiler 3.0
-,  Provides the 3.0 version of the Groovy compiler
-org.codehaus.groovy40.feature.feature.group,Groovy Compiler 4.0
-,  Provides the 4.0 version of the Groovy compiler
-org.codehaus.groovy40.feature.feature.jar,Groovy Compiler 4.0
-,  Provides the 4.0 version of the Groovy compiler
+file:/opt/bamboo-home/xml-data/build-dir/GRECLIPSE-E43J8P-JOB1/Site-org.codehaus.groovy.eclipse/target/site/site.xml.org.codehaus.groovy.compilers,More Compilers (optional)
+,  The Groovy 2.5 compiler is installed
+,"  automatically, but you may install any other"
+,  Groovy compiler as well.
+file:/opt/bamboo-home/xml-data/build-dir/GRECLIPSE-E43J8P-JOB1/Site-org.codehaus.groovy.eclipse/target/site/site.xml.org.codehaus.groovy.eclipse,Main Package (required)
+,  Provides Groovy support to Eclipse.
+file:/opt/bamboo-home/xml-data/build-dir/GRECLIPSE-E43J8P-JOB1/Site-org.codehaus.groovy.eclipse/target/site/site.xml.org.codehaus.groovy.m2eclipse,Maven Support (optional)
+,  Provides Groovy support to m2eclipse. This is
+,  compatible with m2eclipse v1.0 and greater.
 
 ]

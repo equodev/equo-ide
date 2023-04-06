@@ -8,6 +8,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 - `NestedJars.transitiveDeps` is now smart about only adding `slf4j` deps when they are absent ([#115](https://github.com/equodev/equo-ide/pull/115/commits/6bcf66e9e35d2ca4ab1b6da1bae1ddbf0c17fd63))
 ### Fixed
 - Fix branding for title bar and icon. ([#117](https://github.com/equodev/equo-ide/pull/117) fixes [#87](https://github.com/equodev/equo-ide/issues/87))
+- Handle metadata jars with multiple entries. (fixes [#120](https://github.com/equodev/equo-ide/issues/120))
 
 ## [1.0.3] - 2023-03-13
 ### Fixed
