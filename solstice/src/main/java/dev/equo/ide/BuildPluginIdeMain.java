@@ -120,6 +120,8 @@ public class BuildPluginIdeMain {
 			}
 			vmArgs.add("-Dorg.slf4j.simpleLogger.defaultLogLevel=" + (isBlocking ? "info" : "error"));
 
+			vmArgs.add("-Dchromium.args=--disable-web-security");
+
 			if (debugIde) {
 				vmArgs.add("-Xdebug");
 				vmArgs.add("-Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=y");

@@ -45,8 +45,8 @@ import org.slf4j.LoggerFactory;
  * href="https://github.com/equodev/equo-ide/pull/7">equodev/equo-ide#7</a>
  */
 public abstract class NestedJars {
-	/** Reads the version of the Solstice jar from the classpath. */
-	public static String solsticeVersion() {
+	/** Reads versionHeader in the manifest inside the jar from the classpath. */
+	public static String solsticeVersion(String versionHeader) {
 		var solsticeJar =
 				NestedJars.class.getResource(NestedJars.class.getSimpleName() + ".class").toString();
 		if (!solsticeJar.startsWith("jar")) {
@@ -56,10 +56,18 @@ public abstract class NestedJars {
 			var url = new URL(solsticeJar);
 			var jarConnection = (JarURLConnection) url.openConnection();
 			var manifest = jarConnection.getManifest();
-			return manifest.getMainAttributes().getValue("Implementation-Version");
+			return manifest.getMainAttributes().getValue(versionHeader);
 		} catch (IOException e) {
 			throw Unchecked.wrap(e);
 		}
+	}
+
+	public static String solsticeVersion() {
+		return solsticeVersion("Implementation-Version");
+	}
+
+	public static String chromiumSolsticeVersion() {
+		return solsticeVersion("Chromium-Implementation-Version");
 	}
 
 	@Deprecated

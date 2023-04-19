@@ -1,0 +1,41 @@
+ext.maven_name='chromium-solstice'
+ext.maven_artifact = 'z-chromium-solstice'
+ext.maven_desc=干.proj('gradlePlugin_equoIde_desc', 'Marketing description of EquoIDE')
+
+
+apply from: 干.file('changelog.gradle')
+apply plugin: 'java-library'
+sourceCompatibility = java_compat
+targetCompatibility = java_compat
+tasks.withType(JavaCompile).configureEach {
+	options.encoding = 'UTF-8'
+}
+apply from: 干.file('maven.gradle')
+apply from: 干.file('sonatype.gradle')
+
+apply plugin: 'eclipse'
+
+jar.manifest.attributes(
+		'Bundle-SymbolicName':    'dev.equo.chromium; singleton:=true',
+		'Bundle-Version':         '0.0.0',
+		'Implementation-Version': spotlessChangelog.versionNext
+		)
+
+repositories {
+	maven {
+		url 'https://dl.equo.dev/chromium-swt-ce/oss/mvn'
+	}
+}
+
+dependencies {
+	compileOnly 'com.equo:com.equo.chromium:106.0.0'
+}
+
+String VERSION = '4.26'
+apply plugin: 'dev.equo.p2deps'
+p2deps {
+	into 'compileOnly', {
+		p2repo "https://download.eclipse.org/eclipse/updates/${VERSION}/"
+		install 'org.eclipse.ui.ide.application'
+	}
+}

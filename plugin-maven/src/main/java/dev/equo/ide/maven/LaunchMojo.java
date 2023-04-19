@@ -13,11 +13,17 @@
  *******************************************************************************/
 package dev.equo.ide.maven;
 
+import static dev.equo.ide.chromium.Utils.CHROMIUM_ARTIFACT;
+import static dev.equo.ide.chromium.Utils.CHROMIUM_CEF_ARTIFACT;
+import static dev.equo.ide.chromium.Utils.CHROMIUM_REPO;
+import static dev.equo.ide.chromium.Utils.CHROMIUM_SOLSTICE_ARTIFACT;
+
 import com.diffplug.common.swt.os.OS;
 import dev.equo.ide.BuildPluginIdeMain;
 import dev.equo.ide.IdeHook;
 import dev.equo.ide.IdeHookBranding;
 import dev.equo.ide.IdeHookWelcome;
+import dev.equo.ide.chromium.Utils;
 import dev.equo.solstice.NestedJars;
 import dev.equo.solstice.p2.P2ClientCache;
 import dev.equo.solstice.p2.P2QueryCache;
@@ -38,6 +44,7 @@ import org.eclipse.aether.collection.CollectRequest;
 import org.eclipse.aether.graph.Dependency;
 import org.eclipse.aether.graph.Exclusion;
 import org.eclipse.aether.repository.RemoteRepository;
+import org.eclipse.aether.repository.RemoteRepository.Builder;
 import org.eclipse.aether.resolution.DependencyRequest;
 import org.eclipse.aether.resolution.DependencyResolutionException;
 import org.eclipse.aether.resolution.DependencyResult;
@@ -62,6 +69,9 @@ public class LaunchMojo extends AbstractP2MojoWithCatalog {
 	/** Adds a visible console to the launched application. */
 	@Parameter(property = "showConsole", defaultValue = "false")
 	private boolean showConsole;
+
+	@Parameter(property = "equoChromium", defaultValue = "false")
+	private boolean equoChromium;
 
 	/** Dumps the classpath (in order) without starting the application. */
 	@Parameter(property = "debugClasspath", defaultValue = "disabled")
@@ -118,6 +128,24 @@ public class LaunchMojo extends AbstractP2MojoWithCatalog {
 			for (var dep : query.getJarsOnMavenCentral()) {
 				deps.add(new Dependency(new DefaultArtifact(dep), null, null, EXCLUDE_ALL_TRANSITIVES));
 			}
+
+			if (equoChromium) {
+				Builder b = new RemoteRepository.Builder("chromium", "default", CHROMIUM_REPO);
+				repositories.add(b.build());
+				deps.add(
+						new Dependency(
+								new DefaultArtifact(CHROMIUM_ARTIFACT), null, null, EXCLUDE_ALL_TRANSITIVES));
+				deps.add(
+						new Dependency(
+								new DefaultArtifact(CHROMIUM_CEF_ARTIFACT), null, null, EXCLUDE_ALL_TRANSITIVES));
+				deps.add(
+						new Dependency(
+								new DefaultArtifact(CHROMIUM_SOLSTICE_ARTIFACT),
+								null,
+								null,
+								EXCLUDE_ALL_TRANSITIVES));
+			}
+
 			CollectRequest collectRequest = new CollectRequest(deps, null, repositories);
 			DependencyRequest dependencyRequest = new DependencyRequest(collectRequest, null);
 			DependencyResult dependencyResult =
@@ -127,6 +155,11 @@ public class LaunchMojo extends AbstractP2MojoWithCatalog {
 			for (var artifact : dependencyResult.getArtifactResults()) {
 				files.add(artifact.getArtifact().getFile());
 			}
+
+			if (equoChromium) {
+				Utils.removeSwtSigner(files);
+			}
+
 			for (File downloadedJar : query.getJarsNotOnMavenCentral()) {
 				files.add(downloadedJar);
 			}

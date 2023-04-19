@@ -17,6 +17,7 @@ on:
         default: 'all'
         type: choice
         options:
+          - chromium-solstice
           - plugin-gradle
           - plugin-maven
           - solstice
@@ -43,6 +44,7 @@ jobs:
       - name: publish all
         if: "${{ github.event.inputs.to_publish == 'all' }}"
         run: |
+          ./gradlew :chromium-solstice:changelogPush -Prelease=true --stacktrace --warning-mode all
           ./gradlew :solstice:changelogPush -Prelease=true --stacktrace --warning-mode all
           ./gradlew :plugin-maven:changelogPush -Prelease=true --stacktrace --warning-mode all
           ./gradlew :plugin-gradle:changelogPush -Prelease=true -Pgradle.publish.key=${{ secrets.GRADLE_PORTAL_KEY }} -Pgradle.publish.secret=${{ secrets.GRADLE_PORTAL_SECRET }} --stacktrace --warning-mode all
@@ -58,3 +60,7 @@ jobs:
         if: "${{ github.event.inputs.to_publish == 'solstice' }}"
         run: |
           ./gradlew :solstice:changelogPush -Prelease=true --stacktrace --warning-mode all
+      - name: publish just chromium-solstice
+        if: "${{ github.event.inputs.to_publish == 'chromium-solstice' }}"
+        run: |
+          ./gradlew :chromium-solstice:changelogPush -Prelease=true --stacktrace --warning-mode all

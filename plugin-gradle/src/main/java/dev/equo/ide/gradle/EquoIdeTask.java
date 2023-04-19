@@ -15,6 +15,7 @@ package dev.equo.ide.gradle;
 
 import dev.equo.ide.BuildPluginIdeMain;
 import dev.equo.ide.IdeHook;
+import dev.equo.ide.chromium.Utils;
 import dev.equo.solstice.p2.P2QueryResult;
 import java.io.File;
 import java.io.IOException;
@@ -136,6 +137,10 @@ public abstract class EquoIdeTask extends DefaultTask {
 							+ "equoIde {\n"
 							+ "  gradleBuildship()\n"
 							+ "}");
+		}
+
+		if (P2ModelDsl.isChromiumEnabled()) {
+			Utils.removeSwtSigner(classpath);
 		}
 
 		caller.ideHooks = ideHooks;

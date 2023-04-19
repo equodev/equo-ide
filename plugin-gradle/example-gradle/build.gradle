@@ -1,7 +1,10 @@
 plugins {
-  id 'dev.equo.ide' version '0.16.0'
+  id 'dev.equo.ide' version '1.0.2-SNAPSHOT'
 }
-repositories { mavenCentral() }
+repositories { 
+  mavenLocal()
+  mavenCentral() 
+}
 // More info at https://github.com/equodev/equo-ide/blob/main/P2_MULTITOOL.md
 //
 // MINIMAL EXAMPLE
@@ -16,6 +19,11 @@ repositories { mavenCentral() }
 equoIde {
   p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'
   install 'org.eclipse.platform.ide.categoryIU'
+
+  // Enable Equo Chromium replacing SWT Browser
+  equoChromium()
+  
+  welcome().openUrl('https://html5test.com/')
 
     // OPTIONAL BRANDING
     //  branding.title('My IDE')
