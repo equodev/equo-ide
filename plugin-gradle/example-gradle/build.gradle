@@ -1,10 +1,7 @@
 plugins {
-  id 'dev.equo.ide' version '1.0.2-SNAPSHOT'
+  id 'dev.equo.ide' version '0.16.0'
 }
-repositories { 
-  mavenLocal()
-  mavenCentral() 
-}
+repositories { mavenCentral() }
 // More info at https://github.com/equodev/equo-ide/blob/main/P2_MULTITOOL.md
 //
 // MINIMAL EXAMPLE
