@@ -3,6 +3,9 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+### Added
+- You can now do `equoIde { useChromium() }` to replace the standard SWT system browser with Equo Chromium. ([#123](https://github.com/equodev/equo-ide/pull/123))
+### Fixed
 - Fix branding for title bar and icon. ([#117](https://github.com/equodev/equo-ide/pull/117) fixes [#87](https://github.com/equodev/equo-ide/issues/87))
 
 ## [1.0.1] - 2023-03-13

@@ -4,6 +4,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
 ### Added
+- Added `solstice-chromium-browser-overrides.jar` which gets packaged into the `src/main/resources` of `solstice.jar` to support replacing the standard SWT Browser with Equo Chromium. ([#123](https://github.com/equodev/equo-ide/pull/123))
 - Added `SignedJars` which can strip signatures when necessary (e.g. a signed Eclipse jar contributing classes to the same package as one of its nested jars). ([#116](https://github.com/equodev/equo-ide/pull/116))
 - `NestedJars.transitiveDeps` is now smart about only adding `slf4j` deps when they are absent ([#115](https://github.com/equodev/equo-ide/pull/115/commits/6bcf66e9e35d2ca4ab1b6da1bae1ddbf0c17fd63))
 ### Fixed
