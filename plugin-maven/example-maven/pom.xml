@@ -44,13 +44,6 @@
             <install>org.eclipse.platform.ide.categoryIU</install>
           </installs>
 
-<!-- Enable Equo Chromium replacing SWT Browser -->
-          <equoChromium>true</equoChromium>
-
-          <welcome>
-            <openUrl>https://html5test.com/</openUrl>
-          </welcome>
-
 <!--OPTIONAL BRANDING-->
 <!--          <branding>-->
 <!--            <title>My IDE</title>-->

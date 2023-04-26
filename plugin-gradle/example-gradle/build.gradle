@@ -17,11 +17,6 @@ equoIde {
   p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'
   install 'org.eclipse.platform.ide.categoryIU'
 
-  // Enable Equo Chromium replacing SWT Browser
-  equoChromium()
-  
-  welcome().openUrl('https://html5test.com/')
-
     // OPTIONAL BRANDING
     //  branding.title('My IDE')
     //          .icon(file('imgs/my_icon.png'))
