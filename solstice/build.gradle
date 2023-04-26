@@ -17,10 +17,7 @@ apply plugin: 'eclipse'
 jar.manifest.attributes(
 		'Bundle-SymbolicName':    'dev.equo.ide; singleton:=true',
 		'Bundle-Version':         '0.0.0',
-		'Implementation-Version': spotlessChangelog.versionNext,
-		// Include Chromium-Implementation-Version in solstice jar to discover version at runtime
-		'Chromium-Implementation-Version': rootProject.findProject('chromium-solstice').spotlessChangelog.versionLast ?: rootProject.findProject('chromium-solstice').spotlessChangelog.versionNext
-		)
+		'Implementation-Version': spotlessChangelog.versionNext)
 
 spotless {
 	java {

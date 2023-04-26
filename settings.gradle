@@ -35,6 +35,6 @@ blowdryerSetup {
 }
 rootProject.name = 'equo-ide'
 include 'solstice'
+include 'solstice-chromium-browser-overrides'
 include 'plugin-gradle'
 include 'plugin-maven'
-include 'chromium-solstice'

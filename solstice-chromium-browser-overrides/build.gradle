@@ -1,0 +1,22 @@
+apply plugin: 'java-library'
+sourceCompatibility = java_compat
+targetCompatibility = java_compat
+
+repositories {
+	maven {
+		url 'https://dl.equo.dev/chromium-swt-ce/oss/mvn'
+	}
+}
+
+dependencies {
+	compileOnly 'com.equo:com.equo.chromium:106.0.0'
+}
+
+String VERSION = '4.26'
+apply plugin: 'dev.equo.p2deps'
+p2deps {
+	into 'compileOnly', {
+		p2repo "https://download.eclipse.org/eclipse/updates/${VERSION}/"
+		install 'org.eclipse.swt'
+	}
+}
