@@ -33,7 +33,7 @@ class LockFile implements AutoCloseable {
 				f -> {
 					if (f.exists()) {
 						throw new IllegalStateException(
-								"`s, close other clients or delete stale lockfile at "
+								"P2 operation already in progress, close other clients or delete stale lockfile at "
 										+ lockFile.getAbsolutePath());
 					}
 				},
