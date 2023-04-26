@@ -14,11 +14,6 @@
 package dev.equo.ide;
 
 import com.diffplug.common.swt.os.SwtPlatform;
-import dev.equo.ide.chromium.RemoveJarSigner;
-import dev.equo.solstice.NestedJars;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -34,22 +29,6 @@ public class EquoChromium {
 	public static List<String> mavenCoordinates() {
 		return Arrays.asList(
 				"com.equo:com.equo.chromium:106.0.0",
-				"com.equo:com.equo.chromium.cef." + SwtPlatform.getRunning() + ":106.0.0",
-				"dev.equo.ide:z-chromium-solstice:" + NestedJars.chromiumSolsticeVersion());
-	}
-
-	public static void removeSwtSigner(ArrayList<File> files) {
-		for (File file : files) {
-			if (file.toString().contains("org.eclipse.swt.")) {
-				try {
-					File unsignedJarFile = RemoveJarSigner.removeJarSigner(file);
-					files.remove(file);
-					files.add(unsignedJarFile);
-					break;
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		}
+				"com.equo:com.equo.chromium.cef." + SwtPlatform.getRunning() + ":106.0.0");
 	}
 }

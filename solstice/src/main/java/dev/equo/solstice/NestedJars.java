@@ -46,7 +46,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class NestedJars {
 	/** Reads versionHeader in the manifest inside the jar from the classpath. */
-	public static String solsticeVersion(String versionHeader) {
+	private static String solsticeVersion(String versionHeader) {
 		var solsticeJar =
 				NestedJars.class.getResource(NestedJars.class.getSimpleName() + ".class").toString();
 		if (!solsticeJar.startsWith("jar")) {
@@ -64,10 +64,6 @@ public abstract class NestedJars {
 
 	public static String solsticeVersion() {
 		return solsticeVersion("Implementation-Version");
-	}
-
-	public static String chromiumSolsticeVersion() {
-		return solsticeVersion("Chromium-Implementation-Version");
 	}
 
 	@Deprecated

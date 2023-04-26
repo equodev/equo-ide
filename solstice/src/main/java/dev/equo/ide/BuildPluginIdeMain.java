@@ -97,7 +97,19 @@ public class BuildPluginIdeMain {
 				classpathSorted.add(nested.getValue());
 			}
 			if (equoChromium) {
-				EquoChromium.removeSwtSigner(classpathSorted);
+				// extract the browser overrides, and add to classpath *before* SWT
+				var overrides =
+						new NestedJars() {
+							@Override
+							protected List<URL> listNestedJars() {
+								return List.of(getClass().getResource("/solstice-chromium-browser-overrides.jar"));
+							}
+						}.extractAllNestedJars(nestedJarFolder);
+				for (var overrideJar : overrides) {
+					classpathSorted.add(0, overrideJar.getValue());
+				}
+				// strip the signature off of the SWT jars since we are patching the Browser class
+				SignedJars.stripIf(classpathSorted, fileName -> fileName.startsWith("org.eclipse.swt."));
 			}
 			SignedJars.stripIfNecessary(classpathSorted);
 

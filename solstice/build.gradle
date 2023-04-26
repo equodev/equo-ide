@@ -29,6 +29,13 @@ spotless {
 	}
 }
 
+tasks.named('processResources') {
+	dependsOn(':solstice-chromium-browser-overrides:jar')
+	from {
+		'../solstice-chromium-browser-overrides/build/libs/solstice-chromium-browser-overrides.jar'
+	}
+}
+
 String VER_SLF4J = '1.7.36'
 dependencies {
 	api "org.slf4j:slf4j-api:$VER_SLF4J"
