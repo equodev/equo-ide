@@ -143,7 +143,12 @@ public class P2Client implements AutoCloseable {
 		if (cachingPolicy.networkAllowed()) {
 			var request = new Request.Builder().url(url).build();
 			try (var response = metadataClient.newCall(request).execute()) {
-				if (response.code() != 404 && response.code() != 403) {
+				if (response.code() == 404) {
+					if (cachingPolicy.cacheAllowed()) {
+						offlineMetadataCache.put404(url);
+					}
+					throw new NotFoundException(url);
+				} else {
 					var bytes = response.body().bytes();
 					if (contentIsHtml(bytes)) {
 						if (cachingPolicy.cacheAllowed()) {
@@ -155,11 +160,6 @@ public class P2Client implements AutoCloseable {
 						offlineMetadataCache.put(url, bytes);
 					}
 					return bytes;
-				} else {
-					if (cachingPolicy.cacheAllowed()) {
-						offlineMetadataCache.put404(url);
-					}
-					throw new NotFoundException(url);
 				}
 			} catch (UnknownHostException e) {
 				if (cachingPolicy.cacheAllowed()) {
