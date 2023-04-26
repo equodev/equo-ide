@@ -100,11 +100,6 @@ public class CacheLocations {
 		return defOverride(ROOT + "/nested-jars", override_nestedJars);
 	}
 
-	/** Directory used to cache unsigned jars: `~/.equo/unsigned-jars` */
-	public static File unsignedJars() {
-		return defOverride(ROOT + "/unsigned-jars", override_nestedJars);
-	}
-
 	public static File override_nestedJars = null;
 
 	private static File defOverride(String userHomeRelative, File override) {
