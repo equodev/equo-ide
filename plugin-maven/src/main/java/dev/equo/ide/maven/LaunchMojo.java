@@ -66,8 +66,8 @@ public class LaunchMojo extends AbstractP2MojoWithCatalog {
 	private boolean showConsole;
 
 	/** Replaces the standard SWT browser with Equo Chromium. */
-	@Parameter(property = "equoChromium", defaultValue = "false")
-	private boolean equoChromium;
+	@Parameter(property = "useChromium", defaultValue = "false")
+	private boolean useChromium;
 
 	/** Dumps the classpath (in order) without starting the application. */
 	@Parameter(property = "debugClasspath", defaultValue = "disabled")
@@ -125,7 +125,7 @@ public class LaunchMojo extends AbstractP2MojoWithCatalog {
 				deps.add(new Dependency(new DefaultArtifact(dep), null, null, EXCLUDE_ALL_TRANSITIVES));
 			}
 
-			if (equoChromium) {
+			if (useChromium) {
 				ideHooks.add(new EquoChromium());
 				Builder b = new RemoteRepository.Builder("chromium", "default", EquoChromium.mavenRepo());
 				repositories.add(b.build());

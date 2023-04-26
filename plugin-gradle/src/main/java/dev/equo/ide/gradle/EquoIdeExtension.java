@@ -31,7 +31,7 @@ public class EquoIdeExtension extends P2ModelDslWithCatalog {
 		ideHooks.add(branding);
 	}
 
-	public void equoChromium() {
+	public void useChromium() {
 		ideHooks.add(new EquoChromium());
 	}
 
