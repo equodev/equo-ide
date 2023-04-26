@@ -61,7 +61,7 @@ public class SignedJars {
 					if (fileNamesToStrip.test(f.getName())) {
 						File strippedJar = strippedFile(f);
 						try {
-							var strippedBytes = stripIf(f);
+							var strippedBytes = readAndStripInMemory(f);
 							if (!strippedJar.exists() || strippedJar.length() != strippedBytes.length) {
 								Files.write(strippedJar.toPath(), strippedBytes);
 							}
@@ -74,7 +74,7 @@ public class SignedJars {
 				});
 	}
 
-	private static byte[] stripIf(File input) throws IOException {
+	private static byte[] readAndStripInMemory(File input) throws IOException {
 		ByteArrayOutputStream output = new ByteArrayOutputStream();
 		try (ZipInputStream zipInput =
 						new ZipInputStream(new BufferedInputStream(new FileInputStream(input)));
