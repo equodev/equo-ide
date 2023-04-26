@@ -13,11 +13,7 @@
  *******************************************************************************/
 package dev.equo.ide.gradle;
 
-import static dev.equo.ide.chromium.Utils.CHROMIUM_ARTIFACT;
-import static dev.equo.ide.chromium.Utils.CHROMIUM_CEF_ARTIFACT;
-import static dev.equo.ide.chromium.Utils.CHROMIUM_REPO;
-import static dev.equo.ide.chromium.Utils.CHROMIUM_SOLSTICE_ARTIFACT;
-
+import dev.equo.ide.EquoChromium;
 import dev.equo.solstice.NestedJars;
 import dev.equo.solstice.p2.CacheLocations;
 import java.io.File;
@@ -126,22 +122,13 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 						}
 
 						if (P2ModelDsl.isChromiumEnabled()) {
-							project.getRepositories().maven((a) -> a.setUrl(CHROMIUM_REPO));
-							ModuleDependency chromium =
-									(ModuleDependency) project.getDependencies().add(EQUO_IDE, CHROMIUM_ARTIFACT);
-							chromium.setTransitive(false);
-
-							ModuleDependency chromiumCef =
-									(ModuleDependency) project.getDependencies().add(EQUO_IDE, CHROMIUM_CEF_ARTIFACT);
-
-							chromiumCef.setTransitive(false);
-
-							ModuleDependency chromiumSolstice =
-									(ModuleDependency)
-											project.getDependencies().add(EQUO_IDE, CHROMIUM_SOLSTICE_ARTIFACT);
-							chromiumSolstice.setTransitive(false);
+							project.getRepositories().maven((a) -> a.setUrl(EquoChromium.mavenRepo()));
+							for (var coordinate : EquoChromium.mavenCoordinates()) {
+								ModuleDependency dep =
+										(ModuleDependency) project.getDependencies().add(EQUO_IDE, coordinate);
+								dep.setTransitive(false);
+							}
 						}
-
 						equoIdeTask.configure(
 								task -> {
 									task.getQuery().set(query);

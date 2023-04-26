@@ -13,17 +13,12 @@
  *******************************************************************************/
 package dev.equo.ide.maven;
 
-import static dev.equo.ide.chromium.Utils.CHROMIUM_ARTIFACT;
-import static dev.equo.ide.chromium.Utils.CHROMIUM_CEF_ARTIFACT;
-import static dev.equo.ide.chromium.Utils.CHROMIUM_REPO;
-import static dev.equo.ide.chromium.Utils.CHROMIUM_SOLSTICE_ARTIFACT;
-
 import com.diffplug.common.swt.os.OS;
 import dev.equo.ide.BuildPluginIdeMain;
+import dev.equo.ide.EquoChromium;
 import dev.equo.ide.IdeHook;
 import dev.equo.ide.IdeHookBranding;
 import dev.equo.ide.IdeHookWelcome;
-import dev.equo.ide.chromium.Utils;
 import dev.equo.solstice.NestedJars;
 import dev.equo.solstice.p2.P2ClientCache;
 import dev.equo.solstice.p2.P2QueryCache;
@@ -130,20 +125,12 @@ public class LaunchMojo extends AbstractP2MojoWithCatalog {
 			}
 
 			if (equoChromium) {
-				Builder b = new RemoteRepository.Builder("chromium", "default", CHROMIUM_REPO);
+				Builder b = new RemoteRepository.Builder("chromium", "default", EquoChromium.mavenRepo());
 				repositories.add(b.build());
-				deps.add(
-						new Dependency(
-								new DefaultArtifact(CHROMIUM_ARTIFACT), null, null, EXCLUDE_ALL_TRANSITIVES));
-				deps.add(
-						new Dependency(
-								new DefaultArtifact(CHROMIUM_CEF_ARTIFACT), null, null, EXCLUDE_ALL_TRANSITIVES));
-				deps.add(
-						new Dependency(
-								new DefaultArtifact(CHROMIUM_SOLSTICE_ARTIFACT),
-								null,
-								null,
-								EXCLUDE_ALL_TRANSITIVES));
+				for (var coordinate : EquoChromium.mavenCoordinates()) {
+					deps.add(
+							new Dependency(new DefaultArtifact(coordinate), null, null, EXCLUDE_ALL_TRANSITIVES));
+				}
 			}
 
 			CollectRequest collectRequest = new CollectRequest(deps, null, repositories);
@@ -157,7 +144,7 @@ public class LaunchMojo extends AbstractP2MojoWithCatalog {
 			}
 
 			if (equoChromium) {
-				Utils.removeSwtSigner(files);
+				EquoChromium.removeSwtSigner(files);
 			}
 
 			for (File downloadedJar : query.getJarsNotOnMavenCentral()) {
