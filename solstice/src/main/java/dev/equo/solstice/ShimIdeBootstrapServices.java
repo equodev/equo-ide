@@ -142,8 +142,14 @@ public class ShimIdeBootstrapServices {
 		System.setProperty( // fixes https://github.com/equodev/equo-ide/issues/118
 				"javax.xml.parsers.DocumentBuilderFactory",
 				"com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl");
-		System.setProperty(
-				"javax.xml.parsers.SAXParserFactory", "org.apache.xerces.jaxp.SAXParserFactoryImpl");
+		try {
+			// match Eclipse's behavior when we have the same parser available
+			String xerces = "org.apache.xerces.jaxp.SAXParserFactoryImpl";
+			Class.forName(xerces);
+			System.setProperty("javax.xml.parsers.SAXParserFactory", xerces);
+		} catch (ClassNotFoundException e) {
+			// ignore
+		}
 		context.registerService(SAXParserFactory.class, new XMLFactory<>(true), null);
 		context.registerService(DocumentBuilderFactory.class, new XMLFactory<>(false), null);
 	}
