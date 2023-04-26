@@ -14,21 +14,30 @@
 package dev.equo.ide;
 
 import com.diffplug.common.swt.os.SwtPlatform;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * Utilities for setting up EquoChromium as the default browser implementation in the EquoIDE build
  * plugins.
  */
-public class EquoChromium {
+public class EquoChromium implements IdeHook {
 	public static String mavenRepo() {
 		return "https://dl.equo.dev/chromium-swt-ce/oss/mvn";
 	}
 
-	public static List<String> mavenCoordinates() {
-		return Arrays.asList(
+	public static java.util.List<String> mavenCoordinates() {
+		return java.util.List.of(
 				"com.equo:com.equo.chromium:106.0.0",
 				"com.equo:com.equo.chromium.cef." + SwtPlatform.getRunning() + ":106.0.0");
 	}
+
+	public static boolean isEnabled(IdeHook.List hooks) {
+		return hooks.stream().anyMatch(hook -> hook instanceof EquoChromium);
+	}
+
+	@Override
+	public IdeHookInstantiated instantiate() throws Exception {
+		return new Instantiated();
+	}
+
+	class Instantiated implements IdeHookInstantiated {}
 }

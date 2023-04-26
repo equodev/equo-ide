@@ -145,7 +145,6 @@ public abstract class EquoIdeTask extends DefaultTask {
 		caller.showConsole = showConsole;
 		caller.useAtomos = useAtomosOverride != null ? useAtomosOverride : getUseAtomos().get();
 		caller.debugIde = debugIde;
-		caller.equoChromium = P2ModelDsl.isChromiumEnabled();
 		caller.showConsoleFlag = "--show-console";
 		caller.cleanFlag = "--clean";
 		caller.launch();

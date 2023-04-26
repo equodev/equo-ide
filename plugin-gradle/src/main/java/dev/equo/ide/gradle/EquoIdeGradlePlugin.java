@@ -121,7 +121,7 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 							dep.setTransitive(false);
 						}
 
-						if (P2ModelDsl.isChromiumEnabled()) {
+						if (EquoChromium.isEnabled(extension.getIdeHooks())) {
 							project.getRepositories().maven((a) -> a.setUrl(EquoChromium.mavenRepo()));
 							for (var coordinate : EquoChromium.mavenCoordinates()) {
 								ModuleDependency dep =

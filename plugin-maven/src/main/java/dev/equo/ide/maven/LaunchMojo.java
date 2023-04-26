@@ -125,6 +125,7 @@ public class LaunchMojo extends AbstractP2MojoWithCatalog {
 			}
 
 			if (equoChromium) {
+				ideHooks.add(new EquoChromium());
 				Builder b = new RemoteRepository.Builder("chromium", "default", EquoChromium.mavenRepo());
 				repositories.add(b.build());
 				for (var coordinate : EquoChromium.mavenCoordinates()) {
@@ -156,7 +157,6 @@ public class LaunchMojo extends AbstractP2MojoWithCatalog {
 			caller.showConsole = showConsole;
 			caller.useAtomos = useAtomos;
 			caller.debugIde = debugIde;
-			caller.equoChromium = equoChromium;
 			caller.showConsoleFlag = "-DshowConsole";
 			caller.cleanFlag = "-Dclean";
 			caller.launch();

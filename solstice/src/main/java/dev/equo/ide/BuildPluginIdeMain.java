@@ -73,7 +73,6 @@ public class BuildPluginIdeMain {
 		public ArrayList<File> classpath;
 		public BuildPluginIdeMain.DebugClasspath debugClasspath;
 		public Boolean initOnly, showConsole, useAtomos, debugIde;
-		public Boolean equoChromium;
 		public String showConsoleFlag, cleanFlag;
 
 		public void launch() throws IOException, InterruptedException {
@@ -86,7 +85,6 @@ public class BuildPluginIdeMain {
 			Objects.requireNonNull(showConsole);
 			Objects.requireNonNull(useAtomos);
 			Objects.requireNonNull(debugIde);
-			Objects.requireNonNull(equoChromium);
 			Objects.requireNonNull(showConsoleFlag);
 			Objects.requireNonNull(cleanFlag);
 
@@ -96,7 +94,7 @@ public class BuildPluginIdeMain {
 			for (var nested : NestedJars.inFiles(classpathSorted).extractAllNestedJars(nestedJarFolder)) {
 				classpathSorted.add(nested.getValue());
 			}
-			if (equoChromium) {
+			if (EquoChromium.isEnabled(ideHooks)) {
 				// extract the browser overrides, and add to classpath *before* SWT
 				var overrides =
 						new NestedJars() {

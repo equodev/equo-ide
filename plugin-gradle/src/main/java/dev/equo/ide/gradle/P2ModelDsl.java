@@ -22,14 +22,9 @@ import org.gradle.api.Project;
 /** The DSL for defining a P2Model. */
 public class P2ModelDsl {
 	protected final P2Model model;
-	private static boolean chromiumEnabled = false;
 
 	public P2ModelDsl(P2Model model) {
 		this.model = model;
-	}
-
-	public void equoChromium() {
-		chromiumEnabled = true;
 	}
 
 	public P2ModelDsl() {
@@ -76,10 +71,6 @@ public class P2ModelDsl {
 				EquoIdeGradlePlugin.anyArgEquals(project, CLEAN_FLAG)
 						|| EquoIdeGradlePlugin.anyArgEquals(project, REFRESH_DEPENDENCIES);
 		return forceRecalculate ? P2QueryCache.FORCE_RECALCULATE : P2QueryCache.ALLOW;
-	}
-
-	static boolean isChromiumEnabled() {
-		return chromiumEnabled;
 	}
 
 	private static final String CLEAN_FLAG = "--clean";
