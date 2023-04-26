@@ -37,7 +37,7 @@ This catalog is a useful reference for the p2 urls, code repositories, and issue
 
 ### `platform`
 
-- Latest release https://download.eclipse.org/eclipse/updates/4.26/
+- Latest release https://download.eclipse.org/eclipse/updates/4.27/
 - Code & issues
   - https://github.com/eclipse-platform (IDE platform)
   - https://github.com/eclipse-equinox (OSGi runtime)
@@ -81,16 +81,16 @@ This catalog is a useful reference for the p2 urls, code repositories, and issue
 
 ### `m2e`
 
-- Latest release https://download.eclipse.org/technology/m2e/releases/2.1.2/
+- Latest release https://download.eclipse.org/technology/m2e/releases/2.2.1/
 - Code & issues https://github.com/eclipse-m2e/m2e-core
 - Also a transitive dependency on some jars from
-  - https://download.eclipse.org/webtools/downloads/drops/R3.28.0/R-3.28.0-20221120050827/repository/
-  - https://download.eclipse.org/lsp4j/updates/releases/0.20.0
+  - https://download.eclipse.org/webtools/downloads/drops/R3.29.0/R-3.29.0-20230303230236/repository/
+  - https://download.eclipse.org/lsp4j/updates/releases/0.20.1
 
 ### `groovy`
 
-- Latest release https://groovy.jfrog.io/artifactory/plugins-release/org/codehaus/groovy/groovy-eclipse-integration/4.8.0/e4.26/
-  - Find other URLs via https://github.com/groovy/groovy-eclipse/wiki/4.8.0-Release-Notes#update-sites
+- Latest release https://groovy.jfrog.io/artifactory/plugins-release/org/codehaus/groovy/groovy-eclipse-integration/4.9.0/e4.27/
+  - Find other URLs via https://github.com/groovy/groovy-eclipse/wiki/4.9.0-Release-Notes#update-sites
 - Code & issues https://github.com/groovy/groovy-eclipse
 
 ## Wishlist
@@ -98,10 +98,10 @@ This catalog is a useful reference for the p2 urls, code repositories, and issue
 The projects below are not in the catalog yet, but somebody wants them! Feel free to add the plugins you want onto this wishlist. You can also move one of these out of the wishlist and into the Catalog DSL [like so](CONTRIBUTING.md#catalog-dsl).
 
 ### `wtp`
-- Latest release https://download.eclipse.org/webtools/repository/2022-12/
+- Latest release https://download.eclipse.org/webtools/repository/2023-03/
 - Code & issues https://www.eclipse.org/webtools/
 
 ### `tm4e`
 
-- Latest release https://download.eclipse.org/tm4e/releases/0.6.2/
+- Latest release https://download.eclipse.org/tm4e/releases/0.6.3/
 - Code & issues https://github.com/eclipse/tm4e
