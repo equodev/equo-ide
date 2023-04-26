@@ -14,7 +14,6 @@
 package dev.equo.ide.gradle;
 
 import dev.equo.ide.BuildPluginIdeMain;
-import dev.equo.ide.EquoChromium;
 import dev.equo.ide.IdeHook;
 import dev.equo.solstice.p2.P2QueryResult;
 import java.io.File;
@@ -139,10 +138,6 @@ public abstract class EquoIdeTask extends DefaultTask {
 							+ "}");
 		}
 
-		if (P2ModelDsl.isChromiumEnabled()) {
-			EquoChromium.removeSwtSigner(classpath);
-		}
-
 		caller.ideHooks = ideHooks;
 		caller.classpath = classpath;
 		caller.debugClasspath = debugClasspath;
@@ -150,6 +145,7 @@ public abstract class EquoIdeTask extends DefaultTask {
 		caller.showConsole = showConsole;
 		caller.useAtomos = useAtomosOverride != null ? useAtomosOverride : getUseAtomos().get();
 		caller.debugIde = debugIde;
+		caller.equoChromium = P2ModelDsl.isChromiumEnabled();
 		caller.showConsoleFlag = "--show-console";
 		caller.cleanFlag = "--clean";
 		caller.launch();

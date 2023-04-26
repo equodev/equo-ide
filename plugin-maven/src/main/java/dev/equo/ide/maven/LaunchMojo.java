@@ -142,11 +142,6 @@ public class LaunchMojo extends AbstractP2MojoWithCatalog {
 			for (var artifact : dependencyResult.getArtifactResults()) {
 				files.add(artifact.getArtifact().getFile());
 			}
-
-			if (equoChromium) {
-				EquoChromium.removeSwtSigner(files);
-			}
-
 			for (File downloadedJar : query.getJarsNotOnMavenCentral()) {
 				files.add(downloadedJar);
 			}
@@ -161,6 +156,7 @@ public class LaunchMojo extends AbstractP2MojoWithCatalog {
 			caller.showConsole = showConsole;
 			caller.useAtomos = useAtomos;
 			caller.debugIde = debugIde;
+			caller.equoChromium = equoChromium;
 			caller.showConsoleFlag = "-DshowConsole";
 			caller.cleanFlag = "-Dclean";
 			caller.launch();
