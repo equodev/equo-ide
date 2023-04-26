@@ -354,9 +354,6 @@ equo-ide:list
       Lists properties and requirements for all available versions of the given
       unit id.
 
-    equoChromium
-      (no description available)
-
     filters
       (no description available)
 

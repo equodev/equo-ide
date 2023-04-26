@@ -65,6 +65,7 @@ public class LaunchMojo extends AbstractP2MojoWithCatalog {
 	@Parameter(property = "showConsole", defaultValue = "false")
 	private boolean showConsole;
 
+	/** Replaces the standard SWT browser with Equo Chromium. */
 	@Parameter(property = "equoChromium", defaultValue = "false")
 	private boolean equoChromium;
 

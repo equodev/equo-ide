@@ -24,8 +24,9 @@ equo-ide:launch
       User property: debugIde
       Blocks IDE startup to help you attach a debugger.
 
-    equoChromium
-      (no description available)
+    equoChromium (Default: false)
+      User property: equoChromium
+      Replaces the standard SWT browser with Equo Chromium.
 
     filters
       (no description available)
