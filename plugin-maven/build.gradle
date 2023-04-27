@@ -20,7 +20,7 @@ dependencies {
 	compileOnly "org.apache.maven.plugin-tools:maven-plugin-annotations:$VER_MAVEN_API"
 	compileOnly "org.eclipse.aether:aether-api:1.1.0"
 	implementation project(':solstice')
-	implementation 'com.diffplug.durian:durian-swt.os:4.1.1'
+	implementation "com.diffplug.durian:durian-swt.os:$VER_DURIAN_SWT"
 	testImplementation "org.apache.maven:maven-plugin-api:$VER_MAVEN_API"
 	testImplementation "org.junit.jupiter:junit-jupiter:$VER_JUNIT"
 	testImplementation "org.assertj:assertj-core:$VER_ASSERTJ"

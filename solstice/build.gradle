@@ -33,7 +33,7 @@ spotless {
 String VER_SLF4J = '1.7.36'
 dependencies {
 	api "org.slf4j:slf4j-api:$VER_SLF4J"
-	api 'com.diffplug.durian:durian-swt.os:4.1.1'
+	api "com.diffplug.durian:durian-swt.os:$VER_DURIAN_SWT"
 	compileOnly 'com.google.code.findbugs:jsr305:3.0.2'
 
 	compileOnly 'org.apache.felix:org.apache.felix.atomos:1.0.0'
