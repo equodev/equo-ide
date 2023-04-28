@@ -43,7 +43,7 @@ public class SolsticeFrameworkUtilHelper implements FrameworkUtilHelper {
 		}
 		// if this is a fragment, return the host instead
 		if (manifest.isFragment()) {
-			manifest = owner.bundleByName(manifest.fragmentHost());
+			manifest = owner.bundleForSymbolicName(manifest.fragmentHost());
 		}
 		return Optional.of(manifest.hydrated);
 	}

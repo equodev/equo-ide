@@ -73,7 +73,7 @@ public class Solstice {
 		for (var fragment : bundles) {
 			var host = fragment.fragmentHost();
 			if (host != null) {
-				var hostBundle = bundleByName(host);
+				var hostBundle = bundleForSymbolicName(host);
 				if (hostBundle == null) {
 					throw new IllegalArgumentException("Fragment " + fragment + " needs missing " + host);
 				}
@@ -92,8 +92,8 @@ public class Solstice {
 	}
 
 	private void ensureOrder(String beforeName, String afterName, String reason) {
-		var before = bundleByName(beforeName);
-		var after = bundleByName(afterName);
+		var before = bundleForSymbolicName(beforeName);
+		var after = bundleForSymbolicName(afterName);
 		if (before != null && after != null) {
 			if (before.classpathOrder > after.classpathOrder) {
 				logger.error(
@@ -428,7 +428,7 @@ public class Solstice {
 				}
 			}
 			for (var required : manifest.totalRequiredBundles()) {
-				var bundle = bundleByName(required);
+				var bundle = bundleForSymbolicName(required);
 				if (bundle == null) {
 					throw new IllegalArgumentException(manifest + " required missing bundle " + required);
 				} else {
@@ -523,7 +523,7 @@ public class Solstice {
 		}
 	}
 
-	SolsticeManifest bundleByName(String name) {
+	SolsticeManifest bundleForSymbolicName(String name) {
 		for (var bundle : bundles) {
 			if (name.equals(bundle.getSymbolicName())) {
 				return bundle;
