@@ -149,11 +149,34 @@ public class CatalogDsl {
 		}
 
 		public void putInto(P2Model model, IdeHook.List hooks) {
+			// setup the IDE hooks
 			for (CatalogDsl dsl : catalogEntries.values()) {
 				model.addP2Repo(dsl.url());
 				model.getInstall().addAll(dsl.installs());
 				dsl.filters().forEach(model::addFilterAndValidate);
 				hooks.addAll(dsl.ideHooks());
+			}
+			// find the initial perspective
+			String perspective = null;
+			for (CatalogDsl dsl : catalogEntries.values()) {
+				if (perspective == null) {
+					perspective = Catalog.defaultPerspectiveFor(dsl.catalog);
+				}
+			}
+			if (perspective != null) {
+				IdeHookWelcome welcomeHook =
+						(IdeHookWelcome)
+								hooks.stream()
+										.filter(hook -> hook instanceof IdeHookWelcome)
+										.findFirst()
+										.orElse(null);
+				if (welcomeHook == null) {
+					welcomeHook = new IdeHookWelcome();
+					hooks.add(welcomeHook);
+				}
+				if (welcomeHook.perspective() == null) {
+					welcomeHook.perspective(perspective);
+				}
 			}
 		}
 	}
