@@ -42,11 +42,11 @@ public class Catalog implements Comparable<Catalog> {
 					JDT);
 
 	/** Pure transitive of m2e and others */
-	private static final Catalog LSP4J =
+	private static final Catalog ORBIT =
 			new Catalog(
-					"lsp4j",
-					"https://download.eclipse.org/lsp4j/updates/releases/" + V,
-					jre11("0.20.1"),
+					"orbit",
+					"https://download.eclipse.org/tools/orbit/downloads/drops/" + V + "/repository/",
+					jre11("R20230302014618"),
 					List.of());
 
 	/** Pure transitive of m2e and others */
@@ -54,7 +54,7 @@ public class Catalog implements Comparable<Catalog> {
 			new Catalog(
 					"wst",
 					"https://download.eclipse.org/webtools/downloads/drops/" + V + "/repository/",
-					jre11("R3.29.0/R-3.29.0-20230303230236/"),
+					jre11("R3.29.0/R-3.29.0-20230303230236"),
 					List.of());
 
 	public static final Catalog M2E =
@@ -65,7 +65,7 @@ public class Catalog implements Comparable<Catalog> {
 					List.of("org.eclipse.m2e.feature.feature.group"),
 					JDT,
 					WST,
-					LSP4J) {
+					ORBIT) {
 				@Override
 				public Map<String, P2Model.Filter> getFiltersFor(@Nullable String override) {
 					return Map.of(
