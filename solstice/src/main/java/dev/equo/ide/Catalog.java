@@ -24,6 +24,21 @@ import org.slf4j.LoggerFactory;
 
 public class Catalog implements Comparable<Catalog> {
 	private static final String V = "${VERSION}";
+
+	static String defaultPerspectiveFor(Catalog catalog) {
+		if (catalog == Catalog.JDT || catalog == Catalog.GROOVY) {
+			return "org.eclipse.jdt.ui.JavaPerspective";
+		} else if (catalog == Catalog.PDE) {
+			return "org.eclipse.pde.ui.PDEPerspective";
+		} else if (catalog == Catalog.KOTLIN) {
+			return "org.jetbrains.kotlin.perspective";
+		} else if (catalog == Catalog.CDT || catalog == Catalog.RUST) {
+			return "org.eclipse.cdt.ui.CPerspective";
+		} else {
+			return null;
+		}
+	}
+
 	public static final Catalog PLATFORM =
 			new Catalog(
 					"platform",
