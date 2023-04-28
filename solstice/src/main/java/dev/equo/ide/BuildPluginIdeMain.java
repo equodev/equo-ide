@@ -34,12 +34,9 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 import org.eclipse.osgi.internal.location.EquinoxLocations;
 import org.eclipse.swt.widgets.Display;
-import org.osgi.framework.BundleEvent;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
 import org.osgi.framework.InvalidSyntaxException;
-import org.osgi.framework.SynchronousBundleListener;
-import org.slf4j.LoggerFactory;
 
 /**
  * A main method for launching an IDE using Solstice. It has a verbose command line interface which
