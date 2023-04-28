@@ -9,6 +9,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 ### Fixed
 - Fix branding for title bar and icon. ([#117](https://github.com/equodev/equo-ide/pull/117) fixes [#87](https://github.com/equodev/equo-ide/issues/87))
 - Fix xml parsing errors. ([#110](https://github.com/equodev/equo-ide/pull/110/commits/15b0be521a4ae7fb20692b3192968c69f6d04f43) fixes [#118](https://github.com/equodev/equo-ide/issues/118))
+- Handle metadata jars with multiple entries. (fixes [#120](https://github.com/equodev/equo-ide/issues/120))
 
 ## [1.0.3] - 2023-03-13
 ### Fixed

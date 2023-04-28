@@ -280,14 +280,18 @@ public class P2Client implements AutoCloseable {
 		}
 		try {
 			var bytes = getBytes(jarUrl);
+			var unwantedEntries = new ArrayList<String>();
 			try (var zipStream = new ZipInputStream(new ByteArrayInputStream(bytes))) {
-				ZipEntry entry = zipStream.getNextEntry();
-				if (entry.getName().equals(metadataTarget)) {
-					return new String(zipStream.readAllBytes(), StandardCharsets.UTF_8);
-				} else {
-					throw new IllegalArgumentException(
-							"Expected to find " + metadataTarget + " but was " + entry.getName());
+				ZipEntry entry;
+				while ((entry = zipStream.getNextEntry()) != null) {
+					if (entry.getName().equals(metadataTarget)) {
+						return new String(zipStream.readAllBytes(), StandardCharsets.UTF_8);
+					} else {
+						unwantedEntries.add(entry.getName());
+					}
 				}
+				throw new IllegalArgumentException(
+						"Expected to find " + metadataTarget + " but was " + unwantedEntries);
 			}
 		} catch (NotFoundException e) {
 			// no problem, just keep trying

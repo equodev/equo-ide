@@ -66,10 +66,10 @@ public class P2Test {
 	@Test
 	public void weirdUpdateSites(Expect expect) throws Exception {
 		listCategories("https://bndtools.jfrog.io/bndtools/update-latest/", expect.scenario("bnd"));
-		listCategories("https://www.certiv.net/updates/", expect.scenario("fluentmark"));
 		listCategories(
 				"https://groovy.jfrog.io/artifactory/plugins-release/org/codehaus/groovy/groovy-eclipse-integration/4.8.0/e4.26/",
 				expect.scenario("groovy"));
+		listCategories("https://download.eclipse.org/eclipse/updates/4.28/", expect.scenario("4.28"));
 	}
 
 	private void listCategories(String url, Expect expect) throws Exception {
@@ -80,6 +80,6 @@ public class P2Test {
 		var query = session.query();
 		query.addAllUnits();
 		expect.toMatchSnapshot(
-				ConsoleTable.nameAndDescription(query.getFeatures(), ConsoleTable.Format.csv));
+				ConsoleTable.nameAndDescription(query.getCategories(), ConsoleTable.Format.csv));
 	}
 }
