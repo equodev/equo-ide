@@ -85,7 +85,7 @@ This catalog is a useful reference for the p2 urls, code repositories, and issue
 - Code & issues https://github.com/eclipse-m2e/m2e-core
 - Also a transitive dependency on some jars from
   - https://download.eclipse.org/webtools/downloads/drops/R3.29.0/R-3.29.0-20230303230236/repository/
-  - https://download.eclipse.org/lsp4j/updates/releases/0.20.1
+  - https://download.eclipse.org/tools/orbit/downloads/drops/R20230302014618/repository/
 
 ### `groovy`
 
