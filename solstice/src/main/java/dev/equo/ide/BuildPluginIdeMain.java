@@ -299,22 +299,6 @@ public class BuildPluginIdeMain {
 			solstice.openShim(props);
 			ShimIdeBootstrapServices.apply(props, solstice.getContext());
 		}
-		var logger = LoggerFactory.getLogger(BuildPluginIdeMain.class);
-		solstice
-				.getContext()
-				.addBundleListener(
-						new SynchronousBundleListener() {
-							@Override
-							public void bundleChanged(BundleEvent e) {
-								var originIsSame = e.getOrigin() == e.getBundle();
-								logger.warn(
-										"{} bundle {} {} origin {}",
-										Solstice.typeToString(e),
-										e.getBundle().getSymbolicName(),
-										Solstice.stateToString(e.getBundle()),
-										originIsSame ? "same" : e.getOrigin().getSymbolicName());
-							}
-						});
 
 		solstice.start("org.apache.felix.scr");
 		solstice.startAllWithLazy(false);
