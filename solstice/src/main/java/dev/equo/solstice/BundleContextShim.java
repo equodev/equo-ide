@@ -17,10 +17,10 @@ import com.diffplug.common.swt.os.SwtPlatform;
 import dev.equo.solstice.platform.Handler;
 import java.io.File;
 import java.io.InputStream;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -97,7 +97,6 @@ public class BundleContextShim extends ServiceRegistry {
 				});
 		this.storage = new ShimStorage(props, logger);
 		Handler.install(this);
-		SolsticeFrameworkUtilHelper.initialize(this);
 		bundleSet.hydrateFrom(
 				manifest -> {
 					long bundleId;
@@ -114,18 +113,20 @@ public class BundleContextShim extends ServiceRegistry {
 					return bundle;
 				});
 		Objects.requireNonNull(systemBundle);
+		// match the ordering of org.eclipse.osgi's context.getBundles()
+		bundles.sort(Comparator.comparing(ShimBundle::getSymbolicName));
+		var systemIdx = bundles.indexOf(systemBundle);
+		bundles.remove(systemIdx);
+		bundles.add(0, systemBundle);
+
 		for (var b : bundles) {
-			notifyBundleListeners(BundleEvent.INSTALLED, b);
 			b.state = Bundle.INSTALLED;
+			notifyBundleListeners(BundleEvent.INSTALLED, b);
 		}
 		for (var b : bundles) {
-			notifyBundleListeners(BundleEvent.RESOLVED, b);
-			b.state = Bundle.RESOLVED;
-		}
-		for (var b : bundles) {
-			if (b.manifest.lazy) {
-				notifyBundleListeners(BundleEvent.LAZY_ACTIVATION, b);
-				b.state = Bundle.STARTING;
+			if (b.manifest.lazy || b.activator == null) {
+				b.state = Bundle.RESOLVED;
+				notifyBundleListeners(BundleEvent.RESOLVED, b);
 			}
 		}
 	}
@@ -140,16 +141,6 @@ public class BundleContextShim extends ServiceRegistry {
 	public ShimBundle bundleForSymbolicName(String name) {
 		for (ShimBundle bundle : bundles) {
 			if (name.equals(bundle.getSymbolicName())) {
-				return bundle;
-			}
-		}
-		return null;
-	}
-
-	public Bundle bundleForUrl(URL source) {
-		String sourceString = "jar:" + source.toExternalForm() + "!";
-		for (ShimBundle bundle : bundles) {
-			if (sourceString.equals(bundle.manifest.getJarUrl())) {
 				return bundle;
 			}
 		}

@@ -28,7 +28,7 @@ public class Catalog implements Comparable<Catalog> {
 			new Catalog(
 					"platform",
 					"https://download.eclipse.org/eclipse/updates/" + V,
-					jre11("4.26"),
+					jre11("4.27"),
 					List.of("org.eclipse.platform.ide.categoryIU"));
 	public static final Catalog JDT =
 			new Catalog(
@@ -42,11 +42,11 @@ public class Catalog implements Comparable<Catalog> {
 					JDT);
 
 	/** Pure transitive of m2e and others */
-	private static final Catalog LSP4J =
+	private static final Catalog ORBIT =
 			new Catalog(
-					"lsp4j",
-					"https://download.eclipse.org/lsp4j/updates/releases/" + V,
-					jre11("0.20.0"),
+					"orbit",
+					"https://download.eclipse.org/tools/orbit/downloads/drops/" + V + "/repository/",
+					jre11("R20230302014618"),
 					List.of());
 
 	/** Pure transitive of m2e and others */
@@ -54,18 +54,18 @@ public class Catalog implements Comparable<Catalog> {
 			new Catalog(
 					"wst",
 					"https://download.eclipse.org/webtools/downloads/drops/" + V + "/repository/",
-					jre11("R3.28.0/R-3.28.0-20221120050827"),
+					jre11("R3.29.0/R-3.29.0-20230303230236"),
 					List.of());
 
 	public static final Catalog M2E =
 			new Catalog(
 					"m2e",
 					"https://download.eclipse.org/technology/m2e/releases/" + V,
-					jre11("1.20.1").jre(17, "2.1.2"),
+					jre11("1.20.1").jre(17, "2.2.1"),
 					List.of("org.eclipse.m2e.feature.feature.group"),
 					JDT,
 					WST,
-					LSP4J) {
+					ORBIT) {
 				@Override
 				public Map<String, P2Model.Filter> getFiltersFor(@Nullable String override) {
 					return Map.of(
@@ -73,12 +73,6 @@ public class Catalog implements Comparable<Catalog> {
 							P2Model.Filter.create(
 									filter -> {
 										filter.excludePrefix("org.apache.lucene.");
-									}),
-							"slf4j-included",
-							P2Model.Filter.create(
-									filter -> {
-										filter.exclude("slf4j-simple");
-										filter.exclude("slf4j-nop");
 									}));
 				}
 			};
@@ -99,8 +93,8 @@ public class Catalog implements Comparable<Catalog> {
 	public static final Catalog TM_TERMINAL =
 			new Catalog(
 					"tmTerminal",
-					"https://download.eclipse.org/tools/cdt/releases/11.0/cdt-" + V,
-					jre11("11.0.0"),
+					"https://download.eclipse.org/tools/cdt/releases/" + V,
+					jre11("11.1/cdt-11.1.0"),
 					List.of(
 							"org.eclipse.tm.terminal.feature.feature.group",
 							"org.eclipse.tm.terminal.view.feature.feature.group"),
@@ -145,7 +139,7 @@ public class Catalog implements Comparable<Catalog> {
 					"groovy",
 					"https://groovy.jfrog.io/artifactory/plugins-release/org/codehaus/groovy/groovy-eclipse-integration/"
 							+ V,
-					jre11("4.8.0/e4.26"),
+					jre11("4.9.0/e4.27"),
 					List.of(
 							"org.codehaus.groovy.compilerless.feature.feature.group",
 							"org.codehaus.groovy40.feature.feature.group"

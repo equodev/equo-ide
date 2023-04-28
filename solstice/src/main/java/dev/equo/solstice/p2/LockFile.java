@@ -21,10 +21,13 @@ class LockFile implements AutoCloseable {
 	final FileOutputStream lock;
 	final File lockFile;
 	private static final int WAIT_FOR_BUSY = 5_000;
+	private static final int WAIT_FOR_BUSY_CI = 50_000;
 
 	LockFile(File dir) throws IOException {
 		FileMisc.mkdirs(dir);
 		lockFile = new File(dir, ".lock");
+		int timeout =
+				System.getProperty("lockFileGenerousTimeout") != null ? WAIT_FOR_BUSY_CI : WAIT_FOR_BUSY;
 		FileMisc.retry(
 				lockFile,
 				f -> {
@@ -34,7 +37,7 @@ class LockFile implements AutoCloseable {
 										+ lockFile.getAbsolutePath());
 					}
 				},
-				WAIT_FOR_BUSY);
+				timeout);
 
 		lock = new FileOutputStream(lockFile);
 		lock.write(Long.toString(ProcessHandle.current().pid()).getBytes());

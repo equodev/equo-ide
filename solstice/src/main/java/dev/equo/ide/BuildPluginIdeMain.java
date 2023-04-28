@@ -278,6 +278,7 @@ public class BuildPluginIdeMain {
 		var props = new LinkedHashMap<String, String>();
 		props.put("gosh.args", "--quiet --noshutdown");
 		props.put("osgi.nl", "en_US");
+		props.put("eclipse.noRegistryFlushing", "true");
 		props.put(Constants.FRAMEWORK_STORAGE_CLEAN, Constants.FRAMEWORK_STORAGE_CLEAN_ONFIRSTINIT);
 		props.put(
 				EquinoxLocations.PROP_INSTANCE_AREA, new File(installDir, "instance").getAbsolutePath());
@@ -295,6 +296,7 @@ public class BuildPluginIdeMain {
 			solstice.openShim(props);
 			ShimIdeBootstrapServices.apply(props, solstice.getContext());
 		}
+
 		solstice.start("org.apache.felix.scr");
 		solstice.startAllWithLazy(false);
 		solstice.start("org.eclipse.ui.ide.application");

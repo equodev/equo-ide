@@ -73,29 +73,39 @@ public class Solstice {
 		for (var fragment : bundles) {
 			var host = fragment.fragmentHost();
 			if (host != null) {
-				var hostBundle = bundleByName(host);
+				var hostBundle = bundleForSymbolicName(host);
 				if (hostBundle == null) {
 					throw new IllegalArgumentException("Fragment " + fragment + " needs missing " + host);
 				}
 				hostBundle.fragments.add(fragment);
 			}
 		}
+		ensureOrder(
+				"org.eclipse.jdt.core",
+				"org.apache.jasper.glassfish",
+				"Eclipse has multiple jars which define `ICompilationUnit`.");
+		ensureOrder(
+				"org.eclipse.jdt.core.compiler.batch",
+				"org.apache.jasper.glassfish",
+				"Eclipse has multiple jars which define `ICompilationUnit`.");
+		ensureOrder("org.eclipse.osgi", "biz.aQute.bndlib", "bndlib contains org.osgi.service.log");
+	}
 
-		var glassfish = bundleByName(GLASSFISH);
-		var jdtCore = bundleByName(JDT_CORE);
-		if (glassfish != null && jdtCore != null) {
-			if (glassfish.classpathOrder < jdtCore.classpathOrder) {
-				throw new IllegalArgumentException(
-						"Eclipse has multiple jars which define `ICompilationUnit`, and it is important for the classpath order to put "
-								+ JDT_CORE
-								+ " before "
-								+ GLASSFISH);
+	private void ensureOrder(String beforeName, String afterName, String reason) {
+		var before = bundleForSymbolicName(beforeName);
+		var after = bundleForSymbolicName(afterName);
+		if (before != null && after != null) {
+			if (before.classpathOrder > after.classpathOrder) {
+				logger.error(
+						"It is a known problem for {} {} to be earlier on the classpath than {} {} because {}",
+						afterName,
+						after.getJarUrl(),
+						beforeName,
+						before.getJarUrl(),
+						reason);
 			}
 		}
 	}
-
-	private static final String GLASSFISH = "org.apache.jasper.glassfish";
-	private static final String JDT_CORE = "org.eclipse.jdt.core";
 
 	public Map<String, List<SolsticeManifest>> bySymbolicName() {
 		return groupBundlesIncludeFragments(
@@ -314,6 +324,7 @@ public class Solstice {
 	}
 
 	public void openAtomos(Map<String, String> props) throws BundleException {
+		SolsticeFrameworkUtilHelper.initialize(this);
 		assertContextInitialized(false);
 		// the spelled-out package is on purpose so that Atomos can remain an optional
 		// component
@@ -323,6 +334,7 @@ public class Solstice {
 	}
 
 	public void openShim(Map<String, String> props) {
+		SolsticeFrameworkUtilHelper.initialize(this);
 		assertContextInitialized(false);
 		context = BundleContextShim.hydrate(this, props);
 	}
@@ -416,7 +428,7 @@ public class Solstice {
 				}
 			}
 			for (var required : manifest.totalRequiredBundles()) {
-				var bundle = bundleByName(required);
+				var bundle = bundleForSymbolicName(required);
 				if (bundle == null) {
 					throw new IllegalArgumentException(manifest + " required missing bundle " + required);
 				} else {
@@ -511,9 +523,19 @@ public class Solstice {
 		}
 	}
 
-	SolsticeManifest bundleByName(String name) {
+	SolsticeManifest bundleForSymbolicName(String name) {
 		for (var bundle : bundles) {
 			if (name.equals(bundle.getSymbolicName())) {
+				return bundle;
+			}
+		}
+		return null;
+	}
+
+	SolsticeManifest bundleForUrl(URL source) {
+		String sourceString = "jar:" + source.toExternalForm() + "!";
+		for (var bundle : bundles) {
+			if (sourceString.equals(bundle.getJarUrl())) {
 				return bundle;
 			}
 		}

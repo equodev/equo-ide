@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -92,7 +93,7 @@ abstract class ServiceRegistry extends BundleContextImpl {
 			services.computeIfAbsent(clazz, k -> new ArrayList<>()).add(newService);
 		}
 		notifyListeners(ServiceEvent.REGISTERED, newService);
-		return newService;
+		return newService.registration;
 	}
 
 	private static String propertiesToString(Dictionary<String, ?> dict) {
@@ -186,14 +187,7 @@ abstract class ServiceRegistry extends BundleContextImpl {
 
 	@Override
 	public final <S> S getService(ServiceReference<S> reference) {
-		if (reference instanceof ShimServiceReference) {
-			return ((ShimServiceReference<S>) reference).service;
-		} else if (reference instanceof ShimServiceFactoryReference) {
-			var cast = (ShimServiceFactoryReference<S>) reference;
-			return cast.factory.getService(systemBundle(), cast);
-		} else {
-			throw new IllegalArgumentException("Unexpected class " + reference);
-		}
+		return ((AbstractServiceReference<S>) reference).get();
 	}
 
 	@Override
@@ -277,8 +271,8 @@ abstract class ServiceRegistry extends BundleContextImpl {
 		}
 
 		@Override
-		public String toString() {
-			return service.toString();
+		protected S get() {
+			return service;
 		}
 	}
 
@@ -316,25 +310,75 @@ abstract class ServiceRegistry extends BundleContextImpl {
 			}
 			return false;
 		}
+
+		S value;
+
+		@Override
+		protected synchronized S get() {
+			if (value == null) {
+				value = factory.getService(systemBundle(), registration);
+			}
+			return value;
+		}
 	}
 
 	static final AtomicLong globalId = new AtomicLong();
 
-	abstract class AbstractServiceReference<S>
-			implements ServiceReference<S>, ServiceRegistration<S> {
+	final class ShimRegistration<S> implements ServiceRegistration<S> {
+		final AbstractServiceReference<S> reference;
+
+		ShimRegistration(AbstractServiceReference<S> reference) {
+			this.reference = reference;
+		}
+
+		@Override
+		public ServiceReference<S> getReference() {
+			return reference;
+		}
+
+		@Override
+		public synchronized void setProperties(Dictionary<String, ?> properties) {
+			reference.properties = (Dictionary<String, Object>) properties;
+			notifyListeners(ServiceEvent.MODIFIED, reference);
+		}
+
+		@Override
+		public void unregister() {
+			notifyListeners(ServiceEvent.UNREGISTERING, reference);
+			synchronized (ServiceRegistry.this) {
+				for (String clazz : reference.objectClass) {
+					services.get(clazz).remove(this);
+				}
+			}
+		}
+
+		@Override
+		public String toString() {
+			return "{registration " + reference + "}";
+		}
+	}
+
+	abstract class AbstractServiceReference<S> implements ServiceReference<S> {
+		final ServiceRegistration<S> registration = new ShimRegistration<>(this);
 		final String[] objectClass;
 		final long id;
-		Dictionary<String, ?> properties;
+		Dictionary<String, Object> properties;
 
 		AbstractServiceReference(String[] objectClass, Dictionary<String, ?> properties) {
 			this.id = globalId.getAndIncrement();
 			this.objectClass = objectClass;
 			if (properties != null) {
-				this.properties = Dictionaries.copy(properties);
+				this.properties = (Dictionary<String, Object>) Dictionaries.copy(properties);
 			} else {
-				this.properties = Dictionaries.empty();
+				this.properties = new Hashtable<>();
 			}
+			this.properties.put(Constants.SERVICE_ID, Long.valueOf(id));
+			this.properties.put(Constants.OBJECTCLASS, objectClass);
+			this.properties.put(Constants.SERVICE_SCOPE, Constants.SCOPE_BUNDLE);
+			this.properties.put(Constants.SERVICE_BUNDLEID, Long.valueOf(0));
 		}
+
+		protected abstract S get();
 
 		@Override
 		public synchronized Object getProperty(String key) {
@@ -364,24 +408,8 @@ abstract class ServiceRegistry extends BundleContextImpl {
 		}
 
 		@Override
-		public synchronized void setProperties(Dictionary<String, ?> properties) {
-			this.properties = properties;
-			notifyListeners(ServiceEvent.MODIFIED, this);
-		}
-
-		@Override
 		public Bundle getBundle() {
 			return systemBundle();
-		}
-
-		@Override
-		public void unregister() {
-			notifyListeners(ServiceEvent.UNREGISTERING, this);
-			synchronized (ServiceRegistry.this) {
-				for (String clazz : objectClass) {
-					services.get(clazz).remove(this);
-				}
-			}
 		}
 
 		@Override
@@ -403,10 +431,9 @@ abstract class ServiceRegistry extends BundleContextImpl {
 			throw Unimplemented.onPurpose();
 		}
 
-		// ServiceRegistration overrides
 		@Override
-		public ServiceReference<S> getReference() {
-			return this;
+		public String toString() {
+			return Arrays.toString(objectClass);
 		}
 	}
 }
