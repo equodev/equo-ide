@@ -5,6 +5,8 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 ## [Unreleased]
 ### Added
 - `<m2e><autoImport>${project.basedir}</autoImport></m2e>` to automatically import the given repo on startup. ([#115](https://github.com/equodev/equo-ide/pull/115) implements [#18](https://github.com/equodev/equo-ide/issues/18))
+### Changed
+- Update version catalog to latest `2022-03` versions of everything. ([#110](https://github.com/equodev/equo-ide/pull/110))
 ### Fixed
 - Fix branding for title bar and icon. ([#117](https://github.com/equodev/equo-ide/pull/117) fixes [#87](https://github.com/equodev/equo-ide/issues/87))
 
