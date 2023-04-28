@@ -99,7 +99,7 @@ public class LaunchMojo extends AbstractP2MojoWithCatalog {
 					new IdeHookBranding().title(branding.title).icon(branding.icon).splash(branding.splash));
 			if (welcome != null) {
 				var welcomeHook = new IdeHookWelcome();
-				welcomeHook.openUrl(welcome.openUrl);
+				welcomeHook.openUrl(welcome.openUrl).perspective(welcome.perspective);
 				ideHooks.add(welcomeHook);
 			}
 

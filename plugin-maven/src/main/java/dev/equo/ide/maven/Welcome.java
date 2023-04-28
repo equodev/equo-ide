@@ -18,4 +18,5 @@ import org.sonatype.inject.Nullable;
 
 public class Welcome {
 	@Parameter @Nullable String openUrl;
+	@Parameter @Nullable String perspective;
 }
