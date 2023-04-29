@@ -16,10 +16,20 @@ package dev.equo.ide;
 @SuppressWarnings("serial")
 public class IdeHookWelcome implements IdeHook {
 	String openUrl;
+	String perspective;
 
 	public IdeHookWelcome openUrl(String openUrl) {
 		this.openUrl = openUrl;
 		return this;
+	}
+
+	public IdeHookWelcome perspective(String perspective) {
+		this.perspective = perspective;
+		return this;
+	}
+
+	public String perspective() {
+		return perspective;
 	}
 
 	@Override
