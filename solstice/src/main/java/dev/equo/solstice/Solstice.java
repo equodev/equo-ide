@@ -324,6 +324,10 @@ public class Solstice {
 	}
 
 	public void openAtomos(Map<String, String> props) throws BundleException {
+		System.setProperty( // fixes https://github.com/equodev/equo-ide/issues/118
+				"javax.xml.parsers.DocumentBuilderFactory",
+				"com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl");
+
 		SolsticeFrameworkUtilHelper.initialize(this);
 		assertContextInitialized(false);
 		// the spelled-out package is on purpose so that Atomos can remain an optional
