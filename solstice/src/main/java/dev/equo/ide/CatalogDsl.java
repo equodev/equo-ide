@@ -14,6 +14,7 @@
 package dev.equo.ide;
 
 import dev.equo.solstice.p2.P2Model;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -107,9 +108,11 @@ public class CatalogDsl {
 	}
 
 	public static class TransitiveAwareList<T extends CatalogDsl> {
+		private List<CatalogDsl> insertionOrder = new ArrayList<>();
 		private final TreeMap<Catalog, CatalogDsl> catalogEntries = new TreeMap<>();
 
 		public void add(T dsl) {
+			insertionOrder.add(dsl);
 			var existing = catalogEntries.get(dsl.catalog);
 			if (existing != null) {
 				if (existing.addedAsTransitiveOf != null) {
@@ -140,6 +143,7 @@ public class CatalogDsl {
 			if (dsl == null) {
 				dsl = new CatalogDsl(transitive, originalRequest);
 				catalogEntries.put(transitive, dsl);
+				insertionOrder.add(dsl);
 			}
 			for (var required : transitive.getRequires()) {
 				var transitiveDsl = addAsTransitiveOf(required, originalRequest);
@@ -158,7 +162,7 @@ public class CatalogDsl {
 			}
 			// find the initial perspective
 			String perspective = null;
-			for (CatalogDsl dsl : catalogEntries.values()) {
+			for (CatalogDsl dsl : insertionOrder) {
 				if (perspective == null) {
 					perspective = Catalog.defaultPerspectiveFor(dsl.catalog);
 				}
