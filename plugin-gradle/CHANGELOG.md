@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+
+## [1.1.0] - 2023-04-29
 ### Added
 - We now set the initial perspective of the IDE. ([#125](https://github.com/equodev/equo-ide/pull/125))
   - It gets set automatically from catalog entries (e.g. `jdt()`), or you can set it manually
