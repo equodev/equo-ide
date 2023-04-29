@@ -164,6 +164,7 @@ public class CatalogDsl {
 			String perspective =
 					insertionOrder.stream()
 							.map(dsl -> Catalog.defaultPerspectiveFor(dsl.catalog))
+							.filter(Objects::nonNull)
 							.findFirst()
 							.orElse(null);
 			if (perspective != null) {
