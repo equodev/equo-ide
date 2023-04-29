@@ -5,6 +5,13 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 ## [Unreleased]
 ### Added
 - `<m2e><autoImport>${project.basedir}</autoImport></m2e>` to automatically import the given repo on startup. ([#115](https://github.com/equodev/equo-ide/pull/115) implements [#18](https://github.com/equodev/equo-ide/issues/18))
+- We now set the initial perspective of the IDE. ([#125](https://github.com/equodev/equo-ide/pull/125))
+  - It gets set automatically from catalog entries (e.g. `<jdt/>`), or you can set it manually
+  - ```xml
+    <welcome>
+      <perspective>org.eclipse.jdt.ui.JavaPerspective</perspective>
+    </welcome>
+    ```
 ### Changed
 - Update version catalog to latest `2022-03` versions of everything. ([#110](https://github.com/equodev/equo-ide/pull/110))
 ### Fixed
