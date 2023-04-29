@@ -161,12 +161,11 @@ public class CatalogDsl {
 				hooks.addAll(dsl.ideHooks());
 			}
 			// find the initial perspective
-			String perspective = null;
-			for (CatalogDsl dsl : insertionOrder) {
-				if (perspective == null) {
-					perspective = Catalog.defaultPerspectiveFor(dsl.catalog);
-				}
-			}
+			String perspective =
+					insertionOrder.stream()
+							.map(dsl -> Catalog.defaultPerspectiveFor(dsl.catalog))
+							.findFirst()
+							.orElse(null);
 			if (perspective != null) {
 				IdeHookWelcome welcomeHook =
 						(IdeHookWelcome)
