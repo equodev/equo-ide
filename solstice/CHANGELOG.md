@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+
+## [1.1.0] - 2023-04-29
 ### Added
 - Added `SignedJars` which can strip signatures when necessary (e.g. a signed Eclipse jar contributing classes to the same package as one of its nested jars). ([#116](https://github.com/equodev/equo-ide/pull/116))
 - `NestedJars.transitiveDeps` is now smart about keeping `slf4j-nop` off the classpath and only adding `slf4j` deps when they are absent ([#115](https://github.com/equodev/equo-ide/pull/115/commits/6bcf66e9e35d2ca4ab1b6da1bae1ddbf0c17fd63) and [#110]()https://github.com/equodev/equo-ide/pull/110/commits/0cf444ac9d19844ecbce5f7aac23095816b42ec6)
