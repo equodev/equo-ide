@@ -2,11 +2,6 @@ ext.maven_name='EquoIDE for Maven'
 ext.maven_artifact = 'equo-ide-maven-plugin'
 ext.maven_desc=干.proj('gradlePlugin_equoIde_desc', 'Marketing description of EquoIDE')
 
-apply plugin: 'com.diffplug.spotless-changelog'
-spotlessChangelog {
-	forceNextVersion '1.0.0'
-}
-
 String VER_MAVEN_API='3.0'
 
 apply from: 干.file('changelog.gradle')
