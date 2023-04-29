@@ -304,7 +304,7 @@ public class BuildPluginIdeMain {
 			// the spelled-out package is on purpose so that Atomos can remain an optional component
 			// works together with
 			// https://github.com/equodev/equo-ide/blob/aa7d30cba9988bc740ff4bc4b3015475d30d187c/solstice/build.gradle#L16-L22
-			dev.equo.solstice.BundleContextAtomos.urlWorkaround(solstice.getContext());
+			dev.equo.solstice.BundleContextAtomos.urlWorkaround(solstice);
 		}
 		if (!initOnly) {
 			ideHooks.forEach(IdeHookInstantiated::afterOsgi, solstice.getContext());
