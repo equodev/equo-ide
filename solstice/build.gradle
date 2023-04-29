@@ -70,7 +70,7 @@ jar {
 	}
 }
 
-String VERSION = '4.26'
+String VERSION = '4.27'
 apply plugin: 'dev.equo.p2deps'
 p2deps {
 	into 'api', {
