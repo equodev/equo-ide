@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+
+## [1.0.0] - 2023-04-29
 ### Added
 - `<m2e><autoImport>${project.basedir}</autoImport></m2e>` to automatically import the given repo on startup. ([#115](https://github.com/equodev/equo-ide/pull/115) implements [#18](https://github.com/equodev/equo-ide/issues/18))
 - We now set the initial perspective of the IDE. ([#125](https://github.com/equodev/equo-ide/pull/125))
