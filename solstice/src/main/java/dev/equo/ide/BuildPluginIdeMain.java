@@ -24,6 +24,7 @@ import dev.equo.solstice.p2.WorkspaceRegistry;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.LinkedHashMap;
@@ -106,6 +107,15 @@ public class BuildPluginIdeMain {
 			var ideHooksCopy = ideHooks.copy();
 			ideHooksCopy.add(IdeHookLockFile.forWorkspaceDirAndClasspath(workspaceDir, classpathSorted));
 			SerializableMisc.toFile(ideHooksCopy, ideHooksFile);
+
+			var installDir = workspaceDir.toPath().resolve("install");
+			Files.createDirectories(installDir);
+			var bundlesInfo =
+					workspaceDir
+							.toPath()
+							.resolve("config/org.eclipse.equinox.simpleconfigurator/bundles.info");
+			Files.createDirectories(bundlesInfo.getParent());
+			Files.writeString(bundlesInfo, bundlesDotInfo(classpathSorted));
 
 			debugClasspath.printWithHead(
 					"jars about to be launched", classpathSorted.stream().map(File::getAbsolutePath));
@@ -224,6 +234,44 @@ public class BuildPluginIdeMain {
 					throw new IllegalArgumentException("Unexpected enum value " + this);
 			}
 		}
+	}
+
+	private static String bundlesDotInfo(List<File> cp) {
+		var buffer = new StringBuilder();
+		var newline = "\n";
+		// for a "real" file these should be different in different places...
+		var startLevel = "4";
+		var markedAsStarted = "false";
+
+		buffer.append("#encoding=UTF-8");
+		buffer.append(newline);
+		buffer.append("#version=1");
+		buffer.append(newline);
+		for (var file : cp) {
+			try {
+				SolsticeManifest manifest = SolsticeManifest.parseJar(file);
+				if (manifest == null) {
+					continue;
+				}
+				String version = manifest.getHeadersOriginal().get(Constants.BUNDLE_VERSION);
+				if (version == null) {
+					continue;
+				}
+				buffer.append(manifest.getSymbolicName());
+				buffer.append(',');
+				buffer.append(version);
+				buffer.append(',');
+				buffer.append(file.toURI());
+				buffer.append(',');
+				buffer.append(startLevel);
+				buffer.append(',');
+				buffer.append(markedAsStarted);
+				buffer.append(newline);
+			} catch (Exception e) {
+				// do nothing
+			}
+		}
+		return buffer.toString();
 	}
 
 	private static <T> T parseArg(
