@@ -13,8 +13,10 @@
  *******************************************************************************/
 package dev.equo.solstice;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -46,6 +48,11 @@ import org.osgi.framework.Constants;
  * </ul>
  */
 public class SolsticeManifest {
+	public static SolsticeManifest parseJar(File file) throws MalformedURLException {
+		var url = new URL("jar:" + file.toURI() + "!" + SLASH_MANIFEST_PATH);
+		return new SolsticeManifest(url, -1);
+	}
+
 	public static final String MANIFEST_PATH = "META-INF/MANIFEST.MF";
 	public static final String SLASH_MANIFEST_PATH = "/" + MANIFEST_PATH;
 
