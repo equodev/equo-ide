@@ -37,6 +37,7 @@ import org.eclipse.osgi.util.ManifestElement;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
+import org.osgi.framework.Version;
 
 /**
  * Parses a jar manifest, removing some fine-grained details for the purpose of simplifying the
@@ -59,6 +60,7 @@ public class SolsticeManifest {
 	private final String jarUrl;
 	final int classpathOrder;
 	private final @Nullable String symbolicName;
+	private final Version version;
 	private final LinkedHashMap<String, String> headersOriginal = new LinkedHashMap<>();
 	final ArrayList<String> requiredBundles;
 	final ArrayList<String> pkgImports;
@@ -101,6 +103,8 @@ public class SolsticeManifest {
 
 		var symbolicNameRaw = parseAndStrip(Constants.BUNDLE_SYMBOLICNAME);
 		symbolicName = symbolicNameRaw.isEmpty() ? null : symbolicNameRaw.get(0);
+		var rawVersion = headersOriginal.get(Constants.BUNDLE_VERSION);
+		version = rawVersion != null ? new Version(rawVersion) : Version.emptyVersion;
 
 		requiredBundles = parseAndStrip(Constants.REQUIRE_BUNDLE);
 		requiredBundles.replaceAll(SolsticeManifest::handleSystemBundle);
@@ -307,6 +311,10 @@ public class SolsticeManifest {
 
 	public String getSymbolicName() {
 		return symbolicName;
+	}
+
+	public Version getVersion() {
+		return version;
 	}
 
 	public String getJarUrl() {

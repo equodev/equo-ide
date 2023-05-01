@@ -250,16 +250,14 @@ public class BuildPluginIdeMain {
 		for (var file : cp) {
 			try {
 				SolsticeManifest manifest = SolsticeManifest.parseJar(file);
-				if (manifest == null) {
-					continue;
-				}
-				String version = manifest.getHeadersOriginal().get(Constants.BUNDLE_VERSION);
-				if (version == null) {
+				if (manifest == null
+						|| manifest.getSymbolicName() == null
+						|| manifest.getVersion() == null) {
 					continue;
 				}
 				buffer.append(manifest.getSymbolicName());
 				buffer.append(',');
-				buffer.append(version);
+				buffer.append(manifest.getVersion());
 				buffer.append(',');
 				buffer.append(file.toURI());
 				buffer.append(',');

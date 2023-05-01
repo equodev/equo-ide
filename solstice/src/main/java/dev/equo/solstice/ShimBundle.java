@@ -119,7 +119,7 @@ public class ShimBundle implements Bundle {
 
 	@Override
 	public Version getVersion() {
-		return Version.emptyVersion;
+		return manifest.getVersion();
 	}
 
 	@Override
@@ -144,7 +144,6 @@ public class ShimBundle implements Bundle {
 
 	private boolean activateHasBeenCalled = false;
 
-	/** Returns false if the bundle cannot activate yet because of "requiresWorkbench" */
 	private void activate() {
 		if (activateHasBeenCalled) {
 			return;
@@ -167,6 +166,21 @@ public class ShimBundle implements Bundle {
 				context.activator.start(context);
 			} catch (Exception e) {
 				context.delegate.logger.warn("Error in activator of " + getSymbolicName(), e);
+			}
+			for (var fragment : manifest.fragments) {
+				try {
+					var extensionActivator =
+							fragment.getHeadersOriginal().get(Constants.EXTENSION_BUNDLE_ACTIVATOR);
+					if (extensionActivator != null) {
+						@SuppressWarnings("unchecked")
+						var c =
+								(Constructor<BundleActivator>) Class.forName(extensionActivator).getConstructor();
+						c.newInstance().start(context);
+					}
+				} catch (Exception e) {
+					context.delegate.logger.warn(
+							"Error in fragment activator of " + fragment.getSymbolicName(), e);
+				}
 			}
 		}
 		state = ACTIVE;
@@ -365,6 +379,11 @@ public class ShimBundle implements Bundle {
 						@Override
 						public boolean isActivationPolicyUsed() {
 							return true;
+						}
+
+						@Override
+						public void setStartLevel(int startlevel) {
+							// no-op needed for simpleconfigurator
 						}
 					};
 		} else if (BundleRevision.class.equals(type)) {
