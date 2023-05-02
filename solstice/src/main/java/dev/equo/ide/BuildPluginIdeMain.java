@@ -342,6 +342,7 @@ public class BuildPluginIdeMain {
 			solstice.openShim(props);
 			ShimIdeBootstrapServices.apply(props, solstice.getContext());
 		}
+		ShimIdeBootstrapServices.shimAndAtomos(props, solstice.getContext());
 
 		solstice.start("org.apache.felix.scr");
 		solstice.startAllWithLazy(false);

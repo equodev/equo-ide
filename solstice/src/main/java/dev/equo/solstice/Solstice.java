@@ -314,20 +314,16 @@ public class Solstice {
 	private void assertContextInitialized(boolean isInitialized) {
 		if (isInitialized) {
 			if (context == null) {
-				throw new IllegalStateException("Call `openAtomos` or `openSolstice` first");
+				throw new IllegalStateException("Call `openAtomos` or `openShim` first");
 			}
 		} else {
 			if (context != null) {
-				throw new IllegalStateException("`openAtomos` or `openSolstice` can only be called once");
+				throw new IllegalStateException("`openAtomos` or `openShim` can only be called once");
 			}
 		}
 	}
 
 	public void openAtomos(Map<String, String> props) throws BundleException {
-		System.setProperty( // fixes https://github.com/equodev/equo-ide/issues/118
-				"javax.xml.parsers.DocumentBuilderFactory",
-				"com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl");
-
 		SolsticeFrameworkUtilHelper.initialize(this);
 		assertContextInitialized(false);
 		// the spelled-out package is on purpose so that Atomos can remain an optional

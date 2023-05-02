@@ -139,9 +139,6 @@ public class ShimIdeBootstrapServices {
 				Dictionaries.empty());
 
 		// - [ ] XML parsing
-		System.setProperty( // fixes https://github.com/equodev/equo-ide/issues/118
-				"javax.xml.parsers.DocumentBuilderFactory",
-				"com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl");
 		try {
 			// match Eclipse's behavior when we have the same parser available
 			String xerces = "org.apache.xerces.jaxp.SAXParserFactoryImpl";
@@ -152,6 +149,12 @@ public class ShimIdeBootstrapServices {
 		}
 		context.registerService(SAXParserFactory.class, new XMLFactory<>(true), null);
 		context.registerService(DocumentBuilderFactory.class, new XMLFactory<>(false), null);
+	}
+
+	public static void shimAndAtomos(Map<String, String> props, BundleContext contextUntyped) {
+		System.setProperty( // fixes https://github.com/equodev/equo-ide/issues/118
+				"javax.xml.parsers.DocumentBuilderFactory",
+				"com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl");
 	}
 
 	static Collection<String> locationKeys() {
