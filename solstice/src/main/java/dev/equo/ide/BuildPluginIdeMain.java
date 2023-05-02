@@ -240,7 +240,7 @@ public class BuildPluginIdeMain {
 		var buffer = new StringBuilder();
 		var newline = "\n";
 		// for a "real" file these should be different in different places...
-		var startLevel = "4";
+		var startLevel = "0";
 		var markedAsStarted = "false";
 
 		buffer.append("#encoding=UTF-8");
@@ -322,6 +322,9 @@ public class BuildPluginIdeMain {
 		}
 
 		var props = new LinkedHashMap<String, String>();
+		props.put(
+				"org.eclipse.equinox.simpleconfigurator.configUrl",
+				"file: broken on purpose to disable simpleconfigurator");
 		props.put("gosh.args", "--quiet --noshutdown");
 		props.put("osgi.nl", "en_US");
 		props.put("eclipse.noRegistryFlushing", "true");
