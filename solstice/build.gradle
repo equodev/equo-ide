@@ -30,6 +30,15 @@ spotless {
 	}
 }
 
+tasks.named('processResources') {
+	for (String subjar : ['patch-equinox-4.27']) {
+		dependsOn(":${subjar}:jar")
+		from {
+			"../${subjar}/build/libs/${subjar}.jar"
+		}
+	}
+}
+
 String VER_SLF4J = '1.7.36'
 dependencies {
 	api "org.slf4j:slf4j-api:$VER_SLF4J"
@@ -80,6 +89,7 @@ p2deps {
 	into 'implementation', {
 		p2repo "https://download.eclipse.org/eclipse/updates/${VERSION}/"
 		install 'org.eclipse.osgi'
+		//install "org.eclipse.releng.pde.categoryIU"
 		//install 'org.osgi.service.component'
 	}
 	into 'compileOnly', {
