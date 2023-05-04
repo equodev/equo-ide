@@ -16,6 +16,7 @@ package org.eclipse.osgi.internal.framework;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.AccessControlContext;
 import java.security.AccessController;
@@ -691,8 +692,21 @@ public class EquinoxBundle implements Bundle, BundleReference {
 		return current.getBundleFile().getEntryPaths(path);
 	}
 
+	private static final String ATOMOS_BOOT = "atomos:boot:";
+
 	@Override
 	public URL getEntry(String path) {
+		if ("/".equals(path)) {
+			try {
+				if (getLocation().startsWith(ATOMOS_BOOT)) {
+					return new URL(getLocation().replace(ATOMOS_BOOT, "file:"));
+				} else {
+					throw new IllegalArgumentException("Expected location to start with " + ATOMOS_BOOT + " but was " + getLocation() + ".");
+				}
+			} catch (MalformedURLException e) {
+				throw new RuntimeException(e);
+			}
+		}
 		try {
 			equinoxContainer.checkAdminPermission(this, AdminPermission.RESOURCE);
 		} catch (SecurityException e) {
