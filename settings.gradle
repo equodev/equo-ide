@@ -35,5 +35,6 @@ blowdryerSetup {
 }
 rootProject.name = 'equo-ide'
 include 'solstice'
+include 'patch-equinox-4.27'
 include 'plugin-gradle'
 include 'plugin-maven'

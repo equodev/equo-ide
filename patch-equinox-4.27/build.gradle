@@ -1,0 +1,17 @@
+apply plugin: 'java-library'
+sourceCompatibility = java_compat
+targetCompatibility = java_compat
+
+spotless {
+	java {
+		clearSteps()
+	}
+}
+String VERSION = '4.27'
+apply plugin: 'dev.equo.p2deps'
+p2deps {
+	into 'compileOnly', {
+		p2repo "https://download.eclipse.org/eclipse/updates/${VERSION}/"
+		install 'org.eclipse.osgi'
+	}
+}
