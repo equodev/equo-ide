@@ -89,11 +89,18 @@ public class BuildPluginIdeMain {
 			Objects.requireNonNull(showConsoleFlag);
 			Objects.requireNonNull(cleanFlag);
 
-			var classpathSorted = Launcher.copyAndSortClasspath(classpath);
+			ArrayList<File> classpathSorted = Launcher.copyAndSortClasspath(classpath);
 			SignedJars.stripIfNecessary(classpathSorted);
 			var nestedJarFolder = new File(workspaceDir, NestedJars.DIR);
 			for (var nested : NestedJars.inFiles(classpathSorted).extractAllNestedJars(nestedJarFolder)) {
 				classpathSorted.add(nested.getValue());
+			}
+			if (useAtomos) {
+				var version = Patch.detectVersion(classpathSorted, "org.eclipse.osgi");
+				if ("3.18.300".equals(version)) {
+					Patch.patch(classpathSorted, nestedJarFolder, "patch-equinox-4.27");
+					SignedJars.stripIf(classpathSorted, jarName -> jarName.startsWith("org.eclipse.osgi"));
+				}
 			}
 			SignedJars.stripIfNecessary(classpathSorted);
 
