@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -51,12 +52,16 @@ public class SignedJars {
 	}
 
 	public static void stripIfNecessary(ArrayList<File> file) {
+		stripIf(file, needsStrip::contains);
+	}
+
+	public static void stripIf(ArrayList<File> file, Predicate<String> fileNamesToStrip) {
 		file.replaceAll(
 				f -> {
-					if (needsStrip.contains(f.getName())) {
+					if (fileNamesToStrip.test(f.getName())) {
 						File strippedJar = strippedFile(f);
 						try {
-							var strippedBytes = stripIfNecessary(f);
+							var strippedBytes = readAndStripInMemory(f);
 							if (!strippedJar.exists() || strippedJar.length() != strippedBytes.length) {
 								Files.write(strippedJar.toPath(), strippedBytes);
 							}
@@ -69,7 +74,7 @@ public class SignedJars {
 				});
 	}
 
-	private static byte[] stripIfNecessary(File input) throws IOException {
+	private static byte[] readAndStripInMemory(File input) throws IOException {
 		ByteArrayOutputStream output = new ByteArrayOutputStream();
 		try (ZipInputStream zipInput =
 						new ZipInputStream(new BufferedInputStream(new FileInputStream(input)));

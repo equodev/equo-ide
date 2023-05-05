@@ -43,7 +43,7 @@ class MavenCentralMapping {
 	private static final String OSGI = "org.osgi";
 
 	private static String groupIdArtifactId(String bundleId) {
-		if (bundleId.endsWith(".feature")) {
+		if (bundleId.endsWith(".feature") || bundleId.contains(".test")) {
 			return null;
 		} else if (bundleId.endsWith("feature.jar")) {
 			return null;

@@ -13,8 +13,10 @@
  *******************************************************************************/
 package dev.equo.solstice;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,6 +37,7 @@ import org.eclipse.osgi.util.ManifestElement;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
+import org.osgi.framework.Version;
 
 /**
  * Parses a jar manifest, removing some fine-grained details for the purpose of simplifying the
@@ -46,12 +49,18 @@ import org.osgi.framework.Constants;
  * </ul>
  */
 public class SolsticeManifest {
+	public static SolsticeManifest parseJar(File file) throws MalformedURLException {
+		var url = new URL("jar:" + file.toURI() + "!" + SLASH_MANIFEST_PATH);
+		return new SolsticeManifest(url, -1);
+	}
+
 	public static final String MANIFEST_PATH = "META-INF/MANIFEST.MF";
 	public static final String SLASH_MANIFEST_PATH = "/" + MANIFEST_PATH;
 
 	private final String jarUrl;
 	final int classpathOrder;
 	private final @Nullable String symbolicName;
+	private final Version version;
 	private final LinkedHashMap<String, String> headersOriginal = new LinkedHashMap<>();
 	final ArrayList<String> requiredBundles;
 	final ArrayList<String> pkgImports;
@@ -94,6 +103,8 @@ public class SolsticeManifest {
 
 		var symbolicNameRaw = parseAndStrip(Constants.BUNDLE_SYMBOLICNAME);
 		symbolicName = symbolicNameRaw.isEmpty() ? null : symbolicNameRaw.get(0);
+		var rawVersion = headersOriginal.get(Constants.BUNDLE_VERSION);
+		version = rawVersion != null ? new Version(rawVersion) : Version.emptyVersion;
 
 		requiredBundles = parseAndStrip(Constants.REQUIRE_BUNDLE);
 		requiredBundles.replaceAll(SolsticeManifest::handleSystemBundle);
@@ -300,6 +311,10 @@ public class SolsticeManifest {
 
 	public String getSymbolicName() {
 		return symbolicName;
+	}
+
+	public Version getVersion() {
+		return version;
 	}
 
 	public String getJarUrl() {

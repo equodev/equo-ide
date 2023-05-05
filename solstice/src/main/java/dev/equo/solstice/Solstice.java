@@ -314,11 +314,11 @@ public class Solstice {
 	private void assertContextInitialized(boolean isInitialized) {
 		if (isInitialized) {
 			if (context == null) {
-				throw new IllegalStateException("Call `openAtomos` or `openSolstice` first");
+				throw new IllegalStateException("Call `openAtomos` or `openShim` first");
 			}
 		} else {
 			if (context != null) {
-				throw new IllegalStateException("`openAtomos` or `openSolstice` can only be called once");
+				throw new IllegalStateException("`openAtomos` or `openShim` can only be called once");
 			}
 		}
 	}

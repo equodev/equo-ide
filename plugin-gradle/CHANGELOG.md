@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+### Fixed
+- Eclipse PDE now runs well under Atomos. ([#126](https://github.com/equodev/equo-ide/pull/126)
 
 ## [1.1.0] - 2023-04-29
 ### Added
