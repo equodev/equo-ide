@@ -3,6 +3,13 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+### Added
+- Fix issues to make Eclipse PDE work better. ([#126](https://github.com/equodev/equo-ide/pull/126))
+  - Shim now calls activators in extension (fragment) bundles. 
+  - Shim bundles now report their version correctly.
+  - We now generate a `bundles.info` file so that PDE can parse the "Running" target platform.
+  - Remove Atomos URL workaround for Eclipse 4.27 and later (fixes [#40](https://github.com/equodev/equo-ide/issues/40)).
+  - When running under Atomos, we now patch the `EquinoxBundle` class so that it returns `getEntry("/")` returns the jar file instead of null.
 
 ## [1.1.0] - 2023-04-29
 ### Added

@@ -96,6 +96,8 @@ public class BuildPluginIdeMain {
 				classpathSorted.add(nested.getValue());
 			}
 			if (useAtomos) {
+				// for Eclipse 4.27, we have patched the EquinoxBundle class so that it handles
+				// `getEntry("/")`
 				var version = Patch.detectVersion(classpathSorted, "org.eclipse.osgi");
 				if ("3.18.300".equals(version)) {
 					Patch.patch(classpathSorted, nestedJarFolder, "patch-equinox-4.27");
