@@ -3,8 +3,29 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+### Added
+- The ability to set Eclipse preference files. ([#127](https://github.com/equodev/equo-ide/pull/127))
+  - Each catalog entry has its own DSL, e.g. for Eclipse PDE
+    ```xml
+    <configuration>
+      <pde>
+        <missingApiBaseline>Ignore</missingApiBaseline>
+      </pde>
+      ...
+    ```
+  - Or you can set properties manually on their own
+    ```xml
+    <configuration>
+      <workspaceProps>
+        <workspaceProp>
+            <path>.metadata/.plugins/org.eclipse.core.runtime/.settings/org.eclipse.pde.api.tools.prefs</path>
+            <key>missing_default_api_profile</key>
+            <value>Ignore</value>
+        </workspaceProp>
+        ...
+    ```
 ### Fixed
-- Eclipse PDE now runs well under Atomos. ([#126](https://github.com/equodev/equo-ide/pull/126)
+- Eclipse PDE now runs well under Atomos. ([#126](https://github.com/equodev/equo-ide/pull/126))
 
 ## [1.0.0] - 2023-04-29
 ### Added
