@@ -28,6 +28,7 @@ public class CatalogDsl {
 	protected final Catalog catalog;
 	private final @Nullable CatalogDsl addedAsTransitiveOf;
 	private @Nullable String urlOverride;
+	private final WorkspaceInit workspaceInit = new WorkspaceInit();
 
 	protected CatalogDsl(Catalog catalog) {
 		this(catalog, null);
@@ -36,6 +37,10 @@ public class CatalogDsl {
 	private CatalogDsl(Catalog catalog, @Nullable CatalogDsl addedAsTransitiveOf) {
 		this.catalog = catalog;
 		this.addedAsTransitiveOf = addedAsTransitiveOf;
+	}
+
+	protected WorkspaceInit workspaceInit() {
+		return workspaceInit;
 	}
 
 	/**

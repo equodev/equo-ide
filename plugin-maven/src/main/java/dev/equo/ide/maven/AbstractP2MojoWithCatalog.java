@@ -56,6 +56,18 @@ public abstract class AbstractP2MojoWithCatalog extends AbstractP2Mojo {
 		public Pde() {
 			super(Catalog.PDE);
 		}
+
+		/** Ignore / Error */
+		@Parameter(required = false)
+		private String missingApiBaseline;
+
+		@Override
+		protected void processVersionOverrides() {
+			super.processVersionOverrides();
+			if (missingApiBaseline != null) {
+				Catalog.Pde.missingApiBaseline(workspaceInit(), missingApiBaseline);
+			}
+		}
 	}
 
 	@Parameter private M2E m2e;

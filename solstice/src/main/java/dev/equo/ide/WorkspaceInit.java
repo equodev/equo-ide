@@ -77,7 +77,7 @@ public class WorkspaceInit {
 	public void applyTo(File workspaceDir) {
 		modifiers.forEach(
 				(subpath, modifiers) -> {
-					File file = new File(folder, subpath);
+					File file = new File(workspaceDir, subpath);
 					file.getParentFile().mkdirs();
 					try {
 						byte[] content;
