@@ -32,6 +32,25 @@ Use it like this with `mvn equo-ide:launch`
     <welcome>
       <openUrl>https://github.com/me/myproject/CONTRIBUTING.md</openUrl>
     </welcome>
+    
+    <!-- for catalog entries you can set workspace properties using DSL -->
+    <platform>
+      <showLineNumbers>true</showLineNumbers>
+      <showWhitespace>true</showWhitespace>
+    </platform>
+    <!-- or you can set arbitrary properties -->
+    <workspaceProps>
+      <workspaceProp>
+        <path>instance/.metadata/.plugins/org.eclipse.core.runtime/.settings/org.eclipse.ui.editors.prefs</path>
+        <key>lineNumberRuler</key>
+        <value>true</value>
+      </workspaceProp>
+      <workspaceProp>
+        <path>instance/.metadata/.plugins/org.eclipse.core.runtime/.settings/org.eclipse.ui.editors.prefs</path>
+        <key>showWhitespaceCharacters</key>
+        <value>true</value>
+      </workspaceProp>
+    </workspaceProps>
   </configuration>
 </plugin>
 ```
