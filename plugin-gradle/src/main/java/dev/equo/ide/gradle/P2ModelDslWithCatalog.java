@@ -19,7 +19,6 @@ import dev.equo.ide.IdeHook;
 import dev.equo.ide.IdeHookBuildship;
 import java.io.File;
 import java.util.List;
-import org.gradle.api.Action;
 import org.gradle.api.GradleException;
 import org.gradle.api.Project;
 
@@ -116,15 +115,7 @@ public class P2ModelDslWithCatalog extends P2ModelDsl {
 	}
 
 	public Pde pde() {
-		return pde((String) null);
-	}
-
-	public Pde pde(String urlOverride, Action<Pde> dsl) {
-		return add(new Pde(urlOverride, project), dsl);
-	}
-
-	public Pde pde(Action<Pde> dsl) {
-		return pde(null, dsl);
+		return pde(null);
 	}
 
 	public static class M2E extends GradleCatalogDsl {
@@ -219,12 +210,6 @@ public class P2ModelDslWithCatalog extends P2ModelDsl {
 	}
 
 	private <T extends GradleCatalogDsl> T add(T dsl) {
-		add(dsl, unused -> {});
-		return dsl;
-	}
-
-	private <T extends GradleCatalogDsl> T add(T dsl, Action<? super T> action) {
-		action.execute(dsl);
 		catalog.add(dsl);
 		return dsl;
 	}
