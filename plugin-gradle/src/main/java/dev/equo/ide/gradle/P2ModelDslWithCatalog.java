@@ -47,6 +47,11 @@ public class P2ModelDslWithCatalog extends P2ModelDsl {
 		public Jdt(String urlOverride) {
 			super(Catalog.JDT, urlOverride);
 		}
+
+		public Jdt classpathVariable(String name, String value) {
+			Catalog.JDT.classpathVariable(workspaceInit(), name, value);
+			return this;
+		}
 	}
 
 	public Jdt jdt(String urlOverride) {

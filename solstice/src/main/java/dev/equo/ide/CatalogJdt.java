@@ -19,4 +19,11 @@ public class CatalogJdt extends Catalog {
 	CatalogJdt() {
 		super("jdt", PLATFORM, List.of("org.eclipse.releng.java.languages.categoryIU"), PLATFORM);
 	}
+
+	/** Adds a compiler class path variable. */
+	public void classpathVariable(WorkspaceInit workspace, String name, String value) {
+		String JDT_CORE_PREFS =
+				"instance/.metadata/.plugins/org.eclipse.core.runtime/.settings/org.eclipse.jdt.core.prefs";
+		workspace.setProperty(JDT_CORE_PREFS, "org.eclipse.jdt.core.classpathVariable." + name, value);
+	}
 }

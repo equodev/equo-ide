@@ -21,6 +21,7 @@ import dev.equo.ide.WorkspaceInit;
 import dev.equo.solstice.p2.P2Model;
 import java.io.File;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Stream;
 import org.apache.maven.plugins.annotations.Parameter;
@@ -40,6 +41,18 @@ public abstract class AbstractP2MojoWithCatalog extends AbstractP2Mojo {
 	public static class Jdt extends MavenCatalogDsl {
 		public Jdt() {
 			super(Catalog.JDT);
+		}
+
+		@Parameter(required = false)
+		private Map<String, String> classpathVariable;
+
+		@Override
+		protected void processVersionOverrides() {
+			super.processVersionOverrides();
+			if (classpathVariable != null) {
+				classpathVariable.forEach(
+						(name, value) -> Catalog.JDT.classpathVariable(workspaceInit(), name, value));
+			}
 		}
 	}
 
