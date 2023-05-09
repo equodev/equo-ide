@@ -98,7 +98,7 @@ public class BuildPluginIdeMain {
 				classpathSorted.add(nested.getValue());
 			}
 			if (EquoChromium.isEnabled(ideHooks)) {
-				Patch.patch(classpathSorted, nestedJarFolder, "solstice-chromium-browser-overrides");
+				Patch.patch(classpathSorted, nestedJarFolder, "patch-chromium-swt");
 				SignedJars.stripIf(classpathSorted, fileName -> fileName.startsWith("org.eclipse.swt."));
 			}
 			if (useAtomos) {

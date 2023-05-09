@@ -32,7 +32,7 @@ spotless {
 tasks.named('processResources') {
 	for (String subjar : [
 				'patch-equinox-4.27',
-				'solstice-chromium-browser-overrides'
+				'patch-chromium-swt'
 			]) {
 		dependsOn(":${subjar}:jar")
 		from {
