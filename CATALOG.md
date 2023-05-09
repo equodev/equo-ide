@@ -3,10 +3,10 @@
 - [Available in DSL](#available-projects)
   - [`platform`](#platform), [`jdt`](#jdt), [`pde`](#pde)
   - [`gradleBuildship`](#gradle-buildship)
+  - [`m2e`](#m2e)
   - [`kotlin`](#kotlin)
   - [`cdt`](#cdt) and [`tmTerminal`](#tmterminal)
   - [`rust`](#rust)
-  - [`m2e`](#m2e)
   - [`groovy`](#groovy)
 - [Wishlist](#wishlist)
   - [`wtp`](#wtp)
@@ -62,6 +62,14 @@ This catalog is a useful reference for the p2 urls, code repositories, and issue
 - Latest release https://download.eclipse.org/buildship/updates/e423/releases/3.x/3.1.6.v20220511-1359/ 
 - Code & issues https://github.com/eclipse/buildship
 
+### `m2e`
+
+- Latest release https://download.eclipse.org/technology/m2e/releases/2.2.1/
+- Code & issues https://github.com/eclipse-m2e/m2e-core
+- Also a transitive dependency on some jars from
+  - https://download.eclipse.org/webtools/downloads/drops/R3.29.0/R-3.29.0-20230303230236/repository/
+  - https://download.eclipse.org/tools/orbit/downloads/drops/R20230302014618/repository/
+
 ### `kotlin`
 
 - Latest release https://files.pkg.jetbrains.space/kotlin/p/kotlin-eclipse/main/0.8.21/
@@ -82,14 +90,6 @@ This catalog is a useful reference for the p2 urls, code repositories, and issue
 
 - Latest release https://download.eclipse.org/corrosion/releases/1.2.4/
 - Code & issues https://github.com/eclipse/corrosion
-
-### `m2e`
-
-- Latest release https://download.eclipse.org/technology/m2e/releases/2.2.1/
-- Code & issues https://github.com/eclipse-m2e/m2e-core
-- Also a transitive dependency on some jars from
-  - https://download.eclipse.org/webtools/downloads/drops/R3.29.0/R-3.29.0-20230303230236/repository/
-  - https://download.eclipse.org/tools/orbit/downloads/drops/R20230302014618/repository/
 
 ### `groovy`
 
