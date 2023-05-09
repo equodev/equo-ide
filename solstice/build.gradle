@@ -35,9 +35,7 @@ tasks.named('processResources') {
 				'patch-chromium-swt'
 			]) {
 		dependsOn(":${subjar}:jar")
-		from {
-			"../${subjar}/build/libs/${subjar}.jar"
-		}
+		from "../${subjar}/build/libs/${subjar}.jar"
 	}
 }
 
