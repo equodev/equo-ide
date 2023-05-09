@@ -33,6 +33,21 @@ public class P2ModelDslWithCatalog extends P2ModelDsl {
 		public Platform(String urlOverride) {
 			super(Catalog.PLATFORM, urlOverride);
 		}
+
+		public Platform showLineNumbers(boolean showLineNumbers) {
+			Catalog.PLATFORM.showLineNumbers(workspaceInit(), showLineNumbers);
+			return this;
+		}
+
+		public Platform showWhitespace(boolean showWhitespace) {
+			Catalog.PLATFORM.showWhitespace(workspaceInit(), showWhitespace);
+			return this;
+		}
+
+		public Platform showLineEndings(boolean showLineEndings) {
+			Catalog.PLATFORM.showLineEndings(workspaceInit(), showLineEndings);
+			return this;
+		}
 	}
 
 	public Platform platform(String urlOverride) {

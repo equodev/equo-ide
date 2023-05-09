@@ -34,6 +34,29 @@ public abstract class AbstractP2MojoWithCatalog extends AbstractP2Mojo {
 		public Platform() {
 			super(Catalog.PLATFORM);
 		}
+
+		@Parameter(required = false)
+		private Boolean showLineNumbers;
+
+		@Parameter(required = false)
+		private Boolean showWhitespace;
+
+		@Parameter(required = false)
+		private Boolean showLineEndings;
+
+		@Override
+		protected void processVersionOverrides() {
+			super.processVersionOverrides();
+			if (showLineNumbers != null) {
+				Catalog.PLATFORM.showLineNumbers(workspaceInit(), showLineNumbers);
+			}
+			if (showWhitespace != null) {
+				Catalog.PLATFORM.showWhitespace(workspaceInit(), showWhitespace);
+			}
+			if (showLineEndings != null) {
+				Catalog.PLATFORM.showLineEndings(workspaceInit(), showLineEndings);
+			}
+		}
 	}
 
 	@Parameter private Jdt jdt;
