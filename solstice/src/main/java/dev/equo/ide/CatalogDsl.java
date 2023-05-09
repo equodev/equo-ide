@@ -157,13 +157,14 @@ public class CatalogDsl {
 			return dsl;
 		}
 
-		public void putInto(P2Model model, IdeHook.List hooks) {
+		public void putInto(P2Model model, IdeHook.List hooks, WorkspaceInit workspace) {
 			// setup the IDE hooks
 			for (CatalogDsl dsl : catalogEntries.values()) {
 				model.addP2Repo(dsl.url());
 				model.getInstall().addAll(dsl.installs());
 				dsl.filters().forEach(model::addFilterAndValidate);
 				hooks.addAll(dsl.ideHooks());
+				workspace.copyAllFrom(dsl.workspaceInit());
 			}
 			// find the initial perspective
 			String perspective =

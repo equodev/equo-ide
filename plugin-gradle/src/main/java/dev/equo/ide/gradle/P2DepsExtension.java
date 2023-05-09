@@ -15,6 +15,7 @@ package dev.equo.ide.gradle;
 
 import dev.equo.ide.IdeHook;
 import dev.equo.ide.Launcher;
+import dev.equo.ide.WorkspaceInit;
 import dev.equo.solstice.NestedJars;
 import dev.equo.solstice.SignedJars;
 import dev.equo.solstice.p2.P2Model;
@@ -41,7 +42,8 @@ public class P2DepsExtension {
 	public void into(Configuration configuration, Action<P2ModelDslWithCatalog> p2) {
 		P2ModelDslWithCatalog dsl = new P2ModelDslWithCatalog(project);
 		p2.execute(dsl);
-		dsl.catalog.putInto(dsl.model, new IdeHook.List());
+		var workspaceInitUnused = new WorkspaceInit();
+		dsl.catalog.putInto(dsl.model, new IdeHook.List(), workspaceInitUnused);
 		dsl.model.applyNativeFilterIfNoPlatformFilter();
 		dsl.model.validateFilters();
 		configurations.put(configuration.getName(), dsl.model);

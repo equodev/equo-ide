@@ -15,6 +15,7 @@ package dev.equo.ide.gradle;
 
 import dev.equo.ide.BuildPluginIdeMain;
 import dev.equo.ide.IdeHook;
+import dev.equo.ide.WorkspaceInit;
 import dev.equo.solstice.p2.P2QueryResult;
 import java.io.File;
 import java.io.IOException;
@@ -46,6 +47,7 @@ public abstract class EquoIdeTask extends DefaultTask {
 	public abstract Property<Boolean> getEquoIdeWasCalledDirectly();
 
 	@Internal IdeHook.List ideHooks;
+	@Internal WorkspaceInit workspace;
 
 	public IdeHook.List getIdeHooks() {
 		return ideHooks;
@@ -139,6 +141,7 @@ public abstract class EquoIdeTask extends DefaultTask {
 		}
 
 		caller.ideHooks = ideHooks;
+		caller.workspaceInit = workspace;
 		caller.classpath = classpath;
 		caller.debugClasspath = debugClasspath;
 		caller.initOnly = initOnly;

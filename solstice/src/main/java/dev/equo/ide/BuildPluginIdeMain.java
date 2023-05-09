@@ -71,6 +71,7 @@ public class BuildPluginIdeMain {
 		public File workspaceDir;
 		public IdeLockFile lockFile;
 		public IdeHook.List ideHooks;
+		public WorkspaceInit workspaceInit;
 		public ArrayList<File> classpath;
 		public BuildPluginIdeMain.DebugClasspath debugClasspath;
 		public Boolean initOnly, showConsole, useAtomos, debugIde;
@@ -80,6 +81,7 @@ public class BuildPluginIdeMain {
 			Objects.requireNonNull(workspaceDir);
 			Objects.requireNonNull(lockFile);
 			Objects.requireNonNull(ideHooks);
+			Objects.requireNonNull(workspaceInit);
 			Objects.requireNonNull(classpath);
 			Objects.requireNonNull(debugClasspath);
 			Objects.requireNonNull(initOnly);
@@ -116,6 +118,8 @@ public class BuildPluginIdeMain {
 			var ideHooksCopy = ideHooks.copy();
 			ideHooksCopy.add(IdeHookLockFile.forWorkspaceDirAndClasspath(workspaceDir, classpathSorted));
 			SerializableMisc.toFile(ideHooksCopy, ideHooksFile);
+
+			workspaceInit.applyTo(workspaceDir);
 
 			var installDir = workspaceDir.toPath().resolve("install");
 			Files.createDirectories(installDir);
