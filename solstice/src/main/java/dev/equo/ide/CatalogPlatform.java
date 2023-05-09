@@ -23,4 +23,23 @@ public class CatalogPlatform extends Catalog {
 				jre11("4.27"),
 				List.of("org.eclipse.platform.ide.categoryIU"));
 	}
+
+	private static final String UI_EDITORS =
+			"instance/.metadata/.plugins/org.eclipse.core.runtime/.settings/org.eclipse.ui.editors.prefs";
+
+	/** Determines whether or not to show line numbers. */
+	public void showLineNumbers(WorkspaceInit workspace, boolean showLineNumbers) {
+		workspace.setProperty(UI_EDITORS, "lineNumberRuler", Boolean.toString(showLineNumbers));
+	}
+
+	/** Determines whether or not to show white space not including line endings. */
+	public void showWhitespace(WorkspaceInit workspace, boolean showWhiteSpace) {
+		workspace.setProperty(UI_EDITORS, "showWhitespaceCharacters", Boolean.toString(showWhiteSpace));
+	}
+
+	/** Determines whether or not to show line ending characters (carriage return/line feeds). */
+	public void showLineEndings(WorkspaceInit workspace, boolean showLineEndings) {
+		workspace.setProperty(UI_EDITORS, "showLineFeed", Boolean.toString(showLineEndings));
+		workspace.setProperty(UI_EDITORS, "showCarriageReturn", Boolean.toString(showLineEndings));
+	}
 }

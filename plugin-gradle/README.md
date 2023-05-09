@@ -27,6 +27,14 @@ equoIde { // launch with gradlew equoIde
   branding().splash(file('my_splash.png'))
   // and make your own plugins, without learning OSGi or p2
   welcome().openUrl('https://github.com/me/myproject/CONTRIBUTING.md')
+  
+  // for catalog entries you can set workspace properties using DSL
+  platform().showLineNumbers(true).showWhitespace(true)
+  // or you can set arbitrary properties
+  workspaceInit 'instance/.metadata/.plugins/org.eclipse.core.runtime/.settings/org.eclipse.ui.editors.prefs', {
+    prop 'lineNumberRuler', 'true'
+    prop 'showWhitespaceCharacters', 'true'
+  }
 }
 ```
 

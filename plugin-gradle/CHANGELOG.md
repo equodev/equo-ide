@@ -8,19 +8,17 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
   - Each catalog entry has its own DSL, e.g. for Eclipse PDE
     ```gradle
     equoIde { 
-      pde {
-        missingApiBaseline('Ignore')
-        ...
+      pde().missingApiBaseline('Ignore')
     ```
   - Or you can set properties manually on their own
     ```gradle
     equoIde {
-      workspaceInit '.metadata/.plugins/org.eclipse.core.runtime/.settings/org.eclipse.pde.api.tools.prefs', {
+      workspaceInit 'instance/.metadata/.plugins/org.eclipse.core.runtime/.settings/org.eclipse.pde.api.tools.prefs', {
         prop 'missing_default_api_profile', 'Ignore'
         prop 'missing_plugin_in_baseline', 'Ignore'
       }
-      ...
     ```
+- Control preferences for whitespace and line numbers under `platform`, add classpath variables under `jdt`. ([#128](https://github.com/equodev/equo-ide/pull/128))
 ### Fixed
 - Eclipse PDE now runs well under Atomos. ([#126](https://github.com/equodev/equo-ide/pull/126)
 
