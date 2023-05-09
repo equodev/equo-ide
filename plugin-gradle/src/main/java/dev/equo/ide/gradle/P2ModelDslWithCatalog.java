@@ -15,7 +15,6 @@ package dev.equo.ide.gradle;
 
 import dev.equo.ide.Catalog;
 import dev.equo.ide.CatalogDsl;
-import dev.equo.ide.CatalogPde;
 import dev.equo.ide.IdeHook;
 import dev.equo.ide.IdeHookBuildship;
 import java.io.File;
@@ -108,7 +107,7 @@ public class P2ModelDslWithCatalog extends P2ModelDsl {
 
 		/** Ignore / Error */
 		public void missingApiBaseline(String ignoreOrError) {
-			CatalogPde.missingApiBaseline(workspaceInit(), ignoreOrError);
+			Catalog.PDE.missingApiBaseline(workspaceInit(), ignoreOrError);
 		}
 	}
 

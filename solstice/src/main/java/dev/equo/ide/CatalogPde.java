@@ -20,7 +20,7 @@ public class CatalogPde extends Catalog {
 		super("pde", PLATFORM, List.of("org.eclipse.releng.pde.categoryIU"), JDT);
 	}
 
-	public static void missingApiBaseline(WorkspaceInit workspace, String value) {
+	public void missingApiBaseline(WorkspaceInit workspace, String value) {
 		String filename =
 				"instance/.metadata/.plugins/org.eclipse.core.runtime/.settings/org.eclipse.pde.api.tools.prefs";
 		workspace.setProperty(filename, "missing_default_api_profile", value);

@@ -15,7 +15,6 @@ package dev.equo.ide.maven;
 
 import dev.equo.ide.Catalog;
 import dev.equo.ide.CatalogDsl;
-import dev.equo.ide.CatalogPde;
 import dev.equo.ide.IdeHook;
 import dev.equo.ide.IdeHookM2E;
 import dev.equo.ide.WorkspaceInit;
@@ -67,7 +66,7 @@ public abstract class AbstractP2MojoWithCatalog extends AbstractP2Mojo {
 		protected void processVersionOverrides() {
 			super.processVersionOverrides();
 			if (missingApiBaseline != null) {
-				CatalogPde.missingApiBaseline(workspaceInit(), missingApiBaseline);
+				Catalog.PDE.missingApiBaseline(workspaceInit(), missingApiBaseline);
 			}
 		}
 	}
