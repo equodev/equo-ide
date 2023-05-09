@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+
+## [1.2.0] - 2023-05-09
 ### Added
 - The ability to set Eclipse preference files. ([#127](https://github.com/equodev/equo-ide/pull/127))
 - Fix issues to make Eclipse PDE work better. ([#126](https://github.com/equodev/equo-ide/pull/126))
