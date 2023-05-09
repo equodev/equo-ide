@@ -11,6 +11,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
   - We now generate a `bundles.info` file so that PDE can parse the "Running" target platform.
   - Remove Atomos URL workaround for Eclipse 4.27 and later (fixes [#40](https://github.com/equodev/equo-ide/issues/40)).
   - When running under Atomos, we now patch the `EquinoxBundle` class so that `getEntry("/")` returns the jar file itself of null.
+- Control preferences for whitespace and line numbers under `platform`, add classpath variables under `jdt`. ([#128](https://github.com/equodev/equo-ide/pull/128))
 
 ## [1.1.0] - 2023-04-29
 ### Added

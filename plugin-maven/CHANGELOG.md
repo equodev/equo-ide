@@ -24,6 +24,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
         </workspaceProp>
         ...
     ```
+- Control preferences for whitespace and line numbers under `platform`, add classpath variables under `jdt`. ([#128](https://github.com/equodev/equo-ide/pull/128))
 ### Fixed
 - Eclipse PDE now runs well under Atomos. ([#126](https://github.com/equodev/equo-ide/pull/126))
 
