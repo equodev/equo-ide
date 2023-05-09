@@ -14,6 +14,7 @@
 package dev.equo.ide.maven;
 
 import dev.equo.ide.IdeHook;
+import dev.equo.ide.WorkspaceInit;
 import dev.equo.solstice.p2.P2Model;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -51,11 +52,12 @@ public abstract class AbstractP2Mojo extends AbstractMojo {
 
 	@Parameter private List<String> installs = new ArrayList<>();
 
-	protected void modifyModel(P2Model model, IdeHook.List ideHooks) {}
+	protected void modifyModel(P2Model model, IdeHook.List ideHooks, WorkspaceInit workspaceInit) {}
 
-	protected P2Model prepareModel(IdeHook.List ideHooks) throws MojoFailureException {
+	protected P2Model prepareModel(IdeHook.List ideHooks, WorkspaceInit workspaceInit)
+			throws MojoFailureException {
 		var model = new P2Model();
-		modifyModel(model, ideHooks);
+		modifyModel(model, ideHooks, workspaceInit);
 		p2repos.forEach(model::addP2Repo);
 		installs.forEach(model.getInstall()::add);
 		for (Filter filterModel : filters) {

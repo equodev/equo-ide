@@ -3,10 +3,10 @@
 - [Available in DSL](#available-projects)
   - [`platform`](#platform), [`jdt`](#jdt), [`pde`](#pde)
   - [`gradleBuildship`](#gradle-buildship)
+  - [`m2e`](#m2e)
   - [`kotlin`](#kotlin)
   - [`cdt`](#cdt) and [`tmTerminal`](#tmterminal)
   - [`rust`](#rust)
-  - [`m2e`](#m2e)
   - [`groovy`](#groovy)
 - [Wishlist](#wishlist)
   - [`wtp`](#wtp)
@@ -19,7 +19,7 @@ The following projects are available in the [Gradle](https://github.com/equodev/
 
 ```gradle
 equoIde {
-  jdt()
+  jdt().classpathVariable('JUNIT_HOME', '/home/user/junit')
 }
 ```
 
@@ -27,7 +27,11 @@ and in Maven, you do
 
 ```xml
 <configuration>
-  <jdt/>
+  <jdt>
+    <classpathVariable>
+      <JUNIT_HOME>/home/user/junit</JUNIT_HOME>
+    </classpathVariable>
+  </jdt>
 </configuration>
 ```
 
@@ -37,19 +41,19 @@ This catalog is a useful reference for the p2 urls, code repositories, and issue
 
 ### `platform`
 
-- Latest release https://download.eclipse.org/eclipse/updates/4.26/
+- [`CatalogPlatform.java`](https://github.com/equodev/equo-ide/blob/main/solstice/src/main/java/dev/equo/ide/CatalogPlatform.java)
 - Code & issues
   - https://github.com/eclipse-platform (IDE platform)
   - https://github.com/eclipse-equinox (OSGi runtime)
 
 ### `jdt`
 
-- Latest release https://download.eclipse.org/eclipse/updates/4.26/
+- [`CatalogJdt.java`](https://github.com/equodev/equo-ide/blob/main/solstice/src/main/java/dev/equo/ide/CatalogJdt.java)
 - Code & issues https://github.com/eclipse-jdt
 
 ### `pde`
 
-- Latest release https://download.eclipse.org/eclipse/updates/4.26/
+- [`CatalogPde.java`](https://github.com/equodev/equo-ide/blob/main/solstice/src/main/java/dev/equo/ide/CatalogPde.java)
 - Code & issues https://github.com/eclipse-pde
 
 <a name="gradle-buildship"></a>
@@ -57,6 +61,14 @@ This catalog is a useful reference for the p2 urls, code repositories, and issue
 
 - Latest release https://download.eclipse.org/buildship/updates/e423/releases/3.x/3.1.6.v20220511-1359/ 
 - Code & issues https://github.com/eclipse/buildship
+
+### `m2e`
+
+- Latest release https://download.eclipse.org/technology/m2e/releases/2.2.1/
+- Code & issues https://github.com/eclipse-m2e/m2e-core
+- Also a transitive dependency on some jars from
+  - https://download.eclipse.org/webtools/downloads/drops/R3.29.0/R-3.29.0-20230303230236/repository/
+  - https://download.eclipse.org/tools/orbit/downloads/drops/R20230302014618/repository/
 
 ### `kotlin`
 
@@ -66,12 +78,12 @@ This catalog is a useful reference for the p2 urls, code repositories, and issue
 
 ### `cdt`
 
-- Latest release https://download.eclipse.org/tools/cdt/releases/11.0/cdt-11.0.0/
+- Latest release https://download.eclipse.org/tools/cdt/releases/11.1/cdt-11.1.0/
 - Code & issues https://github.com/eclipse-cdt
 
 ### `tmTerminal`
 
-- Latest release https://download.eclipse.org/tools/cdt/releases/11.0/cdt-11.0.0/
+- Latest release https://download.eclipse.org/tools/cdt/releases/11.1/cdt-11.1.0/
 - Code & issues https://github.com/eclipse-cdt
 
 ### `rust`
@@ -79,18 +91,10 @@ This catalog is a useful reference for the p2 urls, code repositories, and issue
 - Latest release https://download.eclipse.org/corrosion/releases/1.2.4/
 - Code & issues https://github.com/eclipse/corrosion
 
-### `m2e`
-
-- Latest release https://download.eclipse.org/technology/m2e/releases/2.1.2/
-- Code & issues https://github.com/eclipse-m2e/m2e-core
-- Also a transitive dependency on some jars from
-  - https://download.eclipse.org/webtools/downloads/drops/R3.28.0/R-3.28.0-20221120050827/repository/
-  - https://download.eclipse.org/lsp4j/updates/releases/0.20.0
-
 ### `groovy`
 
-- Latest release https://groovy.jfrog.io/artifactory/plugins-release/org/codehaus/groovy/groovy-eclipse-integration/4.8.0/e4.26/
-  - Find other URLs via https://github.com/groovy/groovy-eclipse/wiki/4.8.0-Release-Notes#update-sites
+- Latest release https://groovy.jfrog.io/artifactory/plugins-release/org/codehaus/groovy/groovy-eclipse-integration/4.9.0/e4.27/
+  - Find other URLs via https://github.com/groovy/groovy-eclipse/wiki/4.9.0-Release-Notes#update-sites
 - Code & issues https://github.com/groovy/groovy-eclipse
 
 ## Wishlist
@@ -98,10 +102,10 @@ This catalog is a useful reference for the p2 urls, code repositories, and issue
 The projects below are not in the catalog yet, but somebody wants them! Feel free to add the plugins you want onto this wishlist. You can also move one of these out of the wishlist and into the Catalog DSL [like so](CONTRIBUTING.md#catalog-dsl).
 
 ### `wtp`
-- Latest release https://download.eclipse.org/webtools/repository/2022-12/
+- Latest release https://download.eclipse.org/webtools/repository/2023-03/
 - Code & issues https://www.eclipse.org/webtools/
 
 ### `tm4e`
 
-- Latest release https://download.eclipse.org/tm4e/releases/0.6.2/
+- Latest release https://download.eclipse.org/tm4e/releases/0.6.3/
 - Code & issues https://github.com/eclipse/tm4e

@@ -79,6 +79,10 @@ equo-ide:launch
 
     welcome
       (no description available)
+
+    workspaceProps
+      User property: workspaceProps
+      Sets properties in the Eclipse workspace.
 .
 .
 [INFO] ------------------------------------------------------------------------

@@ -2,13 +2,29 @@
 
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
+- Added `solstice-chromium-browser-overrides.jar` which gets packaged into the `src/main/resources` of `solstice.jar` to support replacing the standard SWT Browser with Equo Chromium. ([#123](https://github.com/equodev/equo-ide/pull/123))
+
 ## [Unreleased]
 ### Added
-- Added `solstice-chromium-browser-overrides.jar` which gets packaged into the `src/main/resources` of `solstice.jar` to support replacing the standard SWT Browser with Equo Chromium. ([#123](https://github.com/equodev/equo-ide/pull/123))
+- The ability to set Eclipse preference files. ([#127](https://github.com/equodev/equo-ide/pull/127))
+- Fix issues to make Eclipse PDE work better. ([#126](https://github.com/equodev/equo-ide/pull/126))
+  - Shim now calls activators in extension (fragment) bundles. 
+  - Shim bundles now report their version correctly.
+  - We now generate a `bundles.info` file so that PDE can parse the "Running" target platform.
+  - Remove Atomos URL workaround for Eclipse 4.27 and later (fixes [#40](https://github.com/equodev/equo-ide/issues/40)).
+  - When running under Atomos, we now patch the `EquinoxBundle` class so that `getEntry("/")` returns the jar file itself of null.
+- Control preferences for whitespace and line numbers under `platform`, add classpath variables under `jdt`. ([#128](https://github.com/equodev/equo-ide/pull/128))
+
+## [1.1.0] - 2023-04-29
+### Added
 - Added `SignedJars` which can strip signatures when necessary (e.g. a signed Eclipse jar contributing classes to the same package as one of its nested jars). ([#116](https://github.com/equodev/equo-ide/pull/116))
-- `NestedJars.transitiveDeps` is now smart about only adding `slf4j` deps when they are absent ([#115](https://github.com/equodev/equo-ide/pull/115/commits/6bcf66e9e35d2ca4ab1b6da1bae1ddbf0c17fd63))
+- `NestedJars.transitiveDeps` is now smart about keeping `slf4j-nop` off the classpath and only adding `slf4j` deps when they are absent ([#115](https://github.com/equodev/equo-ide/pull/115/commits/6bcf66e9e35d2ca4ab1b6da1bae1ddbf0c17fd63) and [#110]()https://github.com/equodev/equo-ide/pull/110/commits/0cf444ac9d19844ecbce5f7aac23095816b42ec6)
+- Can now set the initial perspective, and the catalog entries autosuggest based on the first catalog entry specified in the build. ([#125](https://github.com/equodev/equo-ide/pull/125))
+### Changed
+- Update version catalog to latest `2022-03` versions of everything. ([#110](https://github.com/equodev/equo-ide/pull/110))
 ### Fixed
 - Fix branding for title bar and icon. ([#117](https://github.com/equodev/equo-ide/pull/117) fixes [#87](https://github.com/equodev/equo-ide/issues/87))
+- Fix xml parsing errors. ([#110](https://github.com/equodev/equo-ide/pull/110/commits/15b0be521a4ae7fb20692b3192968c69f6d04f43) fixes [#118](https://github.com/equodev/equo-ide/issues/118))
 - Handle metadata jars with multiple entries. (fixes [#120](https://github.com/equodev/equo-ide/issues/120))
 
 ## [1.0.3] - 2023-03-13

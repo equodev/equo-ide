@@ -14,6 +14,7 @@
 package dev.equo.ide;
 
 import dev.equo.solstice.p2.P2Model;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -27,6 +28,7 @@ public class CatalogDsl {
 	protected final Catalog catalog;
 	private final @Nullable CatalogDsl addedAsTransitiveOf;
 	private @Nullable String urlOverride;
+	private final WorkspaceInit workspaceInit = new WorkspaceInit();
 
 	protected CatalogDsl(Catalog catalog) {
 		this(catalog, null);
@@ -37,9 +39,13 @@ public class CatalogDsl {
 		this.addedAsTransitiveOf = addedAsTransitiveOf;
 	}
 
+	protected WorkspaceInit workspaceInit() {
+		return workspaceInit;
+	}
+
 	/**
 	 * Subclasses can override this method to include their IdeHooks in {@link
-	 * TransitiveAwareList#putInto(P2Model, dev.equo.ide.IdeHook.List)}.
+	 * TransitiveAwareList#putInto(P2Model, dev.equo.ide.IdeHook.List, WorkspaceInit)}.
 	 */
 	protected List<IdeHook> ideHooks() {
 		return List.of();
@@ -107,9 +113,11 @@ public class CatalogDsl {
 	}
 
 	public static class TransitiveAwareList<T extends CatalogDsl> {
+		private List<CatalogDsl> insertionOrder = new ArrayList<>();
 		private final TreeMap<Catalog, CatalogDsl> catalogEntries = new TreeMap<>();
 
 		public void add(T dsl) {
+			insertionOrder.add(dsl);
 			var existing = catalogEntries.get(dsl.catalog);
 			if (existing != null) {
 				if (existing.addedAsTransitiveOf != null) {
@@ -140,6 +148,7 @@ public class CatalogDsl {
 			if (dsl == null) {
 				dsl = new CatalogDsl(transitive, originalRequest);
 				catalogEntries.put(transitive, dsl);
+				insertionOrder.add(dsl);
 			}
 			for (var required : transitive.getRequires()) {
 				var transitiveDsl = addAsTransitiveOf(required, originalRequest);
@@ -148,12 +157,36 @@ public class CatalogDsl {
 			return dsl;
 		}
 
-		public void putInto(P2Model model, IdeHook.List hooks) {
+		public void putInto(P2Model model, IdeHook.List hooks, WorkspaceInit workspace) {
+			// setup the IDE hooks
 			for (CatalogDsl dsl : catalogEntries.values()) {
 				model.addP2Repo(dsl.url());
 				model.getInstall().addAll(dsl.installs());
 				dsl.filters().forEach(model::addFilterAndValidate);
 				hooks.addAll(dsl.ideHooks());
+				workspace.copyAllFrom(dsl.workspaceInit());
+			}
+			// find the initial perspective
+			String perspective =
+					insertionOrder.stream()
+							.map(dsl -> Catalog.defaultPerspectiveFor(dsl.catalog))
+							.filter(Objects::nonNull)
+							.findFirst()
+							.orElse(null);
+			if (perspective != null) {
+				IdeHookWelcome welcomeHook =
+						(IdeHookWelcome)
+								hooks.stream()
+										.filter(hook -> hook instanceof IdeHookWelcome)
+										.findFirst()
+										.orElse(null);
+				if (welcomeHook == null) {
+					welcomeHook = new IdeHookWelcome();
+					hooks.add(welcomeHook);
+				}
+				if (welcomeHook.perspective() == null) {
+					welcomeHook.perspective(perspective);
+				}
 			}
 		}
 	}

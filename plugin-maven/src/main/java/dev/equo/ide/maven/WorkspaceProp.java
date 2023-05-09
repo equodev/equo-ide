@@ -14,9 +14,14 @@
 package dev.equo.ide.maven;
 
 import org.apache.maven.plugins.annotations.Parameter;
-import org.sonatype.inject.Nullable;
 
-public class Welcome {
-	@Parameter @Nullable String openUrl;
-	@Parameter @Nullable String perspective;
+public class WorkspaceProp {
+	@Parameter(required = true)
+	String path;
+
+	@Parameter(required = true)
+	String key;
+
+	@Parameter(required = true)
+	String value;
 }

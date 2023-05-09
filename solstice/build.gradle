@@ -30,16 +30,21 @@ spotless {
 }
 
 tasks.named('processResources') {
-	dependsOn(':solstice-chromium-browser-overrides:jar')
-	from {
-		'../solstice-chromium-browser-overrides/build/libs/solstice-chromium-browser-overrides.jar'
+	for (String subjar : [
+				'patch-equinox-4.27',
+				'solstice-chromium-browser-overrides'
+			]) {
+		dependsOn(":${subjar}:jar")
+		from {
+			"../${subjar}/build/libs/${subjar}.jar"
+		}
 	}
 }
 
 String VER_SLF4J = '1.7.36'
 dependencies {
 	api "org.slf4j:slf4j-api:$VER_SLF4J"
-	api 'com.diffplug.durian:durian-swt.os:4.1.1'
+	api "com.diffplug.durian:durian-swt.os:$VER_DURIAN_SWT"
 	compileOnly 'com.google.code.findbugs:jsr305:3.0.2'
 
 	compileOnly 'org.apache.felix:org.apache.felix.atomos:1.0.0'
@@ -76,7 +81,7 @@ jar {
 	}
 }
 
-String VERSION = '4.26'
+String VERSION = '4.27'
 apply plugin: 'dev.equo.p2deps'
 p2deps {
 	into 'api', {
@@ -86,6 +91,7 @@ p2deps {
 	into 'implementation', {
 		p2repo "https://download.eclipse.org/eclipse/updates/${VERSION}/"
 		install 'org.eclipse.osgi'
+		//install "org.eclipse.releng.pde.categoryIU"
 		//install 'org.osgi.service.component'
 	}
 	into 'compileOnly', {

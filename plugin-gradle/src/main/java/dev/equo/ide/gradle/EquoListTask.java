@@ -13,6 +13,7 @@
  *******************************************************************************/
 package dev.equo.ide.gradle;
 
+import dev.equo.ide.WorkspaceInit;
 import dev.equo.solstice.p2.ConsoleTable;
 import dev.equo.solstice.p2.P2ClientCache;
 import dev.equo.solstice.p2.P2Multitool;
@@ -106,7 +107,8 @@ public abstract class EquoListTask extends DefaultTask {
 					"Exactly one of --request, --installed, --problems, --optional, --all, --detail, or --raw must be set.\n"
 							+ "`gradlew help --task equoList` for more info or visit https://github.com/equodev/equo-ide/blob/main/P2_MULTITOOL.md");
 		}
-		var model = getExtension().get().prepareModel();
+		var workspaceUnused = new WorkspaceInit();
+		var model = getExtension().get().prepareModel(workspaceUnused);
 		tool.dump(model, getClientCaching().get());
 	}
 }

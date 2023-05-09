@@ -11,12 +11,19 @@
  * Contributors:
  *     EquoTech, Inc. - initial API and implementation
  *******************************************************************************/
-package dev.equo.ide.maven;
+package dev.equo.ide;
 
-import org.apache.maven.plugins.annotations.Parameter;
-import org.sonatype.inject.Nullable;
+import java.util.List;
 
-public class Welcome {
-	@Parameter @Nullable String openUrl;
-	@Parameter @Nullable String perspective;
+public class CatalogJdt extends Catalog {
+	CatalogJdt() {
+		super("jdt", PLATFORM, List.of("org.eclipse.releng.java.languages.categoryIU"), PLATFORM);
+	}
+
+	/** Adds a compiler class path variable. */
+	public void classpathVariable(WorkspaceInit workspace, String name, String value) {
+		String JDT_CORE_PREFS =
+				"instance/.metadata/.plugins/org.eclipse.core.runtime/.settings/org.eclipse.jdt.core.prefs";
+		workspace.setProperty(JDT_CORE_PREFS, "org.eclipse.jdt.core.classpathVariable." + name, value);
+	}
 }

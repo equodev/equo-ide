@@ -35,6 +35,7 @@ public class PartDescriptor {
 
 	private PartDescriptor(String tabName, Consumer<Composite> coat) {
 		this.tabName = tabName;
+		this.toolTipText = tabName;
 		this.coat = coat;
 	}
 

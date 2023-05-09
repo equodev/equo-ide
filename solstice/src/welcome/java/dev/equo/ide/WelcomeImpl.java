@@ -17,12 +17,20 @@ import dev.equo.ide.ui.PartDescriptor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.ui.PlatformUI;
 
 class WelcomeImpl implements IdeHookInstantiated {
 	IdeHookWelcome data;
 
 	WelcomeImpl(IdeHookWelcome data) {
 		this.data = data;
+	}
+
+	@Override
+	public void preStartup() throws Exception {
+		if (data.perspective != null) {
+			PlatformUI.getWorkbench().getPerspectiveRegistry().setDefaultPerspective(data.perspective);
+		}
 	}
 
 	@Override

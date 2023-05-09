@@ -2,10 +2,46 @@
 
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
+- You can now do `<useChromium/>` to replace the standard SWT system browser with Equo Chromium. ([#123](https://github.com/equodev/equo-ide/pull/123))
+
 ## [Unreleased]
 ### Added
-- You can now do `<useChromium/>` to replace the standard SWT system browser with Equo Chromium. ([#123](https://github.com/equodev/equo-ide/pull/123))
+- The ability to set Eclipse preference files. ([#127](https://github.com/equodev/equo-ide/pull/127))
+  - Each catalog entry has its own DSL, e.g. for Eclipse PDE
+    ```xml
+    <configuration>
+      <pde>
+        <missingApiBaseline>Ignore</missingApiBaseline>
+      </pde>
+      ...
+    ```
+  - Or you can set properties manually on their own
+    ```xml
+    <configuration>
+      <workspaceProps>
+        <workspaceProp>
+            <path>instance/.metadata/.plugins/org.eclipse.core.runtime/.settings/org.eclipse.pde.api.tools.prefs</path>
+            <key>missing_default_api_profile</key>
+            <value>Ignore</value>
+        </workspaceProp>
+        ...
+    ```
+- Control preferences for whitespace and line numbers under `platform`, add classpath variables under `jdt`. ([#128](https://github.com/equodev/equo-ide/pull/128))
+### Fixed
+- Eclipse PDE now runs well under Atomos. ([#126](https://github.com/equodev/equo-ide/pull/126))
+
+## [1.0.0] - 2023-04-29
+### Added
 - `<m2e><autoImport>${project.basedir}</autoImport></m2e>` to automatically import the given repo on startup. ([#115](https://github.com/equodev/equo-ide/pull/115) implements [#18](https://github.com/equodev/equo-ide/issues/18))
+- We now set the initial perspective of the IDE. ([#125](https://github.com/equodev/equo-ide/pull/125))
+  - It gets set automatically from catalog entries (e.g. `<jdt/>`), or you can set it manually
+  - ```xml
+    <welcome>
+      <perspective>org.eclipse.jdt.ui.JavaPerspective</perspective>
+    </welcome>
+    ```
+### Changed
+- Update version catalog to latest `2022-03` versions of everything. ([#110](https://github.com/equodev/equo-ide/pull/110))
 ### Fixed
 - Fix branding for title bar and icon. ([#117](https://github.com/equodev/equo-ide/pull/117) fixes [#87](https://github.com/equodev/equo-ide/issues/87))
 

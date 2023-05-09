@@ -4,5 +4,7 @@ dependencies {
 test {
 	if (System.env['CI'] == null) {
 		systemProperty "updateSnapshot", ""
+	} else {
+		systemProperty "lockFileGenerousTimeout", "true"
 	}
 }

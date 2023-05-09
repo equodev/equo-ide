@@ -17,9 +17,11 @@ import dev.equo.ide.Catalog;
 import dev.equo.ide.CatalogDsl;
 import dev.equo.ide.IdeHook;
 import dev.equo.ide.IdeHookM2E;
+import dev.equo.ide.WorkspaceInit;
 import dev.equo.solstice.p2.P2Model;
 import java.io.File;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Stream;
 import org.apache.maven.plugins.annotations.Parameter;
@@ -32,6 +34,29 @@ public abstract class AbstractP2MojoWithCatalog extends AbstractP2Mojo {
 		public Platform() {
 			super(Catalog.PLATFORM);
 		}
+
+		@Parameter(required = false)
+		private Boolean showLineNumbers;
+
+		@Parameter(required = false)
+		private Boolean showWhitespace;
+
+		@Parameter(required = false)
+		private Boolean showLineEndings;
+
+		@Override
+		protected void processVersionOverrides() {
+			super.processVersionOverrides();
+			if (showLineNumbers != null) {
+				Catalog.PLATFORM.showLineNumbers(workspaceInit(), showLineNumbers);
+			}
+			if (showWhitespace != null) {
+				Catalog.PLATFORM.showWhitespace(workspaceInit(), showWhitespace);
+			}
+			if (showLineEndings != null) {
+				Catalog.PLATFORM.showLineEndings(workspaceInit(), showLineEndings);
+			}
+		}
 	}
 
 	@Parameter private Jdt jdt;
@@ -39,6 +64,18 @@ public abstract class AbstractP2MojoWithCatalog extends AbstractP2Mojo {
 	public static class Jdt extends MavenCatalogDsl {
 		public Jdt() {
 			super(Catalog.JDT);
+		}
+
+		@Parameter(required = false)
+		private Map<String, String> classpathVariable;
+
+		@Override
+		protected void processVersionOverrides() {
+			super.processVersionOverrides();
+			if (classpathVariable != null) {
+				classpathVariable.forEach(
+						(name, value) -> Catalog.JDT.classpathVariable(workspaceInit(), name, value));
+			}
 		}
 	}
 
@@ -55,6 +92,18 @@ public abstract class AbstractP2MojoWithCatalog extends AbstractP2Mojo {
 	public static class Pde extends MavenCatalogDsl {
 		public Pde() {
 			super(Catalog.PDE);
+		}
+
+		/** Ignore / Error */
+		@Parameter(required = false)
+		private String missingApiBaseline;
+
+		@Override
+		protected void processVersionOverrides() {
+			super.processVersionOverrides();
+			if (missingApiBaseline != null) {
+				Catalog.PDE.missingApiBaseline(workspaceInit(), missingApiBaseline);
+			}
 		}
 	}
 
@@ -141,7 +190,7 @@ public abstract class AbstractP2MojoWithCatalog extends AbstractP2Mojo {
 	}
 
 	@Override
-	protected void modifyModel(P2Model model, IdeHook.List ideHooks) {
+	protected void modifyModel(P2Model model, IdeHook.List ideHooks, WorkspaceInit workspace) {
 		CatalogDsl.TransitiveAwareList<MavenCatalogDsl> catalog =
 				new CatalogDsl.TransitiveAwareList<>();
 		// NB: each entry must be after all of its transitive dependencies
@@ -153,6 +202,6 @@ public abstract class AbstractP2MojoWithCatalog extends AbstractP2Mojo {
 							dsl.processVersionOverrides();
 							catalog.add(dsl);
 						});
-		catalog.putInto(model, ideHooks);
+		catalog.putInto(model, ideHooks, workspace);
 	}
 }

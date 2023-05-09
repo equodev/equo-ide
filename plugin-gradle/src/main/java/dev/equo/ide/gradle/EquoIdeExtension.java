@@ -17,7 +17,9 @@ import dev.equo.ide.EquoChromium;
 import dev.equo.ide.IdeHook;
 import dev.equo.ide.IdeHookBranding;
 import dev.equo.ide.IdeHookWelcome;
+import dev.equo.ide.WorkspaceInit;
 import dev.equo.solstice.p2.P2Model;
+import org.gradle.api.Action;
 import org.gradle.api.Project;
 
 /** The DSL inside the equoIde block. */
@@ -53,12 +55,31 @@ public class EquoIdeExtension extends P2ModelDslWithCatalog {
 		return ideHooks;
 	}
 
-	P2Model prepareModel() throws Exception {
+	WorkspaceInit workspace = new WorkspaceInit();
+
+	public class SetWorkspaceFile {
+		private final String subpath;
+
+		SetWorkspaceFile(String subpath) {
+			this.subpath = subpath;
+		}
+
+		public void prop(String key, String value) {
+			workspace.setProperty(subpath, key, value);
+		}
+	}
+
+	public void workspaceInit(String subpath, Action<SetWorkspaceFile> action) {
+		var setWorkspaceFile = new SetWorkspaceFile(subpath);
+		action.execute(setWorkspaceFile);
+	}
+
+	P2Model prepareModel(WorkspaceInit workspaceInit) throws Exception {
 		if (hasBeenPrepared) {
 			return model;
 		}
 		hasBeenPrepared = true;
-		catalog.putInto(model, ideHooks);
+		catalog.putInto(model, ideHooks, workspaceInit);
 		model.applyNativeFilterIfNoPlatformFilter();
 		return model;
 	}

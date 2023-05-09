@@ -26,6 +26,7 @@ import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
+import org.osgi.framework.Version;
 import org.osgi.framework.launch.Framework;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -104,7 +105,18 @@ public class BundleContextAtomos implements Atomos.HeaderProvider {
 	}
 
 	/** https://github.com/eclipse-equinox/equinox/issues/179 */
-	public static void urlWorkaround(BundleContext bundleContext) throws InvalidSyntaxException {
+	public static void urlWorkaround(Solstice solstice) throws InvalidSyntaxException {
+		var version =
+				new Version(
+						solstice
+								.bundleForSymbolicName("org.eclipse.osgi")
+								.getHeadersOriginal()
+								.get(Constants.BUNDLE_VERSION));
+		var fixedInVersion = new Version("3.18.300");
+		if (version.compareTo(fixedInVersion) >= 0) {
+			return;
+		}
+		var bundleContext = solstice.getContext();
 		var converters = bundleContext.getServiceReferences(URLConverter.class, "(protocol=platform)");
 		for (ServiceReference<URLConverter> toRemove : converters) {
 			((org.eclipse.osgi.internal.serviceregistry.ServiceReferenceImpl<URLConverter>) toRemove)

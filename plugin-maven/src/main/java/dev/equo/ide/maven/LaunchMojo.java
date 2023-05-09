@@ -19,6 +19,7 @@ import dev.equo.ide.EquoChromium;
 import dev.equo.ide.IdeHook;
 import dev.equo.ide.IdeHookBranding;
 import dev.equo.ide.IdeHookWelcome;
+import dev.equo.ide.WorkspaceInit;
 import dev.equo.solstice.NestedJars;
 import dev.equo.solstice.p2.P2ClientCache;
 import dev.equo.solstice.p2.P2QueryCache;
@@ -47,11 +48,9 @@ import org.eclipse.aether.resolution.DependencyResult;
 /** Launches an Eclipse-based IDE for this project. */
 @Mojo(name = "launch", aggregator = true)
 public class LaunchMojo extends AbstractP2MojoWithCatalog {
-	@Parameter(required = false)
-	private Branding branding = new Branding();
+	@Parameter private Branding branding = new Branding();
 
-	@Parameter(required = false)
-	private Welcome welcome = new Welcome();
+	@Parameter private Welcome welcome = new Welcome();
 
 	/** Wipes all IDE settings and state before rebuilding and launching. */
 	@Parameter(property = "clean", defaultValue = "false")
@@ -81,6 +80,10 @@ public class LaunchMojo extends AbstractP2MojoWithCatalog {
 	@Parameter(property = "debugIde", defaultValue = "false")
 	private boolean debugIde;
 
+	/** Sets properties in the Eclipse workspace. */
+	@Parameter(property = "workspaceProps")
+	private List<WorkspaceProp> workspaceProps = new ArrayList<>();
+
 	@Parameter(defaultValue = "${project.basedir}", required = true, readonly = true)
 	protected File baseDir;
 
@@ -105,7 +108,7 @@ public class LaunchMojo extends AbstractP2MojoWithCatalog {
 					new IdeHookBranding().title(branding.title).icon(branding.icon).splash(branding.splash));
 			if (welcome != null) {
 				var welcomeHook = new IdeHookWelcome();
-				welcomeHook.openUrl(welcome.openUrl);
+				welcomeHook.openUrl(welcome.openUrl).perspective(welcome.perspective);
 				ideHooks.add(welcomeHook);
 			}
 
@@ -113,10 +116,11 @@ public class LaunchMojo extends AbstractP2MojoWithCatalog {
 			deps.add(
 					new Dependency(
 							new DefaultArtifact("dev.equo.ide:solstice:" + NestedJars.solsticeVersion()), null));
+			var workspaceInit = new WorkspaceInit();
 			boolean isOffline = false;
 			var clientCaching = P2ClientCache.defaultIfOfflineIsAndForceRecalculateIs(isOffline, clean);
 			var query =
-					super.prepareModel(ideHooks)
+					super.prepareModel(ideHooks, workspaceInit)
 							.query(clientCaching, clean ? P2QueryCache.FORCE_RECALCULATE : P2QueryCache.ALLOW);
 			for (var dep : NestedJars.transitiveDeps(useAtomos, NestedJars.CoordFormat.MAVEN, query)) {
 				deps.add(new Dependency(new DefaultArtifact(dep), null, null, EXCLUDE_ALL_TRANSITIVES));
@@ -139,7 +143,9 @@ public class LaunchMojo extends AbstractP2MojoWithCatalog {
 			DependencyRequest dependencyRequest = new DependencyRequest(collectRequest, null);
 			DependencyResult dependencyResult =
 					repositorySystem.resolveDependencies(repositorySystemSession, dependencyRequest);
-
+			for (var workspaceProp : workspaceProps) {
+				workspaceInit.setProperty(workspaceProp.path, workspaceProp.key, workspaceProp.value);
+			}
 			var files = new ArrayList<File>();
 			for (var artifact : dependencyResult.getArtifactResults()) {
 				files.add(artifact.getArtifact().getFile());
@@ -152,6 +158,7 @@ public class LaunchMojo extends AbstractP2MojoWithCatalog {
 				System.setProperty("equo-ide-maven-workarounds", "true");
 			}
 			caller.ideHooks = ideHooks;
+			caller.workspaceInit = workspaceInit;
 			caller.classpath = files;
 			caller.debugClasspath = debugClasspath;
 			caller.initOnly = initOnly;

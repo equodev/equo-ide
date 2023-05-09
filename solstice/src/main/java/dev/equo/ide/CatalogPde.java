@@ -11,12 +11,19 @@
  * Contributors:
  *     EquoTech, Inc. - initial API and implementation
  *******************************************************************************/
-package dev.equo.ide.maven;
+package dev.equo.ide;
 
-import org.apache.maven.plugins.annotations.Parameter;
-import org.sonatype.inject.Nullable;
+import java.util.List;
 
-public class Welcome {
-	@Parameter @Nullable String openUrl;
-	@Parameter @Nullable String perspective;
+public class CatalogPde extends Catalog {
+	CatalogPde() {
+		super("pde", PLATFORM, List.of("org.eclipse.releng.pde.categoryIU"), JDT);
+	}
+
+	public void missingApiBaseline(WorkspaceInit workspace, String value) {
+		String filename =
+				"instance/.metadata/.plugins/org.eclipse.core.runtime/.settings/org.eclipse.pde.api.tools.prefs";
+		workspace.setProperty(filename, "missing_default_api_profile", value);
+		workspace.setProperty(filename, "missing_plugin_in_baseline", value);
+	}
 }

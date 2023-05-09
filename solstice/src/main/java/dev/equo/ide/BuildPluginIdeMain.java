@@ -24,6 +24,7 @@ import dev.equo.solstice.p2.WorkspaceRegistry;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.LinkedHashMap;
@@ -70,6 +71,7 @@ public class BuildPluginIdeMain {
 		public File workspaceDir;
 		public IdeLockFile lockFile;
 		public IdeHook.List ideHooks;
+		public WorkspaceInit workspaceInit;
 		public ArrayList<File> classpath;
 		public BuildPluginIdeMain.DebugClasspath debugClasspath;
 		public Boolean initOnly, showConsole, useAtomos, debugIde;
@@ -79,6 +81,7 @@ public class BuildPluginIdeMain {
 			Objects.requireNonNull(workspaceDir);
 			Objects.requireNonNull(lockFile);
 			Objects.requireNonNull(ideHooks);
+			Objects.requireNonNull(workspaceInit);
 			Objects.requireNonNull(classpath);
 			Objects.requireNonNull(debugClasspath);
 			Objects.requireNonNull(initOnly);
@@ -88,26 +91,24 @@ public class BuildPluginIdeMain {
 			Objects.requireNonNull(showConsoleFlag);
 			Objects.requireNonNull(cleanFlag);
 
-			var classpathSorted = Launcher.copyAndSortClasspath(classpath);
+			ArrayList<File> classpathSorted = Launcher.copyAndSortClasspath(classpath);
 			SignedJars.stripIfNecessary(classpathSorted);
 			var nestedJarFolder = new File(workspaceDir, NestedJars.DIR);
 			for (var nested : NestedJars.inFiles(classpathSorted).extractAllNestedJars(nestedJarFolder)) {
 				classpathSorted.add(nested.getValue());
 			}
 			if (EquoChromium.isEnabled(ideHooks)) {
-				// extract the browser overrides, and add to classpath *before* SWT
-				var overrides =
-						new NestedJars() {
-							@Override
-							protected List<URL> listNestedJars() {
-								return List.of(getClass().getResource("/solstice-chromium-browser-overrides.jar"));
-							}
-						}.extractAllNestedJars(nestedJarFolder);
-				for (var overrideJar : overrides) {
-					classpathSorted.add(0, overrideJar.getValue());
-				}
-				// strip the signature off of the SWT jars since we are patching the Browser class
+				Patch.patch(classpathSorted, nestedJarFolder, "solstice-chromium-browser-overrides");
 				SignedJars.stripIf(classpathSorted, fileName -> fileName.startsWith("org.eclipse.swt."));
+			}
+			if (useAtomos) {
+				// for Eclipse 4.27, we have patched the EquinoxBundle class so that it handles
+				// `getEntry("/")`
+				var version = Patch.detectVersion(classpathSorted, "org.eclipse.osgi");
+				if ("3.18.300".equals(version)) {
+					Patch.patch(classpathSorted, nestedJarFolder, "patch-equinox-4.27");
+					SignedJars.stripIf(classpathSorted, jarName -> jarName.startsWith("org.eclipse.osgi"));
+				}
 			}
 			SignedJars.stripIfNecessary(classpathSorted);
 
@@ -121,6 +122,17 @@ public class BuildPluginIdeMain {
 			var ideHooksCopy = ideHooks.copy();
 			ideHooksCopy.add(IdeHookLockFile.forWorkspaceDirAndClasspath(workspaceDir, classpathSorted));
 			SerializableMisc.toFile(ideHooksCopy, ideHooksFile);
+
+			workspaceInit.applyTo(workspaceDir);
+
+			var installDir = workspaceDir.toPath().resolve("install");
+			Files.createDirectories(installDir);
+			var bundlesInfo =
+					workspaceDir
+							.toPath()
+							.resolve("config/org.eclipse.equinox.simpleconfigurator/bundles.info");
+			Files.createDirectories(bundlesInfo.getParent());
+			Files.writeString(bundlesInfo, bundlesDotInfo(classpathSorted));
 
 			debugClasspath.printWithHead(
 					"jars about to be launched", classpathSorted.stream().map(File::getAbsolutePath));
@@ -242,6 +254,42 @@ public class BuildPluginIdeMain {
 		}
 	}
 
+	private static String bundlesDotInfo(List<File> cp) {
+		var buffer = new StringBuilder();
+		var newline = "\n";
+		// for a "real" file these should be different in different places...
+		var startLevel = "0";
+		var markedAsStarted = "false";
+
+		buffer.append("#encoding=UTF-8");
+		buffer.append(newline);
+		buffer.append("#version=1");
+		buffer.append(newline);
+		for (var file : cp) {
+			try {
+				SolsticeManifest manifest = SolsticeManifest.parseJar(file);
+				if (manifest == null
+						|| manifest.getSymbolicName() == null
+						|| manifest.getVersion() == null) {
+					continue;
+				}
+				buffer.append(manifest.getSymbolicName());
+				buffer.append(',');
+				buffer.append(manifest.getVersion());
+				buffer.append(',');
+				buffer.append(file.toURI());
+				buffer.append(',');
+				buffer.append(startLevel);
+				buffer.append(',');
+				buffer.append(markedAsStarted);
+				buffer.append(newline);
+			} catch (Exception e) {
+				// do nothing
+			}
+		}
+		return buffer.toString();
+	}
+
 	private static <T> T parseArg(
 			String[] args, String arg, Function<String, T> parser, T defaultValue) {
 		for (int i = 0; i < args.length - 1; ++i) {
@@ -292,8 +340,12 @@ public class BuildPluginIdeMain {
 		}
 
 		var props = new LinkedHashMap<String, String>();
+		props.put(
+				"org.eclipse.equinox.simpleconfigurator.configUrl",
+				"file: broken on purpose to disable simpleconfigurator");
 		props.put("gosh.args", "--quiet --noshutdown");
 		props.put("osgi.nl", "en_US");
+		props.put("eclipse.noRegistryFlushing", "true");
 		props.put(Constants.FRAMEWORK_STORAGE_CLEAN, Constants.FRAMEWORK_STORAGE_CLEAN_ONFIRSTINIT);
 		props.put(
 				EquinoxLocations.PROP_INSTANCE_AREA, new File(installDir, "instance").getAbsolutePath());
@@ -311,6 +363,8 @@ public class BuildPluginIdeMain {
 			solstice.openShim(props);
 			ShimIdeBootstrapServices.apply(props, solstice.getContext());
 		}
+		ShimIdeBootstrapServices.shimAndAtomos(props, solstice.getContext());
+
 		solstice.start("org.apache.felix.scr");
 		solstice.startAllWithLazy(false);
 		solstice.start("org.eclipse.ui.ide.application");
@@ -318,7 +372,7 @@ public class BuildPluginIdeMain {
 			// the spelled-out package is on purpose so that Atomos can remain an optional component
 			// works together with
 			// https://github.com/equodev/equo-ide/blob/aa7d30cba9988bc740ff4bc4b3015475d30d187c/solstice/build.gradle#L16-L22
-			dev.equo.solstice.BundleContextAtomos.urlWorkaround(solstice.getContext());
+			dev.equo.solstice.BundleContextAtomos.urlWorkaround(solstice);
 		}
 		if (!initOnly) {
 			ideHooks.forEach(IdeHookInstantiated::afterOsgi, solstice.getContext());
