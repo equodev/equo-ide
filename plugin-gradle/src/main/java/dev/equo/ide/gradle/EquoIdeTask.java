@@ -53,6 +53,10 @@ public abstract class EquoIdeTask extends DefaultTask {
 		return ideHooks;
 	}
 
+	public WorkspaceInit getWorkspace() {
+		return workspace;
+	}
+
 	private boolean clean = false;
 
 	@Option(
