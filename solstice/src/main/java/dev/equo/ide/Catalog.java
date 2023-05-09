@@ -92,20 +92,7 @@ public class Catalog implements Comparable<Catalog> {
 				}
 			};
 
-	public static class Pde extends Catalog {
-		private Pde() {
-			super("pde", PLATFORM, List.of("org.eclipse.releng.pde.categoryIU"), JDT);
-		}
-
-		public static void missingApiBaseline(WorkspaceInit workspace, String value) {
-			String filename =
-					"instance/.metadata/.plugins/org.eclipse.core.runtime/.settings/org.eclipse.pde.api.tools.prefs";
-			workspace.setProperty(filename, "missing_default_api_profile", value);
-			workspace.setProperty(filename, "missing_plugin_in_baseline", value);
-		}
-	}
-
-	public static final Pde PDE = new Pde();
+	public static final CatalogPde PDE = new CatalogPde();
 
 	public static final Catalog KOTLIN =
 			new Catalog(
