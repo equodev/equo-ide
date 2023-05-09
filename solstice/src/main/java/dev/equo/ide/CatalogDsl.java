@@ -45,7 +45,7 @@ public class CatalogDsl {
 
 	/**
 	 * Subclasses can override this method to include their IdeHooks in {@link
-	 * TransitiveAwareList#putInto(P2Model, dev.equo.ide.IdeHook.List)}.
+	 * TransitiveAwareList#putInto(P2Model, dev.equo.ide.IdeHook.List, WorkspaceInit)}.
 	 */
 	protected List<IdeHook> ideHooks() {
 		return List.of();
