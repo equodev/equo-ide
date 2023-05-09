@@ -14,6 +14,7 @@
 package dev.equo.ide.maven;
 
 import dev.equo.ide.IdeHook;
+import dev.equo.ide.WorkspaceInit;
 import dev.equo.solstice.p2.ConsoleTable;
 import dev.equo.solstice.p2.P2ClientCache;
 import dev.equo.solstice.p2.P2Multitool;
@@ -80,7 +81,8 @@ public class ListMojo extends AbstractP2MojoWithCatalog {
 		boolean isOffline = false;
 		var clientCaching = P2ClientCache.defaultIfOfflineIsAndForceRecalculateIs(isOffline, clean);
 		try {
-			var model = prepareModel(new IdeHook.List());
+			var workspaceUnused = new WorkspaceInit();
+			var model = prepareModel(new IdeHook.List(), workspaceUnused);
 			tool.dump(model, clientCaching);
 		} catch (Exception e) {
 			throw new MojoFailureException(e.getMessage(), e);

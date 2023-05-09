@@ -104,6 +104,11 @@ public class P2ModelDslWithCatalog extends P2ModelDsl {
 		public Pde(String urlOverride, Project project) {
 			super(Catalog.PDE, urlOverride);
 		}
+
+		/** Ignore / Error */
+		public void missingApiBaseline(String ignoreOrError) {
+			Catalog.PDE.missingApiBaseline(workspaceInit(), ignoreOrError);
+		}
 	}
 
 	public Pde pde(String urlOverride) {
@@ -111,7 +116,15 @@ public class P2ModelDslWithCatalog extends P2ModelDsl {
 	}
 
 	public Pde pde() {
-		return pde(null);
+		return pde((String) null);
+	}
+
+	public Pde pde(String urlOverride, Action<Pde> dsl) {
+		return add(new Pde(urlOverride, project), dsl);
+	}
+
+	public Pde pde(Action<Pde> dsl) {
+		return pde(null, dsl);
 	}
 
 	public static class M2E extends GradleCatalogDsl {

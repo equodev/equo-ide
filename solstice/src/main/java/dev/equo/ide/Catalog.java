@@ -23,7 +23,7 @@ import javax.annotation.Nullable;
 import org.slf4j.LoggerFactory;
 
 public class Catalog implements Comparable<Catalog> {
-	private static final String V = "${VERSION}";
+	protected static final String V = "${VERSION}";
 
 	static String defaultPerspectiveFor(Catalog catalog) {
 		if (catalog == Catalog.JDT || catalog == Catalog.GROOVY) {
@@ -39,15 +39,12 @@ public class Catalog implements Comparable<Catalog> {
 		}
 	}
 
-	public static final Catalog PLATFORM =
-			new Catalog(
-					"platform",
-					"https://download.eclipse.org/eclipse/updates/" + V,
-					jre11("4.27"),
-					List.of("org.eclipse.platform.ide.categoryIU"));
-	public static final Catalog JDT =
-			new Catalog(
-					"jdt", PLATFORM, List.of("org.eclipse.releng.java.languages.categoryIU"), PLATFORM);
+	public static final CatalogPlatform PLATFORM = new CatalogPlatform();
+
+	public static final CatalogJdt JDT = new CatalogJdt();
+
+	public static final CatalogPde PDE = new CatalogPde();
+
 	public static final Catalog GRADLE_BUILDSHIP =
 			new Catalog(
 					"gradleBuildship",
@@ -91,8 +88,6 @@ public class Catalog implements Comparable<Catalog> {
 									}));
 				}
 			};
-	public static final Catalog PDE =
-			new Catalog("pde", PLATFORM, List.of("org.eclipse.releng.pde.categoryIU"), JDT);
 
 	public static final Catalog KOTLIN =
 			new Catalog(
@@ -248,7 +243,7 @@ public class Catalog implements Comparable<Catalog> {
 		}
 	}
 
-	private static VmVersion jre11(String ver) {
+	protected static VmVersion jre11(String ver) {
 		return new VmVersion().jre(11, ver);
 	}
 

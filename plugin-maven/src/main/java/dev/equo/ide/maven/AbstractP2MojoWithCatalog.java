@@ -17,6 +17,7 @@ import dev.equo.ide.Catalog;
 import dev.equo.ide.CatalogDsl;
 import dev.equo.ide.IdeHook;
 import dev.equo.ide.IdeHookM2E;
+import dev.equo.ide.WorkspaceInit;
 import dev.equo.solstice.p2.P2Model;
 import java.io.File;
 import java.util.List;
@@ -55,6 +56,18 @@ public abstract class AbstractP2MojoWithCatalog extends AbstractP2Mojo {
 	public static class Pde extends MavenCatalogDsl {
 		public Pde() {
 			super(Catalog.PDE);
+		}
+
+		/** Ignore / Error */
+		@Parameter(required = false)
+		private String missingApiBaseline;
+
+		@Override
+		protected void processVersionOverrides() {
+			super.processVersionOverrides();
+			if (missingApiBaseline != null) {
+				Catalog.PDE.missingApiBaseline(workspaceInit(), missingApiBaseline);
+			}
 		}
 	}
 
@@ -141,7 +154,7 @@ public abstract class AbstractP2MojoWithCatalog extends AbstractP2Mojo {
 	}
 
 	@Override
-	protected void modifyModel(P2Model model, IdeHook.List ideHooks) {
+	protected void modifyModel(P2Model model, IdeHook.List ideHooks, WorkspaceInit workspace) {
 		CatalogDsl.TransitiveAwareList<MavenCatalogDsl> catalog =
 				new CatalogDsl.TransitiveAwareList<>();
 		// NB: each entry must be after all of its transitive dependencies
@@ -153,6 +166,6 @@ public abstract class AbstractP2MojoWithCatalog extends AbstractP2Mojo {
 							dsl.processVersionOverrides();
 							catalog.add(dsl);
 						});
-		catalog.putInto(model, ideHooks);
+		catalog.putInto(model, ideHooks, workspace);
 	}
 }

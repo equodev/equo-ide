@@ -13,6 +13,7 @@
  *******************************************************************************/
 package dev.equo.ide.gradle;
 
+import dev.equo.ide.WorkspaceInit;
 import dev.equo.solstice.NestedJars;
 import dev.equo.solstice.p2.CacheLocations;
 import java.io.File;
@@ -99,10 +100,12 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 		project.afterEvaluate(
 				unused -> {
 					try {
+						var workspace = new WorkspaceInit();
 						var query =
 								extension
-										.prepareModel()
+										.prepareModel(workspace)
 										.query(P2ModelDsl.clientCaching(project), P2ModelDsl.queryCaching(project));
+						workspace.copyAllFrom(extension.workspace);
 						boolean useAtomosOverrideTrue =
 								anyArgMatching(
 										project,
@@ -127,6 +130,7 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 									// extension.useAtomos is on purpose, override is parsed inside the task
 									task.getUseAtomos().set(extension.useAtomos);
 									task.ideHooks = extension.getIdeHooks();
+									task.workspace = workspace;
 								});
 					} catch (Exception e) {
 						throw new RuntimeException(e);
