@@ -177,6 +177,7 @@ public class BuildPluginIdeMain {
 							process.destroyForcibly();
 						};
 			}
+
 			var exitCode =
 					Launcher.launchJavaBlocking(
 							isBlocking,
