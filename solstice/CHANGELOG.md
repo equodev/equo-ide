@@ -4,7 +4,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
 ### Added
-- Added `solstice-chromium-browser-overrides.jar` which gets packaged into the `src/main/resources` of `solstice.jar` to support replacing the standard SWT Browser with Equo Chromium. ([#123](https://github.com/equodev/equo-ide/pull/123))
+- Added `patch-chromium-swt.jar` which gets packaged into the `src/main/resources` of `solstice.jar` to support replacing the standard SWT Browser with Equo Chromium. ([#123](https://github.com/equodev/equo-ide/pull/123))
 
 ## [1.2.0] - 2023-05-09
 ### Added
