@@ -4,12 +4,12 @@ targetCompatibility = java_compat
 
 repositories {
 	maven {
-		url 'https://dl.equo.dev/chromium-swt-ce/oss/mvn'
+		url 'https://dl.equo.dev/chromium-swt-ee/equo-gpl/mvn'
 	}
 }
 
 dependencies {
-	compileOnly 'com.equo:com.equo.chromium:106.0.0'
+	compileOnly 'com.equo:com.equo.chromium:106.0.3'
 }
 
 String VERSION = '4.26'

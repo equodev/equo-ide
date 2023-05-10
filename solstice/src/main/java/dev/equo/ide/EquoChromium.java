@@ -21,13 +21,13 @@ import com.diffplug.common.swt.os.SwtPlatform;
  */
 public class EquoChromium implements IdeHook {
 	public static String mavenRepo() {
-		return "https://dl.equo.dev/chromium-swt-ce/oss/mvn";
+		return "https://dl.equo.dev/chromium-swt-ee/equo-gpl/mvn";
 	}
 
 	public static java.util.List<String> mavenCoordinates() {
 		return java.util.List.of(
-				"com.equo:com.equo.chromium:106.0.0",
-				"com.equo:com.equo.chromium.cef." + SwtPlatform.getRunning() + ":106.0.0");
+				"com.equo:com.equo.chromium:106.0.3",
+				"com.equo:com.equo.chromium.cef." + SwtPlatform.getRunning() + ":106.0.3");
 	}
 
 	public static boolean isEnabled(IdeHook.List hooks) {

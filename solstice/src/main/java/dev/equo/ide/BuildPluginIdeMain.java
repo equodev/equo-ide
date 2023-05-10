@@ -97,9 +97,13 @@ public class BuildPluginIdeMain {
 			for (var nested : NestedJars.inFiles(classpathSorted).extractAllNestedJars(nestedJarFolder)) {
 				classpathSorted.add(nested.getValue());
 			}
+			
+			var vmArgs = new ArrayList<String>();
 			if (EquoChromium.isEnabled(ideHooks)) {
 				Patch.patch(classpathSorted, nestedJarFolder, "patch-chromium-swt");
 				SignedJars.stripIf(classpathSorted, fileName -> fileName.startsWith("org.eclipse.swt."));
+				vmArgs.add("-Dchromium.args=--disable-web-security");
+				vmArgs.add("-Dchromium.activate_equo_chromium=This distribution of the Equo browser is licensed only for use with an IDE launched by the EquoIDE build plugin");
 			}
 			if (useAtomos) {
 				// for Eclipse 4.27, we have patched the EquinoxBundle class so that it handles
@@ -141,13 +145,11 @@ public class BuildPluginIdeMain {
 							|| showConsole
 							|| debugClasspath != BuildPluginIdeMain.DebugClasspath.disabled
 							|| debugIde;
-			var vmArgs = new ArrayList<String>();
+			
 			if (OS.getRunning().isMac()) {
 				vmArgs.add("-XstartOnFirstThread");
 			}
 			vmArgs.add("-Dorg.slf4j.simpleLogger.defaultLogLevel=" + (isBlocking ? "info" : "error"));
-
-			vmArgs.add("-Dchromium.args=--disable-web-security");
 
 			if (debugIde) {
 				vmArgs.add("-Xdebug");
