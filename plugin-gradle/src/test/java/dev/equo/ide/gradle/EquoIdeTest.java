@@ -75,7 +75,7 @@ public class EquoIdeTest extends GradleHarness {
 						"  install 'org.eclipse.ui.ide.application'",
 						"  useAtomos = false",
 						"}");
-		runAndAssert("equoIde", "--init-only", "--use-atomos=false")
+		runAndAssert("equoIde", "--init-only", "--use-atomos=false", "--stacktrace")
 				.matches("(?s)(.*)Loaded (\\d+) bundles not using Atomos(.*)");
 
 		// command line overrides buildscript
@@ -90,7 +90,7 @@ public class EquoIdeTest extends GradleHarness {
 						"  install 'org.eclipse.ui.ide.application'",
 						"  useAtomos = false",
 						"}");
-		runAndAssert("equoIde", "--init-only", "--use-atomos=true")
+		runAndAssert("equoIde", "--init-only", "--use-atomos=true", "--stacktrace")
 				.matches("(?s)(.*)Loaded (\\d+) bundles using Atomos(.*)");
 	}
 

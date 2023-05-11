@@ -50,6 +50,17 @@ equoIde { // launch with gradlew equoIde
   - `--useAtomos=[true|false]` determines whether to use Atomos
 - `equoList` to debug IDE dependencies ([p2 multitool](../P2_MULTITOOL.md))
 
+## Web browser
+
+By default, SWT uses the system browser (Internet Explorer on Windows, Safari on mac, etc). This means that SWT browser features are different depending on which operating system is being used. To get a consistent modern browser experience, you can replace the SWT system browser with the Equo Chromium browser.
+
+```gradle
+equoIde {
+  useChromium()
+  // this is only needed if you want the browser to be able to access local files
+  vmArg '-Dchromium.args=--disable-web-security'
+```
+
 ## User plugins
 
 To compile classes against dependencies from p2, you can use `dev.equo.p2deps`.
