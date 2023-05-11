@@ -79,6 +79,8 @@ By default, SWT uses the system browser (Internet Explorer on Windows, Safari on
   </vmArgs>
 ```
 
+Using Equo Chromium will add `https://dl.equo.dev/chromium-swt-ee/equo-gpl/mvn` to your list of maven repositories, which is used only for the Chromium dependency.
+
 ## User plugins
 
 You can use the [`dev.equo.p2deps` gradle plugin](../plugin-gradle/README.md#user-plugins) to compile against p2 dependencies. We would love help porting this feature into the maven plugin, see [#54](https://github.com/equodev/equo-ide/issues/54).

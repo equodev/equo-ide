@@ -61,6 +61,8 @@ equoIde {
   vmArg '-Dchromium.args=--disable-web-security'
 ```
 
+Using Equo Chromium will add `https://dl.equo.dev/chromium-swt-ee/equo-gpl/mvn` to your list of maven repositories, which is used only for the Chromium dependency.
+
 ## User plugins
 
 To compile classes against dependencies from p2, you can use `dev.equo.p2deps`.
