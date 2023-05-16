@@ -74,9 +74,6 @@ By default, SWT uses the system browser (Internet Explorer on Windows, Safari on
 ```xml
 <configuration>
   <useChromium>true</useChromium>
-  <vmArgs> <!-- vmArg is only needed if you want the browser to be able to access local files -->
-    <vmArg>-Dchromium.args=--disable-web-security</vmArg>
-  </vmArgs>
 ```
 
 Using Equo Chromium will add `https://dl.equo.dev/chromium-swt-ee/equo-gpl/mvn` to your list of maven repositories, which is used only for the Chromium dependency.
