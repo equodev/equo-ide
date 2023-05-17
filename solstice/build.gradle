@@ -17,8 +17,7 @@ apply plugin: 'eclipse'
 jar.manifest.attributes(
 		'Bundle-SymbolicName':    'dev.equo.ide; singleton:=true',
 		'Bundle-Version':         '0.0.0',
-		'Implementation-Version': spotlessChangelog.versionNext
-		)
+		'Implementation-Version': spotlessChangelog.versionNext)
 
 spotless {
 	java {
@@ -31,11 +30,12 @@ spotless {
 }
 
 tasks.named('processResources') {
-	for (String subjar : ['patch-equinox-4.27']) {
+	for (String subjar : [
+				'patch-equinox-4.27',
+				'patch-chromium-swt'
+			]) {
 		dependsOn(":${subjar}:jar")
-		from {
-			"../${subjar}/build/libs/${subjar}.jar"
-		}
+		from "../${subjar}/build/libs/${subjar}.jar"
 	}
 }
 

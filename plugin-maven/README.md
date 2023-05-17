@@ -28,7 +28,7 @@ Use it like this with `mvn equo-ide:launch`
       <icon>${project.basedir}/my_icon.png</icon>
       <splash>${project.basedir}/my_splash.png</splash>
     </branding>
-     <!-- and make your own plugins, without learning OSGi or p2 -->
+    <!-- and make your own plugins, without learning OSGi or p2 -->
     <welcome>
       <openUrl>https://github.com/me/myproject/CONTRIBUTING.md</openUrl>
     </welcome>
@@ -66,6 +66,17 @@ Use it like this with `mvn equo-ide:launch`
   - `-DdebugIde` blocks IDE startup and prints instructions to help you attach a remote debugger.
   - `-DuseAtomos=[true|false]` determines whether to use Atomos
 - `equo-ide:list` to debug IDE dependencies ([p2 multitool](../P2_MULTITOOL.md))
+
+## Web browser
+
+By default, SWT uses the system browser (Internet Explorer on Windows, Safari on mac, etc). This means that SWT browser features are different depending on which operating system is being used. To get a consistent modern browser experience, you can replace the SWT system browser with the Equo Chromium browser.
+
+```xml
+<configuration>
+  <useChromium>true</useChromium>
+```
+
+Using Equo Chromium will add `https://dl.equo.dev/chromium-swt-ee/equo-gpl/mvn` to your list of maven repositories, which is used only for the Chromium dependency.
 
 ## User plugins
 

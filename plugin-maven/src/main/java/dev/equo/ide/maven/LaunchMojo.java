@@ -15,6 +15,7 @@ package dev.equo.ide.maven;
 
 import com.diffplug.common.swt.os.OS;
 import dev.equo.ide.BuildPluginIdeMain;
+import dev.equo.ide.EquoChromium;
 import dev.equo.ide.IdeHook;
 import dev.equo.ide.IdeHookBranding;
 import dev.equo.ide.IdeHookWelcome;
@@ -39,6 +40,7 @@ import org.eclipse.aether.collection.CollectRequest;
 import org.eclipse.aether.graph.Dependency;
 import org.eclipse.aether.graph.Exclusion;
 import org.eclipse.aether.repository.RemoteRepository;
+import org.eclipse.aether.repository.RemoteRepository.Builder;
 import org.eclipse.aether.resolution.DependencyRequest;
 import org.eclipse.aether.resolution.DependencyResolutionException;
 import org.eclipse.aether.resolution.DependencyResult;
@@ -61,6 +63,10 @@ public class LaunchMojo extends AbstractP2MojoWithCatalog {
 	/** Adds a visible console to the launched application. */
 	@Parameter(property = "showConsole", defaultValue = "false")
 	private boolean showConsole;
+
+	/** Replaces the standard SWT browser with Equo Chromium. */
+	@Parameter(property = "useChromium", defaultValue = "false")
+	private boolean useChromium;
 
 	/** Dumps the classpath (in order) without starting the application. */
 	@Parameter(property = "debugClasspath", defaultValue = "disabled")
@@ -122,6 +128,17 @@ public class LaunchMojo extends AbstractP2MojoWithCatalog {
 			for (var dep : query.getJarsOnMavenCentral()) {
 				deps.add(new Dependency(new DefaultArtifact(dep), null, null, EXCLUDE_ALL_TRANSITIVES));
 			}
+
+			if (useChromium) {
+				ideHooks.add(new EquoChromium());
+				Builder b = new RemoteRepository.Builder("chromium", "default", EquoChromium.mavenRepo());
+				repositories.add(b.build());
+				for (var coordinate : EquoChromium.mavenCoordinates()) {
+					deps.add(
+							new Dependency(new DefaultArtifact(coordinate), null, null, EXCLUDE_ALL_TRANSITIVES));
+				}
+			}
+
 			CollectRequest collectRequest = new CollectRequest(deps, null, repositories);
 			DependencyRequest dependencyRequest = new DependencyRequest(collectRequest, null);
 			DependencyResult dependencyResult =

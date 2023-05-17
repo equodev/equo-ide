@@ -13,6 +13,7 @@
  *******************************************************************************/
 package dev.equo.ide.gradle;
 
+import dev.equo.ide.EquoChromium;
 import dev.equo.ide.WorkspaceInit;
 import dev.equo.solstice.NestedJars;
 import dev.equo.solstice.p2.CacheLocations;
@@ -121,6 +122,15 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 							ModuleDependency dep =
 									(ModuleDependency) project.getDependencies().add(EQUO_IDE, coordinate);
 							dep.setTransitive(false);
+						}
+
+						if (EquoChromium.isEnabled(extension.getIdeHooks())) {
+							project.getRepositories().maven((a) -> a.setUrl(EquoChromium.mavenRepo()));
+							for (var coordinate : EquoChromium.mavenCoordinates()) {
+								ModuleDependency dep =
+										(ModuleDependency) project.getDependencies().add(EQUO_IDE, coordinate);
+								dep.setTransitive(false);
+							}
 						}
 						equoIdeTask.configure(
 								task -> {

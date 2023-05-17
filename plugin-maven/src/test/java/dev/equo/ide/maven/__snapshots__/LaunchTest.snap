@@ -73,6 +73,10 @@ equo-ide:launch
       Determines whether to use Solstice's built-in OSGi runtime or instead
       Atomos+Equinox.
 
+    useChromium (Default: false)
+      User property: useChromium
+      Replaces the standard SWT browser with Equo Chromium.
+
     welcome
       (no description available)
 
