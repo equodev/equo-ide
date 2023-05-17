@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+
+## [1.3.0] - 2023-05-17
 ### Added
 - You can now do `equoIde { useChromium() }` to replace the standard SWT system browser with Equo Chromium. ([#123](https://github.com/equodev/equo-ide/pull/123))
 
