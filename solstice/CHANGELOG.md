@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+### Fixed
+- Fail more loudly when the p2 client gets 502 errors.
 
 ## [1.3.0] - 2023-05-17
 ### Added

@@ -148,6 +148,10 @@ public class P2Client implements AutoCloseable {
 						offlineMetadataCache.put404(url);
 					}
 					throw new NotFoundException(url);
+				}
+				if (response.code() == 502) {
+					System.err.println("Received 502 from " + url);
+					throw new IOException("Received 502 from " + url);
 				} else {
 					var bytes = response.body().bytes();
 					if (contentIsHtml(bytes)) {
