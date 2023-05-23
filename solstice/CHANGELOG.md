@@ -4,9 +4,9 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
 ### Fixed
-- Fail more loudly when the p2 client gets 502 errors.
+- Fail more loudly when the p2 client gets 502 errors. ([#130](https://github.com/equodev/equo-ide/pull/130))
 ### Changed
-- Changed the default location for all p2 data (metadata, bundle pool, queries, and nested jars) to be `~/.m2/repository/dev/equo/p2-data/`
+- Changed the default location for all p2 data (metadata, bundle pool, queries, and nested jars) to be `~/.m2/repository/dev/equo/p2-data/`. ([#131](https://github.com/equodev/equo-ide/pull/131))
   - If this location fails for some reason, it then tries `$GRADLE_USER_HOME/caches/p2-data`
   - This improves CI caching and follows user feedback ([spotless#1687](https://github.com/diffplug/spotless/issues/1687), )
 
