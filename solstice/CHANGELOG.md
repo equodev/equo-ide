@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+
+## [1.3.1] - 2023-05-23
 ### Fixed
 - Fail more loudly when the p2 client gets 502 errors. ([#130](https://github.com/equodev/equo-ide/pull/130))
 ### Changed
