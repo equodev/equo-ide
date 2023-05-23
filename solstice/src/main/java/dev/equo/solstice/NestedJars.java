@@ -277,9 +277,9 @@ public abstract class NestedJars {
 
 	protected abstract List<URL> listNestedJars();
 
-	/** Extracts nested jars into {@link dev.equo.solstice.p2.CacheLocations#nestedJars()}. */
+	/** Extracts nested jars into {@link dev.equo.solstice.p2.CacheLocations#p2nestedJars()}. */
 	public List<Map.Entry<URL, File>> extractAllNestedJars() {
-		return extractAllNestedJars(CacheLocations.nestedJars());
+		return extractAllNestedJars(CacheLocations.p2nestedJars());
 	}
 
 	public List<Map.Entry<URL, File>> extractAllNestedJars(File nestedJarFolder) {
