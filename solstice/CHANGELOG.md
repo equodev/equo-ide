@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+### Changed
+- Minor changes to the default location for p2 data when we are unable to determine the user's home directory. ([#132](https://github.com/equodev/equo-ide/pull/132))
 
 ## [1.3.1] - 2023-05-23
 ### Fixed
