@@ -115,6 +115,14 @@ public abstract class AbstractP2MojoWithCatalog extends AbstractP2Mojo {
 		}
 	}
 
+	@Parameter private AssistAI assistAI;
+
+	public static class AssistAI extends MavenCatalogDsl {
+		public AssistAI() {
+			super(Catalog.ASSIST_AI);
+		}
+	}
+
 	@Parameter private M2E m2e;
 
 	public static class M2E extends MavenCatalogDsl {

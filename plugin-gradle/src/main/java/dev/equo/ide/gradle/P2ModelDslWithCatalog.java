@@ -152,6 +152,20 @@ public class P2ModelDslWithCatalog extends P2ModelDsl {
 		return egit(null);
 	}
 
+	public static class AssistAI extends GradleCatalogDsl {
+		public AssistAI(String urlOverride, Project project) {
+			super(Catalog.ASSIST_AI, urlOverride);
+		}
+	}
+
+	public AssistAI assistAI(String urlOverride) {
+		return add(new AssistAI(urlOverride, project));
+	}
+
+	public AssistAI assistAI() {
+		return assistAI(null);
+	}
+
 	public static class M2E extends GradleCatalogDsl {
 		public M2E(String urlOverride, Project project) {
 			super(Catalog.M2E, urlOverride);

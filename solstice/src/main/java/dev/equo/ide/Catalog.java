@@ -52,6 +52,8 @@ public class Catalog implements Comparable<Catalog> {
 					jre11("6.5"),
 					List.of("org.eclipse.egit.feature.group"));
 
+	public static final CatalogAssistAI ASSIST_AI = new CatalogAssistAI();
+
 	public static final Catalog GRADLE_BUILDSHIP =
 			new Catalog(
 					"gradleBuildship",
