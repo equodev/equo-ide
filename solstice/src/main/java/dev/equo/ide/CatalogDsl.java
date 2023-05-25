@@ -157,6 +157,11 @@ public class CatalogDsl {
 			return dsl;
 		}
 
+		@Deprecated
+		public void putInto(P2Model model, IdeHook.List hooks) {
+			putInto(model, hooks, new WorkspaceInit());
+		}
+
 		public void putInto(P2Model model, IdeHook.List hooks, WorkspaceInit workspace) {
 			// setup the IDE hooks
 			for (CatalogDsl dsl : catalogEntries.values()) {
