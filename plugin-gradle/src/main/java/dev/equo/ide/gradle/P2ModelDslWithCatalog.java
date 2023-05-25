@@ -156,6 +156,16 @@ public class P2ModelDslWithCatalog extends P2ModelDsl {
 		public AssistAI(String urlOverride, Project project) {
 			super(Catalog.ASSIST_AI, urlOverride);
 		}
+
+		public AssistAI apiKey(String key) {
+			Catalog.ASSIST_AI.apiKey(workspaceInit(), key);
+			return this;
+		}
+
+		public AssistAI modelName(String modelName) {
+			Catalog.ASSIST_AI.modelName(workspaceInit(), modelName);
+			return this;
+		}
 	}
 
 	public AssistAI assistAI(String urlOverride) {

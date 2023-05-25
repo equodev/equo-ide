@@ -25,4 +25,15 @@ public class CatalogAssistAI extends Catalog {
 				PLATFORM,
 				EGIT);
 	}
+
+	private static final String SETTINGS_FILE =
+			"instance/.metadata/.plugins/org.eclipse.core.runtime/.settings/com.github.gradusnikov.eclipse.plugin.assistai.main.prefs";
+
+	public void apiKey(WorkspaceInit workspace, String apiKey) {
+		workspace.setProperty(SETTINGS_FILE, "OpenAIAPIKey", apiKey);
+	}
+
+	public void modelName(WorkspaceInit workspace, String modelName) {
+		workspace.setProperty(SETTINGS_FILE, "OpenAIModelName", modelName);
+	}
 }

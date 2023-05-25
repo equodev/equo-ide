@@ -121,6 +121,23 @@ public abstract class AbstractP2MojoWithCatalog extends AbstractP2Mojo {
 		public AssistAI() {
 			super(Catalog.ASSIST_AI);
 		}
+
+		@Parameter(required = false)
+		private String apiKey;
+
+		@Parameter(required = false)
+		private String modelName;
+
+		@Override
+		protected void processVersionOverrides() {
+			super.processVersionOverrides();
+			if (apiKey != null) {
+				Catalog.ASSIST_AI.apiKey(workspaceInit(), apiKey);
+			}
+			if (modelName != null) {
+				Catalog.ASSIST_AI.modelName(workspaceInit(), modelName);
+			}
+		}
 	}
 
 	@Parameter private M2E m2e;
