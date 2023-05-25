@@ -20,7 +20,7 @@ public class CatalogAssistAI extends Catalog {
 		super(
 				"assistAI",
 				"https://eclipse-chatgpt-plugin.lm.r.appspot.com/",
-				jre11(""),
+				jre17(""),
 				List.of("com.github.gradusnikov.eclipse.assistai"),
 				PLATFORM,
 				EGIT);

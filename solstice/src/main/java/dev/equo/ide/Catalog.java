@@ -256,6 +256,10 @@ public class Catalog implements Comparable<Catalog> {
 		return new VmVersion().jre(11, ver);
 	}
 
+	protected static VmVersion jre17(String ver) {
+		return new VmVersion().jre(17, ver);
+	}
+
 	static class VmVersion {
 		private TreeMap<Integer, String> versions = new TreeMap<>();
 
