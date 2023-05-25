@@ -16,6 +16,7 @@ package dev.equo.solstice.p2;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Optional;
 
 /**
  * There are a few things which EquoIDE needs to cache on the developer's machine. They are
@@ -35,8 +36,13 @@ import java.nio.file.Path;
 public class CacheLocations {
 	private CacheLocations() {}
 
-	private static Path userHome() {
-		return new File(System.getProperty("user.home")).toPath();
+	private static Optional<Path> userHome() {
+		var userHome = Path.of(System.getProperty("user.home"));
+		if (userHome.isAbsolute() && Files.exists(userHome)) {
+			return Optional.of(userHome);
+		} else {
+			return Optional.empty();
+		}
 	}
 
 	/**
@@ -54,7 +60,12 @@ public class CacheLocations {
 		if (ideWorkspaces == null) {
 			ideWorkspaces = override_ideWorkspaces;
 			if (ideWorkspaces == null) {
-				ideWorkspaces = userHome().resolve(".equo").resolve("ide-workspaces").toFile();
+				var userHome = userHome();
+				if (!userHome.isPresent()) {
+					throw new IllegalStateException(
+							"Unable to determine user home: " + System.getProperty("user.home"));
+				}
+				ideWorkspaces = userHome().get().resolve("ide-workspaces").toFile();
 			}
 		}
 		return ideWorkspaces;
@@ -76,19 +87,15 @@ public class CacheLocations {
 		if (p2data == null) {
 			p2data = override_p2data;
 			if (p2data == null) {
-				try {
-					Path m2 = userHome().resolve(".m2");
-					if (!Files.exists(m2)) {
-						Files.createDirectories(m2);
-					}
-					Path p2Data = m2.resolve(P2_DATA_WITHIN_M2);
-					p2data = p2Data.resolve("repository/dev/equo/p2-data").toFile();
-				} catch (Exception e) {
+				var userHome = userHome();
+				if (userHome.isPresent()) {
+					p2data = userHome.get().resolve(".m2").resolve(P2_DATA_WITHIN_M2).toFile();
+				} else {
 					var gradleUserHome = System.getenv("GRADLE_USER_HOME");
-					if (gradleUserHome == null) {
-						throw Unchecked.wrap(e);
+					if (gradleUserHome != null) {
+						p2data = Path.of(gradleUserHome).resolve(P2_DATA_GRADLE_USER_HOME).toFile();
 					} else {
-						p2data = new File(gradleUserHome).toPath().resolve(P2_DATA_GRADLE_USER_HOME).toFile();
+						throw new RuntimeException("Could not find user home or GRADLE_USER_HOME");
 					}
 				}
 			}
@@ -113,5 +120,9 @@ public class CacheLocations {
 
 	public static File p2nestedJars() {
 		return new File(p2data(), "nested-jars");
+	}
+
+	public static File nestedJars() {
+		return p2nestedJars();
 	}
 }
