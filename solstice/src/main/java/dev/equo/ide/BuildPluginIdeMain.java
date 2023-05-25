@@ -369,6 +369,10 @@ public class BuildPluginIdeMain {
 
 		solstice.start("org.apache.felix.scr");
 		solstice.startAllWithLazy(false);
+		for (var eagerStart :
+				solstice.bundlesOnClasspathOutOf(Fudge.activateEagerWithoutTransitives())) {
+			solstice.startWithoutTransitives(eagerStart);
+		}
 		solstice.start("org.eclipse.ui.ide.application");
 		if (useAtomos) {
 			// the spelled-out package is on purpose so that Atomos can remain an optional component
