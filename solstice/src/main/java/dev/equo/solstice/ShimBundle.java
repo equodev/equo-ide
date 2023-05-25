@@ -310,7 +310,8 @@ public class ShimBundle implements Bundle {
 			((ShimBundle) fragments.hydrated).findEntries(urls, path, filePattern, recurse);
 		}
 		var pathFinal = stripLeadingAddTrailingSlash(path);
-		var pattern = Pattern.compile(filePattern.replace(".", "\\.").replace("*", ".*"));
+		var pattern =
+				Pattern.compile(filePattern.replace(".", "\\.").replace("$", "\\$").replace("*", ".*"));
 		var pathsWithinZip =
 				parseFromZip(
 						zipFile -> {

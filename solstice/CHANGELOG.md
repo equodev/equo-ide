@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+### Fixed
+- OSGi services implemented by inner classes (e.g. `SomeClass$InnerClass`) are now instantiated correctly.
 
 ## [1.3.1] - 2023-05-23
 ### Fixed
