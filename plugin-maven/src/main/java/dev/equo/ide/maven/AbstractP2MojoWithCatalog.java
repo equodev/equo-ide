@@ -107,6 +107,14 @@ public abstract class AbstractP2MojoWithCatalog extends AbstractP2Mojo {
 		}
 	}
 
+	@Parameter private EGit egit;
+
+	public static class EGit extends MavenCatalogDsl {
+		public EGit() {
+			super(Catalog.EGIT);
+		}
+	}
+
 	@Parameter private M2E m2e;
 
 	public static class M2E extends MavenCatalogDsl {

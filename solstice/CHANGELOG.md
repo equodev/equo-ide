@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+### Added
+- EGit to the plugin catalog.
 ### Fixed
 - OSGi services implemented by inner classes (e.g. `SomeClass$InnerClass`) are now instantiated correctly.
 

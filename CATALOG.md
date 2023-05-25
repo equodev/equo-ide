@@ -1,7 +1,7 @@
 ### Table of Contents
 
 - [Available in DSL](#available-projects)
-  - [`platform`](#platform), [`jdt`](#jdt), [`pde`](#pde)
+  - [`platform`](#platform), [`jdt`](#jdt), [`pde`](#pde), [`egit`](#egit)
   - [`gradleBuildship`](#gradle-buildship)
   - [`m2e`](#m2e)
   - [`kotlin`](#kotlin)
@@ -55,6 +55,10 @@ This catalog is a useful reference for the p2 urls, code repositories, and issue
 
 - [`CatalogPde.java`](https://github.com/equodev/equo-ide/blob/main/solstice/src/main/java/dev/equo/ide/CatalogPde.java)
 - Code & issues https://github.com/eclipse-pde
+
+### `egit`
+- Latest release https://download.eclipse.org/egit/updates-6.5/
+- Code & issues TODO
 
 <a name="gradle-buildship"></a>
 ### `gradleBuildship`

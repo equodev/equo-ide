@@ -45,6 +45,13 @@ public class Catalog implements Comparable<Catalog> {
 
 	public static final CatalogPde PDE = new CatalogPde();
 
+	public static final Catalog EGIT =
+			new Catalog(
+					"egit",
+					"https://download.eclipse.org/egit/updates-" + V + "/",
+					jre11("6.5"),
+					List.of("org.eclipse.egit.feature.group"));
+
 	public static final Catalog GRADLE_BUILDSHIP =
 			new Catalog(
 					"gradleBuildship",
