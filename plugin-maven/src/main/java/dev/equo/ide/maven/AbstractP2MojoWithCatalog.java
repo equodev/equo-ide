@@ -16,6 +16,7 @@ package dev.equo.ide.maven;
 import dev.equo.ide.Catalog;
 import dev.equo.ide.CatalogDsl;
 import dev.equo.ide.IdeHook;
+import dev.equo.ide.IdeHookAssistAI;
 import dev.equo.ide.IdeHookM2E;
 import dev.equo.ide.WorkspaceInit;
 import dev.equo.solstice.p2.P2Model;
@@ -127,6 +128,11 @@ public abstract class AbstractP2MojoWithCatalog extends AbstractP2Mojo {
 
 		@Parameter(required = false)
 		private String modelName;
+
+		@Override
+		protected List<IdeHook> ideHooks() {
+			return List.of(new IdeHookAssistAI());
+		}
 
 		@Override
 		protected void processVersionOverrides() {

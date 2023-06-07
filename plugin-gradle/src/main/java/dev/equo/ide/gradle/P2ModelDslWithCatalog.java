@@ -16,6 +16,7 @@ package dev.equo.ide.gradle;
 import dev.equo.ide.Catalog;
 import dev.equo.ide.CatalogDsl;
 import dev.equo.ide.IdeHook;
+import dev.equo.ide.IdeHookAssistAI;
 import dev.equo.ide.IdeHookBuildship;
 import java.io.File;
 import java.util.List;
@@ -165,6 +166,11 @@ public class P2ModelDslWithCatalog extends P2ModelDsl {
 		public AssistAI modelName(String modelName) {
 			Catalog.ASSIST_AI.modelName(workspaceInit(), modelName);
 			return this;
+		}
+
+		@Override
+		protected List<IdeHook> ideHooks() {
+			return List.of(new IdeHookAssistAI());
 		}
 	}
 
