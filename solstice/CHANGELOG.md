@@ -8,6 +8,10 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 ### Fixed
 - OSGi services implemented by inner classes (e.g. `SomeClass$InnerClass`) are now instantiated correctly.
 
+## [1.3.2] - 2023-05-25
+### Changed
+- Minor changes to the default location for p2 data when we are unable to determine the user's home directory. ([#132](https://github.com/equodev/equo-ide/pull/132))
+
 ## [1.3.1] - 2023-05-23
 ### Fixed
 - Fail more loudly when the p2 client gets 502 errors. ([#130](https://github.com/equodev/equo-ide/pull/130))
