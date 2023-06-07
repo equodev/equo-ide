@@ -23,6 +23,7 @@ public class CatalogAssistAI extends Catalog {
 				jre17(""),
 				List.of("com.github.gradusnikov.eclipse.assistai"),
 				PLATFORM,
+				ORBIT,
 				EGIT);
 	}
 
