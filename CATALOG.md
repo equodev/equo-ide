@@ -4,6 +4,7 @@
   - [`platform`](#platform), [`jdt`](#jdt), [`pde`](#pde), [`egit`](#egit)
   - [`gradleBuildship`](#gradle-buildship)
   - [`m2e`](#m2e)
+  - [`assistAI`](#assistai)
   - [`kotlin`](#kotlin)
   - [`cdt`](#cdt) and [`tmTerminal`](#tmterminal)
   - [`rust`](#rust)
@@ -74,6 +75,11 @@ This catalog is a useful reference for the p2 urls, code repositories, and issue
 - Also a transitive dependency on some jars from
   - https://download.eclipse.org/webtools/downloads/drops/R3.29.0/R-3.29.0-20230303230236/repository/
   - https://download.eclipse.org/tools/orbit/downloads/drops/R20230302014618/repository/
+
+### `assistai`
+
+- Latest release https://eclipse-chatgpt-plugin.lm.r.appspot.com/
+- Code & issues https://github.com/gradusnikov/eclipse-chatgpt-plugin
 
 ### `kotlin`
 
