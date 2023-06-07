@@ -1,7 +1,7 @@
 ### Table of Contents
 
 - [Available in DSL](#available-projects)
-  - [`platform`](#platform), [`jdt`](#jdt), [`pde`](#pde)
+  - [`platform`](#platform), [`jdt`](#jdt), [`pde`](#pde), [`egit`](#egit)
   - [`gradleBuildship`](#gradle-buildship)
   - [`m2e`](#m2e)
   - [`kotlin`](#kotlin)
@@ -55,6 +55,11 @@ This catalog is a useful reference for the p2 urls, code repositories, and issue
 
 - [`CatalogPde.java`](https://github.com/equodev/equo-ide/blob/main/solstice/src/main/java/dev/equo/ide/CatalogPde.java)
 - Code & issues https://github.com/eclipse-pde
+
+### `egit`
+- Latest release https://download.eclipse.org/egit/updates-6.5/
+- Code https://git.eclipse.org/c/egit/egit.git/
+- Issues at [bugs.eclipse.org](https://bugs.eclipse.org/bugs/buglist.cgi?bug_file_loc_type=allwordssubstr&bug_status=NEW&bug_status=ASSIGNED&bug_status=REOPENED&bugidtype=include&chfieldto=Now&classification=Technology&cmdtype=doit&emailtype1=exact&emailtype2=substring&field0-0-0=noop&keywords_type=allwords&long_desc_type=allwordssubstr&order=Reuse%20same%20sort%20as%20last%20time&product=EGit&query_format=advanced&short_desc_type=allwordssubstr&status_whiteboard_type=allwordssubstr&type0-0-0=noop)
 
 <a name="gradle-buildship"></a>
 ### `gradleBuildship`

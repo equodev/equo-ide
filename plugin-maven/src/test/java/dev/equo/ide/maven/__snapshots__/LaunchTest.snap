@@ -24,6 +24,9 @@ equo-ide:launch
       User property: debugIde
       Blocks IDE startup to help you attach a debugger.
 
+    egit
+      (no description available)
+
     filters
       (no description available)
 

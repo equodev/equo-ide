@@ -138,6 +138,20 @@ public class P2ModelDslWithCatalog extends P2ModelDsl {
 		return pde(null);
 	}
 
+	public static class EGit extends GradleCatalogDsl {
+		public EGit(String urlOverride, Project project) {
+			super(Catalog.EGIT, urlOverride);
+		}
+	}
+
+	public EGit egit(String urlOverride) {
+		return add(new EGit(urlOverride, project));
+	}
+
+	public EGit egit() {
+		return egit(null);
+	}
+
 	public static class M2E extends GradleCatalogDsl {
 		public M2E(String urlOverride, Project project) {
 			super(Catalog.M2E, urlOverride);

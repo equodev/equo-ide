@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+### Added
+- `<egit/>` is now available in the EquoIDE plugin catalog.
 
 ## [1.2.0] - 2023-05-17
 ### Added
