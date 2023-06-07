@@ -35,6 +35,7 @@ plugins {
 equoIde { // launch with gradlew equoIde
   jdt()
   gradleBuildship().autoImport('.')
+  assistAI().modelName('gpt-3.5-turbo').apiKey("$OPENAI_API_KEY") // put API key into ~/.gradle/gradle.properties from https://platform.openai.com/account/api-keys
 }
 ```
 
@@ -48,6 +49,10 @@ or like this in Maven with `mvn equo-ide:launch` ([more info](plugin-maven))
   <configuration>
     <jdt/>
     <m2e><autoImport>${project.basedir}</autoImport></m2e>
+    <assistAI>
+        <modelName>gpt-3.5-turbo</modelName>
+        <apiKey>...</apiKey> <!-- https://platform.openai.com/account/api-keys -->
+    </assistAI>
   </configuration>
 </plugin>
   ...

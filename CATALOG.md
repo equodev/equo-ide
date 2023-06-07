@@ -80,6 +80,9 @@ This catalog is a useful reference for the p2 urls, code repositories, and issue
 
 - Latest release https://eclipse-chatgpt-plugin.lm.r.appspot.com/
 - Code & issues https://github.com/gradusnikov/eclipse-chatgpt-plugin
+- Parameters
+  - `modelName` we recommend `gpt-3.5-turbo`, you can see other available at far right under "Model" [here](https://platform.openai.com/playground?mode=chat).
+  - `apiKey` you can get your value [here](https://platform.openai.com/account/api-keys).
 
 ### `kotlin`
 
