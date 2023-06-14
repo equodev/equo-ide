@@ -16,6 +16,7 @@ package dev.equo.ide.gradle;
 import dev.equo.ide.Catalog;
 import dev.equo.ide.CatalogDsl;
 import dev.equo.ide.IdeHook;
+import dev.equo.ide.IdeHookAssistAI;
 import dev.equo.ide.IdeHookBuildship;
 import java.io.File;
 import java.util.List;
@@ -150,6 +151,35 @@ public class P2ModelDslWithCatalog extends P2ModelDsl {
 
 	public EGit egit() {
 		return egit(null);
+	}
+
+	public static class AssistAI extends GradleCatalogDsl {
+		public AssistAI(String urlOverride, Project project) {
+			super(Catalog.ASSIST_AI, urlOverride);
+		}
+
+		public AssistAI apiKey(String key) {
+			Catalog.ASSIST_AI.apiKey(workspaceInit(), key);
+			return this;
+		}
+
+		public AssistAI modelName(String modelName) {
+			Catalog.ASSIST_AI.modelName(workspaceInit(), modelName);
+			return this;
+		}
+
+		@Override
+		protected List<IdeHook> ideHooks() {
+			return List.of(new IdeHookAssistAI());
+		}
+	}
+
+	public AssistAI assistAI(String urlOverride) {
+		return add(new AssistAI(urlOverride, project));
+	}
+
+	public AssistAI assistAI() {
+		return assistAI(null);
 	}
 
 	public static class M2E extends GradleCatalogDsl {

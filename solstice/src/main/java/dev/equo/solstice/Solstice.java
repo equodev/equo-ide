@@ -15,6 +15,7 @@ package dev.equo.solstice;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashSet;
@@ -105,6 +106,16 @@ public class Solstice {
 						reason);
 			}
 		}
+	}
+
+	public List<String> bundlesOnClasspathOutOf(Collection<String> symbolicNames) {
+		var onlyPresent = new ArrayList<String>();
+		for (var bundle : bundles) {
+			if (symbolicNames.contains(bundle.getSymbolicName())) {
+				onlyPresent.add(bundle.getSymbolicName());
+			}
+		}
+		return onlyPresent;
 	}
 
 	public Map<String, List<SolsticeManifest>> bySymbolicName() {

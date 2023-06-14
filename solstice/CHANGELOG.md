@@ -4,7 +4,8 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
 ### Added
-- EGit to the plugin catalog.
+- AssistAI (ChatGPT) to the plugin catalog. ([#134](https://github.com/equodev/equo-ide/pull/134))
+- EGit to the plugin catalog. ([#133](https://github.com/equodev/equo-ide/pull/133))
 ### Fixed
 - OSGi services implemented by inner classes (e.g. `SomeClass$InnerClass`) are now instantiated correctly.
 

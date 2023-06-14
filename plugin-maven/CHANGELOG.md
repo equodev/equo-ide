@@ -4,7 +4,8 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
 ### Added
-- `<egit/>` is now available in the EquoIDE plugin catalog.
+- `<assistAI/>` (a ChatGPT plugin) is now available in the EquoIDE plugin catalog. ([#134](https://github.com/equodev/equo-ide/pull/134))
+- `<egit/>` is now available in the EquoIDE plugin catalog. ([#133](https://github.com/equodev/equo-ide/pull/133))
 
 ## [1.2.0] - 2023-05-17
 ### Added

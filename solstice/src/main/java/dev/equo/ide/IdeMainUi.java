@@ -16,9 +16,7 @@ package dev.equo.ide;
 import dev.equo.solstice.Solstice;
 import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher;
 import org.eclipse.equinox.app.IApplicationContext;
@@ -123,11 +121,8 @@ class IdeMainUi {
 	 * IDEWorkbenchAdvisor#initialize(IWorkbenchConfigurer)} works perfectly. But there are a few
 	 * which need to activate before that. Those are handled here.
 	 */
-	private static void earlyStartupWorkaround(Solstice solstice) throws InvalidSyntaxException {
-		List<String> needsEarlyActivation = List.of("org.eclipse.tm.terminal.view.ui");
-		var inSystem = solstice.bySymbolicName();
-		var toActivateEarly =
-				needsEarlyActivation.stream().filter(inSystem::containsKey).collect(Collectors.toList());
+	static void earlyStartupWorkaround(Solstice solstice) throws InvalidSyntaxException {
+		var toActivateEarly = solstice.bundlesOnClasspathOutOf(Fudge.earlyStartupWorkaround());
 		if (toActivateEarly.isEmpty()) {
 			return;
 		}

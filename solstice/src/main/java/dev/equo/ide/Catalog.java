@@ -52,6 +52,16 @@ public class Catalog implements Comparable<Catalog> {
 					jre11("6.5"),
 					List.of("org.eclipse.egit.feature.group"));
 
+	/** Pure transitive of m2e and AssistAI. */
+	static final Catalog ORBIT =
+			new Catalog(
+					"orbit",
+					"https://download.eclipse.org/tools/orbit/downloads/drops/" + V + "/repository/",
+					jre11("R20230302014618"),
+					List.of());
+
+	public static final CatalogAssistAI ASSIST_AI = new CatalogAssistAI();
+
 	public static final Catalog GRADLE_BUILDSHIP =
 			new Catalog(
 					"gradleBuildship",
@@ -59,14 +69,6 @@ public class Catalog implements Comparable<Catalog> {
 					jre11("3.1.6.v20220511-1359"),
 					List.of("org.eclipse.buildship.feature.group"),
 					JDT);
-
-	/** Pure transitive of m2e and others */
-	private static final Catalog ORBIT =
-			new Catalog(
-					"orbit",
-					"https://download.eclipse.org/tools/orbit/downloads/drops/" + V + "/repository/",
-					jre11("R20230302014618"),
-					List.of());
 
 	/** Pure transitive of m2e and others */
 	private static final Catalog WST =
@@ -252,6 +254,10 @@ public class Catalog implements Comparable<Catalog> {
 
 	protected static VmVersion jre11(String ver) {
 		return new VmVersion().jre(11, ver);
+	}
+
+	protected static VmVersion jre17(String ver) {
+		return new VmVersion().jre(17, ver);
 	}
 
 	static class VmVersion {
