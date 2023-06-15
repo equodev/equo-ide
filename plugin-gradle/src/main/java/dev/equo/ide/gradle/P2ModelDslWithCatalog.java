@@ -182,6 +182,20 @@ public class P2ModelDslWithCatalog extends P2ModelDsl {
 		return assistAI(null);
 	}
 
+	public static class Tabnine extends GradleCatalogDsl {
+		public Tabnine(String urlOverride, Project project) {
+			super(Catalog.TABNINE, urlOverride);
+		}
+	}
+
+	public Tabnine tabnine(String urlOverride) {
+		return add(new Tabnine(urlOverride, project));
+	}
+
+	public Tabnine tabnine() {
+		return tabnine(null);
+	}
+
 	public static class M2E extends GradleCatalogDsl {
 		public M2E(String urlOverride, Project project) {
 			super(Catalog.M2E, urlOverride);
