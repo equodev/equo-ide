@@ -4,6 +4,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
 ### Added
+- `tabnine()` (Copilot-style AI completion) to the plugin catalog. ([#136](https://github.com/equodev/equo-ide/pull/136))
 - `assistAI()` (ChatGPT) is now available in the EquoIDE plugin catalog. ([#134](https://github.com/equodev/equo-ide/pull/134))
 - `egit()` is now available in the EquoIDE plugin catalog. ([#133](https://github.com/equodev/equo-ide/pull/133))
 ### Fixed
