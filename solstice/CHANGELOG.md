@@ -8,6 +8,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 - EGit to the plugin catalog. ([#133](https://github.com/equodev/equo-ide/pull/133))
 ### Fixed
 - OSGi services implemented by inner classes (e.g. `SomeClass$InnerClass`) are now instantiated correctly.
+- `IdeHookBranding` no longer loads SWT classes at definition time, which required build plugins to have SWT on the classpath. ([#135](https://github.com/equodev/equo-ide/pull/135))
 
 ## [1.3.2] - 2023-05-25
 ### Changed
