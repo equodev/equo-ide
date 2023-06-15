@@ -286,6 +286,9 @@ dev.equo.solstice.p2.P2Test.queryPlatformSpecific[mac-only]=[
 
 dev.equo.solstice.p2.P2Test.weirdUpdateSites[4.28]=[
 id,name \n description
+I20230605-0440.Default,Uncategorized
+,  Default category for otherwise uncategorized
+,  features
 org.eclipse.equinox.target.categoryIU,Equinox Target Components
 ,  Features especially useful to install as PDE
 ,  runtime targets.

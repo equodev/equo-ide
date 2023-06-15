@@ -6,6 +6,8 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 ### Added
 - `<assistAI/>` (a ChatGPT plugin) is now available in the EquoIDE plugin catalog. ([#134](https://github.com/equodev/equo-ide/pull/134))
 - `<egit/>` is now available in the EquoIDE plugin catalog. ([#133](https://github.com/equodev/equo-ide/pull/133))
+### Fixed
+- `<branding>` no longer loads SWT classes at definition time, which required build plugins to have SWT on the classpath. ([#135](https://github.com/equodev/equo-ide/pull/135))
 
 ## [1.2.0] - 2023-05-17
 ### Added
