@@ -62,6 +62,13 @@ public class Catalog implements Comparable<Catalog> {
 
 	public static final CatalogAssistAI ASSIST_AI = new CatalogAssistAI();
 
+	public static final Catalog TABNINE =
+			new Catalog(
+					"tabnine",
+					"https://eclipse-update-site.tabnine.com/",
+					jre11(""),
+					List.of("Tabnine Eclipse Plugin"));
+
 	public static final Catalog GRADLE_BUILDSHIP =
 			new Catalog(
 					"gradleBuildship",

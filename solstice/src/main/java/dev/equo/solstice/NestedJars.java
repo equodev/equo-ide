@@ -16,6 +16,7 @@ package dev.equo.solstice;
 import dev.equo.solstice.p2.CacheLocations;
 import dev.equo.solstice.p2.P2QueryResult;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -226,7 +227,7 @@ public abstract class NestedJars {
 					msg.append('\n');
 				}
 				if (warnOnly) {
-					System.err.println(msg);
+					LoggerFactory.getLogger(NestedJars.class).warn(msg.toString());
 				} else {
 					throw new IllegalStateException(msg.toString());
 				}
@@ -287,9 +288,17 @@ public abstract class NestedJars {
 		for (var url : listNestedJars()) {
 			int lastExclamation = url.getPath().indexOf('!');
 			int slashBeforeThat = url.getPath().lastIndexOf('/', lastExclamation);
-			files.add(
-					extractNestedJar(
-							url.getPath().substring(slashBeforeThat + 1, lastExclamation), url, nestedJarFolder));
+			try {
+				files.add(
+						extractNestedJar(
+								url.getPath().substring(slashBeforeThat + 1, lastExclamation),
+								url,
+								nestedJarFolder));
+			} catch (FileNotFoundException e) {
+				LoggerFactory.getLogger(NestedJars.class).warn("Missing nested jar: " + url.getPath());
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
 		}
 		files.sort(Comparator.comparing(e -> e.getKey().getPath()));
 		return files;
@@ -302,7 +311,7 @@ public abstract class NestedJars {
 	}
 
 	private static Map.Entry<URL, File> extractNestedJar(
-			String parentJar, URL entry, File nestedJarFolder) {
+			String parentJar, URL entry, File nestedJarFolder) throws IOException {
 		try (var toRead = entry.openStream()) {
 			var content = toRead.readAllBytes();
 
@@ -319,8 +328,6 @@ public abstract class NestedJars {
 				}
 			}
 			return Map.entry(entry, jarToAdd);
-		} catch (IOException e) {
-			throw Unchecked.wrap(e);
 		}
 	}
 

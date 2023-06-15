@@ -85,4 +85,9 @@ class ShimBundleWiring extends Unimplemented.BundleWiring {
 	public List<BundleWire> getProvidedWires(String namespace) {
 		return Collections.emptyList();
 	}
+
+	@Override
+	public ClassLoader getClassLoader() {
+		return ShimBundleWiring.class.getClassLoader();
+	}
 }

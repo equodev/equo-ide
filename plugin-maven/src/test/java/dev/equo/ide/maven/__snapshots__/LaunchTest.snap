@@ -71,6 +71,9 @@ equo-ide:launch
       User property: showConsole
       Adds a visible console to the launched application.
 
+    tabnine
+      (no description available)
+
     tmTerminal
       (no description available)
 

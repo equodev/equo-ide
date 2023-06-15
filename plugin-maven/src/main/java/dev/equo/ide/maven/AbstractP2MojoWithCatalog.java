@@ -146,6 +146,14 @@ public abstract class AbstractP2MojoWithCatalog extends AbstractP2Mojo {
 		}
 	}
 
+	@Parameter private Tabnine tabnine;
+
+	public static class Tabnine extends MavenCatalogDsl {
+		public Tabnine() {
+			super(Catalog.TABNINE);
+		}
+	}
+
 	@Parameter private M2E m2e;
 
 	public static class M2E extends MavenCatalogDsl {
