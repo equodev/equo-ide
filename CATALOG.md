@@ -1,14 +1,19 @@
 ### Table of Contents
 
 - [Available in DSL](#available-projects)
-  - [`platform`](#platform), [`jdt`](#jdt), [`pde`](#pde), [`egit`](#egit)
-  - [`gradleBuildship`](#gradle-buildship)
-  - [`m2e`](#m2e)
-  - [`assistAI`](#assistai)
-  - [`kotlin`](#kotlin)
-  - [`cdt`](#cdt) and [`tmTerminal`](#tmterminal)
-  - [`rust`](#rust)
-  - [`groovy`](#groovy)
+  - Eclipse core
+    - [`platform`](#platform), [`jdt`](#jdt), [`pde`](#pde), [`egit`](#egit)
+  - Build systems
+    - Gradle: [`gradleBuildship`](#gradle-buildship)
+    - Maven: [`m2e`](#m2e)
+  - AI assistants
+    - [`assistAI`](#assistai) (ChatGPT)
+    - [`tabnine`]
+  - Languages besides Java
+    - [`kotlin`](#kotlin)
+    - [`cdt`](#cdt) and [`tmTerminal`](#tmterminal)
+    - [`rust`](#rust)
+    - [`groovy`](#groovy)
 - [Wishlist](#wishlist)
   - [`wtp`](#wtp)
   - [`tm4e`](#tm4e) 
@@ -40,6 +45,8 @@ There might be other aspects you can configure, see the [Gradle DSL](https://git
 
 This catalog is a useful reference for the p2 urls, code repositories, and issue trackers for each project.
 
+## Eclipse core
+
 ### `platform`
 
 - [`CatalogPlatform.java`](https://github.com/equodev/equo-ide/blob/main/solstice/src/main/java/dev/equo/ide/CatalogPlatform.java)
@@ -62,6 +69,9 @@ This catalog is a useful reference for the p2 urls, code repositories, and issue
 - Code https://git.eclipse.org/c/egit/egit.git/
 - Issues at [bugs.eclipse.org](https://bugs.eclipse.org/bugs/buglist.cgi?bug_file_loc_type=allwordssubstr&bug_status=NEW&bug_status=ASSIGNED&bug_status=REOPENED&bugidtype=include&chfieldto=Now&classification=Technology&cmdtype=doit&emailtype1=exact&emailtype2=substring&field0-0-0=noop&keywords_type=allwords&long_desc_type=allwordssubstr&order=Reuse%20same%20sort%20as%20last%20time&product=EGit&query_format=advanced&short_desc_type=allwordssubstr&status_whiteboard_type=allwordssubstr&type0-0-0=noop)
 
+
+## Build systems
+
 <a name="gradle-buildship"></a>
 ### `gradleBuildship`
 
@@ -76,6 +86,8 @@ This catalog is a useful reference for the p2 urls, code repositories, and issue
   - https://download.eclipse.org/webtools/downloads/drops/R3.29.0/R-3.29.0-20230303230236/repository/
   - https://download.eclipse.org/tools/orbit/downloads/drops/R20230302014618/repository/
 
+## AI assistants
+
 ### `assistai`
 
 - Latest release https://eclipse-chatgpt-plugin.lm.r.appspot.com/
@@ -83,6 +95,12 @@ This catalog is a useful reference for the p2 urls, code repositories, and issue
 - Parameters
   - `modelName` we recommend `gpt-3.5-turbo`, you can see other available at far right under "Model" [here](https://platform.openai.com/playground?mode=chat).
   - `apiKey` you can get your value [here](https://platform.openai.com/account/api-keys).
+
+### `tabnine`
+
+- Latest release https://eclipse-update-site.tabnine.com/
+
+## Languages besides Java
 
 ### `kotlin`
 
