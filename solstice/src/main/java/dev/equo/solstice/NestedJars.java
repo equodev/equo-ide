@@ -76,6 +76,7 @@ public abstract class NestedJars {
 			boolean useAtomos, CoordFormat format, P2QueryResult query) {
 		boolean needsApi = true;
 		boolean needsSimple = true;
+		boolean slf4j_is_2 = false;
 		if (query != null) {
 			query.getJarsOnMavenCentral().stream();
 			query.getJarsNotOnMavenCentral().stream().map(File::getName);
@@ -92,6 +93,7 @@ public abstract class NestedJars {
 				if (name.contains("slf4j")) {
 					if (name.contains("slf4j-api") || name.contains("slf4j.api")) {
 						needsApi = false;
+						slf4j_is_2 = name.contains("slf4j.api_2.") || name.contains("slf4j-api_2.");
 					} else {
 						needsSimple = false;
 					}
@@ -101,7 +103,7 @@ public abstract class NestedJars {
 			}
 		}
 		var coords = new ArrayList<String>();
-		String VER_SLF4J = "1.7.36";
+		String VER_SLF4J = slf4j_is_2 ? "2.0.7" : "1.7.36";
 		if (needsApi) {
 			coords.add(format.format("org.slf4j", "slf4j-api", VER_SLF4J, null));
 		}
