@@ -20,7 +20,7 @@ public class CatalogPlatform extends Catalog {
 		super(
 				"platform",
 				"https://download.eclipse.org/eclipse/updates/" + V,
-				jre11("4.28"),
+				jre11("4.27").jre(17, "4.28"),
 				List.of("org.eclipse.platform.ide.categoryIU"));
 	}
 
