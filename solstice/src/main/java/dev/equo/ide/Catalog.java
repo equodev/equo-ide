@@ -302,7 +302,7 @@ public class Catalog implements Comparable<Catalog> {
 										+ catalog.name
 										+ " "
 										+ entry.getValue()
-										+ " which requires JRE "
+										+ " which is the latest version for JRE "
 										+ entry.getKey()
 										+ ". There is a newer version available, "
 										+ catalog.name
