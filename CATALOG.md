@@ -65,10 +65,9 @@ This catalog is a useful reference for the p2 urls, code repositories, and issue
 - Code & issues https://github.com/eclipse-pde
 
 ### `egit`
-- Latest release https://download.eclipse.org/egit/updates-6.5/
+- Latest release https://download.eclipse.org/egit/updates-6.6/
 - Code https://git.eclipse.org/c/egit/egit.git/
 - Issues at [bugs.eclipse.org](https://bugs.eclipse.org/bugs/buglist.cgi?bug_file_loc_type=allwordssubstr&bug_status=NEW&bug_status=ASSIGNED&bug_status=REOPENED&bugidtype=include&chfieldto=Now&classification=Technology&cmdtype=doit&emailtype1=exact&emailtype2=substring&field0-0-0=noop&keywords_type=allwords&long_desc_type=allwordssubstr&order=Reuse%20same%20sort%20as%20last%20time&product=EGit&query_format=advanced&short_desc_type=allwordssubstr&status_whiteboard_type=allwordssubstr&type0-0-0=noop)
-
 
 ## Build systems
 
@@ -80,11 +79,11 @@ This catalog is a useful reference for the p2 urls, code repositories, and issue
 
 ### `m2e`
 
-- Latest release https://download.eclipse.org/technology/m2e/releases/2.2.1/
+- Latest release https://download.eclipse.org/technology/m2e/releases/2.3.0/
 - Code & issues https://github.com/eclipse-m2e/m2e-core
 - Also a transitive dependency on some jars from
-  - https://download.eclipse.org/webtools/downloads/drops/R3.29.0/R-3.29.0-20230303230236/repository/
-  - https://download.eclipse.org/tools/orbit/downloads/drops/R20230302014618/repository/
+  - https://download.eclipse.org/webtools/downloads/drops/R3.30.0/R-3.30.0-20230603084739
+  - https://download.eclipse.org/tools/orbit/downloads/drops/R20230531010532/repository/
 
 ## AI assistants
 
@@ -110,12 +109,12 @@ This catalog is a useful reference for the p2 urls, code repositories, and issue
 
 ### `cdt`
 
-- Latest release https://download.eclipse.org/tools/cdt/releases/11.1/cdt-11.1.0/
+- Latest release https://download.eclipse.org/tools/cdt/releases/11.2/cdt-11.2.0/
 - Code & issues https://github.com/eclipse-cdt
 
 ### `tmTerminal`
 
-- Latest release https://download.eclipse.org/tools/cdt/releases/11.1/cdt-11.1.0/
+- Latest release https://download.eclipse.org/tools/cdt/releases/11.2/cdt-11.2.0/
 - Code & issues https://github.com/eclipse-cdt
 
 ### `rust`
