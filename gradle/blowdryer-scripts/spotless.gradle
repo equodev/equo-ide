@@ -2,6 +2,7 @@ repositories { mavenCentral() }
 
 apply plugin: 'com.diffplug.spotless'
 spotless {
+	ratchetFrom 'origin/main'
 	groovyGradle {
 		target '*.gradle'
 		greclipse()
