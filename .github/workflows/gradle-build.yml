@@ -31,6 +31,7 @@ jobs:
       - name: gradle caching
         uses: gradle/gradle-build-action@v2
       - run: sudo apt-get install xvfb
+      - run: git fetch origin main
       - run: |
           Xvfb :99 &
           export DISPLAY=:99
