@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+
+## [1.4.0] - 2023-06-16
 ### Added
 - Tabnine (Copilot-style AI completion) to the plugin catalog. ([#136](https://github.com/equodev/equo-ide/pull/136))
 - AssistAI (ChatGPT) to the plugin catalog. ([#134](https://github.com/equodev/equo-ide/pull/134))
