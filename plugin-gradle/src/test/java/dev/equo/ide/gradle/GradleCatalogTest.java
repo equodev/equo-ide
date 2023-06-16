@@ -35,7 +35,7 @@ public class GradleCatalogTest extends GradleHarness {
 
 	@Test
 	public void simple(Expect expect) throws IOException {
-		test("jdt()", expect.scenario("jdt"));
+		test("jdt('4.27')", expect.scenario("jdt"));
 		test("gradleBuildship()", expect.scenario("gradleBuildship"));
 	}
 

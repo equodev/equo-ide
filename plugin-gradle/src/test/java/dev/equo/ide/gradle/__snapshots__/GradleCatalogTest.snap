@@ -19,7 +19,7 @@ dev.equo.ide.gradle.GradleCatalogTest.simple[jdt]=[
 +-------------+----------------------------------------------------+
 | kind        | value                                              |
 +-------------+----------------------------------------------------+
-| p2repo      | https://download.eclipse.org/eclipse/updates/4.28/ |
+| p2repo      | https://download.eclipse.org/eclipse/updates/4.27/ |
 | install     | org.eclipse.platform.ide.categoryIU                |
 | install     | org.eclipse.releng.java.languages.categoryIU       |
 | filter      | platform-neutral                                   |
