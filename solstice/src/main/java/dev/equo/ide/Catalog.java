@@ -49,7 +49,7 @@ public class Catalog implements Comparable<Catalog> {
 			new Catalog(
 					"egit",
 					"https://download.eclipse.org/egit/updates-" + V + "/",
-					jre11("6.5"),
+					jre11("6.6"),
 					List.of("org.eclipse.egit.feature.group"));
 
 	/** Pure transitive of m2e and AssistAI. */
@@ -57,7 +57,7 @@ public class Catalog implements Comparable<Catalog> {
 			new Catalog(
 					"orbit",
 					"https://download.eclipse.org/tools/orbit/downloads/drops/" + V + "/repository/",
-					jre11("R20230302014618"),
+					jre11("R20230531010532"),
 					List.of());
 
 	public static final CatalogAssistAI ASSIST_AI = new CatalogAssistAI();
@@ -73,7 +73,7 @@ public class Catalog implements Comparable<Catalog> {
 			new Catalog(
 					"gradleBuildship",
 					"https://download.eclipse.org/buildship/updates/e423/releases/3.x/" + V,
-					jre11("3.1.6.v20220511-1359"),
+					jre11("3.1.7.v20230428-1420"),
 					List.of("org.eclipse.buildship.feature.group"),
 					JDT);
 
@@ -82,14 +82,14 @@ public class Catalog implements Comparable<Catalog> {
 			new Catalog(
 					"wst",
 					"https://download.eclipse.org/webtools/downloads/drops/" + V + "/repository/",
-					jre11("R3.29.0/R-3.29.0-20230303230236"),
+					jre11("R3.30.0/R-3.30.0-20230603084739"),
 					List.of());
 
 	public static final Catalog M2E =
 			new Catalog(
 					"m2e",
 					"https://download.eclipse.org/technology/m2e/releases/" + V,
-					jre11("1.20.1").jre(17, "2.2.1"),
+					jre11("1.20.1").jre(17, "2.3.0"),
 					List.of("org.eclipse.m2e.feature.feature.group"),
 					JDT,
 					WST,
@@ -120,7 +120,7 @@ public class Catalog implements Comparable<Catalog> {
 			new Catalog(
 					"tmTerminal",
 					"https://download.eclipse.org/tools/cdt/releases/" + V,
-					jre11("11.1/cdt-11.1.0"),
+					jre11("11.2/cdt-11.2.0"),
 					List.of(
 							"org.eclipse.tm.terminal.feature.feature.group",
 							"org.eclipse.tm.terminal.view.feature.feature.group"),
@@ -302,7 +302,7 @@ public class Catalog implements Comparable<Catalog> {
 										+ catalog.name
 										+ " "
 										+ entry.getValue()
-										+ " which requires JRE "
+										+ " which is the latest version for JRE "
 										+ entry.getKey()
 										+ ". There is a newer version available, "
 										+ catalog.name

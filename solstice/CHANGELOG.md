@@ -7,6 +7,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 - Tabnine (Copilot-style AI completion) to the plugin catalog. ([#136](https://github.com/equodev/equo-ide/pull/136))
 - AssistAI (ChatGPT) to the plugin catalog. ([#134](https://github.com/equodev/equo-ide/pull/134))
 - EGit to the plugin catalog. ([#133](https://github.com/equodev/equo-ide/pull/133))
+- Bump all defaults to Eclipse 4.28 (2023-06) and handle slf4j 2.x. ([#137](https://github.com/equodev/equo-ide/pull/137))
 ### Fixed
 - OSGi services implemented by inner classes (e.g. `SomeClass$InnerClass`) are now instantiated correctly.
 - `IdeHookBranding` no longer loads SWT classes at definition time, which required build plugins to have SWT on the classpath. ([#135](https://github.com/equodev/equo-ide/pull/135))
