@@ -35,8 +35,10 @@ public class MavenCatalogTest extends MavenHarness {
 
 	@Test
 	public void simple(Expect expect) throws Exception {
-		test("<jdt/>", expect.scenario("jdt"));
-		test("<gradleBuildship/>", expect.scenario("gradleBuildship"));
+		test("<platform><version>4.27</version></platform><jdt/>", expect.scenario("jdt"));
+		test(
+				"<platform><version>4.27</version></platform><gradleBuildship/>",
+				expect.scenario("gradleBuildship"));
 	}
 
 	@Test
