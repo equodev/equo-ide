@@ -60,6 +60,7 @@ jobs:
         uses: gradle/wrapper-validation-action@v1
       - name: gradle caching
         uses: gradle/gradle-build-action@v2
+      - run: git fetch origin main
       - run: ./gradlew build
       - name: junit result
         uses: mikepenz/action-junit-report@v3.6.1
