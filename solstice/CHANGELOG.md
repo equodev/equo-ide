@@ -4,6 +4,9 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
 ### Fixed
+- Fix issues in Chromium browser. ([#141](https://github.com/equodev/equo-ide/pull/141))
+  - Now can calls multiple times setUrl.
+  - Welcome view and javadocs they look correct.
 - Huge speed increase to `ShimBundleWiring.listResources` and `ShimBundle.findEntries`. ([#142](https://github.com/equodev/equo-ide/pull/142))
 - Use the latest buildship compiled for Eclipse `4.27` instead of the old `4.23`. ([#142](https://github.com/equodev/equo-ide/pull/142))
 
