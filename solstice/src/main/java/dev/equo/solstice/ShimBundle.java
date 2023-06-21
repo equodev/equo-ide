@@ -207,7 +207,7 @@ public class ShimBundle implements Bundle {
 		return manifest.getSymbolicName();
 	}
 
-	private String stripLeadingSlash(String path) {
+	private static String stripLeadingSlash(String path) {
 		if (path.startsWith("/")) {
 			return path.substring(1);
 		} else {
@@ -215,7 +215,7 @@ public class ShimBundle implements Bundle {
 		}
 	}
 
-	private String stripLeadingAddTrailingSlash(String path) {
+	private static String stripLeadingAddTrailingSlash(String path) {
 		path = stripLeadingSlash(path);
 		if (path.isEmpty() || path.equals("/")) {
 			return "";
@@ -301,47 +301,58 @@ public class ShimBundle implements Bundle {
 	@Override
 	public Enumeration<URL> findEntries(String path, String filePattern, boolean recurse) {
 		var urls = new ArrayList<URL>();
-		findEntries(urls, path, filePattern, recurse);
+		var finder = new Finder(path, filePattern, recurse);
+		finder.addEntriesIn(urls, this);
 		return Collections.enumeration(urls);
 	}
 
-	private void findEntries(List<URL> urls, String path, String filePattern, boolean recurse) {
-		for (var fragments : manifest.fragments) {
-			((ShimBundle) fragments.hydrated).findEntries(urls, path, filePattern, recurse);
+	static class Finder {
+		final String pathFinal;
+		final Pattern pattern;
+		final boolean recurse;
+
+		Finder(String path, String filePattern, boolean recurse) {
+			pathFinal = stripLeadingAddTrailingSlash(path);
+			pattern =
+					Pattern.compile(filePattern.replace(".", "\\.").replace("$", "\\$").replace("*", ".*"));
+			this.recurse = recurse;
 		}
-		var pathFinal = stripLeadingAddTrailingSlash(path);
-		var pattern =
-				Pattern.compile(filePattern.replace(".", "\\.").replace("$", "\\$").replace("*", ".*"));
-		var pathsWithinZip =
-				parseFromZip(
-						zipFile -> {
-							List<String> zipPaths = new ArrayList<>();
-							var entries = zipFile.entries();
-							while (entries.hasMoreElements()) {
-								var entry = entries.nextElement();
-								if (entry.getName().startsWith(pathFinal)) {
-									var after = entry.getName().substring(pathFinal.length());
-									int lastSlash = after.lastIndexOf('/');
-									if (lastSlash == -1) {
-										if (pattern.matcher(after).matches()) {
-											zipPaths.add(entry.getName());
-										}
-									} else if (recurse) {
-										var name = after.substring(lastSlash + 1);
-										if (pattern.matcher(name).matches()) {
-											zipPaths.add(entry.getName());
+
+		void addEntriesIn(List<URL> urls, ShimBundle bundle) {
+			for (var fragment : bundle.manifest.fragments) {
+				addEntriesIn(urls, (ShimBundle) fragment.hydrated);
+			}
+			var pathsWithinZip =
+					bundle.parseFromZip(
+							zipFile -> {
+								List<String> zipPaths = new ArrayList<>();
+								var entries = zipFile.entries();
+								while (entries.hasMoreElements()) {
+									var entry = entries.nextElement();
+									if (entry.getName().startsWith(pathFinal)) {
+										var after = entry.getName().substring(pathFinal.length());
+										int lastSlash = after.lastIndexOf('/');
+										if (lastSlash == -1) {
+											if (pattern.matcher(after).matches()) {
+												zipPaths.add(entry.getName());
+											}
+										} else if (recurse) {
+											var name = after.substring(lastSlash + 1);
+											if (pattern.matcher(name).matches()) {
+												zipPaths.add(entry.getName());
+											}
 										}
 									}
 								}
-							}
-							return zipPaths;
-						});
-		try {
-			for (var withinZip : pathsWithinZip) {
-				urls.add(new URL(manifest.getJarUrl() + "/" + withinZip));
+								return zipPaths;
+							});
+			try {
+				for (var withinZip : pathsWithinZip) {
+					urls.add(new URL(bundle.manifest.getJarUrl() + "/" + withinZip));
+				}
+			} catch (MalformedURLException e) {
+				throw Unchecked.wrap(e);
 			}
-		} catch (MalformedURLException e) {
-			throw Unchecked.wrap(e);
 		}
 	}
 

@@ -13,9 +13,12 @@
  *******************************************************************************/
 package dev.equo.solstice;
 
+import java.net.URL;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import org.osgi.framework.namespace.HostNamespace;
@@ -53,27 +56,29 @@ class ShimBundleWiring extends Unimplemented.BundleWiring {
 	@Override
 	public Collection<String> listResources(String path, String filePattern, int options) {
 		boolean recurse = (options & LISTRESOURCES_RECURSE) == LISTRESOURCES_RECURSE;
-		List<String> asStrings = new ArrayList<>();
-		listResourcesHelper(asStrings, bundle, path, filePattern, recurse);
-		return asStrings;
-	}
+		var finder = new ShimBundle.Finder(path, filePattern, recurse);
+		List<URL> urls = new ArrayList<>();
 
-	private static void listResourcesHelper(
-			List<String> asStrings, ShimBundle bundle, String path, String filePattern, boolean recurse) {
-		var urls = bundle.findEntries(path, filePattern, recurse);
-		while (urls.hasMoreElements()) {
-			var url = urls.nextElement();
-			asStrings.add(url.toExternalForm());
+		var alreadySearched = new HashSet<String>();
+		var toSearch = new ArrayDeque<ShimBundle>();
+		toSearch.add(this.bundle);
+		alreadySearched.add(this.bundle.manifest.getSymbolicName());
+
+		while (!toSearch.isEmpty()) {
+			finder.addEntriesIn(urls, toSearch.poll());
+			for (var required : bundle.manifest.totalRequiredBundles()) {
+				// TODO: this should respect whether a required bundle is re-exported or not
+				if (!alreadySearched.add(required)) {
+					toSearch.add(bundle.getRootBundleContext().bundleForSymbolicName(required));
+				}
+			}
 		}
-		for (var required : bundle.manifest.totalRequiredBundles()) {
-			// TODO: this should respect whether a required bundle is re-exported or not
-			listResourcesHelper(
-					asStrings,
-					bundle.getRootBundleContext().bundleForSymbolicName(required),
-					path,
-					filePattern,
-					recurse);
+
+		List<String> strings = new ArrayList<>(urls.size());
+		for (var url : urls) {
+			strings.add(url.toExternalForm());
 		}
+		return strings;
 	}
 
 	@Override

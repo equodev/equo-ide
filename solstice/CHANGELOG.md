@@ -7,6 +7,9 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 - Fix issues in Chromium browser. ([#141](https://github.com/equodev/equo-ide/pull/141))
   - Now can calls multiple times setUrl.
   - Welcome view and javadocs they look correct.
+- Huge speed increase to `ShimBundleWiring.listResources` and `ShimBundle.findEntries`. ([#142](https://github.com/equodev/equo-ide/pull/142))
+- Use the latest buildship compiled for Eclipse `4.27` instead of the old `4.23`. ([#142](https://github.com/equodev/equo-ide/pull/142))
+
 ## [1.4.0] - 2023-06-16
 ### Added
 - Tabnine (Copilot-style AI completion) to the plugin catalog. ([#136](https://github.com/equodev/equo-ide/pull/136))
