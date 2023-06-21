@@ -275,10 +275,6 @@ public class Catalog implements Comparable<Catalog> {
 			return this;
 		}
 
-		private String get(Catalog catalog) {
-			return versions.floorEntry(JVM_VER).getValue();
-		}
-
 		public String getAndWarn(Catalog catalog) {
 			var entry = versions.floorEntry(JVM_VER);
 			if (entry == null) {
@@ -315,10 +311,6 @@ public class Catalog implements Comparable<Catalog> {
 										+ ".");
 			}
 			return entry.getValue();
-		}
-
-		private String latest() {
-			return versions.lastEntry().getValue();
 		}
 	}
 
