@@ -3,7 +3,10 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
-
+### Fixed
+- Fix issues in Chromium browser. ([#141](https://github.com/equodev/equo-ide/pull/141))
+  - Now can calls multiple times setUrl.
+  - Welcome view and javadocs they look correct.
 ## [1.4.0] - 2023-06-16
 ### Added
 - `tabnine()` (Copilot-style AI completion) to the plugin catalog. ([#136](https://github.com/equodev/equo-ide/pull/136))
