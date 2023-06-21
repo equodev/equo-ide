@@ -74,7 +74,7 @@ This catalog is a useful reference for the p2 urls, code repositories, and issue
 <a name="gradle-buildship"></a>
 ### `gradleBuildship`
 
-- Latest release https://download.eclipse.org/buildship/updates/e423/releases/3.x/3.1.6.v20220511-1359/ 
+- Latest release https://download.eclipse.org/buildship/updates/e427/releases/3.x/3.1.7.v20230428-1420/ 
 - Code & issues https://github.com/eclipse/buildship
 
 ### `m2e`
