@@ -189,7 +189,7 @@ public class Catalog implements Comparable<Catalog> {
 		this(name, copyFrom.p2urlTemplate, copyFrom.versions, toInstall, requires);
 	}
 
-	Catalog(
+	protected Catalog(
 			String name,
 			String p2urlTemplate,
 			VmVersion versions,

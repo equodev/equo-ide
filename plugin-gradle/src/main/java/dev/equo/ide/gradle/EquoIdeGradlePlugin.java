@@ -35,7 +35,7 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 	static final String MINIMUM_GRADLE = "6.0";
 
 	private static final String TASK_GROUP = "IDE";
-	private static final String EQUO_IDE = "equoIde";
+	static final String EQUO_IDE = "equoIde";
 	private static final String EQUO_LIST = "equoList";
 
 	private static final String USE_ATOMOS_FLAG = "--use-atomos=";
