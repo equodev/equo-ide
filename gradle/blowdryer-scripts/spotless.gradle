@@ -7,12 +7,10 @@ spotless {
 		target '*.gradle'
 		greclipse()
 	}
-	if (project != rootProject) {
-		java {
-			removeUnusedImports()
-			googleJavaFormat()
-			indentWithTabs(2)
-			licenseHeaderFile 干.file("impl/header_${license}.java")
-		}
+	java {
+		removeUnusedImports()
+		googleJavaFormat()
+		indentWithTabs(2)
+		licenseHeaderFile 干.file("impl/header_${license}.java")
 	}
 }
