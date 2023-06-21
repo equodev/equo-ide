@@ -99,6 +99,8 @@ public class BuildPluginIdeMain {
 			}
 			var vmArgs = new ArrayList<String>();
 			if (EquoChromium.isEnabled(ideHooks)) {
+				// This property is used to fix the error in the setUrl method.
+				vmArgs.add("-Dchromium.args=--disable-site-isolation-trials");
 				Patch.patch(classpathSorted, nestedJarFolder, "patch-chromium-swt");
 				SignedJars.stripIf(classpathSorted, fileName -> fileName.startsWith("org.eclipse.swt."));
 				vmArgs.add(
