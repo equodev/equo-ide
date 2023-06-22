@@ -102,10 +102,9 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 				unused -> {
 					try {
 						var workspace = new WorkspaceInit();
+						var model = extension.prepareModel(workspace);
 						var query =
-								extension
-										.prepareModel(workspace)
-										.query(P2ModelDsl.clientCaching(project), P2ModelDsl.queryCaching(project));
+								model.query(P2ModelDsl.clientCaching(project), P2ModelDsl.queryCaching(project));
 						workspace.copyAllFrom(extension.workspace);
 						boolean useAtomosOverrideTrue =
 								anyArgMatching(
@@ -118,12 +117,16 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 								NestedJars.transitiveDeps(useAtomos, NestedJars.CoordFormat.GRADLE, query)) {
 							project.getDependencies().add(EQUO_IDE, dep);
 						}
+						// add the pure-maven deps
+						for (String mavenCoord : model.getPureMaven()) {
+							project.getDependencies().add(EQUO_IDE, convertPureMaven(project, mavenCoord));
+						}
+						// then the p2-resolved maven deps
 						for (var coordinate : query.getJarsOnMavenCentral()) {
 							ModuleDependency dep =
 									(ModuleDependency) project.getDependencies().add(EQUO_IDE, coordinate);
 							dep.setTransitive(false);
 						}
-
 						if (EquoChromium.isEnabled(extension.getIdeHooks())) {
 							project.getRepositories().maven((a) -> a.setUrl(EquoChromium.mavenRepo()));
 							for (var coordinate : EquoChromium.mavenCoordinates()) {
@@ -210,5 +213,13 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 	/** Ambiguous after 2147.483647.blah-blah */
 	private static int badSemver(int major, int minor) {
 		return major * 1_000_000 + minor;
+	}
+
+	static Object convertPureMaven(Project project, String coordinate) {
+		if (coordinate.startsWith(":")) {
+			return project.project(coordinate);
+		} else {
+			return coordinate;
+		}
 	}
 }
