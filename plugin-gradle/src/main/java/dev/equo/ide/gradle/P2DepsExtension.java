@@ -27,6 +27,7 @@ import org.gradle.api.Action;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ModuleDependency;
+import org.gradle.api.artifacts.ModuleVersionSelector;
 
 public class P2DepsExtension {
 	private final Project project;
@@ -56,12 +57,11 @@ public class P2DepsExtension {
 		var queryCaching = P2ModelDsl.queryCaching(project);
 		for (Map.Entry<String, P2Model> entry : configurations.entrySet()) {
 			String config = entry.getKey();
+			P2Model model = entry.getValue();
 			// add the pure-maven deps
-			for (String mavenCoord : entry.getValue().getPureMaven()) {
-				project.getDependencies().add(config, mavenCoord);
-			}
-			var query = entry.getValue().query(clientCaching, queryCaching);
-			// add the maven deps
+			addPureMavenDeps(model, project, config);
+			// then the maven-resolved deps
+			var query = model.query(clientCaching, queryCaching);
 			for (String mavenCoord : query.getJarsOnMavenCentral()) {
 				ModuleDependency dep = (ModuleDependency) project.getDependencies().add(config, mavenCoord);
 				dep.setTransitive(false);
@@ -76,6 +76,46 @@ public class P2DepsExtension {
 			}
 			SignedJars.stripIfNecessary(classpathSorted);
 			project.getDependencies().add(config, project.files(classpathSorted));
+			replace$osgiplatformWith(project.getConfigurations().getByName(config), "");
 		}
+	}
+
+	/** Add the pure-maven deps, for which we respect transitivity. */
+	static void addPureMavenDeps(P2Model model, Project project, String configuration) {
+		// add the pure maven deps
+		for (String mavenCoord : model.getPureMaven()) {
+			project.getDependencies().add(configuration, convertPureMaven(project, mavenCoord));
+		}
+	}
+
+	private static Object convertPureMaven(Project project, String coordinate) {
+		if (coordinate.startsWith(":")) {
+			return project.project(coordinate);
+		} else {
+			return coordinate;
+		}
+	}
+
+	private static final String $_OSGI_PLATFORM = "${osgi.platform}";
+
+	/**
+	 * Replace the ${osgi.platform} artifacts, either with the running platform or the "parent"
+	 * artifact to effectively remove it.
+	 */
+	static void replace$osgiplatformWith(Configuration config, String replacement) {
+		config
+				.getResolutionStrategy()
+				.eachDependency(
+						details -> {
+							ModuleVersionSelector req = details.getRequested();
+							if (req.getName().contains($_OSGI_PLATFORM)) {
+								details.useTarget(
+										req.getGroup()
+												+ ":"
+												+ req.getName().replace($_OSGI_PLATFORM, replacement)
+												+ ":"
+												+ req.getVersion());
+							}
+						});
 	}
 }

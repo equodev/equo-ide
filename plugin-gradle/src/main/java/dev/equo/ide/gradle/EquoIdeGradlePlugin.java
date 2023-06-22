@@ -13,6 +13,7 @@
  *******************************************************************************/
 package dev.equo.ide.gradle;
 
+import com.diffplug.common.swt.os.SwtPlatform;
 import dev.equo.ide.EquoChromium;
 import dev.equo.ide.WorkspaceInit;
 import dev.equo.solstice.NestedJars;
@@ -118,9 +119,7 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 							project.getDependencies().add(EQUO_IDE, dep);
 						}
 						// add the pure-maven deps
-						for (String mavenCoord : model.getPureMaven()) {
-							project.getDependencies().add(EQUO_IDE, convertPureMaven(project, mavenCoord));
-						}
+						P2DepsExtension.addPureMavenDeps(model, project, EQUO_IDE);
 						// then the p2-resolved maven deps
 						for (var coordinate : query.getJarsOnMavenCentral()) {
 							ModuleDependency dep =
@@ -177,6 +176,7 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 									});
 							config.setCanBeConsumed(false);
 							config.setVisible(false);
+							P2DepsExtension.replace$osgiplatformWith(config, SwtPlatform.getRunning().toString());
 						});
 	}
 
@@ -213,13 +213,5 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 	/** Ambiguous after 2147.483647.blah-blah */
 	private static int badSemver(int major, int minor) {
 		return major * 1_000_000 + minor;
-	}
-
-	static Object convertPureMaven(Project project, String coordinate) {
-		if (coordinate.startsWith(":")) {
-			return project.project(coordinate);
-		} else {
-			return coordinate;
-		}
 	}
 }
