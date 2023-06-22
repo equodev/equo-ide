@@ -15,10 +15,12 @@ package dev.equo.ide;
 
 import dev.equo.solstice.p2.P2Model;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
 /**
@@ -56,7 +58,19 @@ public class CatalogDsl {
 	}
 
 	private List<String> installs() {
-		return catalog.getTargetsFor(urlOverride);
+		if (!catalog.isPureMaven()) {
+			return catalog.getTargetsFor(urlOverride);
+		} else {
+			if (urlOverride == null) {
+				return catalog.getTargetsFor(null);
+			} else if (urlOverride.contains(":")) {
+				return Arrays.asList(urlOverride.split(","));
+			} else {
+				return catalog.getTargetsFor(urlOverride).stream()
+						.map(coord -> coord.replace(Catalog.V, urlOverride))
+						.collect(Collectors.toList());
+			}
+		}
 	}
 
 	private Map<String, P2Model.Filter> filters() {
@@ -165,9 +179,13 @@ public class CatalogDsl {
 		public void putInto(P2Model model, IdeHook.List hooks, WorkspaceInit workspace) {
 			// setup the IDE hooks
 			for (CatalogDsl dsl : catalogEntries.values()) {
-				model.addP2Repo(dsl.url());
-				model.getInstall().addAll(dsl.installs());
-				dsl.filters().forEach(model::addFilterAndValidate);
+				if (dsl.catalog.isPureMaven()) {
+					model.getPureMaven().addAll(dsl.installs());
+				} else {
+					model.addP2Repo(dsl.url());
+					model.getInstall().addAll(dsl.installs());
+					dsl.filters().forEach(model::addFilterAndValidate);
+				}
 				hooks.addAll(dsl.ideHooks());
 				workspace.copyAllFrom(dsl.workspaceInit());
 			}

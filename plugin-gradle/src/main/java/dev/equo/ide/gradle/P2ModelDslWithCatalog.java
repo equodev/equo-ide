@@ -287,7 +287,7 @@ public class P2ModelDslWithCatalog extends P2ModelDsl {
 		}
 	}
 
-	private <T extends GradleCatalogDsl> T add(T dsl) {
+	protected <T extends GradleCatalogDsl> T add(T dsl) {
 		catalog.add(dsl);
 		return dsl;
 	}

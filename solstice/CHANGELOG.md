@@ -3,6 +3,10 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+### Added
+- `Catalog.PureMaven` for plugins which are only published to maven, not p2. ([#143](https://github.com/equodev/equo-ide/pull/143))
+- `P2Model.getPureMaven()` which has a set of maven coordinates which do not partipate in the p2 resolution at all. ([#143](https://github.com/equodev/equo-ide/pull/143))
+- `IdeHookReflected` which is helpful for dogfooding IDE plugins. ([#143](https://github.com/equodev/equo-ide/pull/143))
 ### Fixed
 - Fix issues in Chromium browser. ([#141](https://github.com/equodev/equo-ide/pull/141))
   - Now can calls multiple times setUrl.

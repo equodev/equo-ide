@@ -73,7 +73,7 @@ public class Catalog implements Comparable<Catalog> {
 			new Catalog(
 					"gradleBuildship",
 					"https://download.eclipse.org/buildship/updates/e427/releases/3.x/" + V,
-					jre11("3.1.7.v20230428-1420"),
+					jre11("3.1.7.v20230428-1350"),
 					List.of("org.eclipse.buildship.feature.group"),
 					JDT);
 
@@ -189,7 +189,7 @@ public class Catalog implements Comparable<Catalog> {
 		this(name, copyFrom.p2urlTemplate, copyFrom.versions, toInstall, requires);
 	}
 
-	Catalog(
+	protected Catalog(
 			String name,
 			String p2urlTemplate,
 			VmVersion versions,
@@ -275,10 +275,6 @@ public class Catalog implements Comparable<Catalog> {
 			return this;
 		}
 
-		private String get(Catalog catalog) {
-			return versions.floorEntry(JVM_VER).getValue();
-		}
-
 		public String getAndWarn(Catalog catalog) {
 			var entry = versions.floorEntry(JVM_VER);
 			if (entry == null) {
@@ -316,9 +312,16 @@ public class Catalog implements Comparable<Catalog> {
 			}
 			return entry.getValue();
 		}
+	}
 
-		private String latest() {
-			return versions.lastEntry().getValue();
+	public boolean isPureMaven() {
+		return this instanceof PureMaven;
+	}
+
+	public static class PureMaven extends Catalog {
+		protected PureMaven(
+				String name, VmVersion versions, List<String> toInstall, Catalog... requires) {
+			super(name, "PureMaven", versions, toInstall, requires);
 		}
 	}
 

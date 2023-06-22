@@ -13,12 +13,16 @@
  *******************************************************************************/
 package dev.equo.ide.gradle;
 
+import dev.equo.ide.Catalog;
 import dev.equo.ide.EquoChromium;
 import dev.equo.ide.IdeHook;
 import dev.equo.ide.IdeHookBranding;
+import dev.equo.ide.IdeHookReflected;
 import dev.equo.ide.IdeHookWelcome;
 import dev.equo.ide.WorkspaceInit;
 import dev.equo.solstice.p2.P2Model;
+import java.util.ArrayList;
+import java.util.List;
 import org.gradle.api.Action;
 import org.gradle.api.Project;
 
@@ -85,4 +89,52 @@ public class EquoIdeExtension extends P2ModelDslWithCatalog {
 	}
 
 	private boolean hasBeenPrepared = false;
+
+	/** Add the jar of this project (and its dependencies) to the IDE. */
+	public DogfoodDsl dogfood() {
+		return dogfood(project);
+	}
+
+	/** Add the jar of the given project (and its dependencies) to the IDE. */
+	public DogfoodDsl dogfood(Project project) {
+		project
+				.getTasks()
+				.named(
+						EquoIdeGradlePlugin.EQUO_IDE,
+						task -> {
+							task.dependsOn(project.getTasks().named("jar"));
+						});
+		return add(new DogfoodDsl(project));
+	}
+
+	private static class DogfoodCatalog extends Catalog.PureMaven {
+		DogfoodCatalog(Project project) {
+			super("dogfood", jre11(""), List.of(project.getPath()));
+		}
+	}
+
+	public static class DogfoodDsl extends GradleCatalogDsl {
+		final Project project;
+
+		public DogfoodDsl(Project project) {
+			super(new DogfoodCatalog(project), null);
+			this.project = project;
+		}
+
+		final List<IdeHook> ideHooks = new ArrayList<>();
+
+		@Override
+		protected List<IdeHook> ideHooks() {
+			return ideHooks;
+		}
+
+		/**
+		 * Instantiates the given class (which must be an [IdeHook] with a no-arg constructor) and adds
+		 * it to the IDE.
+		 */
+		public DogfoodDsl ideHook(String hookClass) {
+			ideHooks.add(new IdeHookReflected(hookClass));
+			return this;
+		}
+	}
 }

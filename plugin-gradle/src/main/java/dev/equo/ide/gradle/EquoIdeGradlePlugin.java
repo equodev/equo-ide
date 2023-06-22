@@ -13,6 +13,7 @@
  *******************************************************************************/
 package dev.equo.ide.gradle;
 
+import com.diffplug.common.swt.os.SwtPlatform;
 import dev.equo.ide.EquoChromium;
 import dev.equo.ide.WorkspaceInit;
 import dev.equo.solstice.NestedJars;
@@ -35,7 +36,7 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 	static final String MINIMUM_GRADLE = "6.0";
 
 	private static final String TASK_GROUP = "IDE";
-	private static final String EQUO_IDE = "equoIde";
+	static final String EQUO_IDE = "equoIde";
 	private static final String EQUO_LIST = "equoList";
 
 	private static final String USE_ATOMOS_FLAG = "--use-atomos=";
@@ -102,10 +103,9 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 				unused -> {
 					try {
 						var workspace = new WorkspaceInit();
+						var model = extension.prepareModel(workspace);
 						var query =
-								extension
-										.prepareModel(workspace)
-										.query(P2ModelDsl.clientCaching(project), P2ModelDsl.queryCaching(project));
+								model.query(P2ModelDsl.clientCaching(project), P2ModelDsl.queryCaching(project));
 						workspace.copyAllFrom(extension.workspace);
 						boolean useAtomosOverrideTrue =
 								anyArgMatching(
@@ -118,12 +118,14 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 								NestedJars.transitiveDeps(useAtomos, NestedJars.CoordFormat.GRADLE, query)) {
 							project.getDependencies().add(EQUO_IDE, dep);
 						}
+						// add the pure-maven deps
+						P2DepsExtension.addPureMavenDeps(model, project, EQUO_IDE);
+						// then the p2-resolved maven deps
 						for (var coordinate : query.getJarsOnMavenCentral()) {
 							ModuleDependency dep =
 									(ModuleDependency) project.getDependencies().add(EQUO_IDE, coordinate);
 							dep.setTransitive(false);
 						}
-
 						if (EquoChromium.isEnabled(extension.getIdeHooks())) {
 							project.getRepositories().maven((a) -> a.setUrl(EquoChromium.mavenRepo()));
 							for (var coordinate : EquoChromium.mavenCoordinates()) {
@@ -174,6 +176,7 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 									});
 							config.setCanBeConsumed(false);
 							config.setVisible(false);
+							P2DepsExtension.replace$osgiplatformWith(config, SwtPlatform.getRunning().toString());
 						});
 	}
 
