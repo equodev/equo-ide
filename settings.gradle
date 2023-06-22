@@ -1,4 +1,8 @@
 pluginManagement {
+	repositories {
+		mavenCentral()
+		gradlePluginPortal()
+	}
 	plugins {
 		// https://github.com/radarsh/gradle-test-logger-plugin/blob/develop/CHANGELOG.md
 		id 'com.adarshr.test-logger'                    version '3.2.0'
