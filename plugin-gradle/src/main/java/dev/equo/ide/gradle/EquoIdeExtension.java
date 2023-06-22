@@ -132,7 +132,7 @@ public class EquoIdeExtension extends P2ModelDslWithCatalog {
 		 * Instantiates the given class (which must be an [IdeHook] with a no-arg constructor) and adds
 		 * it to the IDE.
 		 */
-		public DogfoodDsl testHook(String hookClass) {
+		public DogfoodDsl ideHook(String hookClass) {
 			ideHooks.add(new IdeHookReflected(hookClass));
 			return this;
 		}
