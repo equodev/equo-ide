@@ -314,6 +314,17 @@ public class Catalog implements Comparable<Catalog> {
 		}
 	}
 
+	public boolean isPureMaven() {
+		return this instanceof PureMaven;
+	}
+
+	public static class PureMaven extends Catalog {
+		protected PureMaven(
+				String name, VmVersion versions, List<String> toInstall, Catalog... requires) {
+			super(name, "PureMaven", versions, toInstall, requires);
+		}
+	}
+
 	private static final int JVM_VER;
 
 	static {
