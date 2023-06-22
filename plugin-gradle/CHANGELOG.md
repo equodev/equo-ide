@@ -3,6 +3,9 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+### Added
+- `equoIde { dogfood() }` which adds this jar (and its transitive dependencies) into the launched IDE. ([#143](https://github.com/equodev/equo-ide/pull/143))
+  - You can also do `dogfood().ideHook('com.acme.MyIdeHook').ideHook('AnotherIdeHook')` which adds the given IDE hooks into the launched IDE startup sequence. The hooks must have a no-arg constructor. ([#143](https://github.com/equodev/equo-ide/pull/143))
 ### Fixed
 - Fix issues in Chromium browser. ([#141](https://github.com/equodev/equo-ide/pull/141))
   - Now can calls multiple times setUrl.
