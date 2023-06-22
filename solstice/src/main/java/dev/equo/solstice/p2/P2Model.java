@@ -22,10 +22,10 @@ import java.util.TreeSet;
 import java.util.function.Consumer;
 
 public class P2Model {
-
 	private final TreeSet<String> p2repo = new TreeSet<>();
 	private final TreeSet<String> install = new TreeSet<>();
 	private final TreeMap<String, Filter> filters = new TreeMap<>();
+	private final TreeSet<String> pureMaven = new TreeSet<>();
 
 	public TreeSet<String> getP2repo() {
 		return p2repo;
@@ -39,8 +39,12 @@ public class P2Model {
 		return filters;
 	}
 
+	public TreeSet<String> getPureMaven() {
+		return pureMaven;
+	}
+
 	public boolean isEmpty() {
-		return p2repo.isEmpty() && install.isEmpty() && filters.isEmpty();
+		return p2repo.isEmpty() && install.isEmpty() && filters.isEmpty() && pureMaven.isEmpty();
 	}
 
 	public void addP2Repo(String p2url) {
@@ -85,6 +89,7 @@ public class P2Model {
 		for (var filterEntry : filters.entrySet()) {
 			deepCopy.filters.put(filterEntry.getKey(), filterEntry.getValue().deepCopy());
 		}
+		deepCopy.pureMaven.addAll(pureMaven);
 		return deepCopy;
 	}
 
@@ -218,6 +223,9 @@ public class P2Model {
 			}
 			buf.append(" },\n");
 		}
+		if (!pureMaven.isEmpty()) {
+			appendSet(buf, "pureMaven", pureMaven);
+		}
 		return closeJson(buf);
 	}
 
@@ -233,12 +241,13 @@ public class P2Model {
 		P2Model model = (P2Model) o;
 		return p2repo.equals(model.p2repo)
 				&& install.equals(model.install)
-				&& filters.equals(model.filters);
+				&& filters.equals(model.filters)
+				&& pureMaven.equals(model.pureMaven);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(p2repo, install, filters);
+		return Objects.hash(p2repo, install, filters, pureMaven);
 	}
 
 	public static class Filter {
