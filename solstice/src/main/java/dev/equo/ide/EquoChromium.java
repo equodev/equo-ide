@@ -27,7 +27,7 @@ public class EquoChromium extends Catalog.PureMaven {
 	EquoChromium() {
 		super(
 				"equoChromium",
-				jre11("106.0.3"),
+				jre11("106.0.9"),
 				List.of(
 						"com.equo:com.equo.chromium:" + V,
 						"com.equo:com.equo.chromium.cef." + SwtPlatform.getRunning() + ":" + V),
