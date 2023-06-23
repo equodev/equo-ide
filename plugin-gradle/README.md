@@ -56,7 +56,7 @@ By default, SWT uses the system browser (Internet Explorer on Windows, Safari on
 
 ```gradle
 equoIde {
-  useChromium()
+  equoChromium()
 ```
 
 Using Equo Chromium will add `https://dl.equo.dev/chromium-swt-ee/equo-gpl/mvn` to your list of maven repositories, which is used only for the Chromium dependency.
