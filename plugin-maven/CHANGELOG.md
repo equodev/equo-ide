@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+
+## [1.3.1] - 2023-06-22
 ### Fixed
 - Fix issues in Chromium browser. ([#141](https://github.com/equodev/equo-ide/pull/141))
   - Now can calls multiple times setUrl.
