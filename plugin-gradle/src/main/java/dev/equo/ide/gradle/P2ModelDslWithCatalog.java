@@ -167,6 +167,20 @@ public class P2ModelDslWithCatalog extends P2ModelDsl {
 		return equoChromium(null);
 	}
 
+	public static class ChatGPT extends GradleCatalogDsl {
+		protected ChatGPT(String versionOverride) {
+			super(Catalog.CHATGPT, versionOverride);
+		}
+	}
+
+	public ChatGPT chatGPT(String versionOverride) {
+		return add(new ChatGPT(versionOverride));
+	}
+
+	public ChatGPT chatGPT() {
+		return chatGPT(null);
+	}
+
 	public static class AssistAI extends GradleCatalogDsl {
 		public AssistAI(String urlOverride, Project project) {
 			super(Catalog.ASSIST_AI, urlOverride);

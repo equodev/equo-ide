@@ -124,6 +124,14 @@ public abstract class AbstractP2MojoWithCatalog extends AbstractP2Mojo {
 		}
 	}
 
+	@Parameter ChatGPT chatGPT;
+
+	public static class ChatGPT extends MavenCatalogDsl {
+		public ChatGPT() {
+			super(Catalog.CHATGPT);
+		}
+	}
+
 	@Parameter private AssistAI assistAI;
 
 	public static class AssistAI extends MavenCatalogDsl {
@@ -257,6 +265,7 @@ public abstract class AbstractP2MojoWithCatalog extends AbstractP2Mojo {
 						pde,
 						egit,
 						equoChromium,
+						chatGPT,
 						assistAI,
 						tabnine,
 						m2e,
