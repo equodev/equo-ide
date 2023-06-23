@@ -135,6 +135,9 @@ public class LaunchMojo extends AbstractP2MojoWithCatalog {
 			for (var dep : NestedJars.transitiveDeps(useAtomos, NestedJars.CoordFormat.MAVEN, query)) {
 				deps.add(new Dependency(new DefaultArtifact(dep), null, null, EXCLUDE_ALL_TRANSITIVES));
 			}
+			for (var coord : model.getPureMaven()) {
+				deps.add(new Dependency(new DefaultArtifact(coord), null));
+			}
 			for (var dep : query.getJarsOnMavenCentral()) {
 				deps.add(new Dependency(new DefaultArtifact(dep), null, null, EXCLUDE_ALL_TRANSITIVES));
 			}
