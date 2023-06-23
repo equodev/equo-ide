@@ -63,8 +63,13 @@ public class LaunchMojo extends AbstractP2MojoWithCatalog {
 	@Parameter(property = "showConsole", defaultValue = "false")
 	private boolean showConsole;
 
-	/** Replaces the standard SWT browser with Equo Chromium. */
+	/**
+	 * Replaces the standard SWT browser with Equo Chromium.
+	 *
+	 * @deprecated use equoChromium instead
+	 */
 	@Parameter(property = "useChromium", defaultValue = "false")
+	@Deprecated
 	private boolean useChromium;
 
 	/** Dumps the classpath (in order) without starting the application. */
@@ -101,6 +106,7 @@ public class LaunchMojo extends AbstractP2MojoWithCatalog {
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		try {
 			if (useChromium) {
+				getLog().warn("<useChromium>true</useChromium> is deprecated, use <equoChromium/> instead");
 				if (equoChromium == null) {
 					equoChromium = new EquoChromium();
 				}

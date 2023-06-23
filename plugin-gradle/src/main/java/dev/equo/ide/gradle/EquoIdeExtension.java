@@ -36,7 +36,9 @@ public class EquoIdeExtension extends P2ModelDslWithCatalog {
 		ideHooks.add(branding);
 	}
 
+	@Deprecated
 	public void useChromium() {
+		project.getLogger().warn("useChromium() is deprecated, use equoChromium() instead");
 		super.equoChromium();
 	}
 
