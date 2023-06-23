@@ -116,6 +116,14 @@ public abstract class AbstractP2MojoWithCatalog extends AbstractP2Mojo {
 		}
 	}
 
+	@Parameter EquoChromium equoChromium;
+
+	public static class EquoChromium extends MavenCatalogDsl {
+		public EquoChromium() {
+			super(Catalog.EQUO_CHROMIUM);
+		}
+	}
+
 	@Parameter private AssistAI assistAI;
 
 	public static class AssistAI extends MavenCatalogDsl {
@@ -242,7 +250,21 @@ public abstract class AbstractP2MojoWithCatalog extends AbstractP2Mojo {
 				new CatalogDsl.TransitiveAwareList<>();
 		// NB: each entry must be after all of its transitive dependencies
 		// e.g. jdt must be after platform
-		Stream.of(platform, jdt, gradleBuildship, pde, m2e, kotlin, tmTerminal, cdt, rust, groovy)
+		Stream.of(
+						platform,
+						jdt,
+						gradleBuildship,
+						pde,
+						egit,
+						equoChromium,
+						assistAI,
+						tabnine,
+						m2e,
+						kotlin,
+						tmTerminal,
+						cdt,
+						rust,
+						groovy)
 				.filter(Objects::nonNull)
 				.forEach(
 						dsl -> {

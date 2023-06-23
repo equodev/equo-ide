@@ -14,7 +14,6 @@
 package dev.equo.ide.gradle;
 
 import dev.equo.ide.Catalog;
-import dev.equo.ide.EquoChromium;
 import dev.equo.ide.IdeHook;
 import dev.equo.ide.IdeHookBranding;
 import dev.equo.ide.IdeHookReflected;
@@ -38,7 +37,7 @@ public class EquoIdeExtension extends P2ModelDslWithCatalog {
 	}
 
 	public void useChromium() {
-		ideHooks.add(new EquoChromium());
+		super.equoChromium();
 	}
 
 	public IdeHookBranding branding() {

@@ -40,7 +40,6 @@ import org.eclipse.aether.collection.CollectRequest;
 import org.eclipse.aether.graph.Dependency;
 import org.eclipse.aether.graph.Exclusion;
 import org.eclipse.aether.repository.RemoteRepository;
-import org.eclipse.aether.repository.RemoteRepository.Builder;
 import org.eclipse.aether.resolution.DependencyRequest;
 import org.eclipse.aether.resolution.DependencyResolutionException;
 import org.eclipse.aether.resolution.DependencyResult;
@@ -101,6 +100,11 @@ public class LaunchMojo extends AbstractP2MojoWithCatalog {
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		try {
+			if (useChromium) {
+				if (equoChromium == null) {
+					equoChromium = new EquoChromium();
+				}
+			}
 			var caller = BuildPluginIdeMain.Caller.forProjectDir(baseDir, clean);
 
 			var ideHooks = new IdeHook.List();
@@ -119,24 +123,20 @@ public class LaunchMojo extends AbstractP2MojoWithCatalog {
 			var workspaceInit = new WorkspaceInit();
 			boolean isOffline = false;
 			var clientCaching = P2ClientCache.defaultIfOfflineIsAndForceRecalculateIs(isOffline, clean);
+			var model = super.prepareModel(ideHooks, workspaceInit);
 			var query =
-					super.prepareModel(ideHooks, workspaceInit)
-							.query(clientCaching, clean ? P2QueryCache.FORCE_RECALCULATE : P2QueryCache.ALLOW);
+					model.query(clientCaching, clean ? P2QueryCache.FORCE_RECALCULATE : P2QueryCache.ALLOW);
 			for (var dep : NestedJars.transitiveDeps(useAtomos, NestedJars.CoordFormat.MAVEN, query)) {
 				deps.add(new Dependency(new DefaultArtifact(dep), null, null, EXCLUDE_ALL_TRANSITIVES));
 			}
 			for (var dep : query.getJarsOnMavenCentral()) {
 				deps.add(new Dependency(new DefaultArtifact(dep), null, null, EXCLUDE_ALL_TRANSITIVES));
 			}
-
-			if (useChromium) {
-				ideHooks.add(new EquoChromium());
-				Builder b = new RemoteRepository.Builder("chromium", "default", EquoChromium.mavenRepo());
-				repositories.add(b.build());
-				for (var coordinate : EquoChromium.mavenCoordinates()) {
-					deps.add(
-							new Dependency(new DefaultArtifact(coordinate), null, null, EXCLUDE_ALL_TRANSITIVES));
-				}
+			if (dev.equo.ide.EquoChromium.isEnabled(model)) {
+				repositories.add(
+						new RemoteRepository.Builder(
+										"chromium", "default", dev.equo.ide.EquoChromium.mavenRepo())
+								.build());
 			}
 
 			CollectRequest collectRequest = new CollectRequest(deps, null, repositories);
