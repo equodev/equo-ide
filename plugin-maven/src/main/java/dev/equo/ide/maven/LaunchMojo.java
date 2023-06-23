@@ -15,7 +15,7 @@ package dev.equo.ide.maven;
 
 import com.diffplug.common.swt.os.OS;
 import dev.equo.ide.BuildPluginIdeMain;
-import dev.equo.ide.EquoChromium;
+import dev.equo.ide.Catalog;
 import dev.equo.ide.IdeHook;
 import dev.equo.ide.IdeHookBranding;
 import dev.equo.ide.IdeHookWelcome;
@@ -138,10 +138,9 @@ public class LaunchMojo extends AbstractP2MojoWithCatalog {
 			for (var dep : query.getJarsOnMavenCentral()) {
 				deps.add(new Dependency(new DefaultArtifact(dep), null, null, EXCLUDE_ALL_TRANSITIVES));
 			}
-			if (dev.equo.ide.EquoChromium.isEnabled(model)) {
+			if (Catalog.EQUO_CHROMIUM.isEnabled(model)) {
 				repositories.add(
-						new RemoteRepository.Builder(
-										"chromium", "default", dev.equo.ide.EquoChromium.mavenRepo())
+						new RemoteRepository.Builder("chromium", "default", Catalog.EQUO_CHROMIUM.mavenRepo())
 								.build());
 			}
 

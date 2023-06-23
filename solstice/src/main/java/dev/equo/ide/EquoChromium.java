@@ -34,15 +34,15 @@ public class EquoChromium extends Catalog.PureMaven {
 				PLATFORM);
 	}
 
-	public static String mavenRepo() {
+	public String mavenRepo() {
 		return "https://dl.equo.dev/chromium-swt-ee/equo-gpl/mvn";
 	}
 
-	public static boolean isEnabled(Collection<File> classpath) {
+	public boolean isEnabled(Collection<File> classpath) {
 		return classpath.stream().anyMatch(file -> file.getName().startsWith("com.equo.chromium"));
 	}
 
-	public static boolean isEnabled(P2Model model) {
+	public boolean isEnabled(P2Model model) {
 		return model.getPureMaven().stream()
 				.anyMatch(coord -> coord.startsWith("com.equo:com.equo.chromium:"));
 	}

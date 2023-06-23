@@ -14,7 +14,7 @@
 package dev.equo.ide.gradle;
 
 import com.diffplug.common.swt.os.SwtPlatform;
-import dev.equo.ide.EquoChromium;
+import dev.equo.ide.Catalog;
 import dev.equo.ide.WorkspaceInit;
 import dev.equo.solstice.NestedJars;
 import dev.equo.solstice.p2.CacheLocations;
@@ -126,8 +126,8 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 									(ModuleDependency) project.getDependencies().add(EQUO_IDE, coordinate);
 							dep.setTransitive(false);
 						}
-						if (EquoChromium.isEnabled(model)) {
-							project.getRepositories().maven((a) -> a.setUrl(EquoChromium.mavenRepo()));
+						if (Catalog.EQUO_CHROMIUM.isEnabled(model)) {
+							project.getRepositories().maven((a) -> a.setUrl(Catalog.EQUO_CHROMIUM.mavenRepo()));
 						}
 						equoIdeTask.configure(
 								task -> {
