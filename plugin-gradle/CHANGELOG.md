@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+### Changed
+- `useChromium` deprecated in favor of `equoChromium` which is now a standard catalog entry. ([#145](https://github.com/equodev/equo-ide/pull/145))
 
 ## [1.5.0] - 2023-06-22
 ### Added
