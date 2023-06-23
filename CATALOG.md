@@ -7,8 +7,9 @@
     - Gradle: [`gradleBuildship`](#gradle-buildship)
     - Maven: [`m2e`](#m2e)
   - AI assistants
-    - [`assistAI`](#assistai) (ChatGPT)
-    - [`tabnine`]
+    - [`tabnine`](#tabnine)
+    - [`chatGPT`](#chatgpt)
+    - [`assistAI`](#assistai)
   - Languages besides Java
     - [`kotlin`](#kotlin)
     - [`cdt`](#cdt) and [`tmTerminal`](#tmterminal)
@@ -87,6 +88,16 @@ This catalog is a useful reference for the p2 urls, code repositories, and issue
 
 ## AI assistants
 
+### `tabnine`
+
+- Latest release https://eclipse-update-site.tabnine.com/
+- Info https://www.tabnine.com/getting-started
+
+### `chatgpt`
+
+- Latest release `0.1.0` https://github.com/equodev/equo-ide-chatgpt/blob/main/CHANGELOG.md
+- Code & issues https://github.com/equodev/equo-ide-chatgpt
+
 ### `assistai`
 
 - Latest release https://eclipse-chatgpt-plugin.lm.r.appspot.com/
@@ -94,10 +105,6 @@ This catalog is a useful reference for the p2 urls, code repositories, and issue
 - Parameters
   - `modelName` we recommend `gpt-3.5-turbo`, you can see other available at far right under "Model" [here](https://platform.openai.com/playground?mode=chat).
   - `apiKey` you can get your value [here](https://platform.openai.com/account/api-keys).
-
-### `tabnine`
-
-- Latest release https://eclipse-update-site.tabnine.com/
 
 ## Languages besides Java
 
