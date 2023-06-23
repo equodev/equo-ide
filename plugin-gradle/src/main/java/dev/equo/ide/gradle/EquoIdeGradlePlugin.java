@@ -126,13 +126,8 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 									(ModuleDependency) project.getDependencies().add(EQUO_IDE, coordinate);
 							dep.setTransitive(false);
 						}
-						if (EquoChromium.isEnabled(extension.getIdeHooks())) {
+						if (EquoChromium.isEnabled(model)) {
 							project.getRepositories().maven((a) -> a.setUrl(EquoChromium.mavenRepo()));
-							for (var coordinate : EquoChromium.mavenCoordinates()) {
-								ModuleDependency dep =
-										(ModuleDependency) project.getDependencies().add(EQUO_IDE, coordinate);
-								dep.setTransitive(false);
-							}
 						}
 						equoIdeTask.configure(
 								task -> {

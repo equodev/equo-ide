@@ -14,30 +14,36 @@
 package dev.equo.ide;
 
 import com.diffplug.common.swt.os.SwtPlatform;
+import dev.equo.solstice.p2.P2Model;
+import java.io.File;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Utilities for setting up EquoChromium as the default browser implementation in the EquoIDE build
  * plugins.
  */
-public class EquoChromium implements IdeHook {
+public class EquoChromium extends Catalog.PureMaven {
+	EquoChromium() {
+		super(
+				"equoChromium",
+				jre11("106.0.3"),
+				List.of(
+						"com.equo:com.equo.chromium:" + V,
+						"com.equo:com.equo.chromium.cef." + SwtPlatform.getRunning() + ":" + V),
+				PLATFORM);
+	}
+
 	public static String mavenRepo() {
 		return "https://dl.equo.dev/chromium-swt-ee/equo-gpl/mvn";
 	}
 
-	public static java.util.List<String> mavenCoordinates() {
-		return java.util.List.of(
-				"com.equo:com.equo.chromium:106.0.3",
-				"com.equo:com.equo.chromium.cef." + SwtPlatform.getRunning() + ":106.0.3");
+	public static boolean isEnabled(Collection<File> classpath) {
+		return classpath.stream().anyMatch(file -> file.getName().startsWith("com.equo.chromium"));
 	}
 
-	public static boolean isEnabled(IdeHook.List hooks) {
-		return hooks.stream().anyMatch(hook -> hook instanceof EquoChromium);
+	public static boolean isEnabled(P2Model model) {
+		return model.getPureMaven().stream()
+				.anyMatch(coord -> coord.startsWith("com.equo:com.equo.chromium:"));
 	}
-
-	@Override
-	public IdeHookInstantiated instantiate() throws Exception {
-		return new Instantiated();
-	}
-
-	class Instantiated implements IdeHookInstantiated {}
 }

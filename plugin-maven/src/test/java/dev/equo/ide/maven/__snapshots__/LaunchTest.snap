@@ -30,6 +30,9 @@ equo-ide:launch
     egit
       (no description available)
 
+    equoChromium
+      (no description available)
+
     filters
       (no description available)
 
@@ -85,6 +88,7 @@ equo-ide:launch
     useChromium (Default: false)
       User property: useChromium
       Replaces the standard SWT browser with Equo Chromium.
+      Deprecated. use equoChromium instead
 
     welcome
       (no description available)

@@ -98,7 +98,7 @@ public class BuildPluginIdeMain {
 				classpathSorted.add(nested.getValue());
 			}
 			var vmArgs = new ArrayList<String>();
-			if (EquoChromium.isEnabled(ideHooks)) {
+			if (EquoChromium.isEnabled(classpath)) {
 				// This property is used to fix the error in the setUrl method.
 				vmArgs.add("-Dchromium.args=--disable-site-isolation-trials");
 				// This property improve loading time of setText for large resources.
