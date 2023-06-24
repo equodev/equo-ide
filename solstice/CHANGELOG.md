@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+### Added
+- Our own [ChatGPT plugin](https://github.com/equodev/equo-ide-chatgpt) was added to the plugin catalog. ([#144](https://github.com/equodev/equo-ide/pull/144))
 ### Changed
 - `EquoChromium` is now a standard catalog entry instead of a special-cased sentinel `IdeHook`. ([#145](https://github.com/equodev/equo-ide/pull/145))
 

@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+### Added
+- `<chatGPT/>`, our [first Eclipse plugin](https://github.com/equodev/equo-ide-chatgpt) built and distributed without OSGi or p2, was added to the plugin catalog. ([#144](https://github.com/equodev/equo-ide/pull/144))
 ### Changed
 - `<useChromium>true</useChromium>` deprecated in favor of `<equoChromium/>` which is now a standard catalog entry. ([#145](https://github.com/equodev/equo-ide/pull/145))
 ### Fixed
