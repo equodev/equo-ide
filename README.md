@@ -23,7 +23,7 @@ user@machine % cd equo-chat-gpt
 user@machine equo-ide % ./gradlew equoIde --clean
 ```
 
-This will download and launch an IDE that shows the code for our ChatGPT plugin. Make changes to the code, restart the IDE with `gradlew equoIde`, and you'll see your change instantly. 
+This will download and launch an IDE that shows the code for our ChatGPT plugin. Make changes to the code, restart the IDE with `gradlew equoIde`, and you'll see your change instantly.
 
 ## Quickstart
 
@@ -37,6 +37,7 @@ equoIde { // launch with gradlew equoIde
   jdt()
   gradleBuildship().autoImport('.')
   tabnine() // same idea as GitHub Copilot, but with free and self-hosted versions available
+  chatGPT() // use GPT3 & 4 (no waitlist!) to refactor, write tests, and generate documentation 
 }
 ```
 
@@ -51,6 +52,7 @@ or like this in Maven with `mvn equo-ide:launch` ([more info](plugin-maven))
     <jdt/>
     <m2e><autoImport>${project.basedir}</autoImport></m2e>
     <tabnine/> <!-- same idea as GitHub Copilot, but with free and self-hosted versions available -->
+    <chatGPT/> <!-- use GPT3 & 4 (no waitlist!) to refactor, write tests, and generate documentation -->
   </configuration>
 </plugin>
 ```
