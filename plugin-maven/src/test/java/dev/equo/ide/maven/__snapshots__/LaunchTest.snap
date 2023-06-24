@@ -15,6 +15,9 @@ equo-ide:launch
     cdt
       (no description available)
 
+    chatGPT
+      (no description available)
+
     clean (Default: false)
       User property: clean
       Wipes all IDE settings and state before rebuilding and launching.
@@ -28,6 +31,9 @@ equo-ide:launch
       Blocks IDE startup to help you attach a debugger.
 
     egit
+      (no description available)
+
+    equoChromium
       (no description available)
 
     filters
@@ -85,6 +91,7 @@ equo-ide:launch
     useChromium (Default: false)
       User property: useChromium
       Replaces the standard SWT browser with Equo Chromium.
+      Deprecated. use equoChromium instead
 
     welcome
       (no description available)

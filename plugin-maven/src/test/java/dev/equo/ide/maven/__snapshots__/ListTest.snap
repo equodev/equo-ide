@@ -348,6 +348,9 @@ equo-ide:list
     cdt
       (no description available)
 
+    chatGPT
+      (no description available)
+
     clean (Default: false)
       User property: clean
       Revalidates cached p2 data.
@@ -358,6 +361,9 @@ equo-ide:list
       unit id.
 
     egit
+      (no description available)
+
+    equoChromium
       (no description available)
 
     filters

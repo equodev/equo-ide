@@ -14,7 +14,6 @@
 package dev.equo.ide.gradle;
 
 import dev.equo.ide.Catalog;
-import dev.equo.ide.EquoChromium;
 import dev.equo.ide.IdeHook;
 import dev.equo.ide.IdeHookBranding;
 import dev.equo.ide.IdeHookReflected;
@@ -37,8 +36,10 @@ public class EquoIdeExtension extends P2ModelDslWithCatalog {
 		ideHooks.add(branding);
 	}
 
+	@Deprecated
 	public void useChromium() {
-		ideHooks.add(new EquoChromium());
+		project.getLogger().warn("useChromium() is deprecated, use equoChromium() instead");
+		super.equoChromium();
 	}
 
 	public IdeHookBranding branding() {

@@ -29,7 +29,7 @@ import javax.annotation.Nullable;
 public class CatalogDsl {
 	protected final Catalog catalog;
 	private final @Nullable CatalogDsl addedAsTransitiveOf;
-	private @Nullable String urlOverride;
+	private @Nullable String p2AndMavenOverride;
 	private final WorkspaceInit workspaceInit = new WorkspaceInit();
 
 	protected CatalogDsl(Catalog catalog) {
@@ -54,52 +54,76 @@ public class CatalogDsl {
 	}
 
 	private String url() {
-		return catalog.getUrlForOverride(urlOverride);
+		return catalog.getUrlForOverride(p2AndMavenOverride);
 	}
 
 	private List<String> installs() {
 		if (!catalog.isPureMaven()) {
-			return catalog.getTargetsFor(urlOverride);
+			return catalog.getTargetsFor(p2AndMavenOverride);
 		} else {
-			if (urlOverride == null) {
-				return catalog.getTargetsFor(null);
-			} else if (urlOverride.contains(":")) {
-				return Arrays.asList(urlOverride.split(","));
+			// for pure maven, the versions apply to anything like `group:artifact:${VERSION}`
+			if (p2AndMavenOverride == null) {
+				String version = catalog.versions.getAndWarn(catalog);
+				return replaceV(catalog.getTargetsFor(null), version);
+			} else if (p2AndMavenOverride.contains(":")) {
+				return Arrays.asList(p2AndMavenOverride.split(","));
 			} else {
-				return catalog.getTargetsFor(urlOverride).stream()
-						.map(coord -> coord.replace(Catalog.V, urlOverride))
-						.collect(Collectors.toList());
+				return replaceV(catalog.getTargetsFor(p2AndMavenOverride), p2AndMavenOverride);
 			}
 		}
 	}
 
-	private Map<String, P2Model.Filter> filters() {
-		return catalog.getFiltersFor(urlOverride);
+	private static List<String> replaceV(List<String> list, String replaceWith) {
+		return list.stream()
+				.map(str -> str.replace(Catalog.V, replaceWith))
+				.collect(Collectors.toList());
 	}
 
-	/** Sets the URL and/or version override. */
-	protected void setUrlOverride(String urlOverride) {
-		this.urlOverride = urlOverride;
+	private Map<String, P2Model.Filter> filters() {
+		return catalog.getFiltersFor(p2AndMavenOverride);
+	}
+
+	/**
+	 * Overrides the version, url, or artifacts.
+	 *
+	 * <ul>
+	 *   <li>For a P2 Catalog entry (doesn't extend {@link Catalog.PureMaven})
+	 *       <ul>
+	 *         <li>if p2AndMavenOverride is just a version (doesn't contain ':') then it replaces
+	 *             ${VERSION} in the p2 url
+	 *         <li>if p2AndMavenOverride is a full URL, then it replaces the p2 url entirely
+	 *       </ul>
+	 *   <li>For pure Maven catalog entry (extends {@link Catalog.PureMaven})
+	 *       <ul>
+	 *         <li>if p2AndMavenOverride is just a version (doesn't contain ':') then it replaces
+	 *             ${VERSION} in the installs artifact list
+	 *         <li>if p2AndMavenOverride is a full maven coordinate (or comma-delimited list of
+	 *             coordinates) then it replaces the entire artifact list
+	 *       </ul>
+	 * </ul>
+	 */
+	protected void setUrlOverride(String p2AndMavenOverride) {
+		this.p2AndMavenOverride = p2AndMavenOverride;
 	}
 
 	/**
 	 * If this catalog has the same URL template as one of its transitive dependencies, then it should
-	 * also have the exact same urlOverride. If it doesn't, and one of them is null, then we can
-	 * automatically override the null with the non-null to resolve the issue.
+	 * also have the exact same p2AndMavenOverride. If it doesn't, and one of them is null, then we
+	 * can automatically override the null with the non-null to resolve the issue.
 	 */
 	void syncUrlWith(CatalogDsl other) {
 		if (!catalog.getP2UrlTemplate().equals(other.catalog.getP2UrlTemplate())) {
 			// syncing only matters when they have the same URL
 			return;
 		}
-		if (Objects.equals(urlOverride, other.urlOverride)) {
+		if (Objects.equals(p2AndMavenOverride, other.p2AndMavenOverride)) {
 			// if they have the same override, that's fine
 			return;
 		}
-		if (urlOverride == null) {
-			urlOverride = other.urlOverride;
-		} else if (other.urlOverride == null) {
-			other.urlOverride = urlOverride;
+		if (p2AndMavenOverride == null) {
+			p2AndMavenOverride = other.p2AndMavenOverride;
+		} else if (other.p2AndMavenOverride == null) {
+			other.p2AndMavenOverride = p2AndMavenOverride;
 		} else {
 			// they are both non-null and unequal
 			throw new IllegalArgumentException(
