@@ -21,7 +21,9 @@ import dev.equo.solstice.SignedJars;
 import dev.equo.solstice.p2.P2Model;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.gradle.api.Action;
 import org.gradle.api.Project;
@@ -37,17 +39,42 @@ public class P2DepsExtension {
 	}
 
 	public void into(String configuration, Action<P2ModelDslWithCatalog> p2) {
-		into(project.getConfigurations().maybeCreate(configuration), p2);
+		into(List.of(configuration), p2);
 	}
 
 	public void into(Configuration configuration, Action<P2ModelDslWithCatalog> p2) {
+		into(List.of(configuration), p2);
+	}
+
+	public void into(Collection<?> configs, Action<P2ModelDslWithCatalog> p2) {
+		var configurations = new ArrayList<Configuration>();
+		for (var config : configs) {
+			if (config instanceof Configuration) {
+				configurations.add((Configuration) config);
+			} else if (config instanceof String) {
+				configurations.add(project.getConfigurations().maybeCreate((String) config));
+			} else {
+				throw new IllegalArgumentException("Expected Configuration or String, got " + config);
+			}
+		}
 		P2ModelDslWithCatalog dsl = new P2ModelDslWithCatalog(project);
 		p2.execute(dsl);
 		var workspaceInitUnused = new WorkspaceInit();
 		dsl.catalog.putInto(dsl.model, new IdeHook.List(), workspaceInitUnused);
 		dsl.model.applyNativeFilterIfNoPlatformFilter();
 		dsl.model.validateFilters();
-		configurations.put(configuration.getName(), dsl.model);
+		for (var config : configurations) {
+			var existing = this.configurations.put(config.getName(), dsl.model);
+			if (existing != null) {
+				throw new IllegalArgumentException(
+						"Configuration "
+								+ config.getName()
+								+ " has multiple extensions.\n  existing="
+								+ existing
+								+ "\n  new="
+								+ dsl.model);
+			}
+		}
 	}
 
 	private final Map<String, P2Model> configurations = new HashMap<>();
