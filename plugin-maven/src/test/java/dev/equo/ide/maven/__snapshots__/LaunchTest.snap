@@ -15,6 +15,9 @@ equo-ide:launch
     cdt
       (no description available)
 
+    chatGPT
+      (no description available)
+
     clean (Default: false)
       User property: clean
       Wipes all IDE settings and state before rebuilding and launching.
