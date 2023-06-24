@@ -7,6 +7,7 @@
 - a build plugin for Gradle and Maven
 - downloads, configures, and launches an instance of the Eclipse IDE
 - ensures that all of your devs have a zero-effort and perfectly repeatable IDE setup process
+- makes it easy to develop, dogfood, and distribute new IDE plugins
 
 Use it like this with `mvn equo-ide:launch`
 
@@ -80,7 +81,14 @@ Using Equo Chromium will add `https://dl.equo.dev/chromium-swt-ee/equo-gpl/mvn` 
 
 ## User plugins
 
-You can use the [`dev.equo.p2deps` gradle plugin](../plugin-gradle/README.md#user-plugins) to compile against p2 dependencies. We would love help porting this feature into the maven plugin, see [#54](https://github.com/equodev/equo-ide/issues/54).
+See [the code for our ChatGPT plugin](https://github.com/equodev/equo-ide-chatgpt) for an example of how you can build, dogfood, and distribute an Eclipse plugin without OSGi or p2.
+
+You can use `plugin.xml` and `.e4xmi` and all of that, but if you prefer to just make method calls without any metadata, you can also use our [`IdeHook` mechanism](../CONTRIBUTING.md#idehook). It's what we use to provide features like the `welcome` hook and automatically importing the current project into Gradle, for example.
+
+Right now some of the user plugin functionality is only available in the Gradle plugin, PR's to help resolve these issues would be appreciated!
+
+- [#54](https://github.com/equodev/equo-ide/issues/54) port the p2deps plugin for compiling against p2 artifacts from Gradle to Maven.
+- [#101](https://github.com/equodev/equo-ide/issues/101) port the dogfood feature for inserting the compiled jar into the launched IDE from Gradle to Maven.
 
 ## How it works
 

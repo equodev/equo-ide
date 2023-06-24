@@ -9,20 +9,21 @@ EquoIDE is:
 - a build plugin for [Gradle](plugin-gradle) and [Maven](plugin-maven)
 - downloads, configures, and launches an instance of the Eclipse IDE
 - ensures that all of your devs have a zero-effort and perfectly repeatable IDE setup process
+- makes it easy to develop, dogfood, and distribute new IDE plugins
 
 There are [slides and a recorded presentation available here](https://github.com/equodev/equo-ide/issues/60).
 
 ## Demo
 
-The best way to get acquainted with this project is to run this demo
+The best way to get acquainted with this project is to clone [our ChatGPT plugin](https://github.com/equodev/equo-ide-chatgpt) and launch the dogfooding IDE like so:
 
 ```console
-user@machine % git clone https://github.com/equodev/equo-ide
-user@machine % cd equo-ide
-user@machine equo-ide % ./gradlew equoIde
+user@machine % git clone https://github.com/equodev/equo-ide-chatgpt
+user@machine % cd equo-chat-gpt
+user@machine equo-ide % ./gradlew equoIde --clean
 ```
 
-This will launch an IDE and take you to our [`CONTRIBUTING.md`](CONTRIBUTING.md) which has a deep overview of the features and APIs of this project.
+This will download and launch an IDE that shows the code for our ChatGPT plugin. Make changes to the code, restart the IDE with `gradlew equoIde`, and you'll see your change instantly. 
 
 ## Quickstart
 
@@ -35,7 +36,7 @@ plugins {
 equoIde { // launch with gradlew equoIde
   jdt()
   gradleBuildship().autoImport('.')
-  assistAI().modelName('gpt-3.5-turbo').apiKey("$OPENAI_API_KEY") // put API key into ~/.gradle/gradle.properties from https://platform.openai.com/account/api-keys
+  tabnine() // same idea as GitHub Copilot, but with free and self-hosted versions available
 }
 ```
 
@@ -49,13 +50,9 @@ or like this in Maven with `mvn equo-ide:launch` ([more info](plugin-maven))
   <configuration>
     <jdt/>
     <m2e><autoImport>${project.basedir}</autoImport></m2e>
-    <assistAI>
-        <modelName>gpt-3.5-turbo</modelName>
-        <apiKey>...</apiKey> <!-- https://platform.openai.com/account/api-keys -->
-    </assistAI>
+    <tabnine/> <!-- same idea as GitHub Copilot, but with free and self-hosted versions available -->
   </configuration>
 </plugin>
-  ...
 ```
 
 You can see all the plugins we support in [`CATALOG.md`](CATALOG.md), and we also support any arbitrary maven-based or p2-based plugins. See [P2_MULTITOOL.md](P2_MULTITOOL.md) for info on browsing and working with p2 repositories.

@@ -7,6 +7,7 @@
 - a build plugin for Gradle and Maven
 - downloads, configures, and launches an instance of the Eclipse IDE
 - ensures that all of your devs have a zero-effort and perfectly repeatable IDE setup process
+- makes it easy to develop, dogfood, and distribute new IDE plugins
 
 Use it like this with `gradlew equoIde`
 
@@ -63,24 +64,9 @@ Using Equo Chromium will add `https://dl.equo.dev/chromium-swt-ee/equo-gpl/mvn` 
 
 ## User plugins
 
-To compile classes against dependencies from p2, you can use `dev.equo.p2deps`.
+To compile classes against dependencies from p2, you can use `dev.equo.p2deps`. You can install the plugin you are building into a launched IDE using the `dogfood()` command. See [the code for our ChatGPT plugin](https://github.com/equodev/equo-ide-chatgpt) for an example of how you can build, dogfood, and distribute an Eclipse plugin without OSGi or p2.
 
-```gradle
-apply plugin: 'dev.equo.p2deps'
-p2deps {
-  into 'compileOnly', {
-    p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'
-    install 'org.eclipse.platform.ide.categoryIU'
-  }
-  into 'buildshipCompileOnly', {
-    gradleBuildship()
-  }
-}
-```
-
-Note that you can use the full p2 metadata (`p2repo` and `install`) or the [catalog notation](../CATALOG.md) (as in `gradleBuildship`). When you install a p2 artifact, you also get all of its transitive dependencies according to its p2 metadata. You can debug this process using the [p2 multitool](../P2_MULTITOOL.md). (See [#100](https://github.com/equodev/equo-ide/issues/100) for a bit more info).
-
-You can write plugins for the Eclipse IDE without creating any OSGi or plugin.xml metadata using our [`IdeHook` mechanism](../CONTRIBUTING.md#idehook). It's what we use to provide features like the `welcome` hook and automatically importing the current project into Gradle, for example.
+You can use `plugin.xml` and `.e4xmi` and all of that, but if you prefer to just make method calls without any metadata, you can also use our [`IdeHook` mechanism](../CONTRIBUTING.md#idehook). It's what we use to provide features like the `welcome` hook and automatically importing the current project into Gradle, for example.
 
 ## How it works
 
