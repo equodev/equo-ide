@@ -131,7 +131,10 @@ public class EquoIdeExtension extends P2ModelDslWithCatalog {
 
 		/**
 		 * Instantiates the given class (which must be an [IdeHook] with a no-arg constructor) and adds
-		 * it to the IDE.
+		 * it to the IDE startup.
+		 *
+		 * <p>Even better is to add a {@code Bundle-IdeHook} header to the manifest of the jar, then the
+		 * hook will still work when the Eclipse plugin gets distributed via Maven.
 		 */
 		public DogfoodDsl ideHook(String hookClass) {
 			ideHooks.add(new IdeHookReflected(hookClass));
