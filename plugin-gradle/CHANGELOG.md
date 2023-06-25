@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+
+## [1.6.0] - 2023-06-25
 ### Added
 - `chatGPT()`, our [first Eclipse plugin](https://github.com/equodev/equo-ide-chatgpt) built and distributed without OSGi or p2, was added to the plugin catalog. ([#144](https://github.com/equodev/equo-ide/pull/144))
 - `dev.equo.p2deps` plugin now allows putting deps into multiple configurations at once. ([#109](https://github.com/equodev/equo-ide/issues/109))
