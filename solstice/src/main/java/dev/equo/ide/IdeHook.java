@@ -22,6 +22,11 @@ import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * If you add a {@code Bundle-IdeHook} header to the manifest of a jar that points to the fully
+ * qualified name of a class that implements this interface, then that class will be instantiated
+ * and called at various points in the lifecycle of the IDE.
+ */
 public interface IdeHook extends Serializable {
 	@SuppressWarnings("serial")
 	class List extends ArrayList<IdeHook> {
