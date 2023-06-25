@@ -127,6 +127,14 @@ public class BuildPluginIdeMain {
 
 			var ideHooksFile = new File(workspaceDir, "ide-hooks");
 			var ideHooksCopy = ideHooks.copy();
+			// add any IdeHooks which were declared in jar manifests
+			for (var jar : classpathSorted) {
+				var ideHook = SolsticeManifest.parseJar(jar).getHeadersOriginal().get("Bundle-IdeHook");
+				if (ideHook != null) {
+					ideHooksCopy.add(new IdeHookReflected(ideHook));
+				}
+			}
+
 			ideHooksCopy.add(IdeHookLockFile.forWorkspaceDirAndClasspath(workspaceDir, classpathSorted));
 			SerializableMisc.toFile(ideHooksCopy, ideHooksFile);
 
