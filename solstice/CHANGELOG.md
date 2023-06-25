@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+
+## [1.6.0] - 2023-06-25
 ### Added
 - Our own [ChatGPT plugin](https://github.com/equodev/equo-ide-chatgpt) was added to the plugin catalog. ([#144](https://github.com/equodev/equo-ide/pull/144))
 - We now parse the `Bundle-IdeHook` header and add those hooks to the IDE startup. ([#148](https://github.com/equodev/equo-ide/pull/148))
