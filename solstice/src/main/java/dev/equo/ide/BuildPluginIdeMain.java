@@ -98,11 +98,18 @@ public class BuildPluginIdeMain {
 				classpathSorted.add(nested.getValue());
 			}
 			var vmArgs = new ArrayList<String>();
+			var environmentVars = new LinkedHashMap<String, String>();
 			if (Catalog.EQUO_CHROMIUM.isEnabled(classpath)) {
 				// This property is used to fix the error in the setUrl method.
 				vmArgs.add("-Dchromium.args=--disable-site-isolation-trials");
 				// This property improve loading time of setText for large resources.
 				vmArgs.add("-Dchromium.setTextAsUrl=file:");
+				// Fix graphics on linux
+				if (OS.getRunning().isLinux()) {
+					environmentVars.put("GDK_BACKEND", "x11");
+				}
+				// Patch in our browser replacement, which requires stripping the signature from the SWT
+				// packages, and activate the license
 				Patch.patch(classpathSorted, nestedJarFolder, "patch-chromium-swt");
 				SignedJars.stripIf(classpathSorted, fileName -> fileName.startsWith("org.eclipse.swt."));
 				vmArgs.add(

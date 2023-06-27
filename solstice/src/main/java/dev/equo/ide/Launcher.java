@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -82,10 +83,21 @@ public class Launcher {
 	public static int launchAndInheritIO(
 			File cwd, List<String> args, @Nullable Consumer<Process> monitorProcess)
 			throws IOException, InterruptedException {
+		return launchAndInheritIO(cwd, args, Map.of(), monitorProcess);
+	}
+
+	public static int launchAndInheritIO(
+			File cwd,
+			List<String> args,
+			Map<String, String> env,
+			@Nullable Consumer<Process> monitorProcess)
+			throws IOException, InterruptedException {
 		var builder = new ProcessBuilder(args);
+		builder.environment().putAll(env);
 		if (cwd != null) {
 			builder.directory(cwd);
 		}
+
 		var process = builder.start();
 		var outPumper = new StreamPumper(process, process.getInputStream(), System.out);
 		var errPumper = new StreamPumper(process, process.getErrorStream(), System.err);
