@@ -87,12 +87,12 @@ public class Launcher {
 		if (cwd != null) {
 			builder.directory(cwd);
 		}
-		
+
 		if (Catalog.EQUO_CHROMIUM.isEnabled()) {
 			Map<String, String> environment = builder.environment();
-			environment.put("GDK_BACKEND", "x11");	
+			environment.put("GDK_BACKEND", "x11");
 		}
-		
+
 		var process = builder.start();
 		var outPumper = new StreamPumper(process, process.getInputStream(), System.out);
 		var errPumper = new StreamPumper(process, process.getErrorStream(), System.err);
