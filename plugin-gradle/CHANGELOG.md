@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+
+## [1.6.1] - 2023-06-27
 ### Fixed
 - `equoChromium` browser now works correctly with Linux wayland. ([#150](https://github.com/equodev/equo-ide/pull/150))
 
