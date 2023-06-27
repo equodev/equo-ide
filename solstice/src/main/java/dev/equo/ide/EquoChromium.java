@@ -24,6 +24,9 @@ import java.util.List;
  * plugins.
  */
 public class EquoChromium extends Catalog.PureMaven {
+	
+	private boolean enabled = false;
+	
 	EquoChromium() {
 		super(
 				"equoChromium",
@@ -39,11 +42,22 @@ public class EquoChromium extends Catalog.PureMaven {
 	}
 
 	public boolean isEnabled(Collection<File> classpath) {
-		return classpath.stream().anyMatch(file -> file.getName().startsWith("com.equo.chromium"));
+		if (classpath.stream().anyMatch(file -> file.getName().startsWith("com.equo.chromium"))) {
+			this.enabled = true;
+			return true;
+		}
+		return false;
 	}
 
 	public boolean isEnabled(P2Model model) {
-		return model.getPureMaven().stream()
-				.anyMatch(coord -> coord.startsWith("com.equo:com.equo.chromium:"));
+		if (model.getPureMaven().stream().anyMatch(coord -> coord.startsWith("com.equo:com.equo.chromium:"))) {
+			this.enabled = true;
+			return true;
+		}
+		return false;
+	}
+
+	public boolean isEnabled() {
+		return this.enabled;
 	}
 }
