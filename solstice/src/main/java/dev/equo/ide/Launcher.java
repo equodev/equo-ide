@@ -83,14 +83,19 @@ public class Launcher {
 	public static int launchAndInheritIO(
 			File cwd, List<String> args, @Nullable Consumer<Process> monitorProcess)
 			throws IOException, InterruptedException {
+		return launchAndInheritIO(cwd, args, Map.of(), monitorProcess);
+	}
+
+	public static int launchAndInheritIO(
+			File cwd,
+			List<String> args,
+			Map<String, String> env,
+			@Nullable Consumer<Process> monitorProcess)
+			throws IOException, InterruptedException {
 		var builder = new ProcessBuilder(args);
+		builder.environment().putAll(env);
 		if (cwd != null) {
 			builder.directory(cwd);
-		}
-
-		if (Catalog.EQUO_CHROMIUM.isEnabled()) {
-			Map<String, String> environment = builder.environment();
-			environment.put("GDK_BACKEND", "x11");
 		}
 
 		var process = builder.start();

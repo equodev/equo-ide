@@ -19,6 +19,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.BiConsumer;
@@ -38,6 +39,7 @@ class ScriptExec {
 
 	private final String script;
 	private Optional<File> directory = Optional.empty();
+	private Map<String, String> env = Map.of();
 
 	private ScriptExec(String script) {
 		this.script = Objects.requireNonNull(script);
@@ -46,6 +48,12 @@ class ScriptExec {
 	/** Sets the directory that the script will be run in. */
 	public ScriptExec directory(File directory) {
 		this.directory = Optional.of(directory);
+		return this;
+	}
+
+	/** Sets the directory that the script will be run in. */
+	public ScriptExec environment(Map<String, String> env) {
+		this.env = env;
 		return this;
 	}
 
@@ -70,7 +78,8 @@ class ScriptExec {
 		List<String> fullArgs = getPlatformCmds(scriptFile, isSeparate);
 
 		// set the cmds
-		int exitValue = Launcher.launchAndInheritIO(directory.orElse(null), fullArgs, monitorProcess);
+		int exitValue =
+				Launcher.launchAndInheritIO(directory.orElse(null), fullArgs, env, monitorProcess);
 		if (mavenWorkarounds()
 				&& ((OS.getNative().isLinux() && exitValue == 137)
 						|| (OS.getNative().isWindows() && exitValue == 1))) {
