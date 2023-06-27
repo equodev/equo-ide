@@ -13,6 +13,7 @@ equoIde {
 	welcome().openUrl('https://github.com/equodev/equo-ide/blob/main/CONTRIBUTING.md#equoide-and-solstice-developers-guide')
 	gradleBuildship().autoImport('.')
 	tabnine() // GitHub copilot-style autocomplete
+	chatGPT() // integration
 }
 
 allprojects {
