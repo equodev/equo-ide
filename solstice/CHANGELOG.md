@@ -3,7 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
-
+### Fixed
+- equoChromium browser now works correctly with wayland. ([#150](https://github.com/equodev/equo-ide/pull/150))
 ## [1.6.0] - 2023-06-25
 ### Added
 - Our own [ChatGPT plugin](https://github.com/equodev/equo-ide-chatgpt) was added to the plugin catalog. ([#144](https://github.com/equodev/equo-ide/pull/144))
