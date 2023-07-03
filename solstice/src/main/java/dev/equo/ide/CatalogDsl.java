@@ -112,7 +112,8 @@ public class CatalogDsl {
 	 * can automatically override the null with the non-null to resolve the issue.
 	 */
 	void syncUrlWith(CatalogDsl other) {
-		if (!catalog.getP2UrlTemplate().equals(other.catalog.getP2UrlTemplate())) {
+		if (!catalog.getP2UrlTemplate().equals(other.catalog.getP2UrlTemplate())
+				|| catalog.isPureMaven()) {
 			// syncing only matters when they have the same URL
 			return;
 		}
