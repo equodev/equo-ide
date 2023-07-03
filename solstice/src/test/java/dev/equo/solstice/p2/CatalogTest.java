@@ -23,14 +23,19 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 @ExtendWith({SnapshotExtension.class})
 public class CatalogTest {
+	private static final TestCatalogDsl JAVA_11_PLATFORM =
+			new TestCatalogDsl(Catalog.PLATFORM, "4.27");
+
 	@Test
 	public void equoChatGptDefault(Expect expect) {
-		expect.toMatchSnapshot(requestModel(new TestCatalogDsl(Catalog.CHATGPT, null)));
+		expect.toMatchSnapshot(
+				requestModel(JAVA_11_PLATFORM, new TestCatalogDsl(Catalog.CHATGPT, null)));
 	}
 
 	@Test
 	public void equoChatGptFixed(Expect expect) {
-		expect.toMatchSnapshot(requestModel(new TestCatalogDsl(Catalog.CHATGPT, "9.9.9")));
+		expect.toMatchSnapshot(
+				requestModel(JAVA_11_PLATFORM, new TestCatalogDsl(Catalog.CHATGPT, "9.9.9")));
 	}
 
 	static class TestCatalogDsl extends CatalogDsl {
