@@ -55,7 +55,7 @@ public class CatalogTest {
 		var hooks = new IdeHook.List();
 		list.putInto(model, hooks);
 
-		String result = ConsoleTable.request(model, ConsoleTable.Format.ascii);
+		String result = ConsoleTable.request(model, ConsoleTable.Format.csv);
 		for (SwtPlatform platform : SwtPlatform.getAll()) {
 			result = result.replace(platform.toString(), "platform-specific");
 		}
