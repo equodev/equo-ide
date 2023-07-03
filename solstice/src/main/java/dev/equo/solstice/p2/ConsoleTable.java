@@ -49,6 +49,9 @@ public class ConsoleTable {
 			}
 			filter.getValue().getProps().forEach((key, value) -> table.addRow("  " + key, value));
 		}
+		for (var pureMaven : model.getPureMaven()) {
+			table.addRow("maven", pureMaven);
+		}
 		return table.toString(format);
 	}
 

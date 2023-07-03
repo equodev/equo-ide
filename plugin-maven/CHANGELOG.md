@@ -3,6 +3,10 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+### Added
+- `equo-ide:list -Drequest` now shows pure-maven dependencies. ([#151](https://github.com/equodev/equo-ide/pull/151))
+### Fixed
+- setting an explicit version for `chatGPT` would erroneously force that same version onto `equoChromium`, now fixed. ([#151](https://github.com/equodev/equo-ide/pull/151))
 
 ## [1.4.1] - 2023-06-27
 ### Fixed

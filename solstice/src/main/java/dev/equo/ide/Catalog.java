@@ -184,7 +184,7 @@ public class Catalog implements Comparable<Catalog> {
 	public static final Catalog CHATGPT =
 			new Catalog.PureMaven(
 					"chatGPT",
-					jre11("0.1.0"),
+					jre11("1.0.0"),
 					List.of("dev.equo.ide:equo-ide-chatgpt:" + V),
 					PLATFORM,
 					EQUO_CHROMIUM);
