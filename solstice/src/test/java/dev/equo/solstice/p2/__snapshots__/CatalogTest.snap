@@ -4,7 +4,7 @@ dev.equo.solstice.p2.CatalogTest.equoChatGptDefault=[
 +---------+-------------------------------------------------------------+
 | p2repo  | https://download.eclipse.org/eclipse/updates/4.27/          |
 | install | org.eclipse.platform.ide.categoryIU                         |
-| maven   | com.equo:com.equo.chromium.cef.cocoa.macosx.aarch64:106.0.9 |
+| maven   | com.equo:com.equo.chromium.cef.platform-specific:106.0.9 |
 | maven   | com.equo:com.equo.chromium:106.0.9                          |
 | maven   | dev.equo.ide:equo-ide-chatgpt:1.0.0                         |
 +---------+-------------------------------------------------------------+
@@ -18,7 +18,7 @@ dev.equo.solstice.p2.CatalogTest.equoChatGptFixed=[
 +---------+-------------------------------------------------------------+
 | p2repo  | https://download.eclipse.org/eclipse/updates/4.27/          |
 | install | org.eclipse.platform.ide.categoryIU                         |
-| maven   | com.equo:com.equo.chromium.cef.cocoa.macosx.aarch64:106.0.9 |
+| maven   | com.equo:com.equo.chromium.cef.platform-specific:106.0.9 |
 | maven   | com.equo:com.equo.chromium:106.0.9                          |
 | maven   | dev.equo.ide:equo-ide-chatgpt:9.9.9                         |
 +---------+-------------------------------------------------------------+

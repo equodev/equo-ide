@@ -15,6 +15,7 @@ package dev.equo.solstice.p2;
 
 import au.com.origin.snapshots.Expect;
 import au.com.origin.snapshots.junit5.SnapshotExtension;
+import com.diffplug.common.swt.os.SwtPlatform;
 import dev.equo.ide.Catalog;
 import dev.equo.ide.CatalogDsl;
 import dev.equo.ide.IdeHook;
@@ -54,6 +55,10 @@ public class CatalogTest {
 		var hooks = new IdeHook.List();
 		list.putInto(model, hooks);
 
-		return ConsoleTable.request(model, ConsoleTable.Format.ascii);
+		String result = ConsoleTable.request(model, ConsoleTable.Format.ascii);
+		for (SwtPlatform platform : SwtPlatform.getAll()) {
+			result = result.replace(platform.toString(), "platform-specific");
+		}
+		return result;
 	}
 }
