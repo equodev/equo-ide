@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+
+## [1.5.0] - 2023-07-03
 ### Added
 - `equo-ide:list -Drequest` now shows pure-maven dependencies. ([#151](https://github.com/equodev/equo-ide/pull/151))
 ### Fixed
