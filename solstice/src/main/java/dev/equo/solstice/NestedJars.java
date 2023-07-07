@@ -78,8 +78,6 @@ public abstract class NestedJars {
 		boolean needsSimple = true;
 		boolean slf4j_is_2 = false;
 		if (query != null) {
-			query.getJarsOnMavenCentral().stream();
-			query.getJarsNotOnMavenCentral().stream().map(File::getName);
 			var iter =
 					Stream.concat(
 									query.getJarsOnMavenCentral().stream(),
