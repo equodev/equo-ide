@@ -3,6 +3,9 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+### Changed
+- Bump `equoChromium` default version `106.0.9` -> `106.0.10`. (fixes [#5](https://github.com/equodev/equo-ide-chatgpt/issues/5))
+- Bump `chatGPT` default version `1.0.0` -> `1.0.1`.
 
 ## [1.5.0] - 2023-07-03
 ### Added
