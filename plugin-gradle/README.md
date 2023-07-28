@@ -68,6 +68,23 @@ To compile classes against dependencies from p2, you can use `dev.equo.p2deps`. 
 
 You can use `plugin.xml` and `.e4xmi` and all of that, but if you prefer to just make method calls without any metadata, you can also use our [`IdeHook` mechanism](../CONTRIBUTING.md#idehook). It's what we use to provide features like the `welcome` hook and automatically importing the current project into Gradle, for example.
 
+```gradle
+apply plugin: 'dev.equo.p2deps'
+p2deps {
+  into (['compileOnly', 'testImplementation'], {
+    p2repo 'https://someurl.com/abc'
+    install 'whateverYouWant'
+    // https://github.com/equodev/equo-ide/blob/main/P2_MULTITOOL.md for more info
+ 	})
+  into 'implementation', {
+    // you can also use the catalog to specify p2 repos and install units for you
+    // https://github.com/equodev/equo-ide/blob/main/CATALOG.md for more info
+    cdt()
+    m2e()
+  }
+}
+```
+
 ## How it works
 
 Much of the complexity of downloading, running, and modifying the Eclipse IDE is caused OSGi and p2. Equo IDE replaces p2 and OSGi with a simple shim called [Solstice](https://github.com/equodev/equo-ide/tree/main/solstice). This makes it easier and faster to build, debug, and run Eclipse-based applications.
