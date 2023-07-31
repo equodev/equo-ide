@@ -26,7 +26,7 @@ import java.util.List;
  */
 public class EquoChromium extends Catalog.PureMaven {
 	
-	private static final String EQUO_CHROMIUM_VERSION = "106.0.12";
+	private static final String EQUO_CHROMIUM_VERSION = "106.0.13";
 	
 	EquoChromium() {
 		super(
