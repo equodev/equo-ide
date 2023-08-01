@@ -16,6 +16,7 @@ package dev.equo.solstice.p2;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayDeque;
@@ -28,6 +29,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import javax.xml.parsers.DocumentBuilderFactory;
 import okhttp3.Cache;
+import okhttp3.Credentials;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import org.tukaani.xz.XZInputStream;
@@ -130,6 +132,25 @@ public class P2Client implements AutoCloseable {
 		return true;
 	}
 
+	private static Request buildRequest(String url) {
+		// Check if url contains basic authentication, e.g. http://username:password@example.com/dir
+		String[] info = null;
+		try {
+			URL netUrl = new URL(url);
+			String userInfo = netUrl.getUserInfo();
+			if (userInfo != null) {
+				info = userInfo.split(":");
+			}
+		} catch (Exception ignored) {
+		}
+		Request.Builder builder = new Request.Builder().url(url);
+		if (info != null && info.length == 2) {
+			String credential = Credentials.basic(info[0], info[1]);
+			builder.addHeader("Authorization", credential);
+		}
+		return builder.build();
+	}
+
 	private byte[] getBytes(String url) throws IOException, NotFoundException {
 		if (cachingPolicy.tryOfflineFirst()) {
 			var cached = offlineMetadataCache.get(url);
@@ -141,7 +162,7 @@ public class P2Client implements AutoCloseable {
 			}
 		}
 		if (cachingPolicy.networkAllowed()) {
-			var request = new Request.Builder().url(url).build();
+			var request = buildRequest(url);
 			try (var response = metadataClient.newCall(request).execute()) {
 				if (response.code() == 404) {
 					if (cachingPolicy.cacheAllowed()) {

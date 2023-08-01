@@ -17,6 +17,8 @@ import com.diffplug.common.swt.os.SwtPlatform;
 import dev.equo.solstice.platform.Handler;
 import java.io.File;
 import java.io.InputStream;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -87,7 +89,7 @@ public class BundleContextShim extends ServiceRegistry {
 				(key, value) -> {
 					if (ShimIdeBootstrapServices.locationKeys().contains(key)) {
 						if (!value.startsWith("file:")) {
-							value = new File(value).toURI().toString();
+							value = URLDecoder.decode(new File(value).toURI().toString(), StandardCharsets.UTF_8);
 						}
 						if (!value.endsWith("/")) {
 							value = value + "/";

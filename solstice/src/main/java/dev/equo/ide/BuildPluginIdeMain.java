@@ -100,8 +100,16 @@ public class BuildPluginIdeMain {
 			var vmArgs = new ArrayList<String>();
 			var environmentVars = new LinkedHashMap<String, String>();
 			if (Catalog.EQUO_CHROMIUM.isEnabled(classpath)) {
+				List<String> chromiumArgs = new ArrayList<String>();
+
 				// This property is used to fix the error in the setUrl method.
-				vmArgs.add("-Dchromium.args=--disable-site-isolation-trials");
+				chromiumArgs.add("--disable-site-isolation-trials");
+
+				// This property is used to fix the error when logging in with a third party.
+				chromiumArgs.add("--user-agent=" + EquoChromium.getUserAgent());
+
+				vmArgs.add("-Dchromium.args=" + String.join(";", chromiumArgs));
+
 				// This property improve loading time of setText for large resources.
 				vmArgs.add("-Dchromium.setTextAsUrl=file:");
 				// Fix graphics on linux

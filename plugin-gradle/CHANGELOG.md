@@ -4,9 +4,12 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
 ### Changed
-- Bump `equoChromium` default version `106.0.10` -> `106.0.12`.
+- Bump `equoChromium` default version `106.0.10` -> `106.0.13`.
 ### Fixed
-- Eclipse Welcome page is blank after restart with Equo Chromium.
+- Eclipse Welcome page is blank after restart with Equo Chromium. ([#157](https://github.com/equodev/equo-ide/pull/157))
+- Third party login in Equo Chromium Browser. ([#160](https://github.com/equodev/equo-ide/pull/160))
+- Manifest urls and osgi properties with spaces. ([#160](https://github.com/equodev/equo-ide/pull/160))
+- Failed to download p2repo when URL includes name and password. ([#160](https://github.com/equodev/equo-ide/pull/160))
 
 ## [1.7.1] - 2023-07-07
 ### Changed
