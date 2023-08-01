@@ -25,9 +25,9 @@ import java.util.List;
  * plugins.
  */
 public class EquoChromium extends Catalog.PureMaven {
-	
+
 	private static final String EQUO_CHROMIUM_VERSION = "106.0.13";
-	
+
 	EquoChromium() {
 		super(
 				"equoChromium",
@@ -50,23 +50,28 @@ public class EquoChromium extends Catalog.PureMaven {
 		return model.getPureMaven().stream()
 				.anyMatch(coord -> coord.startsWith("com.equo:com.equo.chromium:"));
 	}
-	
+
 	public static String getUserAgent() {
 		String chromiumMajor = EQUO_CHROMIUM_VERSION.split("\\.")[0];
 		if (OS.getRunning().isLinux()) {
-			return "Mozilla/5.0 (X11\\; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/" + chromiumMajor
+			return "Mozilla/5.0 (X11\\; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/"
+					+ chromiumMajor
 					+ ".0.0.0 Safari/537.36";
 		} else if (OS.getRunning().isWindows()) {
 			return "Mozilla/5.0 (Windows NT 10.0\\; Win64\\; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/"
-					+ chromiumMajor + ".0.0.0 Safari/537.36";
+					+ chromiumMajor
+					+ ".0.0.0 Safari/537.36";
 		} else {
 			String osVersion = "10_0_0";
 			String osVersionProperty = System.getProperty("os.version");
 			if (osVersionProperty != null) {
 				osVersion = osVersionProperty.replace(".", "_");
 			}
-			return "Mozilla/5.0 (Macintosh\\; Intel Mac OS X " + osVersion
-					+ ") AppleWebKit/537.36 (KHTML, like Gecko) Chrome/" + chromiumMajor + ".0.0.0 Safari/537.36";
+			return "Mozilla/5.0 (Macintosh\\; Intel Mac OS X "
+					+ osVersion
+					+ ") AppleWebKit/537.36 (KHTML, like Gecko) Chrome/"
+					+ chromiumMajor
+					+ ".0.0.0 Safari/537.36";
 		}
 	}
 }

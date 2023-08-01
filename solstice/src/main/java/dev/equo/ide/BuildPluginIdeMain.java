@@ -39,7 +39,6 @@ import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
 import org.osgi.framework.InvalidSyntaxException;
 
-import com.diffplug.common.swt.os.OS;
 /**
  * A main method for launching an IDE using Solstice. It has a verbose command line interface which
  * is optimized for integration with the EquoIDE Gradle and Maven build plugins, but it can be used
@@ -102,15 +101,15 @@ public class BuildPluginIdeMain {
 			var environmentVars = new LinkedHashMap<String, String>();
 			if (Catalog.EQUO_CHROMIUM.isEnabled(classpath)) {
 				List<String> chromiumArgs = new ArrayList<String>();
-				
+
 				// This property is used to fix the error in the setUrl method.
 				chromiumArgs.add("--disable-site-isolation-trials");
-				
+
 				// This property is used to fix the error when logging in with a third party.
 				chromiumArgs.add("--user-agent=" + EquoChromium.getUserAgent());
-				
+
 				vmArgs.add("-Dchromium.args=" + String.join(";", chromiumArgs));
-			
+
 				// This property improve loading time of setText for large resources.
 				vmArgs.add("-Dchromium.setTextAsUrl=file:");
 				// Fix graphics on linux

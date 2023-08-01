@@ -16,7 +16,6 @@ package dev.equo.solstice;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -102,7 +101,8 @@ public class ShimIdeBootstrapServices {
 				DebugOptions.class, context.container.getConfiguration().getDebugOptions(), null);
 		var instanceArea = context.getProperty(EquinoxLocations.PROP_INSTANCE_AREA);
 		if (instanceArea != null) {
-			var instanceDir = Unchecked.get(() -> new File(URLEncoder.encode(instanceArea, StandardCharsets.UTF_8)));
+			var instanceDir =
+					Unchecked.get(() -> new File(URLEncoder.encode(instanceArea, StandardCharsets.UTF_8)));
 			context.registerService(
 					URLConverter.class,
 					new JarUrlResolver(new File(instanceDir, "JarUrlResolver")),

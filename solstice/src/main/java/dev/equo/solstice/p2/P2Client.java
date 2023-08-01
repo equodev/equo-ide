@@ -27,18 +27,15 @@ import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-
 import javax.xml.parsers.DocumentBuilderFactory;
-
-import org.tukaani.xz.XZInputStream;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-
 import okhttp3.Cache;
 import okhttp3.Credentials;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import org.tukaani.xz.XZInputStream;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 /** Performs network requests and parsing against a P2 repository, aided by caching. */
 public class P2Client implements AutoCloseable {
@@ -134,7 +131,7 @@ public class P2Client implements AutoCloseable {
 		}
 		return true;
 	}
-	
+
 	private static Request buildRequest(String url) {
 		// Check if url contains basic authentication, e.g. http://username:password@example.com/dir
 		String[] info = null;
