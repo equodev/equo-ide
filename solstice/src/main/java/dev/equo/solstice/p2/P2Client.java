@@ -132,7 +132,7 @@ public class P2Client implements AutoCloseable {
 		return true;
 	}
 
-	private static Request buildRequest(String url) {
+	static Request buildRequest(String url) {
 		// Check if url contains basic authentication, e.g. http://username:password@example.com/dir
 		String[] info = null;
 		try {

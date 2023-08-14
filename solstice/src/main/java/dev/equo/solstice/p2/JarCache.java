@@ -41,7 +41,7 @@ class JarCache {
 				FileMisc.mkdirs(repoDir);
 				FileMisc.writeToken(repoDir, ".url", unit.getRepoUrl());
 			}
-			var request = new Request.Builder().url(unit.getJarUrl()).build();
+			var request = P2Client.buildRequest(unit.getJarUrl());
 			var tempFile = File.createTempFile(unit.id, ".jar");
 			try (var response = client.newCall(request).execute()) {
 				if (response.code() == 200) {
