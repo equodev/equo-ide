@@ -81,27 +81,32 @@ public class RepoStatus implements Comparable<RepoStatus> {
 		var group = unit.properties.get(P2Unit.MAVEN_GROUP_ID);
 		var artifact = unit.properties.get(P2Unit.MAVEN_ARTIFACT_ID);
 		var version = unit.properties.get(P2Unit.MAVEN_VERSION);
+		RepoStatus repoStatus = null;
 		if (group != null && artifact != null && version != null) {
 			if (unit.getId().equals("org.eclipse.equinox.preferences")
 					&& unit.getVersion().toString().equals("3.10.0.v20220503-1634")) {
 				// See https://github.com/eclipse-equinox/equinox.bundles/issues/54
-				return new RepoStatus("org.eclipse.platform:" + artifact + ":3.10.1", MAVEN_CENTRAL);
+				repoStatus= new RepoStatus("org.eclipse.platform:" + artifact + ":3.10.1", MAVEN_CENTRAL);
 			} else if (unit.getId().equals("org.eclipse.osgi.util")
 					&& unit.getVersion().toString().equals("3.7.0.v20220427-2144")) {
 				// See https://github.com/eclipse-equinox/equinox.framework/issues/70
-				return new RepoStatus("org.eclipse.platform:" + artifact + ":3.7.1", MAVEN_CENTRAL);
+				repoStatus= new RepoStatus("org.eclipse.platform:" + artifact + ":3.7.1", MAVEN_CENTRAL);
 			}
 			var repo = unit.properties.get(P2Unit.MAVEN_REPOSITORY);
 			if (MavenCentralMapping.MIRROR.equals(repo)) {
-				return new RepoStatus(group + ":" + artifact + ":" + version, MAVEN_CENTRAL);
+				repoStatus= new RepoStatus(group + ":" + artifact + ":" + version, MAVEN_CENTRAL);
 			} else {
 				var coord = MavenCentralMapping.getMavenCentralCoord(unit);
 				if (coord != null) {
-					return new RepoStatus(coord, MAVEN_CENTRAL_INFERRED);
+					repoStatus= new RepoStatus(coord, MAVEN_CENTRAL_INFERRED);
 				}
 			}
 		}
-		return new RepoStatus(unit.id + ":" + unit.version, P2_ + unit.getRepoUrlLastSegment());
+		if (null!=repoStatus) {
+			return repoStatus;
+		} else {
+			return new RepoStatus(unit.id + ":" + unit.version, P2_ + unit.getRepoUrlLastSegment());
+		}
 	}
 
 	/** Sorts on repo first, then based on coordinate. */
@@ -114,4 +119,5 @@ public class RepoStatus implements Comparable<RepoStatus> {
 			return repoCompare;
 		}
 	}
+
 }

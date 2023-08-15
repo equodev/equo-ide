@@ -22,7 +22,6 @@ import org.gradle.api.Project;
 /** The DSL for defining a P2Model. */
 public class P2ModelDsl {
 	protected final P2Model model;
-
 	public P2ModelDsl(P2Model model) {
 		this.model = model;
 	}
@@ -30,6 +29,8 @@ public class P2ModelDsl {
 	public P2ModelDsl() {
 		this(new P2Model());
 	}
+
+	public void useMavenCentral(Boolean value) { model.useMavenCentral = value;}
 
 	/** Adds the given p2 repo to the list of repositories to populate the session with. */
 	public void p2repo(String p2) {

@@ -67,7 +67,7 @@ public class P2MultipleReposTest {
 	@Test
 	public void download() throws Exception {
 		var query = queryInstall();
-		var jars = query.getJarsNotOnMavenCentral();
+		var jars = query.getJarsNotOnMavenCentral(true);
 		jars.sort(Comparator.comparing(unit -> unit.getJarUrl()));
 		for (var jar : jars) {
 			System.out.println(jar.getJarUrl());
