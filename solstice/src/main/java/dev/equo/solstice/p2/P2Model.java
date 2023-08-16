@@ -27,6 +27,9 @@ public class P2Model {
 	private final TreeMap<String, Filter> filters = new TreeMap<>();
 	private final TreeSet<String> pureMaven = new TreeSet<>();
 
+	/**
+	 * If false, do not use maven central to resolve dependencies, just use the configured p2 repos
+	 */
 	public  Boolean useMavenCentral = true;
 
 	public TreeSet<String> getP2repo() {
