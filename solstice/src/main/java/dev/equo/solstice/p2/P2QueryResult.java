@@ -27,11 +27,11 @@ public class P2QueryResult implements Serializable {
 	private final List<String> mavenCoordinates;
 	private final List<File> downloadedP2Jars;
 
-	P2QueryResult(P2Query query, P2ClientCache cachingPolicy) {
-		this.mavenCoordinates = new ArrayList<>(query.getJarsOnMavenCentral());
+	P2QueryResult(P2Query query, P2ClientCache cachingPolicy, Boolean useMavenCentral) {
+		this.mavenCoordinates = new ArrayList<>(query.getJarsOnMavenCentral(useMavenCentral));
 		this.downloadedP2Jars = new ArrayList<>();
 		try (var client = new P2Client(cachingPolicy)) {
-			for (P2Unit unit : query.getJarsNotOnMavenCentral()) {
+			for (P2Unit unit : query.getJarsNotOnMavenCentral(useMavenCentral)) {
 				downloadedP2Jars.add(client.download(unit));
 			}
 		} catch (IOException e) {

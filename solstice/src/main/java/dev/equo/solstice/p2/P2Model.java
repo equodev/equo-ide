@@ -27,6 +27,11 @@ public class P2Model {
 	private final TreeMap<String, Filter> filters = new TreeMap<>();
 	private final TreeSet<String> pureMaven = new TreeSet<>();
 
+	/**
+	 * If false, do not use maven central to resolve dependencies, just use the configured p2 repos
+	 */
+	public boolean useMavenCentral = true;
+
 	public TreeSet<String> getP2repo() {
 		return p2repo;
 	}
@@ -84,6 +89,7 @@ public class P2Model {
 
 	public P2Model deepCopy() {
 		var deepCopy = new P2Model();
+		deepCopy.useMavenCentral = this.useMavenCentral;
 		deepCopy.p2repo.addAll(p2repo);
 		deepCopy.install.addAll(install);
 		for (var filterEntry : filters.entrySet()) {
@@ -128,7 +134,7 @@ public class P2Model {
 		}
 		try {
 			var query = queryRaw(clientCachingPolicy);
-			var queryResult = new P2QueryResult(query, clientCachingPolicy);
+			var queryResult = new P2QueryResult(query, clientCachingPolicy, this.useMavenCentral);
 			if (queryCachingPolicy.allowWrite()) {
 				QueryCacheOnDisk onDisk = new QueryCacheOnDisk(CacheLocations.p2Queries(), this);
 				onDisk.put(queryResult);
@@ -201,6 +207,7 @@ public class P2Model {
 	public String toString() {
 		StringBuilder buf = new StringBuilder();
 		buf.append('{');
+		buf.append("'useMavenCentral': " + useMavenCentral + ",\n");
 		if (!p2repo.isEmpty()) {
 			appendSet(buf, "p2repo", p2repo);
 		}

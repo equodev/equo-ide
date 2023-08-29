@@ -31,6 +31,10 @@ public class P2ModelDsl {
 		this(new P2Model());
 	}
 
+	public void useMavenCentral(boolean value) {
+		model.useMavenCentral = value;
+	}
+
 	/** Adds the given p2 repo to the list of repositories to populate the session with. */
 	public void p2repo(String p2) {
 		model.addP2Repo(p2);

@@ -85,16 +85,26 @@ public class P2DepsExtension {
 		for (Map.Entry<String, P2Model> entry : configurations.entrySet()) {
 			String config = entry.getKey();
 			P2Model model = entry.getValue();
+			project.getLogger().debug("Configuration: " + config); // TODO: make debug
+			project.getLogger().debug("useMavenCentral: " + model.useMavenCentral); // TODO: make debug
 			// add the pure-maven deps
 			addPureMavenDeps(model, project, config);
 			// then the maven-resolved deps
 			var query = model.query(clientCaching, queryCaching);
 			for (String mavenCoord : query.getJarsOnMavenCentral()) {
+				project
+						.getLogger()
+						.debug("Adding Maven resolved dependency: " + mavenCoord); // TODO: make debug
 				ModuleDependency dep = (ModuleDependency) project.getDependencies().add(config, mavenCoord);
 				dep.setTransitive(false);
 			}
 			// and the p2 ones
 			var nonMavenClasspath = new ArrayList<File>();
+			for (File coord : query.getJarsNotOnMavenCentral()) {
+				project
+						.getLogger()
+						.debug("Adding non-maven dependency: " + coord.getName()); // TODO: make debug
+			}
 			nonMavenClasspath.addAll(query.getJarsNotOnMavenCentral());
 			var classpathSorted = Launcher.copyAndSortClasspath(nonMavenClasspath);
 			SignedJars.stripIfNecessary(classpathSorted);
@@ -111,6 +121,7 @@ public class P2DepsExtension {
 	static void addPureMavenDeps(P2Model model, Project project, String configuration) {
 		// add the pure maven deps
 		for (String mavenCoord : model.getPureMaven()) {
+			project.getLogger().debug("Adding PureMaven dependency: " + mavenCoord); // TODO: make debug
 			project.getDependencies().add(configuration, convertPureMaven(project, mavenCoord));
 		}
 	}

@@ -226,23 +226,25 @@ public class P2Query {
 	}
 
 	/** Returns all jars which are on maven central. */
-	public List<String> getJarsOnMavenCentral() {
+	public List<String> getJarsOnMavenCentral(boolean useMavenCentral) {
 		var mavenCoords = new ArrayList<String>();
-		for (var unit : getJars()) {
-			var repoStatus = RepoStatus.forUnit(unit);
-			if (repoStatus.isOnMavenCentral()) {
-				mavenCoords.add(repoStatus.coordinate());
+		if (useMavenCentral) {
+			for (var unit : getJars()) {
+				var repoStatus = RepoStatus.forUnit(unit);
+				if (repoStatus.isOnMavenCentral()) {
+					mavenCoords.add(repoStatus.coordinate());
+				}
 			}
 		}
 		return mavenCoords;
 	}
 
 	/** Returns all jars which are not on maven central. */
-	public List<P2Unit> getJarsNotOnMavenCentral() {
+	public List<P2Unit> getJarsNotOnMavenCentral(boolean useMavenCentral) {
 		var notOnMaven = new ArrayList<P2Unit>();
 		for (var unit : getJars()) {
 			var repoStatus = RepoStatus.forUnit(unit);
-			if (!repoStatus.isOnMavenCentral()) {
+			if (!repoStatus.isOnMavenCentral() || !useMavenCentral) {
 				notOnMaven.add(unit);
 			}
 		}
