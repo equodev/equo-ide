@@ -17,7 +17,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import okhttp3.OkHttpClient;
-import okhttp3.Request;
 import okio.Okio;
 
 class JarCache {
