@@ -5,6 +5,8 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 ## [Unreleased]
 
 ## [1.7.2] - 2023-08-01
+### Added
+- `P2Model#useMavenCentral = false` to force pure-P2 resolution. ([#164](https://github.com/equodev/equo-ide/pull/164))
 ### Changed
 - Bump `equoChromium` default version `106.0.10` -> `106.0.13`.
 ### Fixed
