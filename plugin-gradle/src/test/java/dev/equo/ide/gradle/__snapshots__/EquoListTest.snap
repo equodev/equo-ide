@@ -1321,8 +1321,6 @@ Options
 
      --request     Lists the full p2 request we are making (helpful for debugging catalog)
 
-     --rerun     Causes the task to be re-run even if up-to-date.
-
 Description
      Lists the p2 dependencies of an Eclipse application
 
