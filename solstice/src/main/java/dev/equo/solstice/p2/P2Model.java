@@ -207,7 +207,7 @@ public class P2Model {
 	public String toString() {
 		StringBuilder buf = new StringBuilder();
 		buf.append('{');
-		buf.append("'useMavenCentral' : '" + useMavenCentral + "',");
+		buf.append("'useMavenCentral': " + useMavenCentral + ",\n");
 		if (!p2repo.isEmpty()) {
 			appendSet(buf, "p2repo", p2repo);
 		}
