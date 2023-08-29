@@ -17,7 +17,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import okhttp3.OkHttpClient;
-import okhttp3.Request;
 import okio.Okio;
 
 class JarCache {
@@ -41,7 +40,7 @@ class JarCache {
 				FileMisc.mkdirs(repoDir);
 				FileMisc.writeToken(repoDir, ".url", unit.getRepoUrl());
 			}
-			var request = new Request.Builder().url(unit.getJarUrl()).build();
+			var request = P2Client.buildRequest(unit.getJarUrl());
 			var tempFile = File.createTempFile(unit.id, ".jar");
 			try (var response = client.newCall(request).execute()) {
 				if (response.code() == 200) {
