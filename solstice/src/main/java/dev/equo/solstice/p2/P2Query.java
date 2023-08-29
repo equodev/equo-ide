@@ -226,7 +226,7 @@ public class P2Query {
 	}
 
 	/** Returns all jars which are on maven central. */
-	public List<String> getJarsOnMavenCentral(Boolean useMavenCentral) {
+	public List<String> getJarsOnMavenCentral(boolean useMavenCentral) {
 		var mavenCoords = new ArrayList<String>();
 		if (useMavenCentral) {
 			for (var unit : getJars()) {
@@ -240,7 +240,7 @@ public class P2Query {
 	}
 
 	/** Returns all jars which are not on maven central. */
-	public List<P2Unit> getJarsNotOnMavenCentral(Boolean useMavenCentral) {
+	public List<P2Unit> getJarsNotOnMavenCentral(boolean useMavenCentral) {
 		var notOnMaven = new ArrayList<P2Unit>();
 		for (var unit : getJars()) {
 			var repoStatus = RepoStatus.forUnit(unit);

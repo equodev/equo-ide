@@ -31,7 +31,7 @@ public class P2ModelDsl {
 		this(new P2Model());
 	}
 
-	public void useMavenCentral(Boolean value) {
+	public void useMavenCentral(boolean value) {
 		model.useMavenCentral = value;
 	}
 

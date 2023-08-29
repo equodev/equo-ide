@@ -30,7 +30,7 @@ public class P2Model {
 	/**
 	 * If false, do not use maven central to resolve dependencies, just use the configured p2 repos
 	 */
-	public Boolean useMavenCentral = true;
+	public boolean useMavenCentral = true;
 
 	public TreeSet<String> getP2repo() {
 		return p2repo;
