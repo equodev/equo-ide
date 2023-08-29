@@ -30,7 +30,7 @@ public class P2Model {
 	/**
 	 * If false, do not use maven central to resolve dependencies, just use the configured p2 repos
 	 */
-	public  Boolean useMavenCentral = true;
+	public Boolean useMavenCentral = true;
 
 	public TreeSet<String> getP2repo() {
 		return p2repo;
@@ -134,7 +134,7 @@ public class P2Model {
 		}
 		try {
 			var query = queryRaw(clientCachingPolicy);
-			var queryResult = new P2QueryResult(query, clientCachingPolicy,this.useMavenCentral);
+			var queryResult = new P2QueryResult(query, clientCachingPolicy, this.useMavenCentral);
 			if (queryCachingPolicy.allowWrite()) {
 				QueryCacheOnDisk onDisk = new QueryCacheOnDisk(CacheLocations.p2Queries(), this);
 				onDisk.put(queryResult);
@@ -207,7 +207,7 @@ public class P2Model {
 	public String toString() {
 		StringBuilder buf = new StringBuilder();
 		buf.append('{');
-		buf.append("'useMavenCentral' : '"+useMavenCentral+"',");
+		buf.append("'useMavenCentral' : '" + useMavenCentral + "',");
 		if (!p2repo.isEmpty()) {
 			appendSet(buf, "p2repo", p2repo);
 		}
