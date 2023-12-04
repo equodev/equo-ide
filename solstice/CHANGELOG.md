@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+
+## [1.7.4] - 2023-12-04
 ### Fixed
 - Stop prematurely decoding `jarUrl` in `SolsticeManifest` to fix nested jars that have `+` in their name. ([#166](https://github.com/equodev/equo-ide/pull/166) fixes [diffplug/spotless#1860](https://github.com/diffplug/spotless/issues/1860#issuecomment-1826113332)) 
 
