@@ -18,8 +18,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -77,7 +75,7 @@ public class SolsticeManifest {
 
 	SolsticeManifest(URL manifestURL, int classpathOrder) {
 		this.classpathOrder = classpathOrder;
-		var externalForm = URLDecoder.decode(manifestURL.toExternalForm(), StandardCharsets.UTF_8);
+		var externalForm = manifestURL.toExternalForm();
 		if (!externalForm.endsWith(SLASH_MANIFEST_PATH)) {
 			throw new IllegalArgumentException(
 					"Expected manifest to end with " + SLASH_MANIFEST_PATH + " but was " + externalForm);
