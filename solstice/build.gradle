@@ -50,7 +50,7 @@ dependencies {
 
 	// needed to navigate p2
 	implementation 'org.tukaani:xz:1.9'
-	implementation 'com.squareup.okhttp3:okhttp:4.11.0'
+	implementation 'com.squareup.okhttp3:okhttp:4.12.0'
 
 	testImplementation "org.slf4j:slf4j-simple:$VER_SLF4J"
 	testImplementation "org.junit.jupiter:junit-jupiter:$VER_JUNIT"
