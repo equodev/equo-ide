@@ -56,11 +56,11 @@ public class EquoChromium extends Catalog.PureMaven {
 		if (OS.getRunning().isLinux()) {
 			return "Mozilla/5.0 (X11\\; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/"
 					+ chromiumMajor
-					+ ".0.0.0 Safari/537.36";
+					+ ".0.0.0";
 		} else if (OS.getRunning().isWindows()) {
 			return "Mozilla/5.0 (Windows NT 10.0\\; Win64\\; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/"
 					+ chromiumMajor
-					+ ".0.0.0 Safari/537.36";
+					+ ".0.0.0";
 		} else {
 			String osVersion = "10_0_0";
 			String osVersionProperty = System.getProperty("os.version");
@@ -71,7 +71,7 @@ public class EquoChromium extends Catalog.PureMaven {
 					+ osVersion
 					+ ") AppleWebKit/537.36 (KHTML, like Gecko) Chrome/"
 					+ chromiumMajor
-					+ ".0.0.0 Safari/537.36";
+					+ ".0.0.0";
 		}
 	}
 }
