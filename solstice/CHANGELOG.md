@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+### Fixed
+- Change Equo Chromium user agent so that OpenAI login works. ([#169](https://github.com/equodev/equo-ide/pull/169))
 
 ## [1.7.4] - 2023-12-04
 ### Fixed
