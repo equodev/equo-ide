@@ -13,6 +13,7 @@
  *******************************************************************************/
 package dev.equo.ide.gradle;
 
+import com.diffplug.common.swt.os.OS;
 import dev.equo.solstice.p2.CacheLocations;
 import java.io.File;
 import java.lang.reflect.Field;
@@ -21,6 +22,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.gradle.api.GradleException;
 import org.gradle.api.Project;
+import org.gradle.api.provider.Provider;
 
 class GradleCommon {
 	static final String MINIMUM_GRADLE = "6.0";
@@ -29,6 +31,7 @@ class GradleCommon {
 		if (gradleIsTooOld(project)) {
 			throw new GradleException(name + " requires Gradle " + MINIMUM_GRADLE + " or later");
 		}
+		platformSpecificBuild(project);
 		setCacheLocations(project);
 	}
 
@@ -70,12 +73,40 @@ class GradleCommon {
 	static boolean anyArgMatching(Project project, Predicate<String> predicate) {
 		return project.getGradle().getStartParameter().getTaskRequests().stream()
 				.flatMap(taskReq -> taskReq.getArgs().stream())
-				.filter(predicate)
-				.findAny()
-				.isPresent();
+				.anyMatch(predicate);
 	}
 
 	static boolean anyArgEquals(Project project, String arg) {
 		return anyArgMatching(project, a -> a.equals(arg));
 	}
+
+	// copied from
+	// https://github.com/diffplug/goomph/blob/main/src/main/java/com/diffplug/gradle/swt/PlatformSpecificBuildPlugin.java
+	private static void platformSpecificBuild(Project settings) {
+		OS.detectPlatform(
+				systemProp -> get(settings, settings.getProviders().systemProperty(systemProp)),
+				envVar -> get(settings, settings.getProviders().environmentVariable(envVar)),
+				cmds ->
+						get(
+								settings,
+								settings
+										.getProviders()
+										.exec(
+												e -> {
+													e.commandLine(cmds.toArray());
+												})
+										.getStandardOutput()
+										.getAsText()));
+	}
+
+	private static <T> T get(Project settings, Provider<T> provider) {
+		if (badSemver(settings.getGradle().getGradleVersion())
+				>= badSemver(STOP_FORUSE_AT_CONFIGURATION_TIME)) {
+			return provider.get();
+		} else {
+			return provider.forUseAtConfigurationTime().get();
+		}
+	}
+
+	private static final String STOP_FORUSE_AT_CONFIGURATION_TIME = "7.4";
 }
