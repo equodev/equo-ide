@@ -24,10 +24,10 @@ public class P2DepsPlugin implements Plugin<Project> {
 
 	@Override
 	public void apply(Project project) {
-		if (EquoIdeGradlePlugin.gradleIsTooOld(project)) {
+		if (GradleCommon.gradleIsTooOld(project)) {
 			throw new GradleException("dev.equo.p2deps requires Gradle 6.0 or later");
 		}
-		EquoIdeGradlePlugin.setCacheLocations(project);
+		GradleCommon.setCacheLocations(project);
 
 		var p2deps = project.getExtensions().create(P2DEPS, P2DepsExtension.class, project);
 		project.afterEvaluate(

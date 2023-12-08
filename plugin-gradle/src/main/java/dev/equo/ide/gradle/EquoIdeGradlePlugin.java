@@ -17,13 +17,8 @@ import com.diffplug.common.swt.os.SwtPlatform;
 import dev.equo.ide.Catalog;
 import dev.equo.ide.WorkspaceInit;
 import dev.equo.solstice.NestedJars;
-import dev.equo.solstice.p2.CacheLocations;
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Field;
-import java.util.function.Predicate;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import org.gradle.api.GradleException;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
@@ -33,8 +28,6 @@ import org.gradle.api.attributes.Bundling;
 import org.gradle.api.tasks.TaskProvider;
 
 public class EquoIdeGradlePlugin implements Plugin<Project> {
-	static final String MINIMUM_GRADLE = "6.0";
-
 	private static final String TASK_GROUP = "IDE";
 	static final String EQUO_IDE = "equoIde";
 	private static final String EQUO_LIST = "equoList";
@@ -43,15 +36,15 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 
 	@Override
 	public void apply(Project project) {
-		if (gradleIsTooOld(project)) {
+		if (GradleCommon.gradleIsTooOld(project)) {
 			throw new GradleException("equoIde requires Gradle 6.0 or later");
 		}
-		setCacheLocations(project);
+		GradleCommon.setCacheLocations(project);
 
 		var extension = project.getExtensions().create(EQUO_IDE, EquoIdeExtension.class, project);
 		extension.branding.title(project.getName());
 
-		boolean equoIdeWasCalledDirectly = anyArgEquals(project, EQUO_IDE);
+		boolean equoIdeWasCalledDirectly = GradleCommon.anyArgEquals(project, EQUO_IDE);
 		var equoIde = createConfiguration(project, EQUO_IDE);
 		var equoIdeTask =
 				project
@@ -108,7 +101,7 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 								model.query(P2ModelDsl.clientCaching(project), P2ModelDsl.queryCaching(project));
 						workspace.copyAllFrom(extension.workspace);
 						boolean useAtomosOverrideTrue =
-								anyArgMatching(
+								GradleCommon.anyArgMatching(
 										project,
 										arg ->
 												arg.startsWith(USE_ATOMOS_FLAG)
@@ -145,18 +138,6 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 				});
 	}
 
-	static boolean anyArgMatching(Project project, Predicate<String> predicate) {
-		return project.getGradle().getStartParameter().getTaskRequests().stream()
-				.flatMap(taskReq -> taskReq.getArgs().stream())
-				.filter(predicate)
-				.findAny()
-				.isPresent();
-	}
-
-	static boolean anyArgEquals(Project project, String arg) {
-		return anyArgMatching(project, a -> a.equals(arg));
-	}
-
 	private Configuration createConfiguration(Project project, String name) {
 		return project
 				.getConfigurations()
@@ -173,40 +154,5 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 							config.setVisible(false);
 							P2DepsExtension.replace$osgiplatformWith(config, SwtPlatform.getRunning().toString());
 						});
-	}
-
-	static void setCacheLocations(Project project) {
-		// let the user override cache locations from ~/.gradle/gradle.properties
-		for (Field field : CacheLocations.class.getFields()) {
-			Object value = project.findProperty("equo_" + field.getName());
-			if (value != null) {
-				try {
-					field.set(null, new File(value.toString()));
-				} catch (IllegalAccessException e) {
-					throw new RuntimeException(e);
-				}
-			}
-		}
-	}
-
-	private static final Pattern BAD_SEMVER = Pattern.compile("(\\d+)\\.(\\d+)");
-
-	static boolean gradleIsTooOld(Project project) {
-		return badSemver(project.getGradle().getGradleVersion()) < badSemver(MINIMUM_GRADLE);
-	}
-
-	private static int badSemver(String input) {
-		Matcher matcher = BAD_SEMVER.matcher(input);
-		if (!matcher.find() || matcher.start() != 0) {
-			throw new IllegalArgumentException("Version must start with " + BAD_SEMVER.pattern());
-		}
-		String major = matcher.group(1);
-		String minor = matcher.group(2);
-		return badSemver(Integer.parseInt(major), Integer.parseInt(minor));
-	}
-
-	/** Ambiguous after 2147.483647.blah-blah */
-	private static int badSemver(int major, int minor) {
-		return major * 1_000_000 + minor;
 	}
 }

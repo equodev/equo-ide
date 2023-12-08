@@ -64,16 +64,16 @@ public class P2ModelDsl {
 
 	static P2ClientCache clientCaching(Project project) {
 		boolean forceRecalculate =
-				EquoIdeGradlePlugin.anyArgEquals(project, CLEAN_FLAG)
-						|| EquoIdeGradlePlugin.anyArgEquals(project, REFRESH_DEPENDENCIES);
+				GradleCommon.anyArgEquals(project, CLEAN_FLAG)
+						|| GradleCommon.anyArgEquals(project, REFRESH_DEPENDENCIES);
 		return P2ClientCache.defaultIfOfflineIsAndForceRecalculateIs(
 				project.getGradle().getStartParameter().isOffline(), forceRecalculate);
 	}
 
 	static P2QueryCache queryCaching(Project project) {
 		boolean forceRecalculate =
-				EquoIdeGradlePlugin.anyArgEquals(project, CLEAN_FLAG)
-						|| EquoIdeGradlePlugin.anyArgEquals(project, REFRESH_DEPENDENCIES);
+				GradleCommon.anyArgEquals(project, CLEAN_FLAG)
+						|| GradleCommon.anyArgEquals(project, REFRESH_DEPENDENCIES);
 		return forceRecalculate ? P2QueryCache.FORCE_RECALCULATE : P2QueryCache.ALLOW;
 	}
 
