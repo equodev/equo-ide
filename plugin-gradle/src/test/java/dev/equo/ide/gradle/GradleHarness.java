@@ -91,15 +91,15 @@ public class GradleHarness extends ResourceHarness {
 				// to support these older versions, we'll need to do some clever stuff
 				// in EquoIdeGradlePlugin to detect which EquoIdeTask to run,
 			case 13:
-				return "6.0";
+//				return "6.0";
 			case 14:
-				return "6.3";
+//				return "6.3";
 			case 15:
-				return "6.7";
+//				return "6.7";
 			case 16:
-				return "7.0";
+//				return "7.0";
 			case 17:
-				return "7.3";
+//				return "7.3";
 			case 18:
 				return "7.5";
 			case 19:

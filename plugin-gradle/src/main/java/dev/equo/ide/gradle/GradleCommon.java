@@ -25,7 +25,7 @@ import org.gradle.api.Project;
 import org.gradle.api.provider.Provider;
 
 class GradleCommon {
-	static final String MINIMUM_GRADLE = "6.0";
+	static final String MINIMUM_GRADLE = "7.5";
 
 	static void initialize(Project project, String name) {
 		if (gradleIsTooOld(project)) {
