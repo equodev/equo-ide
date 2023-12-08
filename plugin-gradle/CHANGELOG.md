@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+### Fixed
+- Fix configuration cache warnings. ([#167](https://github.com/equodev/equo-ide/issues/167))
 
 ## [1.7.4] - 2023-12-08
 ### Fixed
