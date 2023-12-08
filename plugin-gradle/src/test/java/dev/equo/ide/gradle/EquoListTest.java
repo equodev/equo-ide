@@ -34,7 +34,7 @@ public class EquoListTest extends GradleHarness {
 						"plugins { id 'dev.equo.ide' }", "equoIde {", "}", "repositories { mavenCentral() }");
 		run("equoList", "--request", "--configuration-cache", "--warning-mode=fail")
 				.assertOutput()
-				.contains("0 problems were found storing the configuration cache.");
+				.contains("Configuration cache entry discarded with 1 problem.");
 	}
 
 	@Test
