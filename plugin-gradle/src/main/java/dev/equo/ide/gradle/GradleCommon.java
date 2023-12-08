@@ -19,16 +19,24 @@ import java.lang.reflect.Field;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.gradle.api.GradleException;
 import org.gradle.api.Project;
 
 class GradleCommon {
 	static final String MINIMUM_GRADLE = "6.0";
 
-	static boolean gradleIsTooOld(Project project) {
+	static void initialize(Project project, String name) {
+		if (gradleIsTooOld(project)) {
+			throw new GradleException(name + " requires Gradle " + MINIMUM_GRADLE + " or later");
+		}
+		setCacheLocations(project);
+	}
+
+	private static boolean gradleIsTooOld(Project project) {
 		return badSemver(project.getGradle().getGradleVersion()) < badSemver(MINIMUM_GRADLE);
 	}
 
-	static void setCacheLocations(Project project) {
+	private static void setCacheLocations(Project project) {
 		// let the user override cache locations from ~/.gradle/gradle.properties
 		for (Field field : CacheLocations.class.getFields()) {
 			Object value = project.findProperty("equo_" + field.getName());

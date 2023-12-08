@@ -36,10 +36,7 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 
 	@Override
 	public void apply(Project project) {
-		if (GradleCommon.gradleIsTooOld(project)) {
-			throw new GradleException("equoIde requires Gradle 6.0 or later");
-		}
-		GradleCommon.setCacheLocations(project);
+		GradleCommon.initialize(project, "equoIde");
 
 		var extension = project.getExtensions().create(EQUO_IDE, EquoIdeExtension.class, project);
 		extension.branding.title(project.getName());

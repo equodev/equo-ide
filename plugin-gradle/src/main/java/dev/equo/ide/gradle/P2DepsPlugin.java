@@ -13,7 +13,6 @@
  *******************************************************************************/
 package dev.equo.ide.gradle;
 
-import org.gradle.api.GradleException;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 
@@ -24,11 +23,7 @@ public class P2DepsPlugin implements Plugin<Project> {
 
 	@Override
 	public void apply(Project project) {
-		if (GradleCommon.gradleIsTooOld(project)) {
-			throw new GradleException("dev.equo.p2deps requires Gradle 6.0 or later");
-		}
-		GradleCommon.setCacheLocations(project);
-
+		GradleCommon.initialize(project, "dev.equo.p2deps");
 		var p2deps = project.getExtensions().create(P2DEPS, P2DepsExtension.class, project);
 		project.afterEvaluate(
 				unused -> {
