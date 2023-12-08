@@ -65,6 +65,10 @@ public class GradleHarness extends ResourceHarness {
 		public void snapshot(Expect expect) {
 			expect.toMatchSnapshot(output.trim());
 		}
+
+		public AbstractStringAssert<?> assertOutput() {
+			return Assertions.assertThat(output);
+		}
 	}
 
 	protected AbstractStringAssert<?> runFailAndAssert(String... args) throws IOException {

@@ -52,6 +52,7 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 								task -> {
 									task.setGroup(TASK_GROUP);
 									task.setDescription("Launches an Eclipse-based IDE for this project");
+									task.notCompatibleWithConfigurationCache("Not part of tight iteration loops.");
 									task.getEquoIdeWasCalledDirectly().set(equoIdeWasCalledDirectly);
 								});
 		project
@@ -62,6 +63,7 @@ public class EquoIdeGradlePlugin implements Plugin<Project> {
 						task -> {
 							task.setGroup(TASK_GROUP);
 							task.setDescription("Lists the p2 dependencies of an Eclipse application");
+							task.notCompatibleWithConfigurationCache("Not part of tight iteration loops.");
 
 							task.getClientCaching().set(P2ModelDsl.clientCaching(project));
 							task.getExtension().set(extension);
