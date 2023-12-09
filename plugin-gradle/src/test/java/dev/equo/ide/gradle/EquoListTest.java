@@ -28,6 +28,16 @@ public class EquoListTest extends GradleHarness {
 	}
 
 	@Test
+	public void configCache() throws IOException {
+		setFile("build.gradle")
+				.toLines(
+						"plugins { id 'dev.equo.ide' }", "equoIde {", "}", "repositories { mavenCentral() }");
+		run("equoList", "--request", "--configuration-cache", "--warning-mode=fail")
+				.assertOutput()
+				.contains("Configuration cache entry discarded with 1 problem.");
+	}
+
+	@Test
 	public void defaultP2(Expect expect) throws IOException {
 		setFile("build.gradle")
 				.toLines(

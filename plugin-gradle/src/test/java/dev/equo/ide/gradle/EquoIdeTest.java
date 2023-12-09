@@ -29,6 +29,16 @@ public class EquoIdeTest extends GradleHarness {
 	}
 
 	@Test
+	public void configCache() throws IOException {
+		setFile("build.gradle")
+				.toLines(
+						"plugins { id 'dev.equo.ide' }", "equoIde {", "}", "repositories { mavenCentral() }");
+		run("equoIde", "--debug-classpath=names", "--configuration-cache", "--warning-mode=fail")
+				.assertOutput()
+				.contains("0 problems were found storing the configuration cache.");
+	}
+
+	@Test
 	public void help(Expect expect) throws IOException {
 		setFile("build.gradle").toContent("plugins { id 'dev.equo.ide' }");
 		run("-q", "help", "--task", "equoIde").snapshot(expect);
