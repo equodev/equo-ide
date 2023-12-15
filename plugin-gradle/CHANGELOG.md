@@ -3,6 +3,10 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+### Changed
+- Bump `equoChromium` default version `106.0.13` -> `106.0.22`.
+### Fixed
+- Equo-IDE crashes when hovering to view javadocs with Equo Chromium.
 
 ## [1.7.5] - 2023-12-09
 ### Fixed
