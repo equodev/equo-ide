@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+
+## [1.7.6] - 2023-12-20
 ### Changed
 - Bump `equoChromium` default version `106.0.13` -> `106.0.22`.
 ### Fixed
