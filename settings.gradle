@@ -12,7 +12,7 @@ pluginManagement {
 		// https://github.com/diffplug/spotless/blob/main/plugin-gradle/CHANGES.md
 		// Stuck on 6.16.0 as the last version before Spotless adopted Solstice
 		// Gradle tries to replace the Spotless' transitive dep with the solstice-in-progress
-		id 'com.diffplug.spotless'                      version '6.23.3'
+		id 'com.diffplug.spotless'                      version '6.16.0'
 		// https://github.com/diffplug/spotless-changelog/blob/main/CHANGELOG.md
 		id 'com.diffplug.spotless-changelog'            version '3.0.2'
 		// https://plugins.gradle.org/plugin/com.gradle.plugin-publish
