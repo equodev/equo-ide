@@ -3,6 +3,10 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+### Changed
+- Bump `equoChromium` default version `106.0.22` -> `116.0.15`.
+### Fixed
+- Resolve error in ChatGPT integration.
 
 ## [1.5.5] - 2023-12-20
 ### Changed
