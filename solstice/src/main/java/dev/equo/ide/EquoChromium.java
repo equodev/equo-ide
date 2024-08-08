@@ -26,7 +26,8 @@ import java.util.List;
  */
 public class EquoChromium extends Catalog.PureMaven {
 
-	private static final String EQUO_CHROMIUM_VERSION = "106.0.22";
+	private static final String EQUO_CHROMIUM_VERSION = "116.0.15";
+	private static final String EQUO_CHROMIUM_CEF_VERSION = "116.0.13";
 
 	EquoChromium() {
 		super(
@@ -34,7 +35,7 @@ public class EquoChromium extends Catalog.PureMaven {
 				jre11(EQUO_CHROMIUM_VERSION),
 				List.of(
 						"com.equo:com.equo.chromium:" + V,
-						"com.equo:com.equo.chromium.cef." + SwtPlatform.getRunning() + ":" + V),
+						"com.equo:com.equo.chromium.cef." + SwtPlatform.getRunning() + ":" + EQUO_CHROMIUM_CEF_VERSION),
 				PLATFORM);
 	}
 
