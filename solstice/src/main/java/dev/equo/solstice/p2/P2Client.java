@@ -16,9 +16,14 @@ package dev.equo.solstice.p2;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
+import java.nio.file.Path;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -151,6 +156,10 @@ public class P2Client implements AutoCloseable {
 		return builder.build();
 	}
 
+	static boolean isFileUrl(String url) {
+		return url.startsWith("file://");
+	}
+
 	private byte[] getBytes(String url) throws IOException, NotFoundException {
 		if (cachingPolicy.tryOfflineFirst()) {
 			var cached = offlineMetadataCache.get(url);
@@ -161,7 +170,18 @@ public class P2Client implements AutoCloseable {
 				return cached;
 			}
 		}
-		if (cachingPolicy.networkAllowed()) {
+		if (isFileUrl(url)) {
+			try {
+				return Files.readAllBytes(Path.of(new URI(url)));
+			} catch (URISyntaxException e) {
+				throw new IOException("Cannot parse file url", e);
+			} catch (NoSuchFileException e) {
+				if (cachingPolicy.cacheAllowed()) {
+					offlineMetadataCache.put404(url);
+				}
+				throw new NotFoundException(url);
+			}
+		} else if (cachingPolicy.networkAllowed()) {
 			var request = buildRequest(url);
 			try (var response = metadataClient.newCall(request).execute()) {
 				if (response.code() == 404) {

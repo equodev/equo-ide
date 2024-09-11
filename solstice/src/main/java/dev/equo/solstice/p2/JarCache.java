@@ -15,7 +15,11 @@ package dev.equo.solstice.p2;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
+import java.nio.file.Path;
+
 import okhttp3.OkHttpClient;
 import okio.Okio;
 
@@ -35,7 +39,14 @@ class JarCache {
 		if (jar.isFile()) {
 			return jar;
 		}
-		if (cachingPolicy.networkAllowed()) {
+		if (P2Client.isFileUrl(unit.getJarUrl())) {
+			try {
+				Files.copy(Path.of(new URI(unit.getJarUrl())), jar.toPath());
+			} catch (URISyntaxException e) {
+				throw new IllegalArgumentException("Cannot parse url", e);
+			}
+			return jar;
+		} else if (cachingPolicy.networkAllowed()) {
 			if (!repoDir.isDirectory()) {
 				FileMisc.mkdirs(repoDir);
 				FileMisc.writeToken(repoDir, ".url", unit.getRepoUrl());
