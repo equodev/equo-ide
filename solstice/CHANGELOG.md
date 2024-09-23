@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+### Added
+- Add support for URLs with `file` scheme. ([#178](https://github.com/equodev/equo-ide/pull/178))
 
 ## [1.7.7] - 2024-08-08
 ### Changed
