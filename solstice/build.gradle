@@ -103,7 +103,7 @@ p2deps {
 		install 'org.eclipse.buildship.feature.group'
 	}
 	into 'm2eCompileOnly', {
-		m2e('2.7.0')
+		m2e('2.6.2')
 	}
 }
 
