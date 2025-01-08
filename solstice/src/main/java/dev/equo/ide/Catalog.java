@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2023 EquoTech, Inc. and others.
+ * Copyright (c) 2023-2025 EquoTech, Inc. and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -89,7 +89,7 @@ public class Catalog implements Comparable<Catalog> {
 			new Catalog(
 					"m2e",
 					"https://download.eclipse.org/technology/m2e/releases/" + V,
-					jre11("1.20.1").jre(17, "2.3.0"),
+					jre11("1.20.1").jre(17, "2.6.2"),
 					List.of("org.eclipse.m2e.feature.feature.group"),
 					JDT,
 					WST,
