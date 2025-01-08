@@ -29,10 +29,8 @@ jobs:
         with:
           java-version: ${{ matrix.java }}
           distribution: 'temurin'
-      - name: gradle wrapper
-        uses: gradle/wrapper-validation-action@v1
       - name: gradle caching
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/actions/setup-gradle@v4
       - run: sudo apt-get install xvfb
       - run: git fetch origin main
       - run: |
@@ -42,7 +40,7 @@ jobs:
       - name: cleanup xvfb pidx
         uses: bcomnes/cleanup-xvfb@v1
       - name: junit result
-        uses: mikepenz/action-junit-report@v3
+        uses: mikepenz/action-junit-report@v5
         if: always() # always run even if the previous step fails
         with:
           check_name: Linux Java ${{ matrix.java }} JUnit
@@ -60,14 +58,12 @@ jobs:
         with:
           java-version: ${{ matrix.java }}
           distribution: 'temurin'
-      - name: gradle wrapper
-        uses: gradle/wrapper-validation-action@v1
       - name: gradle caching
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/actions/setup-gradle@v4
       - run: git fetch origin main
       - run: ./gradlew build
       - name: junit result
-        uses: mikepenz/action-junit-report@v3.6.1
+        uses: mikepenz/action-junit-report@v5
         if: always() # always run even if the previous step fails
         with:
           check_name: Windows Java ${{ matrix.java }} JUnit
