@@ -66,6 +66,10 @@ tasks.named('test') {
 apply from: 干.file('snapshot-testing.gradle')
 
 def PLUGIN_SHIMS = ['welcome', 'buildship', 'm2e']
+if (!JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_17)) {
+	PLUGIN_SHIMS.remove('buildship')
+	PLUGIN_SHIMS.remove('m2e')
+}
 for (shim in PLUGIN_SHIMS) {
 	sourceSets.register(shim) {
 		compileClasspath += sourceSets.main.output
