@@ -41,6 +41,8 @@ jobs:
           ./gradlew build
       - name: cleanup xvfb pidx
         uses: bcomnes/cleanup-xvfb@v1
+      - name: List test results
+        run: ls -R */build/test-results/test/
       - name: junit result
         uses: mikepenz/action-junit-report@v5
         if: always() # always run even if the previous step fails
