@@ -25,7 +25,7 @@ class LockFile implements AutoCloseable {
 
 	LockFile(File dir) throws IOException {
 		FileMisc.mkdirs(dir);
-		lockFile = new File(dir, ".lock");
+		lockFile = new File(dir, ".lock").getCanonicalFile();
 		int timeout =
 				System.getProperty("lockFileGenerousTimeout") != null ? WAIT_FOR_BUSY_CI : WAIT_FOR_BUSY;
 		FileMisc.retry(
