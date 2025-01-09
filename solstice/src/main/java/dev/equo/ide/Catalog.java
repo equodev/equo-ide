@@ -72,8 +72,8 @@ public class Catalog implements Comparable<Catalog> {
 	public static final Catalog GRADLE_BUILDSHIP =
 			new Catalog(
 					"gradleBuildship",
-					"https://download.eclipse.org/buildship/updates/e427/releases/3.x/" + V,
-					jre11("3.1.7.v20230428-1350"),
+					"https://download.eclipse.org/buildship/updates/e431/releases/3.x/" + V,
+					jre17("3.1.10.v20240802-1211/"),
 					List.of("org.eclipse.buildship.feature.group"),
 					JDT);
 
