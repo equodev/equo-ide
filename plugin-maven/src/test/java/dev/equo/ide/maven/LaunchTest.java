@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2022-2023 EquoTech, Inc. and others.
+ * Copyright (c) 2022-2025 EquoTech, Inc. and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -13,22 +13,19 @@
  *******************************************************************************/
 package dev.equo.ide.maven;
 
-import au.com.origin.snapshots.Expect;
-import au.com.origin.snapshots.junit5.SnapshotExtension;
 import dev.equo.ide.Launcher;
 import java.io.IOException;
 import java.util.Arrays;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 
-@ExtendWith({SnapshotExtension.class})
 public class LaunchTest extends MavenHarness {
 	@Test
-	public void help(Expect expect) throws IOException, InterruptedException {
+	public void help() throws IOException, InterruptedException {
 		setPom("");
 		mvnw("help:describe -Dcmd=equo-ide:launch -Ddetail")
-				.snapshotBetween("Mojo: 'equo-ide:launch'", "[INFO] BUILD SUCCESS", expect);
+				.snapshotBetween("Mojo: 'equo-ide:launch'", "[INFO] BUILD SUCCESS")
+				.toMatchDisk();
 	}
 
 	@Test

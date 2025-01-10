@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2022-2023 EquoTech, Inc. and others.
+ * Copyright (c) 2022-2025 EquoTech, Inc. and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -13,34 +13,31 @@
  *******************************************************************************/
 package dev.equo.ide.maven;
 
-import au.com.origin.snapshots.Expect;
-import au.com.origin.snapshots.junit5.SnapshotExtension;
 import java.io.IOException;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 
-@ExtendWith({SnapshotExtension.class})
 public class ListTest extends MavenHarness {
 	@Test
-	public void help(Expect expect) throws IOException, InterruptedException {
+	public void help() throws IOException, InterruptedException {
 		setPom("");
 		mvnw("help:describe -Dcmd=equo-ide:list -Ddetail")
-				.snapshotBetween("Mojo: 'equo-ide:list'", "[INFO] BUILD SUCCESS", expect);
+				.snapshotBetween("Mojo: 'equo-ide:list'", "[INFO] BUILD SUCCESS")
+				.toMatchDisk();
 	}
 
 	@Test
-	public void argErrorCheck(Expect expect) throws IOException, InterruptedException {
+	public void argErrorCheck() throws IOException, InterruptedException {
 		setPom("");
 		mvnw("equo-ide:list")
-				.snapshotBetween(
-						" on project equo-maven-test-harness: ", "-> [Help 1]", expect.scenario("no args"));
+				.snapshotBetween(" on project equo-maven-test-harness: ", "-> [Help 1]")
+				.toMatchDisk("no args");
 		mvnw("equo-ide:list -Dinstalled -Dproblems")
-				.snapshotBetween(
-						" on project equo-maven-test-harness: ", "-> [Help 1]", expect.scenario("multi args"));
+				.snapshotBetween(" on project equo-maven-test-harness: ", "-> [Help 1]")
+				.toMatchDisk("multi args");
 	}
 
 	@Test
-	public void defaultP2(Expect expect) throws IOException, InterruptedException {
+	public void defaultP2() throws IOException, InterruptedException {
 		setPom(
 				""
 						+ "<p2repos>\n"
@@ -54,19 +51,13 @@ public class ListTest extends MavenHarness {
 						+ "</filters>\n"
 						+ "");
 		mvnw("equo-ide:list -Dinstalled")
-				.snapshotBetween(
-						"(default-cli) @ equo-maven-test-harness ---",
-						"[INFO] BUILD SUCCESS",
-						expect.scenario("installed"));
+				.snapshotBetween("(default-cli) @ equo-maven-test-harness ---", "[INFO] BUILD SUCCESS")
+				.toMatchDisk("installed");
 		mvnw("equo-ide:list -Dproblems")
-				.snapshotBetween(
-						"(default-cli) @ equo-maven-test-harness ---",
-						"[INFO] BUILD SUCCESS",
-						expect.scenario("problems"));
+				.snapshotBetween("(default-cli) @ equo-maven-test-harness ---", "[INFO] BUILD SUCCESS")
+				.toMatchDisk("problems");
 		mvnw("equo-ide:list -Doptional")
-				.snapshotBetween(
-						"(default-cli) @ equo-maven-test-harness ---",
-						"[INFO] BUILD SUCCESS",
-						expect.scenario("optional"));
+				.snapshotBetween("(default-cli) @ equo-maven-test-harness ---", "[INFO] BUILD SUCCESS")
+				.toMatchDisk("optional");
 	}
 }
