@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2022-2023 EquoTech, Inc. and others.
+ * Copyright (c) 2022-2025 EquoTech, Inc. and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -13,13 +13,11 @@
  *******************************************************************************/
 package dev.equo.solstice.p2;
 
-import au.com.origin.snapshots.Expect;
-import au.com.origin.snapshots.junit5.SnapshotExtension;
+import static com.diffplug.selfie.Selfie.expectSelfie;
+
 import java.util.Comparator;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 
-@ExtendWith({SnapshotExtension.class})
 public class P2MultipleReposTest {
 	private P2Session populateSession() throws Exception {
 		var session = new P2Session();
@@ -45,15 +43,15 @@ public class P2MultipleReposTest {
 	final ConsoleTable.Format format = ConsoleTable.Format.ascii;
 
 	@Test
-	public void features(Expect expect) throws Exception {
+	public void features() throws Exception {
 		var session = populateSession();
 		var query = session.query();
 		query.addAllUnits();
-		expect.toMatchSnapshot(ConsoleTable.nameAndDescription(query.getCategories(), format));
+		expectSelfie(ConsoleTable.nameAndDescription(query.getCategories(), format)).toMatchDisk();
 	}
 
 	@Test
-	public void query(Expect expect) throws Exception {
+	public void query() throws Exception {
 		var query = queryInstall();
 		var buffer = new StringBuilder();
 		buffer.append(ConsoleTable.ambiguousRequirements(query, format));
@@ -61,7 +59,7 @@ public class P2MultipleReposTest {
 		buffer.append(ConsoleTable.unmetRequirements(query, format));
 		buffer.append('\n');
 		buffer.append(ConsoleTable.mavenStatus(query.getJars(), format));
-		expect.toMatchSnapshot(buffer.toString().trim());
+		expectSelfie(buffer.toString().trim()).toMatchDisk();
 	}
 
 	@Test

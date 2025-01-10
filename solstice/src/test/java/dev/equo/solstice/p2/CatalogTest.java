@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2023 EquoTech, Inc. and others.
+ * Copyright (c) 2023-2025 EquoTech, Inc. and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -13,30 +13,28 @@
  *******************************************************************************/
 package dev.equo.solstice.p2;
 
-import au.com.origin.snapshots.Expect;
-import au.com.origin.snapshots.junit5.SnapshotExtension;
+import static com.diffplug.selfie.Selfie.expectSelfie;
+
 import com.diffplug.common.swt.os.SwtPlatform;
 import dev.equo.ide.Catalog;
 import dev.equo.ide.CatalogDsl;
 import dev.equo.ide.IdeHook;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 
-@ExtendWith({SnapshotExtension.class})
 public class CatalogTest {
 	private static final TestCatalogDsl JAVA_11_PLATFORM =
 			new TestCatalogDsl(Catalog.PLATFORM, "4.27");
 
 	@Test
-	public void equoChatGptDefault(Expect expect) {
-		expect.toMatchSnapshot(
-				requestModel(JAVA_11_PLATFORM, new TestCatalogDsl(Catalog.CHATGPT, null)));
+	public void equoChatGptDefault() {
+		expectSelfie(requestModel(JAVA_11_PLATFORM, new TestCatalogDsl(Catalog.CHATGPT, null)))
+				.toMatchDisk();
 	}
 
 	@Test
-	public void equoChatGptFixed(Expect expect) {
-		expect.toMatchSnapshot(
-				requestModel(JAVA_11_PLATFORM, new TestCatalogDsl(Catalog.CHATGPT, "9.9.9")));
+	public void equoChatGptFixed() {
+		expectSelfie(requestModel(JAVA_11_PLATFORM, new TestCatalogDsl(Catalog.CHATGPT, "9.9.9")))
+				.toMatchDisk();
 	}
 
 	static class TestCatalogDsl extends CatalogDsl {
