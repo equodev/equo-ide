@@ -17,7 +17,10 @@ import au.com.origin.snapshots.Expect;
 import au.com.origin.snapshots.junit5.SnapshotExtension;
 import java.io.IOException;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledForJreRange;
 import org.junit.jupiter.api.extension.ExtendWith;
+
+import static org.junit.jupiter.api.condition.JRE.JAVA_17;
 
 @ExtendWith({SnapshotExtension.class})
 public class GradleCatalogTest extends GradleHarness {
@@ -34,6 +37,7 @@ public class GradleCatalogTest extends GradleHarness {
 	}
 
 	@Test
+	@EnabledForJreRange(min = JAVA_17)
 	public void simple(Expect expect) throws IOException {
 		test("jdt('4.27')", expect.scenario("jdt"));
 		test("platform('4.27')\ngradleBuildship()", expect.scenario("gradleBuildship"));
