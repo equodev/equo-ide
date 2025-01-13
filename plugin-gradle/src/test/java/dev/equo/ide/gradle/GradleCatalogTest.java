@@ -13,12 +13,10 @@
  *******************************************************************************/
 package dev.equo.ide.gradle;
 
-import static org.junit.jupiter.api.condition.JRE.JAVA_17;
-
+import com.diffplug.selfie.Selfie;
 import com.diffplug.selfie.StringSelfie;
 import java.io.IOException;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledForJreRange;
 
 public class GradleCatalogTest extends GradleHarness {
 	private StringSelfie test(String content) throws IOException {
@@ -34,10 +32,13 @@ public class GradleCatalogTest extends GradleHarness {
 	}
 
 	@Test
-	@EnabledForJreRange(min = JAVA_17)
 	public void simple() throws IOException {
 		test("jdt('4.27')").toMatchDisk("jdt");
-		test("platform('4.27')\ngradleBuildship()").toMatchDisk("gradleBuildship");
+		if (Runtime.version().feature() > 17) {
+			test("platform('4.27')\ngradleBuildship()").toMatchDisk("gradleBuildship");
+		} else {
+			Selfie.preserveSelfiesOnDisk("gradleBuildship");
+		}
 	}
 
 	@Test

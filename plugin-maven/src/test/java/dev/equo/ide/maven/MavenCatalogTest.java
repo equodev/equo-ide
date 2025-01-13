@@ -13,6 +13,7 @@
  *******************************************************************************/
 package dev.equo.ide.maven;
 
+import com.diffplug.selfie.Selfie;
 import com.diffplug.selfie.StringSelfie;
 import java.io.IOException;
 import org.junit.jupiter.api.Test;
@@ -32,8 +33,12 @@ public class MavenCatalogTest extends MavenHarness {
 	@Test
 	public void simple() throws Exception {
 		test("<platform><version>4.27</version></platform><jdt/>").toMatchDisk("jdt");
-		test("<platform><version>4.27</version></platform><gradleBuildship/>")
-				.toMatchDisk("gradleBuildship");
+		if (Runtime.version().feature() > 17) {
+			test("<platform><version>4.27</version></platform><gradleBuildship/>")
+					.toMatchDisk("gradleBuildship");
+		} else {
+			Selfie.preserveSelfiesOnDisk("gradleBuildship");
+		}
 	}
 
 	@Test
