@@ -2,6 +2,7 @@ dependencies {
 	testImplementation "com.diffplug.selfie:selfie-runner-junit5:$VER_SELFIE"
 }
 test {
+	systemProperty "lockFileGenerousTimeout", "true"
 	environment project.properties.subMap(["selfie"]) // optional, see "Overwrite everything" below
 	inputs.files(fileTree("src/test") {
 		// optional, improves up-to-date checking
