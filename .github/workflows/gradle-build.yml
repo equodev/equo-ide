@@ -71,4 +71,5 @@ jobs:
         if: always() # always run even if the previous step fails
         with:
           check_name: Windows Java ${{ matrix.java }} JUnit
+          check_retries: true
           report_paths: '*/build/test-results/test/TEST-*.xml'
