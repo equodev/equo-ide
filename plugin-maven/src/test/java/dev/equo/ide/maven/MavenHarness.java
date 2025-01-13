@@ -64,6 +64,10 @@ public class MavenHarness extends ResourceHarness {
 			args.add("-c");
 			args.add("./mvnw " + argsAfterMvnw);
 		}
+		var lockFileTimeout = System.getProperty("lockFileGenerousTimeout");
+		if (lockFileTimeout != null) {
+			args.add("-DlockFileGenerousTimeout=" + lockFileTimeout);
+		}
 		try (var runner = new ProcessRunner(rootFolder())) {
 			var outputBytes = runner.exec(args).stdOut();
 			return new Output(new String(outputBytes));
