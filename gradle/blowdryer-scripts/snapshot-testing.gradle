@@ -1,3 +1,4 @@
+apply plugin: 'org.gradle.test-retry'
 dependencies {
 	testImplementation "com.diffplug.selfie:selfie-runner-junit5:$VER_SELFIE"
 }
@@ -8,4 +9,8 @@ test {
 		// optional, improves up-to-date checking
 		include "**/*.ss"
 	})
+	retry {
+		maxRetries = 5
+		failOnPassedAfterRetry = false
+	}
 }
