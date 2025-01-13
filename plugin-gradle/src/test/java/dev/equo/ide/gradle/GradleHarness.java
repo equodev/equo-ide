@@ -13,7 +13,9 @@
  *******************************************************************************/
 package dev.equo.ide.gradle;
 
-import au.com.origin.snapshots.Expect;
+import static com.diffplug.selfie.Selfie.expectSelfie;
+
+import com.diffplug.selfie.StringSelfie;
 import dev.equo.ide.ResourceHarness;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -53,17 +55,17 @@ public class GradleHarness extends ResourceHarness {
 			this.output = output.replace("\r", "");
 		}
 
-		public void snapshotBetween(String before, String after, Expect expect) {
+		public StringSelfie expectSnapshotBetween(String before, String after) {
 			var pattern =
 					Pattern.compile(Pattern.quote(before) + "(.*)" + Pattern.quote(after), Pattern.DOTALL);
 			var matcher = pattern.matcher(output);
 			matcher.find();
 			var toMatch = matcher.group(1).trim();
-			expect.toMatchSnapshot(toMatch);
+			return expectSelfie(toMatch);
 		}
 
-		public void snapshot(Expect expect) {
-			expect.toMatchSnapshot(output.trim());
+		public StringSelfie expectSnapshot() {
+			return expectSelfie(output.trim());
 		}
 
 		public AbstractStringAssert<?> assertOutput() {

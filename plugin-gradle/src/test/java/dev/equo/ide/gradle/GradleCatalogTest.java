@@ -15,16 +15,13 @@ package dev.equo.ide.gradle;
 
 import static org.junit.jupiter.api.condition.JRE.JAVA_17;
 
-import au.com.origin.snapshots.Expect;
-import au.com.origin.snapshots.junit5.SnapshotExtension;
+import com.diffplug.selfie.StringSelfie;
 import java.io.IOException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
-import org.junit.jupiter.api.extension.ExtendWith;
 
-@ExtendWith({SnapshotExtension.class})
 public class GradleCatalogTest extends GradleHarness {
-	private void test(String content, Expect expect) throws IOException {
+	private StringSelfie test(String content) throws IOException {
 		setFile("build.gradle")
 				.toLines(
 						"plugins { id 'dev.equo.ide' }",
@@ -32,27 +29,27 @@ public class GradleCatalogTest extends GradleHarness {
 						content,
 						"  addFilter 'platform-neutral', { platformNone() }",
 						"}");
-		run("equoList", "--request", "--stacktrace")
-				.snapshotBetween("Task :equoList", "BUILD SUCCESSFUL", expect);
+		return run("equoList", "--request", "--stacktrace")
+				.expectSnapshotBetween("Task :equoList", "BUILD SUCCESSFUL");
 	}
 
 	@Test
 	@EnabledForJreRange(min = JAVA_17)
-	public void simple(Expect expect) throws IOException {
-		test("jdt('4.27')", expect.scenario("jdt"));
-		test("platform('4.27')\ngradleBuildship()", expect.scenario("gradleBuildship"));
+	public void simple() throws IOException {
+		test("jdt('4.27')").toMatchDisk("jdt");
+		test("platform('4.27')\ngradleBuildship()").toMatchDisk("gradleBuildship");
 	}
 
 	@Test
-	public void versionOverride(Expect expect) throws IOException {
-		test("jdt('4.25')", expect.scenario("jdt-spec"));
-		test("platform()\njdt('4.25')", expect.scenario("platform-neutral-jdt-spec"));
-		test("platform('4.25')\njdt()", expect.scenario("platform-spec"));
-		test("platform('4.25')\njdt('4.25')", expect.scenario("both-spec"));
+	public void versionOverride() throws IOException {
+		test("jdt('4.25')").toMatchDisk("jdt-spec");
+		test("platform()\njdt('4.25')").toMatchDisk("platform-neutral-jdt-spec");
+		test("platform('4.25')\njdt()").toMatchDisk("platform-spec");
+		test("platform('4.25')\njdt('4.25')").toMatchDisk("both-spec");
 	}
 
 	@Test
-	public void wrongOrder(Expect expect) throws IOException {
+	public void wrongOrder() throws IOException {
 		setFile("build.gradle")
 				.toLines(
 						"plugins { id 'dev.equo.ide' }",
@@ -62,7 +59,7 @@ public class GradleCatalogTest extends GradleHarness {
 						"  addFilter 'platform-neutral', { platformNone() }",
 						"}");
 		runAndFail("equoList", "--request", "--stacktrace")
-				.snapshotBetween(
-						"A problem occurred evaluating root project 'under-test'.", "* Try:", expect);
+				.expectSnapshotBetween("A problem occurred evaluating root project 'under-test'.", "* Try:")
+				.toMatchDisk();
 	}
 }

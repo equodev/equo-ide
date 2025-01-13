@@ -1,4 +1,4 @@
-dev.equo.ide.gradle.EquoListTest.allCategories=[
+╔═ allCategories ═╗
 +----------------------------------------------+---------------------------------------------------+
 | id                                           | name \n description                               |
 +----------------------------------------------+---------------------------------------------------+
@@ -32,10 +32,7 @@ dev.equo.ide.gradle.EquoListTest.allCategories=[
 |                                              |   The full version of Eclipse, with source and    |
 |                                              |   documentation: Platform, JDT and PDE.           |
 +----------------------------------------------+---------------------------------------------------+
-]
-
-
-dev.equo.ide.gradle.EquoListTest.allFeatures=[
+╔═ allFeatures ═╗
 +-----------------------------------------------------------------------+----------------------------------------------------+
 | id                                                                    | name \n description                                |
 +-----------------------------------------------------------------------+----------------------------------------------------+
@@ -295,10 +292,7 @@ dev.equo.ide.gradle.EquoListTest.allFeatures=[
 | org.eclipse.tips.feature.source.feature.group                         | Tip of the Day UI Feature Developer Resources      |
 |                                                                       |   Contains the Eclipse Tips framework.             |
 +-----------------------------------------------------------------------+----------------------------------------------------+
-]
-
-
-dev.equo.ide.gradle.EquoListTest.allJars=[
+╔═ allJars ═╗
 id,name \n description
 assertj-core,AssertJ fluent assertions
 ,  Rich and fluent assertions for testing for Java
@@ -860,10 +854,7 @@ slf4j.api,slf4j-api
 ,  The slf4j API
 slf4j.nop,slf4j-nop
 ,  SLF4J NOP Binding
-]
-
-
-dev.equo.ide.gradle.EquoListTest.defaultP2[installed]=[
+╔═ defaultP2/installed ═╗
 0 unmet requirement(s), 6 ambigous requirement(s). For more info: `gradlew equoList --problems`
 50 optional requirement(s) were not installed. For more info: `gradlew equoList --optional`
 +---------------------------------------------------------------------------------+------------------------+
@@ -1164,10 +1155,7 @@ dev.equo.ide.gradle.EquoListTest.defaultP2[installed]=[
 | org.w3c.dom.smil:1.0.1.v200903091627                                            | p2 R-4.26-202211231800 |
 | org.w3c.dom.svg:1.1.0.v201011041433                                             | p2 R-4.26-202211231800 |
 +---------------------------------------------------------------------------------+------------------------+
-]
-
-
-dev.equo.ide.gradle.EquoListTest.defaultP2[optional]=[
+╔═ defaultP2/optional ═╗
 +--------------------------------+------------------------------------+-----------------------------------------------------------+
 | requirement (not installed)    | provided by                        | optionally needed by                                      |
 +--------------------------------+------------------------------------+-----------------------------------------------------------+
@@ -1230,10 +1218,7 @@ dev.equo.ide.gradle.EquoListTest.defaultP2[optional]=[
 +--------------------------------+------------------------------------+-----------------------------------------------------------+
 á org.apache
 ë org.eclipse.equinox
-]
-
-
-dev.equo.ide.gradle.EquoListTest.defaultP2[problems]=[
+╔═ defaultP2/problems ═╗
 0 unmet requirement(s).
 6 ambiguous requirement(s).
 +------------------------------------------+-------------------------------------------------+-----------+
@@ -1253,10 +1238,7 @@ dev.equo.ide.gradle.EquoListTest.defaultP2[problems]=[
 |                                          | é.jdt.annotation.source:1.2.100.v20220826-1026  | [ ]       |
 +------------------------------------------+-------------------------------------------------+-----------+
 é org.eclipse
-]
-
-
-dev.equo.ide.gradle.EquoListTest.detail=[
+╔═ detail ═╗
 2 units available with id org.eclipse.jdt.annotation
   2.2.700.v20220826-1026  [x] included by install
   1.2.100.v20220826-1026  [ ] not included by install
@@ -1285,10 +1267,7 @@ dev.equo.ide.gradle.EquoListTest.detail=[
 | prop maven-version               | 1.2.100-SNAPSHOT                                   |
 | prop org.eclipse.equinox.p2.name | JDT Annotations for Enhanced Null Analysis         |
 +----------------------------------+----------------------------------------------------+
-]
-
-
-dev.equo.ide.gradle.EquoListTest.help=[
+╔═ help ═╗
 Detailed task information for equoList
 
 Path
@@ -1326,35 +1305,12 @@ Description
 
 Group
      IDE
-]
-
-
-dev.equo.ide.gradle.EquoListTest.installedEmpty[installed]=[
+╔═ installedEmpty/installed ═╗
 No jars were specified.
-]
-
-
-dev.equo.ide.gradle.EquoListTest.installedEmpty[problems]=[
+╔═ installedEmpty/problems ═╗
 0 unmet requirement(s).
 0 ambiguous requirement(s).
-]
-
-
-dev.equo.ide.gradle.EquoListTest.installedSwtCsv[installed]=[
-0 unmet requirement(s), 0 ambigous requirement(s). For more info: `gradlew equoList --problems`
-1 optional requirement(s) were not installed. For more info: `gradlew equoList --optional`
-maven coordinate / p2 id,repo
-org.eclipse.platform:org.eclipse.swt:3.122.0,maven central?
-]
-
-
-dev.equo.ide.gradle.EquoListTest.installedSwtCsv[problems]=[
-0 unmet requirement(s).
-0 ambiguous requirement(s).
-]
-
-
-dev.equo.ide.gradle.EquoListTest.installedSwt[installed]=[
+╔═ installedSwt/installed ═╗
 0 unmet requirement(s), 0 ambigous requirement(s). For more info: `gradlew equoList --problems`
 1 optional requirement(s) were not installed. For more info: `gradlew equoList --optional`
 +----------------------------------------------+----------------+
@@ -1362,16 +1318,18 @@ dev.equo.ide.gradle.EquoListTest.installedSwt[installed]=[
 +----------------------------------------------+----------------+
 | org.eclipse.platform:org.eclipse.swt:3.122.0 | maven central? |
 +----------------------------------------------+----------------+
-]
-
-
-dev.equo.ide.gradle.EquoListTest.installedSwt[problems]=[
+╔═ installedSwt/problems ═╗
 0 unmet requirement(s).
 0 ambiguous requirement(s).
-]
-
-
-dev.equo.ide.gradle.EquoListTest.raw=[
+╔═ installedSwtCsv/installed ═╗
+0 unmet requirement(s), 0 ambigous requirement(s). For more info: `gradlew equoList --problems`
+1 optional requirement(s) were not installed. For more info: `gradlew equoList --optional`
+maven coordinate / p2 id,repo
+org.eclipse.platform:org.eclipse.swt:3.122.0,maven central?
+╔═ installedSwtCsv/problems ═╗
+0 unmet requirement(s).
+0 ambiguous requirement(s).
+╔═ raw ═╗
 <unit generation="2" id="org.eclipse.jdt.annotation" singleton="false" version="2.2.700.v20220826-1026">
   <update id="org.eclipse.jdt.annotation" range="[0.0.0,2.2.700.v20220826-1026)" severity="0"/>
   <properties size="9">
@@ -1463,4 +1421,4 @@ Bundle-Version: 1.2.100.v20220826-1026
     </instructions>
   </touchpointData>
 </unit>
-]
+╔═ [end of file] ═╗

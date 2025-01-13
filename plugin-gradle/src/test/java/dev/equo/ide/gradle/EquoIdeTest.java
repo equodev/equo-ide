@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2022-2023 EquoTech, Inc. and others.
+ * Copyright (c) 2022-2025 EquoTech, Inc. and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -13,19 +13,15 @@
  *******************************************************************************/
 package dev.equo.ide.gradle;
 
-import au.com.origin.snapshots.Expect;
-import au.com.origin.snapshots.junit5.SnapshotExtension;
 import java.io.IOException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 
-@ExtendWith({SnapshotExtension.class})
 public class EquoIdeTest extends GradleHarness {
 	@Test
-	public void tasks(Expect expect) throws IOException {
+	public void tasks() throws IOException {
 		setFile("build.gradle").toLines("plugins { id 'dev.equo.ide' }", "equoIde {", "}");
-		run("tasks").snapshotBetween("IDE tasks", "To see all tasks", expect);
+		run("tasks").expectSnapshotBetween("IDE tasks", "To see all tasks").toMatchDisk();
 	}
 
 	@Test
@@ -39,13 +35,13 @@ public class EquoIdeTest extends GradleHarness {
 	}
 
 	@Test
-	public void help(Expect expect) throws IOException {
+	public void help() throws IOException {
 		setFile("build.gradle").toContent("plugins { id 'dev.equo.ide' }");
-		run("-q", "help", "--task", "equoIde").snapshot(expect);
+		run("-q", "help", "--task", "equoIde").expectSnapshot().toMatchDisk();
 	}
 
 	@Test
-	public void p2repoArgCheck(Expect expect) throws IOException {
+	public void p2repoArgCheck() throws IOException {
 		setFile("build.gradle")
 				.toLines(
 						"plugins { id 'dev.equo.ide' }",
@@ -54,10 +50,8 @@ public class EquoIdeTest extends GradleHarness {
 						"  install 'org.eclipse.swt'",
 						"}");
 		runAndFail("equoIde")
-				.snapshotBetween(
-						"A problem occurred evaluating root project 'under-test'",
-						"* Try:",
-						expect.scenario("no-slash"));
+				.expectSnapshotBetween("A problem occurred evaluating root project 'under-test'", "* Try:")
+				.toMatchDisk("no-slash");
 		setFile("build.gradle")
 				.toLines(
 						"plugins { id 'dev.equo.ide' }",
@@ -66,10 +60,8 @@ public class EquoIdeTest extends GradleHarness {
 						"  install 'org.eclipse.swt'",
 						"}");
 		runAndFail("equoIde")
-				.snapshotBetween(
-						"A problem occurred evaluating root project 'under-test'",
-						"* Try:",
-						expect.scenario("double-slash"));
+				.expectSnapshotBetween("A problem occurred evaluating root project 'under-test'", "* Try:")
+				.toMatchDisk("double-slash");
 	}
 
 	@Test
