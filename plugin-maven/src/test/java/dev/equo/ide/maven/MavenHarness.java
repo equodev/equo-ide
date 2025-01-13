@@ -81,9 +81,13 @@ public class MavenHarness extends ResourceHarness {
 			var pattern =
 					Pattern.compile(Pattern.quote(before) + "(.*)" + Pattern.quote(after), Pattern.DOTALL);
 			var matcher = pattern.matcher(output);
-			matcher.find();
-			var toMatch = matcher.group(1).trim();
-			return expectSelfie(toMatch);
+			if (matcher.find()) {
+				var toMatch = matcher.group(1).trim();
+				return expectSelfie(toMatch);
+			} else {
+				throw new AssertionError(
+						"Could not find `" + before + "` -> `" + after + "` in:\n" + output);
+			}
 		}
 
 		public StringSelfie snapshot() {
