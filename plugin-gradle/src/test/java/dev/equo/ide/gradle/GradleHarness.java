@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2022-2023 EquoTech, Inc. and others.
+ * Copyright (c) 2022-2025 EquoTech, Inc. and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -108,9 +108,17 @@ public class GradleHarness extends ResourceHarness {
 				return "7.5";
 			case 19:
 				return "7.6";
+			case 20:
+				return "8.3";
+			case 21:
+				return "8.5";
+			case 22:
+				return "8.8";
+			case 23:
+				return "8.10";
 			default:
 				throw new UnsupportedOperationException(
-						"Update from https://docs.gradle.org/current/userguide/compatibility.html");
+						"Update GradleHarness.oldestGradleForJre from https://docs.gradle.org/current/userguide/compatibility.html");
 		}
 	}
 

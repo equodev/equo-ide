@@ -3,6 +3,9 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+### Changed
+- Bump `m2e` default version from `2.3.0` to `2.6.2`
+- Bump `gradle buildship` default version from `3.1.7.v20230428-1350` to `3.1.10.v20240802-1211`
 
 ## [1.8.0] - 2024-09-23
 ### Added

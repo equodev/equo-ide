@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+### Changed
+- Bump `m2e` default version from `2.3.0` to `2.6.2`
 
 ## [1.5.6] - 2024-08-08
 ### Changed

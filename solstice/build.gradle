@@ -66,6 +66,10 @@ tasks.named('test') {
 apply from: 干.file('snapshot-testing.gradle')
 
 def PLUGIN_SHIMS = ['welcome', 'buildship', 'm2e']
+if (!JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_17)) {
+	PLUGIN_SHIMS.remove('buildship')
+	PLUGIN_SHIMS.remove('m2e')
+}
 for (shim in PLUGIN_SHIMS) {
 	sourceSets.register(shim) {
 		compileClasspath += sourceSets.main.output
@@ -98,10 +102,12 @@ p2deps {
 		install 'org.eclipse.platform.ide.categoryIU'
 	}
 	into 'buildshipCompileOnly', {
-		gradleBuildship()
+		jdt()
+		p2repo "https://download.eclipse.org/buildship/updates/e431/releases/3.x/3.1.10.v20240802-1211/"
+		install 'org.eclipse.buildship.feature.group'
 	}
 	into 'm2eCompileOnly', {
-		m2e('1.20.1')
+		m2e('2.6.2')
 	}
 }
 

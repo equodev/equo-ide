@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2022-2023 EquoTech, Inc. and others.
+ * Copyright (c) 2022-2025 EquoTech, Inc. and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -25,7 +25,7 @@ class LockFile implements AutoCloseable {
 
 	LockFile(File dir) throws IOException {
 		FileMisc.mkdirs(dir);
-		lockFile = new File(dir, ".lock");
+		lockFile = new File(dir, ".lock").getCanonicalFile();
 		int timeout =
 				System.getProperty("lockFileGenerousTimeout") != null ? WAIT_FOR_BUSY_CI : WAIT_FOR_BUSY;
 		FileMisc.retry(

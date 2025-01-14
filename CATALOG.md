@@ -81,12 +81,12 @@ This catalog is a useful reference for the p2 urls, code repositories, and issue
 <a name="gradle-buildship"></a>
 ### `gradleBuildship`
 
-- Latest release https://download.eclipse.org/buildship/updates/e427/releases/3.x/3.1.7.v20230428-1350/ 
+- Latest release https://download.eclipse.org/buildship/updates/e431/releases/3.x/3.1.10.v20240802-1211/ 
 - Code & issues https://github.com/eclipse/buildship
 
 ### `m2e`
 
-- Latest release https://download.eclipse.org/technology/m2e/releases/2.3.0/
+- Latest release https://download.eclipse.org/technology/m2e/releases/2.6.2/
 - Code & issues https://github.com/eclipse-m2e/m2e-core
 - Also a transitive dependency on some jars from
   - https://download.eclipse.org/webtools/downloads/drops/R3.30.0/R-3.30.0-20230603084739
