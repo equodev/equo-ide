@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+
+## [1.8.1] - 2025-01-14
 ### Fixed
 - Parallel downloads within a single process no longer generate an error.
 ### Changed
