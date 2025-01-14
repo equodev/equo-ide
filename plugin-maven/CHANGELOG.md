@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+### Fixed
+- Parallel downloads within a single process no longer generate an error.
 ### Changed
 - Bump `m2e` default version from `2.3.0` to `2.6.2`
 
