@@ -1,4 +1,4 @@
-dev.equo.ide.maven.LaunchTest.help=[
+╔═ help ═╗
 equo-ide:launch
   Description: Launches an Eclipse-based IDE for this project.
   Implementation: dev.equo.ide.maven.LaunchMojo
@@ -99,7 +99,7 @@ equo-ide:launch
     workspaceProps
       User property: workspaceProps
       Sets properties in the Eclipse workspace.
-.
-.
+
+
 [INFO] ------------------------------------------------------------------------
-]
+╔═ [end of file] ═╗

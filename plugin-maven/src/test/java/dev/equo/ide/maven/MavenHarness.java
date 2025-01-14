@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2023 EquoTech, Inc. and others.
+ * Copyright (c) 2023-2025 EquoTech, Inc. and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -13,8 +13,10 @@
  *******************************************************************************/
 package dev.equo.ide.maven;
 
-import au.com.origin.snapshots.Expect;
+import static com.diffplug.selfie.Selfie.expectSelfie;
+
 import com.diffplug.common.swt.os.OS;
+import com.diffplug.selfie.StringSelfie;
 import dev.equo.ide.ResourceHarness;
 import java.io.File;
 import java.io.FileInputStream;
@@ -75,17 +77,21 @@ public class MavenHarness extends ResourceHarness {
 			this.output = output.replace("\r", "");
 		}
 
-		public void snapshotBetween(String before, String after, Expect expect) {
+		public StringSelfie snapshotBetween(String before, String after) {
 			var pattern =
 					Pattern.compile(Pattern.quote(before) + "(.*)" + Pattern.quote(after), Pattern.DOTALL);
 			var matcher = pattern.matcher(output);
-			matcher.find();
-			var toMatch = matcher.group(1).trim();
-			expect.toMatchSnapshot(toMatch);
+			if (matcher.find()) {
+				var toMatch = matcher.group(1).trim();
+				return expectSelfie(toMatch);
+			} else {
+				throw new AssertionError(
+						"Could not find `" + before + "` -> `" + after + "` in:\n" + output);
+			}
 		}
 
-		public void snapshot(Expect expect) {
-			expect.toMatchSnapshot(output.trim());
+		public StringSelfie snapshot() {
+			return expectSelfie(output.trim());
 		}
 
 		public AbstractStringAssert<?> raw() {

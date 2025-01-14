@@ -1,4 +1,4 @@
-dev.equo.ide.gradle.P2MultitoolExamples._01_minimal_allCategories=[
+╔═ _01_minimal_allCategories ═╗
 +----------------------------------------------+---------------------------------------------------+
 | id                                           | name \n description                               |
 +----------------------------------------------+---------------------------------------------------+
@@ -32,10 +32,7 @@ dev.equo.ide.gradle.P2MultitoolExamples._01_minimal_allCategories=[
 |                                              |   The full version of Eclipse, with source and    |
 |                                              |   documentation: Platform, JDT and PDE.           |
 +----------------------------------------------+---------------------------------------------------+
-]
-
-
-dev.equo.ide.gradle.P2MultitoolExamples._02_minimal_installed=[
+╔═ _02_minimal_installed ═╗
 0 unmet requirement(s), 0 ambigous requirement(s). For more info: `gradlew equoList --problems`
 60 optional requirement(s) were not installed. For more info: `gradlew equoList --optional`
 +---------------------------------------------------------------------------------+------------------------+
@@ -262,15 +259,9 @@ dev.equo.ide.gradle.P2MultitoolExamples._02_minimal_installed=[
 | org.w3c.dom.smil:1.0.1.v200903091627                                            | p2 R-4.26-202211231800 |
 | org.w3c.dom.svg:1.1.0.v201011041433                                             | p2 R-4.26-202211231800 |
 +---------------------------------------------------------------------------------+------------------------+
-]
-
-
-dev.equo.ide.gradle.P2MultitoolExamples._02_minimal_installed_empty=[
+╔═ _02_minimal_installed_empty ═╗
 No jars were specified.
-]
-
-
-dev.equo.ide.gradle.P2MultitoolExamples._03_corrosion_allCategories=[
+╔═ _03_corrosion_allCategories ═╗
 +-------------------------------------------------+---------------------------------------------------+
 | id                                              | name \n description                               |
 +-------------------------------------------------+---------------------------------------------------+
@@ -313,10 +304,7 @@ dev.equo.ide.gradle.P2MultitoolExamples._03_corrosion_allCategories=[
 |                                                 |   The full version of Eclipse, with source and    |
 |                                                 |   documentation: Platform, JDT and PDE.           |
 +-------------------------------------------------+---------------------------------------------------+
-]
-
-
-dev.equo.ide.gradle.P2MultitoolExamples._04_corrosion_installed=[
+╔═ _04_corrosion_installed ═╗
 WARNING!!! 13 unmet requirement(s), 674 ambigous requirement(s).
 WARNING!!!  For more info: `gradlew equoList --problems`
 62 optional requirement(s) were not installed. For more info: `gradlew equoList --optional`
@@ -562,10 +550,7 @@ WARNING!!!  For more info: `gradlew equoList --problems`
 | org.apache.lucene.core:8.4.1.v20221112-0806                                     | p2 R-4.26-202211231800 |
 | org.apache.xmlgraphics:2.7.0.v20221018-0736                                     | p2 R-4.26-202211231800 |
 +---------------------------------------------------------------------------------+------------------------+
-]
-
-
-dev.equo.ide.gradle.P2MultitoolExamples._05[apt]=[
+╔═ _05/apt ═╗
 1 unit available with id org.eclipse.jdt.compiler.apt
   1.4.300.v20221108-0856  [ ] not included by install
 +--------------------------------------------------+-------------------------------------------------------------+
@@ -586,10 +571,7 @@ dev.equo.ide.gradle.P2MultitoolExamples._05[apt]=[
 |                                                  |   org.eclipse.jdt.compiler.tool:1.3.200.v20220802-0458      |
 |                                                  |   org.eclipse.jdt.core.compiler.batch:3.32.0.v20221108-1853 |
 +--------------------------------------------------+-------------------------------------------------------------+
-]
-
-
-dev.equo.ide.gradle.P2MultitoolExamples._05[batch]=[
+╔═ _05/batch ═╗
 1 unit available with id org.eclipse.jdt.core.compiler.batch
   3.32.0.v20221108-1853  [ ] not included by install
 +----------------------------------+-------------------------------------+
@@ -606,10 +588,7 @@ dev.equo.ide.gradle.P2MultitoolExamples._05[batch]=[
 | prop maven-version               | 3.32.0-SNAPSHOT                     |
 | prop org.eclipse.equinox.p2.name | Eclipse Compiler for Java(TM)       |
 +----------------------------------+-------------------------------------+
-]
-
-
-dev.equo.ide.gradle.P2MultitoolExamples._05_corrosion_problems=[
+╔═ _05_corrosion_problems ═╗
 13 unmet requirement(s).
 +-------------------------------+-------------------------------------------------+
 | unmet requirement             | needed by                                       |
@@ -2018,10 +1997,7 @@ dev.equo.ide.gradle.P2MultitoolExamples._05_corrosion_problems=[
 á org.apache
 é org.eclipse
 ë org.eclipse.equinox
-]
-
-
-dev.equo.ide.gradle.P2MultitoolExamples._06[batch]=[
+╔═ _06/batch ═╗
 <unit id="org.eclipse.jdt.core.compiler.batch" singleton="false" version="3.32.0.v20221108-1853">
   <update id="org.eclipse.jdt.core.compiler.batch" range="[0.0.0,3.32.0.v20221108-1853)" severity="0"/>
   <properties size="7">
@@ -2077,10 +2053,7 @@ Bundle-Version: 3.32.0.v20221108-1853
     </instructions>
   </touchpointData>
 </unit>
-]
-
-
-dev.equo.ide.gradle.P2MultitoolExamples._06_corrosion_cdt_installed=[
+╔═ _06_corrosion_cdt_installed ═╗
 WARNING!!! 5 unmet requirement(s), 690 ambigous requirement(s).
 WARNING!!!  For more info: `gradlew equoList --problems`
 62 optional requirement(s) were not installed. For more info: `gradlew equoList --optional`
@@ -2342,4 +2315,4 @@ WARNING!!!  For more info: `gradlew equoList --problems`
 | org.eclipse.tools.templates.ui:1.4.0.202211062329                               | p2 cdt-11.0.0          |
 | org.yaml.snakeyaml:1.27.0.v20221112-0806                                        | p2 cdt-11.0.0          |
 +---------------------------------------------------------------------------------+------------------------+
-]
+╔═ [end of file] ═╗
