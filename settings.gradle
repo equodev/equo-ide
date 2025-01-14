@@ -16,13 +16,15 @@ pluginManagement {
 		// https://github.com/diffplug/spotless-changelog/blob/main/CHANGELOG.md
 		id 'com.diffplug.spotless-changelog'            version '3.0.2'
 		// https://plugins.gradle.org/plugin/com.gradle.plugin-publish
-		id 'com.gradle.plugin-publish'                  version '1.2.1'
+		id 'com.gradle.plugin-publish'                  version '1.3.0'
 		// https://www.benediktritter.de/maven-plugin-development/#release-history
 		id 'de.benediktritter.maven-plugin-development' version '0.4.2'
 		// https://github.com/equodev/equo-ide/blob/main/plugin-gradle/CHANGELOG.md
 		id 'dev.equo.p2deps'                            version '1.7.5'
 		// https://github.com/gradle-nexus/publish-plugin/releases
-		id 'io.github.gradle-nexus.publish-plugin'      version '2.0.0-rc-1'
+		id 'io.github.gradle-nexus.publish-plugin'      version '2.0.0'
+		// https://plugins.gradle.org/plugin/org.gradle.test-retry
+		id 'org.gradle.test-retry' version '1.6.0'
 	}
 }
 plugins {
@@ -34,6 +36,7 @@ plugins {
 	id 'de.benediktritter.maven-plugin-development' apply false
 	id 'dev.equo.p2deps'                            apply false
 	id 'io.github.gradle-nexus.publish-plugin'      apply false
+	id 'org.gradle.test-retry'                      apply false
 }
 blowdryerSetup {
 	repoSubfolder ''

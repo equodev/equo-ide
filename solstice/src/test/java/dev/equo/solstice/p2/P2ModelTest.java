@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2023 EquoTech, Inc. and others.
+ * Copyright (c) 2023-2025 EquoTech, Inc. and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -13,53 +13,51 @@
  *******************************************************************************/
 package dev.equo.solstice.p2;
 
-import au.com.origin.snapshots.Expect;
-import au.com.origin.snapshots.junit5.SnapshotExtension;
+import static com.diffplug.selfie.Selfie.expectSelfie;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 
-@ExtendWith({SnapshotExtension.class})
 public class P2ModelTest {
 	@Test
-	public void toString(Expect expect) {
+	public void toStringTest() {
 		var model = new P2Model();
-		expect.scenario("empty").toMatchSnapshot(model.toString());
+		expectSelfie(model.toString()).toMatchDisk("empty");
 
 		model.getP2repo().add("https://download.eclipse.org/eclipse/updates/4.26/");
-		expect.scenario("p2 single").toMatchSnapshot(model.toString());
+		expectSelfie(model.toString()).toMatchDisk("p2 single");
 
 		model
 				.getP2repo()
 				.add(
 						"https://download.eclipse.org/buildship/updates/e423/releases/3.x/3.1.6.v20220511-1359/");
-		expect.scenario("p2 multiple").toMatchSnapshot(model.toString());
+		expectSelfie(model.toString()).toMatchDisk("p2 multiple");
 
 		model.getInstall().add("org.eclipse.platform.ide.categoryIU");
-		expect.scenario("install single").toMatchSnapshot(model.toString());
+		expectSelfie(model.toString()).toMatchDisk("install single");
 
 		model.getInstall().add("org.eclipse.releng.java.languages.categoryIU");
 		model.getInstall().add("org.eclipse.buildship.feature.group");
-		expect.scenario("install multiple").toMatchSnapshot(model.toString());
+		expectSelfie(model.toString()).toMatchDisk("install multiple");
 
 		var filter = new P2Model.Filter();
-		expect.scenario("filter empty").toMatchSnapshot(filter.toString());
+		expectSelfie(filter.toString()).toMatchDisk("filter empty");
 
 		filter.getExclude().add("exclude.me");
-		expect.scenario("filter exclude").toMatchSnapshot(filter.toString());
+		expectSelfie(filter.toString()).toMatchDisk("filter exclude");
 
 		filter.getExcludePrefix().add("exclude.prefix");
-		expect.scenario("filter prefix exclude").toMatchSnapshot(filter.toString());
+		expectSelfie(filter.toString()).toMatchDisk("filter prefix exclude");
 
 		filter.getExcludeSuffix().add("exclude.suffix");
-		expect.scenario("filter suffix exclude").toMatchSnapshot(filter.toString());
+		expectSelfie(filter.toString()).toMatchDisk("filter suffix exclude");
 
 		filter.getProps().put("red", "255,0,0");
-		expect.scenario("filter props single").toMatchSnapshot(filter.toString());
+		expectSelfie(filter.toString()).toMatchDisk("filter props single");
 
 		filter.getProps().put("green", "0,255,0");
 		filter.getProps().put("blue", "0,0,255");
-		expect.scenario("filter props multiple").toMatchSnapshot(filter.toString());
+		expectSelfie(filter.toString()).toMatchDisk("filter props multiple");
 	}
 
 	@Test

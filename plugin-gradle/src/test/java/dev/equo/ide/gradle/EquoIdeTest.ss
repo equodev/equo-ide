@@ -1,4 +1,4 @@
-dev.equo.ide.gradle.EquoIdeTest.help=[
+╔═ help ═╗
 Detailed task information for equoIde
 
 Path
@@ -29,27 +29,18 @@ Description
 
 Group
      IDE
-]
-
-
-dev.equo.ide.gradle.EquoIdeTest.p2repoArgCheck[double-slash]=[
+╔═ p2repoArgCheck/double-slash ═╗
 .
 > Must end with a single /
     https://somerepo//  <- WRONG
     https://somerepo/   <- CORRECT
-]
-
-
-dev.equo.ide.gradle.EquoIdeTest.p2repoArgCheck[no-slash]=[
+╔═ p2repoArgCheck/no-slash ═╗
 .
 > Must end with /
     https://somerepo   <- WRONG
     https://somerepo/  <- CORRECT
-]
-
-
-dev.equo.ide.gradle.EquoIdeTest.tasks=[
+╔═ tasks ═╗
 ---------
 equoIde - Launches an Eclipse-based IDE for this project
 equoList - Lists the p2 dependencies of an Eclipse application
-]
+╔═ [end of file] ═╗

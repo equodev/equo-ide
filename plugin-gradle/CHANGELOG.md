@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+### Fixed
+- Parallel downloads within a single process no longer generate an error.
 ### Changed
 - Bump `gradle buildship` default version from `3.1.7.v20230428-1350` to `3.1.10.v20240802-1211`
 

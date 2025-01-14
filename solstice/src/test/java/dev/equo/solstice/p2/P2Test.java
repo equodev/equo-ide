@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2022-2023 EquoTech, Inc. and others.
+ * Copyright (c) 2022-2025 EquoTech, Inc. and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -13,13 +13,12 @@
  *******************************************************************************/
 package dev.equo.solstice.p2;
 
-import au.com.origin.snapshots.Expect;
-import au.com.origin.snapshots.junit5.SnapshotExtension;
-import com.diffplug.common.swt.os.SwtPlatform;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+import static com.diffplug.selfie.Selfie.expectSelfie;
 
-@ExtendWith({SnapshotExtension.class})
+import com.diffplug.common.swt.os.SwtPlatform;
+import com.diffplug.selfie.StringSelfie;
+import org.junit.jupiter.api.Test;
+
 public class P2Test {
 	private P2Session populateSession(P2ClientCache caching) throws Exception {
 		var session = new P2Session();
@@ -30,12 +29,12 @@ public class P2Test {
 	}
 
 	@Test
-	public void queryOffline(Expect expect) throws Exception {
-		queryImpl(expect, P2ClientCache.ALLOW_OFFLINE);
-		queryImpl(expect, P2ClientCache.OFFLINE);
+	public void queryOffline() throws Exception {
+		queryImpl(P2ClientCache.ALLOW_OFFLINE).toMatchDisk("ALLOW_OFFLINE");
+		queryImpl(P2ClientCache.OFFLINE).toMatchDisk("OFFLINE");
 	}
 
-	private void queryImpl(Expect expect, P2ClientCache caching) throws Exception {
+	private StringSelfie queryImpl(P2ClientCache caching) throws Exception {
 		var session = populateSession(caching);
 		var query = session.query();
 		query.exclude("a.jre.javase");
@@ -43,43 +42,41 @@ public class P2Test {
 		query.exclude("org.eclipse.rcp_root");
 		query.excludePrefix("tooling");
 		query.install("org.eclipse.platform.ide.categoryIU");
-		expect.toMatchSnapshot(ConsoleTable.mavenStatus(query.getJars(), ConsoleTable.Format.ascii));
+		return expectSelfie(ConsoleTable.mavenStatus(query.getJars(), ConsoleTable.Format.ascii));
 	}
 
 	@Test
-	public void queryPlatformSpecific(Expect expect) throws Exception {
+	public void queryPlatformSpecific() throws Exception {
 		var session = populateSession(P2ClientCache.PREFER_OFFLINE);
 		var query = session.query();
 		query.install("org.eclipse.swt");
-		expect
-				.scenario("all-platforms")
-				.toMatchSnapshot(ConsoleTable.mavenStatus(query.getJars(), ConsoleTable.Format.ascii));
+		expectSelfie(ConsoleTable.mavenStatus(query.getJars(), ConsoleTable.Format.ascii))
+				.toMatchDisk("all-platforms");
 
 		var macQuery = session.query();
 		macQuery.platform(SwtPlatform.parseWsOsArch("cocoa.macosx.aarch64"));
 		macQuery.install("org.eclipse.swt");
-		expect
-				.scenario("mac-only")
-				.toMatchSnapshot(ConsoleTable.mavenStatus(macQuery.getJars(), ConsoleTable.Format.ascii));
+		expectSelfie(ConsoleTable.mavenStatus(macQuery.getJars(), ConsoleTable.Format.ascii))
+				.toMatchDisk("mac-only");
 	}
 
 	@Test
-	public void weirdUpdateSites(Expect expect) throws Exception {
-		listCategories("https://bndtools.jfrog.io/bndtools/update-latest/", expect.scenario("bnd"));
+	public void weirdUpdateSites() throws Exception {
+		listCategories("https://bndtools.jfrog.io/bndtools/update-latest/").toMatchDisk("bnd");
 		listCategories(
-				"https://groovy.jfrog.io/artifactory/plugins-release/org/codehaus/groovy/groovy-eclipse-integration/4.8.0/e4.26/",
-				expect.scenario("groovy"));
-		listCategories("https://download.eclipse.org/eclipse/updates/4.28/", expect.scenario("4.28"));
+						"https://groovy.jfrog.io/artifactory/plugins-release/org/codehaus/groovy/groovy-eclipse-integration/4.8.0/e4.26/")
+				.toMatchDisk("groovy");
+		listCategories("https://download.eclipse.org/eclipse/updates/4.28/").toMatchDisk("4.28");
 	}
 
-	private void listCategories(String url, Expect expect) throws Exception {
+	private StringSelfie listCategories(String url) throws Exception {
 		var session = new P2Session();
 		try (var client = new P2Client(P2ClientCache.PREFER_OFFLINE)) {
 			session.populateFrom(client, url);
 		}
 		var query = session.query();
 		query.addAllUnits();
-		expect.toMatchSnapshot(
+		return expectSelfie(
 				ConsoleTable.nameAndDescription(query.getCategories(), ConsoleTable.Format.csv));
 	}
 }

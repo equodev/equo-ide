@@ -1,4 +1,4 @@
-dev.equo.ide.gradle.GradleCatalogTest.simple[gradleBuildship]=[
+╔═ simple/gradleBuildship ═╗
 +-------------+-----------------------------------------------------------------------------------------+
 | kind        | value                                                                                   |
 +-------------+-----------------------------------------------------------------------------------------+
@@ -12,10 +12,7 @@ dev.equo.ide.gradle.GradleCatalogTest.simple[gradleBuildship]=[
 |   osgi.os   | dont-include-platform-specific-artifacts                                                |
 |   osgi.ws   | dont-include-platform-specific-artifacts                                                |
 +-------------+-----------------------------------------------------------------------------------------+
-]
-
-
-dev.equo.ide.gradle.GradleCatalogTest.simple[jdt]=[
+╔═ simple/jdt ═╗
 +-------------+----------------------------------------------------+
 | kind        | value                                              |
 +-------------+----------------------------------------------------+
@@ -27,10 +24,7 @@ dev.equo.ide.gradle.GradleCatalogTest.simple[jdt]=[
 |   osgi.os   | dont-include-platform-specific-artifacts           |
 |   osgi.ws   | dont-include-platform-specific-artifacts           |
 +-------------+----------------------------------------------------+
-]
-
-
-dev.equo.ide.gradle.GradleCatalogTest.versionOverride[both-spec]=[
+╔═ versionOverride/both-spec ═╗
 +-------------+----------------------------------------------------+
 | kind        | value                                              |
 +-------------+----------------------------------------------------+
@@ -42,10 +36,7 @@ dev.equo.ide.gradle.GradleCatalogTest.versionOverride[both-spec]=[
 |   osgi.os   | dont-include-platform-specific-artifacts           |
 |   osgi.ws   | dont-include-platform-specific-artifacts           |
 +-------------+----------------------------------------------------+
-]
-
-
-dev.equo.ide.gradle.GradleCatalogTest.versionOverride[jdt-spec]=[
+╔═ versionOverride/jdt-spec ═╗
 +-------------+----------------------------------------------------+
 | kind        | value                                              |
 +-------------+----------------------------------------------------+
@@ -57,10 +48,7 @@ dev.equo.ide.gradle.GradleCatalogTest.versionOverride[jdt-spec]=[
 |   osgi.os   | dont-include-platform-specific-artifacts           |
 |   osgi.ws   | dont-include-platform-specific-artifacts           |
 +-------------+----------------------------------------------------+
-]
-
-
-dev.equo.ide.gradle.GradleCatalogTest.versionOverride[platform-neutral-jdt-spec]=[
+╔═ versionOverride/platform-neutral-jdt-spec ═╗
 +-------------+----------------------------------------------------+
 | kind        | value                                              |
 +-------------+----------------------------------------------------+
@@ -72,10 +60,7 @@ dev.equo.ide.gradle.GradleCatalogTest.versionOverride[platform-neutral-jdt-spec]
 |   osgi.os   | dont-include-platform-specific-artifacts           |
 |   osgi.ws   | dont-include-platform-specific-artifacts           |
 +-------------+----------------------------------------------------+
-]
-
-
-dev.equo.ide.gradle.GradleCatalogTest.versionOverride[platform-spec]=[
+╔═ versionOverride/platform-spec ═╗
 +-------------+----------------------------------------------------+
 | kind        | value                                              |
 +-------------+----------------------------------------------------+
@@ -87,10 +72,7 @@ dev.equo.ide.gradle.GradleCatalogTest.versionOverride[platform-spec]=[
 |   osgi.os   | dont-include-platform-specific-artifacts           |
 |   osgi.ws   | dont-include-platform-specific-artifacts           |
 +-------------+----------------------------------------------------+
-]
-
-
-dev.equo.ide.gradle.GradleCatalogTest.wrongOrder=[
+╔═ wrongOrder ═╗
 > platform was already added as a transitive dependency of jdt.
   You can fix this by moving the <platform> block above the <jdt> block.
-]
+╔═ [end of file] ═╗

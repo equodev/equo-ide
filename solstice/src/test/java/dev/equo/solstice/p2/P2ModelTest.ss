@@ -1,70 +1,40 @@
-dev.equo.solstice.p2.P2ModelTest.toString[empty]=[
+╔═ toStringTest/empty ═╗
 {'useMavenCentral': true}
-]
-
-
-dev.equo.solstice.p2.P2ModelTest.toString[filter empty]=[
+╔═ toStringTest/filter empty ═╗
 {}
-]
-
-
-dev.equo.solstice.p2.P2ModelTest.toString[filter exclude]=[
+╔═ toStringTest/filter exclude ═╗
 {exclude: ['exclude.me']}
-]
-
-
-dev.equo.solstice.p2.P2ModelTest.toString[filter prefix exclude]=[
+╔═ toStringTest/filter prefix exclude ═╗
 {exclude: ['exclude.me'],
 excludePrefix: ['exclude.prefix']}
-]
-
-
-dev.equo.solstice.p2.P2ModelTest.toString[filter props multiple]=[
+╔═ toStringTest/filter props multiple ═╗
 {exclude: ['exclude.me'],
 excludePrefix: ['exclude.prefix'],
 excludeSuffix: ['exclude.suffix'],
 props: { 'blue': '0,0,255',
           'green': '0,255,0',
           'red': '255,0,0' }}
-]
-
-
-dev.equo.solstice.p2.P2ModelTest.toString[filter props single]=[
+╔═ toStringTest/filter props single ═╗
 {exclude: ['exclude.me'],
 excludePrefix: ['exclude.prefix'],
 excludeSuffix: ['exclude.suffix'],
 props: { 'red': '255,0,0' }}
-]
-
-
-dev.equo.solstice.p2.P2ModelTest.toString[filter suffix exclude]=[
+╔═ toStringTest/filter suffix exclude ═╗
 {exclude: ['exclude.me'],
 excludePrefix: ['exclude.prefix'],
 excludeSuffix: ['exclude.suffix']}
-]
-
-
-dev.equo.solstice.p2.P2ModelTest.toString[install multiple]=[
+╔═ toStringTest/install multiple ═╗
 {'useMavenCentral': true,
 p2repo: ['https://download.eclipse.org/buildship/updates/e423/releases/3.x/3.1.6.v20220511-1359/', 'https://download.eclipse.org/eclipse/updates/4.26/'],
 install: ['org.eclipse.buildship.feature.group', 'org.eclipse.platform.ide.categoryIU', 'org.eclipse.releng.java.languages.categoryIU']}
-]
-
-
-dev.equo.solstice.p2.P2ModelTest.toString[install single]=[
+╔═ toStringTest/install single ═╗
 {'useMavenCentral': true,
 p2repo: ['https://download.eclipse.org/buildship/updates/e423/releases/3.x/3.1.6.v20220511-1359/', 'https://download.eclipse.org/eclipse/updates/4.26/'],
 install: ['org.eclipse.platform.ide.categoryIU']}
-]
-
-
-dev.equo.solstice.p2.P2ModelTest.toString[p2 multiple]=[
+╔═ toStringTest/p2 multiple ═╗
 {'useMavenCentral': true,
 p2repo: ['https://download.eclipse.org/buildship/updates/e423/releases/3.x/3.1.6.v20220511-1359/', 'https://download.eclipse.org/eclipse/updates/4.26/']}
-]
-
-
-dev.equo.solstice.p2.P2ModelTest.toString[p2 single]=[
+╔═ toStringTest/p2 single ═╗
 {'useMavenCentral': true,
 p2repo: ['https://download.eclipse.org/eclipse/updates/4.26/']}
-]
+╔═ [end of file] ═╗

@@ -13,7 +13,9 @@
  *******************************************************************************/
 package dev.equo.ide.gradle;
 
-import au.com.origin.snapshots.Expect;
+import static com.diffplug.selfie.Selfie.expectSelfie;
+
+import com.diffplug.selfie.StringSelfie;
 import dev.equo.ide.ResourceHarness;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -33,17 +35,30 @@ public class GradleHarness extends ResourceHarness {
 		setFile("settings.gradle").toContent("rootProject.name = 'under-test'");
 	}
 
+	private String[] cleanArgs(String[] args) {
+		String lockFileTimeout = System.getProperty("lockFileGenerousTimeout");
+		if (lockFileTimeout == null) {
+			return args;
+		} else {
+			String[] newArgs = new String[args.length + 1];
+			System.arraycopy(args, 0, newArgs, 0, args.length);
+			newArgs[args.length] = "-DlockFileGenerousTimeout=" + lockFileTimeout;
+			return newArgs;
+		}
+	}
+
 	protected AbstractStringAssert<?> runAndAssert(String... args) throws IOException {
-		var output = gradleRunner().withArguments(args).build().getOutput().replace("\r", "");
+		var output =
+				gradleRunner().withArguments(cleanArgs(args)).build().getOutput().replace("\r", "");
 		return Assertions.assertThat(output);
 	}
 
 	protected Output run(String... args) throws IOException {
-		return new Output(gradleRunner().withArguments(args).build().getOutput());
+		return new Output(gradleRunner().withArguments(cleanArgs(args)).build().getOutput());
 	}
 
 	protected Output runAndFail(String... args) throws IOException {
-		return new Output(gradleRunner().withArguments(args).buildAndFail().getOutput());
+		return new Output(gradleRunner().withArguments(cleanArgs(args)).buildAndFail().getOutput());
 	}
 
 	public static class Output {
@@ -53,27 +68,26 @@ public class GradleHarness extends ResourceHarness {
 			this.output = output.replace("\r", "");
 		}
 
-		public void snapshotBetween(String before, String after, Expect expect) {
+		public StringSelfie expectSnapshotBetween(String before, String after) {
 			var pattern =
 					Pattern.compile(Pattern.quote(before) + "(.*)" + Pattern.quote(after), Pattern.DOTALL);
 			var matcher = pattern.matcher(output);
-			matcher.find();
-			var toMatch = matcher.group(1).trim();
-			expect.toMatchSnapshot(toMatch);
+			if (matcher.find()) {
+				var toMatch = matcher.group(1).trim();
+				return expectSelfie(toMatch);
+			} else {
+				throw new AssertionError(
+						"Could not find `" + before + "` -> `" + after + "` in:\n" + output);
+			}
 		}
 
-		public void snapshot(Expect expect) {
-			expect.toMatchSnapshot(output.trim());
+		public StringSelfie expectSnapshot() {
+			return expectSelfie(output.trim());
 		}
 
 		public AbstractStringAssert<?> assertOutput() {
 			return Assertions.assertThat(output);
 		}
-	}
-
-	protected AbstractStringAssert<?> runFailAndAssert(String... args) throws IOException {
-		var output = gradleRunner().withArguments(args).buildAndFail().getOutput().replace("\r", "");
-		return Assertions.assertThat(output);
 	}
 
 	protected GradleRunner gradleRunner() throws IOException {

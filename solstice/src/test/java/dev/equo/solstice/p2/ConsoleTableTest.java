@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2022-2023 EquoTech, Inc. and others.
+ * Copyright (c) 2022-2025 EquoTech, Inc. and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -13,12 +13,10 @@
  *******************************************************************************/
 package dev.equo.solstice.p2;
 
-import au.com.origin.snapshots.Expect;
-import au.com.origin.snapshots.junit5.SnapshotExtension;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+import static com.diffplug.selfie.Selfie.expectSelfie;
 
-@ExtendWith({SnapshotExtension.class})
+import org.junit.jupiter.api.Test;
+
 public class ConsoleTableTest {
 	private P2Query query() throws Exception {
 		var session = new P2Session();
@@ -31,12 +29,13 @@ public class ConsoleTableTest {
 	}
 
 	@Test
-	public void detail(Expect expect) throws Exception {
+	public void detail() throws Exception {
 		var query = query();
-		expect.toMatchSnapshot(
-				ConsoleTable.detail(
-						query.getAllAvailableUnitsById(
-								"org.eclipse.ecf.filetransfer.httpclient5.feature.feature.jar"),
-						ConsoleTable.Format.ascii));
+		expectSelfie(
+						ConsoleTable.detail(
+								query.getAllAvailableUnitsById(
+										"org.eclipse.ecf.filetransfer.httpclient5.feature.feature.jar"),
+								ConsoleTable.Format.ascii))
+				.toMatchDisk();
 	}
 }

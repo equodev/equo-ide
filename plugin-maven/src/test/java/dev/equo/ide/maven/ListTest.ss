@@ -1,18 +1,12 @@
-dev.equo.ide.maven.ListTest.argErrorCheck[multi args]=[
+╔═ argErrorCheck/multi args ═╗
 Exactly one of -Drequest, -Dinstalled, -Dproblems, -Doptional, -Dall=[categories|features|jars], -Ddetail=id, or -Draw=id must be set.
 [ERROR] `mvn help:describe -Dcmd=equo-ide:list -Ddetail` for more info or visit https://github.com/equodev/equo-ide/blob/main/P2_MULTITOOL.md
 [ERROR]
-]
-
-
-dev.equo.ide.maven.ListTest.argErrorCheck[no args]=[
+╔═ argErrorCheck/no args ═╗
 Exactly one of -Drequest, -Dinstalled, -Dproblems, -Doptional, -Dall=[categories|features|jars], -Ddetail=id, or -Draw=id must be set.
 [ERROR] `mvn help:describe -Dcmd=equo-ide:list -Ddetail` for more info or visit https://github.com/equodev/equo-ide/blob/main/P2_MULTITOOL.md
 [ERROR]
-]
-
-
-dev.equo.ide.maven.ListTest.defaultP2[installed]=[
+╔═ defaultP2/installed ═╗
 0 unmet requirement(s), 0 ambigous requirement(s). For more info: `gradlew equoList --problems`
 60 optional requirement(s) were not installed. For more info: `gradlew equoList --optional`
 +---------------------------------------------------------------------------------+------------------------+
@@ -241,10 +235,7 @@ dev.equo.ide.maven.ListTest.defaultP2[installed]=[
 +---------------------------------------------------------------------------------+------------------------+
 
 [INFO] ------------------------------------------------------------------------
-]
-
-
-dev.equo.ide.maven.ListTest.defaultP2[optional]=[
+╔═ defaultP2/optional ═╗
 +----------------------------------------------+-----------------------------------------+-----------------------------------------------------------+
 | requirement (not installed)                  | provided by                             | optionally needed by                                      |
 +----------------------------------------------+-----------------------------------------+-----------------------------------------------------------+
@@ -319,17 +310,11 @@ dev.equo.ide.maven.ListTest.defaultP2[optional]=[
 ë org.eclipse.equinox
 
 [INFO] ------------------------------------------------------------------------
-]
-
-
-dev.equo.ide.maven.ListTest.defaultP2[problems]=[
+╔═ defaultP2/problems ═╗
 0 unmet requirement(s).
 0 ambiguous requirement(s).
 [INFO] ------------------------------------------------------------------------
-]
-
-
-dev.equo.ide.maven.ListTest.help=[
+╔═ help ═╗
 equo-ide:list
   Description: Lists the p2 dependencies of an Eclipse application.
   Implementation: dev.equo.ide.maven.ListMojo
@@ -429,7 +414,7 @@ equo-ide:list
 
     tmTerminal
       (no description available)
-.
-.
+
+
 [INFO] ------------------------------------------------------------------------
-]
+╔═ [end of file] ═╗

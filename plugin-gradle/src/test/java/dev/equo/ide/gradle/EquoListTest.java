@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2022-2023 EquoTech, Inc. and others.
+ * Copyright (c) 2022-2025 EquoTech, Inc. and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -13,18 +13,14 @@
  *******************************************************************************/
 package dev.equo.ide.gradle;
 
-import au.com.origin.snapshots.Expect;
-import au.com.origin.snapshots.junit5.SnapshotExtension;
 import java.io.IOException;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 
-@ExtendWith({SnapshotExtension.class})
 public class EquoListTest extends GradleHarness {
 	@Test
-	public void help(Expect expect) throws IOException {
+	public void help() throws IOException {
 		setFile("build.gradle").toContent("plugins { id 'dev.equo.ide' }");
-		run("-q", "help", "--task", "equoList").snapshot(expect);
+		run("-q", "help", "--task", "equoList").expectSnapshot().toMatchDisk();
 	}
 
 	@Test
@@ -38,7 +34,7 @@ public class EquoListTest extends GradleHarness {
 	}
 
 	@Test
-	public void defaultP2(Expect expect) throws IOException {
+	public void defaultP2() throws IOException {
 		setFile("build.gradle")
 				.toLines(
 						"plugins { id 'dev.equo.ide' }",
@@ -51,15 +47,18 @@ public class EquoListTest extends GradleHarness {
 						"  }",
 						"}");
 		run("equoList", "--installed", "--stacktrace")
-				.snapshotBetween("Task :equoList", "BUILD SUCCESSFUL", expect.scenario("installed"));
+				.expectSnapshotBetween("Task :equoList", "BUILD SUCCESSFUL")
+				.toMatchDisk("installed");
 		run("equoList", "--problems", "--stacktrace")
-				.snapshotBetween("Task :equoList", "BUILD SUCCESSFUL", expect.scenario("problems"));
+				.expectSnapshotBetween("Task :equoList", "BUILD SUCCESSFUL")
+				.toMatchDisk("problems");
 		run("equoList", "--optional", "--stacktrace")
-				.snapshotBetween("Task :equoList", "BUILD SUCCESSFUL", expect.scenario("optional"));
+				.expectSnapshotBetween("Task :equoList", "BUILD SUCCESSFUL")
+				.toMatchDisk("optional");
 	}
 
 	@Test
-	public void installedEmpty(Expect expect) throws IOException {
+	public void installedEmpty() throws IOException {
 		setFile("build.gradle")
 				.toLines(
 						"plugins { id 'dev.equo.ide' }",
@@ -67,13 +66,15 @@ public class EquoListTest extends GradleHarness {
 						"  p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'",
 						"}");
 		run("equoList", "--installed")
-				.snapshotBetween("Task :equoList", "BUILD SUCCESSFUL", expect.scenario("installed"));
+				.expectSnapshotBetween("Task :equoList", "BUILD SUCCESSFUL")
+				.toMatchDisk("installed");
 		run("equoList", "--problems")
-				.snapshotBetween("Task :equoList", "BUILD SUCCESSFUL", expect.scenario("problems"));
+				.expectSnapshotBetween("Task :equoList", "BUILD SUCCESSFUL")
+				.toMatchDisk("problems");
 	}
 
 	@Test
-	public void installedSwt(Expect expect) throws IOException {
+	public void installedSwt() throws IOException {
 		setFile("build.gradle")
 				.toLines(
 						"plugins { id 'dev.equo.ide' }",
@@ -85,13 +86,15 @@ public class EquoListTest extends GradleHarness {
 						"  }",
 						"}");
 		run("equoList", "--installed")
-				.snapshotBetween("Task :equoList", "BUILD SUCCESSFUL", expect.scenario("installed"));
+				.expectSnapshotBetween("Task :equoList", "BUILD SUCCESSFUL")
+				.toMatchDisk("installed");
 		run("equoList", "--problems")
-				.snapshotBetween("Task :equoList", "BUILD SUCCESSFUL", expect.scenario("problems"));
+				.expectSnapshotBetween("Task :equoList", "BUILD SUCCESSFUL")
+				.toMatchDisk("problems");
 	}
 
 	@Test
-	public void installedSwtCsv(Expect expect) throws IOException {
+	public void installedSwtCsv() throws IOException {
 		setFile("build.gradle")
 				.toLines(
 						"plugins { id 'dev.equo.ide' }",
@@ -103,13 +106,15 @@ public class EquoListTest extends GradleHarness {
 						"  }",
 						"}");
 		run("equoList", "--installed", "--format=csv")
-				.snapshotBetween("Task :equoList", "BUILD SUCCESSFUL", expect.scenario("installed"));
+				.expectSnapshotBetween("Task :equoList", "BUILD SUCCESSFUL")
+				.toMatchDisk("installed");
 		run("equoList", "--problems", "--format=csv")
-				.snapshotBetween("Task :equoList", "BUILD SUCCESSFUL", expect.scenario("problems"));
+				.expectSnapshotBetween("Task :equoList", "BUILD SUCCESSFUL")
+				.toMatchDisk("problems");
 	}
 
 	@Test
-	public void allFeatures(Expect expect) throws IOException {
+	public void allFeatures() throws IOException {
 		setFile("build.gradle")
 				.toLines(
 						"plugins { id 'dev.equo.ide' }",
@@ -120,11 +125,13 @@ public class EquoListTest extends GradleHarness {
 						"    platformNone()",
 						"  }",
 						"}");
-		run("equoList", "--all=features").snapshotBetween("Task :equoList", "BUILD SUCCESSFUL", expect);
+		run("equoList", "--all=features")
+				.expectSnapshotBetween("Task :equoList", "BUILD SUCCESSFUL")
+				.toMatchDisk();
 	}
 
 	@Test
-	public void allCategories(Expect expect) throws IOException {
+	public void allCategories() throws IOException {
 		setFile("build.gradle")
 				.toLines(
 						"plugins { id 'dev.equo.ide' }",
@@ -136,11 +143,12 @@ public class EquoListTest extends GradleHarness {
 						"  }",
 						"}");
 		run("equoList", "--all=categories")
-				.snapshotBetween("Task :equoList", "BUILD SUCCESSFUL", expect);
+				.expectSnapshotBetween("Task :equoList", "BUILD SUCCESSFUL")
+				.toMatchDisk();
 	}
 
 	@Test
-	public void allJars(Expect expect) throws IOException {
+	public void allJars() throws IOException {
 		setFile("build.gradle")
 				.toLines(
 						"plugins { id 'dev.equo.ide' }",
@@ -155,11 +163,12 @@ public class EquoListTest extends GradleHarness {
 						"  }",
 						"}");
 		run("equoList", "--all=jars", "--format=csv")
-				.snapshotBetween("Task :equoList", "BUILD SUCCESSFUL", expect);
+				.expectSnapshotBetween("Task :equoList", "BUILD SUCCESSFUL")
+				.toMatchDisk();
 	}
 
 	@Test
-	public void detail(Expect expect) throws IOException {
+	public void detail() throws IOException {
 		setFile("build.gradle")
 				.toLines(
 						"plugins { id 'dev.equo.ide' }",
@@ -171,11 +180,12 @@ public class EquoListTest extends GradleHarness {
 						"  }",
 						"}");
 		run("equoList", "--detail=org.eclipse.jdt.annotation")
-				.snapshotBetween("Task :equoList", "BUILD SUCCESSFUL", expect);
+				.expectSnapshotBetween("Task :equoList", "BUILD SUCCESSFUL")
+				.toMatchDisk();
 	}
 
 	@Test
-	public void raw(Expect expect) throws IOException {
+	public void raw() throws IOException {
 		setFile("build.gradle")
 				.toLines(
 						"plugins { id 'dev.equo.ide' }",
@@ -187,6 +197,7 @@ public class EquoListTest extends GradleHarness {
 						"  }",
 						"}");
 		run("equoList", "--raw=org.eclipse.jdt.annotation")
-				.snapshotBetween("Task :equoList", "BUILD SUCCESSFUL", expect);
+				.expectSnapshotBetween("Task :equoList", "BUILD SUCCESSFUL")
+				.toMatchDisk();
 	}
 }
