@@ -565,6 +565,11 @@ org.eclipse.sdk.ide.categoryIU,Eclipse SDK
 
 ╔═ weirdUpdateSites/bnd ═╗
 id,name \n description
+category:bndtools,Bndtools
+,  Bndtools
+category:bndtools-optional,Bndtools - Optionals
+,  Optional features for bndtools. Select them
+,  individually when needed.
 file:/Users/hargrave/git/bnd-test/org.bndtools.p2/features/category.xml.bndtools.category,Bndtools
 ,  OSGi Development Tools for Eclipse based on bnd.
 file:/home/runner/work/bnd/bnd/org.bndtools.p2/features/category.xml.bndtools.category,Bndtools
