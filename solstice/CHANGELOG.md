@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+### Fixed
+- Update selfie snapshot to fix P2Test
 
 ## [1.8.1] - 2025-01-14
 ### Fixed
