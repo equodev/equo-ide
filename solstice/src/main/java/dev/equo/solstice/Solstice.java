@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2023 EquoTech, Inc. and others.
+ * Copyright (c) 2023-2026 EquoTech, Inc. and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -293,11 +293,13 @@ public class Solstice {
 		if (thisManifest.totalPkgImports().contains(pkg)) {
 			return true;
 		}
-		var element =
-				thisManifest.pkgExportsRaw().stream()
-						.filter(e -> e.getValue().equals(pkg))
-						.findFirst()
-						.get();
+		var elementOpt =
+				thisManifest.pkgExportsRaw().stream().filter(e -> e.getValue().equals(pkg)).findFirst();
+		if (elementOpt.isEmpty()) {
+			return false;
+		}
+		var element = elementOpt.get();
+
 		String mandatory = element.getDirective("mandatory");
 		if (mandatory != null) {
 			if ("split".equals(element.getAttribute(mandatory))) {
