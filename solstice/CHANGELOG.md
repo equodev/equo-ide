@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
+
+## [1.8.2] - 2026-06-02
 ### Fixed
 - Fix NoSuchElementException if package is not exported
 - Update selfie snapshot to fix P2Test
